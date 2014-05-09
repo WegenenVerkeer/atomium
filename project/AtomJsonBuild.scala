@@ -6,10 +6,10 @@ import JacocoPlugin._
 import scala.util.Properties
 
 
-object AtomJson extends Build {
+object AtomJsonBuild extends Build {
   val Organization = "be.vlaanderen.awv"
   val Name = "atom-json"
-  val Version = "0.1.0-SNAPSHOT" 
+  val Version = "0.1.0" 
   val ScalaVersion = "2.10.3"
 
 
@@ -33,6 +33,7 @@ object AtomJson extends Build {
     libraryDependencies ++= {
       Seq(
         "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
+        "ch.qos.logback" % "logback-classic" % "1.1.1",
         "joda-time" % "joda-time" % "2.3",
         "com.typesafe.play" %% "play-json" % "2.2.2"
       )
@@ -44,10 +45,10 @@ object AtomJson extends Build {
   lazy val project = Project(
     "atom-json",
     file("."),
-    settings = Defaults.defaultSettings ++ 
-                        projectSettings ++ 
-                        awvsbtplugin.Plugin.defaultAppSettings ++ 
-                        testSettings ++ 
+    settings = Defaults.defaultSettings ++
+                        projectSettings ++
+                        awvsbtplugin.Plugin.defaultAppSettings ++
+                        testSettings ++
                         jacoco.settings
   )
 }
