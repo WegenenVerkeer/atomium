@@ -2,8 +2,9 @@ package be.vlaanderen.awv.atom
 
 import org.scalatest.{Matchers, FunSuite}
 import play.api.libs.json.{Format, JsValue, Json}
+import com.typesafe.scalalogging.slf4j.Logging
 
-class AtomFeedTest extends FunSuite with Matchers {
+class AtomFeedTest extends FunSuite with Matchers with Logging {
 
   val url  = Url("http://www.examp.le")
   val link = Link("abc", url)
@@ -28,7 +29,7 @@ class AtomFeedTest extends FunSuite with Matchers {
     serializeAndDeserialize(content)
   }
 
-  test("must ser/deser a Entry") {
+  test("must ser/deser an Entry") {
     serializeAndDeserialize(entry)
   }
 
@@ -39,6 +40,10 @@ class AtomFeedTest extends FunSuite with Matchers {
   def serializeAndDeserialize[T: Format](input: T): T = {
     val jsValue = Json.toJson(input)
     // read back
+
+    logger.debug(s"ser/deser test for ${input.getClass.getSimpleName}")
+    logger.debug(Json.prettyPrint(jsValue))
+
     val deser = Json.fromJson[T](jsValue)
     deser.asOpt shouldBe defined
     deser.get

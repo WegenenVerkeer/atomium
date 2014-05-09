@@ -33,6 +33,7 @@ object AtomJson extends Build {
     libraryDependencies ++= {
       Seq(
         "com.typesafe" %% "scalalogging-slf4j" % "1.0.1",
+        "ch.qos.logback" % "logback-classic" % "1.1.1",
         "joda-time" % "joda-time" % "2.3",
         "com.typesafe.play" %% "play-json" % "2.2.2"
       )
