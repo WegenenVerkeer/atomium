@@ -6,7 +6,7 @@ import JacocoPlugin._
 import scala.util.Properties
 
 
-object AtomJson extends Build {
+object AtomJsonBuild extends Build {
   val Organization = "be.vlaanderen.awv"
   val Name = "atom-json"
   val Version = "0.1.0-SNAPSHOT" 
