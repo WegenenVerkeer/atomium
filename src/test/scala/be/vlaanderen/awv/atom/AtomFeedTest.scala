@@ -1,7 +1,7 @@
 package be.vlaanderen.awv.atom
 
 import org.scalatest.{Matchers, FunSuite}
-import play.api.libs.json.{Format, JsValue, Json}
+import play.api.libs.json.{Format, Json}
 import com.typesafe.scalalogging.slf4j.Logging
 
 class AtomFeedTest extends FunSuite with Matchers with Logging {
