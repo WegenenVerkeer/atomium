@@ -27,6 +27,7 @@ object AtomJsonBuild extends Build {
     organization := Organization,
     name := Name,
     scalaVersion := ScalaVersion,
+    version := Version,
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
     resolvers += Classpaths.typesafeReleases,
