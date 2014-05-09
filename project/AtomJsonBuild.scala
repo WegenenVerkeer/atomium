@@ -26,6 +26,7 @@ object AtomJsonBuild extends Build {
   lazy val projectSettings = Seq(
     organization := Organization,
     name := Name,
+    version := Version,
     scalaVersion := ScalaVersion,
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
