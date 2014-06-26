@@ -9,8 +9,7 @@ object Validations {
   def valueOrException(validation:FeedProcessingResult) : FeedPosition  = {
     validation match  {
       case Failure(errMsg) =>
-        val message = errMsg.list.mkString("[", "] :: [", "]")
-        throw new FeedProcessingException(message, null)
+        throw new FeedProcessingException(errMsg, null)
       case Success(feedPos) => feedPos
     }
   }

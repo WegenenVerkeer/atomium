@@ -14,11 +14,11 @@ class EntryConsumerWrapper[E](javaEntryConsumer: JEntryConsumer[E]) extends
   override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
       javaEntryConsumer.consume(position, entry)
-      position.successNel[String]
+      position.success[String]
     } catch {
       case ex:Exception =>
         logger.error(s"Error during entry [$entry] consumption", ex)
-        ex.getMessage.failNel[FeedPosition]
+        ex.getMessage.fail[FeedPosition]
     }
   }
 }

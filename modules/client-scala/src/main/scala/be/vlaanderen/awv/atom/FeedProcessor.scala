@@ -40,7 +40,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
   }
 
 
-  private def initEventCursor() : ValidationNel[String, EventCursor] = {
+  private def initEventCursor() : Validation[String, EventCursor] = {
 
     val feedResult = initialPosition.fold {
       // geen positie, fetch eerste feed
@@ -58,7 +58,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
   private def process(cursor:EventCursor) : FeedProcessingResult = {
 
     //!!! NOTE !!!
-    // code hieronder bevat twee pattern matching over een ValidationNel[String, EventCursor]
+    // code hieronder bevat twee pattern matching over een Validation[String, EventCursor]
     // die precies hetzelfde zijn.
     // Moet zo blijven anders kan scalac geen tail call opt doen
     // en we WILLEN een tailrec hier
@@ -84,7 +84,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
           case Failure(errorMessages) => errorMessages.failure[FeedPosition]
         }
 
-      case EndOfEntries(lastFeedPos) => lastFeedPos.successNel[String] // we zijn klaar
+      case EndOfEntries(lastFeedPos) => lastFeedPos.success[String] // we zijn klaar
     }
 
   }
@@ -93,7 +93,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     try {
       entryConsumer.consume(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
-      case ex:Exception => ex.getMessage.failureNel[FeedPosition]
+      case ex:Exception => ex.getMessage.failure[FeedPosition]
     }
   }
 
@@ -161,12 +161,12 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     }
   }
 
-  private def cursorOnNextFeed(url:String) : ValidationNel[String, EventCursor] = {
+  private def cursorOnNextFeed(url:String) : Validation[String, EventCursor] = {
     feedProvider.fetchFeed(url).map { feed => buildCursor(feed) }
   }
 
 
-  private def buildNextEntryCursor(entryPointer:EntryPointer) : ValidationNel[String, EventCursor] = {
+  private def buildNextEntryCursor(entryPointer:EntryPointer) : Validation[String, EventCursor] = {
     val nextCursor =
       if (entryPointer.stillToProcessEntries.nonEmpty) {
         entryPointer.copy(
@@ -185,9 +185,9 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       // still a feed to go? go fetch it
       case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
       // no next feed link? stop processing, all entries were consumed
-      case end @ EndOfEntries(_) => end.successNel[String]
+      case end @ EndOfEntries(_) => end.success[String]
       // wrap nextCursor in Validation
-      case _ => nextCursor.successNel[String]
+      case _ => nextCursor.success[String]
 
     }
   }
