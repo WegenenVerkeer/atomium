@@ -48,7 +48,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     } { feedPos =>
       // fetch feed voor processing
       feedProvider.fetchFeed(feedPos.page)
-                     }
+    }
 
     feedResult.map { feed => buildCursor(feed, initialPosition) }
   }
