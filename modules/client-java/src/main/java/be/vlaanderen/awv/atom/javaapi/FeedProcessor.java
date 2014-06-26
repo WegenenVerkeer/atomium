@@ -1,9 +1,6 @@
 package be.vlaanderen.awv.atom.javaapi;
 
 import be.vlaanderen.awv.atom.FeedPosition;
-import scala.runtime.BoxedUnit;
-import scalaz.NonEmptyList;
-import scalaz.Validation;
 
 class FeedProcessor<E> {
 
@@ -22,7 +19,7 @@ class FeedProcessor<E> {
     }
 
     public void start() {
-        Validations.toException(feedProcessorScala.start());
+        Validations.valueOrException(feedProcessorScala.start());
     }
 
 

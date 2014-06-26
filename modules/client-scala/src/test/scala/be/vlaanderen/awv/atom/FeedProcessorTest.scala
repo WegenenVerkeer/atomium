@@ -19,12 +19,12 @@ class FeedProcessorTest extends FunSuite with Matchers {
     var finalPosition:Option[FeedPosition] = None
     var consumedEvents = new mutable.ListBuffer[String]
 
-    override def consume(position: FeedPosition, eventEntry: Entry[String]): ValidationNel[String, Unit] = {
+    override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
       finalPosition = Option(position)
       eventEntry.content.value.foreach { e =>
         consumedEvents += e
       }
-      ().successNel[String]
+      position.successNel[String]
     }
   }
 
@@ -42,7 +42,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     consumedEvents shouldBe consumer.consumedEvents.toList
     finalPosition shouldBe consumer.finalPosition
 
-    def assertResult(block: ValidationNel[String, Unit] => Unit) = block(result)
+    def assertResult(block: FeedProcessingResult => Unit) = block(result)
   }
 
   test("Feed is empty") {
@@ -137,8 +137,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
     val foutMelding = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def consume(position: FeedPosition, eventEntry: Entry[String]): ValidationNel[String, Unit] = {
-        foutMelding.failureNel[Unit]
+      override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
+        foutMelding.failureNel[FeedPosition]
       }
     }
 
@@ -160,7 +160,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
     val foutMelding = "Exception when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def consume(position: FeedPosition, eventEntry: Entry[String]): ValidationNel[String, Unit] = {
+      override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
         throw new RuntimeException(foutMelding)
       }
     }

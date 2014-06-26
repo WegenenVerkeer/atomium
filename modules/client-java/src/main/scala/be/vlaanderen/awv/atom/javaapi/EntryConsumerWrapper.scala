@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom.javaapi
 
-import be.vlaanderen.awv.atom.{Entry, FeedPosition}
+import be.vlaanderen.awv.atom.{FeedProcessingResult, Entry, FeedPosition}
 import be.vlaanderen.awv.atom.javaapi.{EntryConsumer => JEntryConsumer}
 import com.typesafe.scalalogging.slf4j.Logging
 
@@ -11,14 +11,14 @@ import scalaz.ValidationNel
 class EntryConsumerWrapper[E](javaEntryConsumer: JEntryConsumer[E]) extends
   be.vlaanderen.awv.atom.EntryConsumer[E] with Logging {
 
-  override def consume(position: FeedPosition, entry: Entry[E]): ValidationNel[String, Unit] = {
+  override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
       javaEntryConsumer.consume(position, entry)
-      ().successNel[String]
+      position.successNel[String]
     } catch {
       case ex:Exception =>
         logger.error(s"Error during entry [$entry] consumption", ex)
-        ex.getMessage.failNel[Unit]
+        ex.getMessage.failNel[FeedPosition]
     }
   }
 }

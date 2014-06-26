@@ -16,13 +16,13 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
   trait EventCursor
 
-  case class CurrentEvent(eventTeVerwerken: Entry[EntryType],
-                          nogTeVerwerkenEvents: Entries,
+  case class EntryPointer(entryToProcess: Entry[EntryType],
+                          stillToProcessEntries: Entries,
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-  case class EventOnNextFeed(nextFeedUrl:String) extends EventCursor
-  case object EndOfEvents extends EventCursor
+  case class EntryOnNextFeed(nextFeedUrl:String) extends EventCursor
+  case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
   /**
@@ -32,10 +32,10 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
    * Dus, het Success geval is een Unit. Data is geconsumeerd en
    * er is niks om terug te geven.
    */
-  def start() : ValidationNel[String, Unit] = {
+  def start() : FeedProcessingResult = {
     initEventCursor() match {
       case Success(eventCursor) => process(eventCursor)
-      case Failure(err) => err.failure[Unit]
+      case Failure(err) => err.failure[FeedPosition]
     }
   }
 
@@ -55,7 +55,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
 
   @tailrec
-  private def process(cursor:EventCursor) : ValidationNel[String, Unit] = {
+  private def process(cursor:EventCursor) : FeedProcessingResult = {
 
     //!!! NOTE !!!
     // code hieronder bevat twee pattern matching over een ValidationNel[String, EventCursor]
@@ -63,11 +63,11 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     // Moet zo blijven anders kan scalac geen tail call opt doen
     // en we WILLEN een tailrec hier
     cursor match {
-      case currentEvent:CurrentEvent =>
+      case currentEvent:EntryPointer =>
 
         val nextEventOrFailure = for {
           _ <- consumeEvent(currentEvent)
-          nextEvent <- buildVolgendeEventCursor(currentEvent)
+          nextEvent <- buildNextEntryCursor(currentEvent)
         } yield nextEvent
 
         // gelukt? process volgende event
@@ -75,25 +75,25 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
         // in geval van een EventOnNextFeed, we kunnen we een fout krijgen bij ophalen van volgende feed
         nextEventOrFailure match {
           case Success(next) => process(next)
-          case Failure(errorMessages) => errorMessages.failure[Unit]
+          case Failure(errorMessages) => errorMessages.failure[FeedPosition]
         }
 
-      case EventOnNextFeed(nextFeedUrl) =>
+      case EntryOnNextFeed(nextFeedUrl) =>
         cursorOnNextFeed(nextFeedUrl) match {
           case Success(next) => process(next)
-          case Failure(errorMessages) => errorMessages.failure[Unit]
+          case Failure(errorMessages) => errorMessages.failure[FeedPosition]
         }
 
-      case EndOfEvents => ().successNel[String] // we zijn klaar
+      case EndOfEntries(lastFeedPos) => lastFeedPos.successNel[String] // we zijn klaar
     }
 
   }
 
-  private def consumeEvent(currentEvent:CurrentEvent) : ValidationNel[String, Unit] = {
+  private def consumeEvent(currentEvent:EntryPointer) : FeedProcessingResult = {
     try {
-      entryConsumer.consume(currentEvent.feedPosition, currentEvent.eventTeVerwerken)
+      entryConsumer.consume(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
-      case ex:Exception => ex.getMessage.failureNel[Unit]
+      case ex:Exception => ex.getMessage.failureNel[FeedPosition]
     }
   }
 
@@ -113,8 +113,9 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
    *
    */
   private def buildCursor(feed:Feed[EntryType], feedPosition:Option[FeedPosition] = None) : EventCursor = {
-    def builCursorMetPositieOp(feed:Feed[EntryType], index:Int) = {
-      CurrentEvent(
+
+    def buildCursorWithPositionOn(feed:Feed[EntryType], index:Int) = {
+      EntryPointer(
         feed.entries.head,
         feed.entries.tail,
         FeedPosition(feed.selfLink, index),
@@ -122,28 +123,41 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       )
     }
 
-    def volgendeFeedOfEinde(feed:Feed[EntryType]) = {
-      // ofwel gaan we naar een volgende feed, ofwel is het gedaan
-      feed.nextLink.map(EventOnNextFeed).getOrElse(EndOfEvents)
+    def nextFeedOrEnd(feed:Feed[EntryType]) = {
+      // we go to next feed page or we reached the EndOfEntries
+      def endOfEntries = {
+        feedPosition match {
+          case Some(feedPos) => EndOfEntries(feedPos)
+          case None =>
+            // rather exceptional situation, can only occurs if a feed is completely empty
+            EndOfEntries(FeedPosition(feed.selfLink, 0))
+        }
+      }
+
+      feed.nextLink match {
+        case Some(nextLink) => EntryOnNextFeed(nextLink)
+        case None => endOfEntries
+      }
+
     }
 
     if (feed.entries.nonEmpty) {
       feedPosition match {
         // geen FeedPosition betekent begin van een nieuwe Feed
-        case None => builCursorMetPositieOp(feed, 0)
+        case None => buildCursorWithPositionOn(feed, 0)
         case Some(feedPos) =>
           // zijn er nog entries om te verwerken
-          val volgendeIndex = feedPos.index + 1
-          val remainingEntries = feed.entries.drop(volgendeIndex)
+          val nextIndex = feedPos.index + 1
+          val remainingEntries = feed.entries.drop(nextIndex)
           remainingEntries match {
-            case Nil => volgendeFeedOfEinde(feed)
+            case Nil => nextFeedOrEnd(feed)
             case _ =>
               val partialFeed = feed.copy(entries = remainingEntries)
-              builCursorMetPositieOp(partialFeed, volgendeIndex)
+              buildCursorWithPositionOn(partialFeed, nextIndex)
           }
       }
     } else {
-      volgendeFeedOfEinde(feed)
+      nextFeedOrEnd(feed)
     }
   }
 
@@ -152,28 +166,28 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
   }
 
 
-  private def buildVolgendeEventCursor(eventCursor:CurrentEvent) : ValidationNel[String, EventCursor] = {
-    val volgendeCursor =
-      if (eventCursor.nogTeVerwerkenEvents.nonEmpty) {
-        eventCursor.copy(
-          eventTeVerwerken = eventCursor.nogTeVerwerkenEvents.head,
-          nogTeVerwerkenEvents = eventCursor.nogTeVerwerkenEvents.tail, // moving forward, dropping head
-          feedPosition = eventCursor.feedPosition.copy(index = eventCursor.feedPosition.index + 1) // moving position forward
+  private def buildNextEntryCursor(entryPointer:EntryPointer) : ValidationNel[String, EventCursor] = {
+    val nextCursor =
+      if (entryPointer.stillToProcessEntries.nonEmpty) {
+        entryPointer.copy(
+          entryToProcess = entryPointer.stillToProcessEntries.head,
+          stillToProcessEntries = entryPointer.stillToProcessEntries.tail, // moving forward, dropping head
+          feedPosition = entryPointer.feedPosition.copy(index = entryPointer.feedPosition.index + 1) // moving position forward
         )
       } else {
-        eventCursor.feed.nextLink match {
-          case None => EndOfEvents
-          case Some(url) => EventOnNextFeed(url)
+        entryPointer.feed.nextLink match {
+          case None => EndOfEntries(entryPointer.feedPosition)
+          case Some(url) => EntryOnNextFeed(url)
         }
       }
 
-    volgendeCursor match {
-      // nog een volgende feed, go fetch it
-      case EventOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
-      // geen next feed link? stop processing, alle events zijn dus verwerkt
-      case EndOfEvents => EndOfEvents.successNel[String]
-      // wrap volgendeCursor in Validation voor volgende stap
-      case _ => volgendeCursor.successNel[String]
+    nextCursor match {
+      // still a feed to go? go fetch it
+      case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
+      // no next feed link? stop processing, all entries were consumed
+      case end @ EndOfEntries(_) => end.successNel[String]
+      // wrap nextCursor in Validation
+      case _ => nextCursor.successNel[String]
 
     }
   }

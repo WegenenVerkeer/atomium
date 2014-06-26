@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 class AtomFeedTest extends FunSuite with Matchers with Logging {
 
   val url  = Url("http://www.examp.le")
-  val link = Link("abc", url)
+  val link = Link(Link.selfLink, url)
 
   val content = Content(
     List(Json.obj("name" -> "John", "age" -> 30)),
