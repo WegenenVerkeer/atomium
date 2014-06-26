@@ -6,8 +6,11 @@ import Scalaz._
 
 class FeedProcessor[E](initialPosition:Option[FeedPosition],
                        feedProvider: FeedProvider[E],
-                       eventConsumer: EntryConsumer[E]) {
+                       entryConsumer: EntryConsumer[E]) {
 
+  def this(initialPosition:FeedPosition, feedProvider: FeedProvider[E], entryConsumer: EntryConsumer[E]) =
+    this(Option(initialPosition), feedProvider, entryConsumer)
+  
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
@@ -88,7 +91,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
   private def consumeEvent(currentEvent:CurrentEvent) : ValidationNel[String, Unit] = {
     try {
-      eventConsumer.consume(currentEvent.feedPosition, currentEvent.eventTeVerwerken)
+      entryConsumer.consume(currentEvent.feedPosition, currentEvent.eventTeVerwerken)
     } catch {
       case ex:Exception => ex.getMessage.failureNel[Unit]
     }

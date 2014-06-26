@@ -8,6 +8,7 @@ object AtomiumBuild extends Build
   val Name = "atomium"
 
 
+  //----------------------------------------------------------------
   val formatModuleName = Name + "-format"
   lazy val formatModule = Project(
     formatModuleName,
@@ -15,6 +16,9 @@ object AtomiumBuild extends Build
     settings = buildSettings(formatModuleName)
   )
 
+
+
+  //----------------------------------------------------------------
   val clientScalaModuleName = Name + "-client-scala"
   lazy val clientScalaModule = Project(
     clientScalaModuleName,
@@ -24,10 +28,23 @@ object AtomiumBuild extends Build
    .aggregate(formatModule)
    
 
+
+  //----------------------------------------------------------------
+  val clientJavaModuleName = Name + "-client-java"
+  lazy val clientJavaModule = Project(
+    clientJavaModuleName,
+    file("modules/client-java"),
+    settings = buildSettings(clientJavaModuleName)
+  ).dependsOn(clientScalaModule)
+   .aggregate(clientScalaModule)
+
+
+  
+  //----------------------------------------------------------------
   lazy val main = Project(
     Name,
     file("."),
     settings = buildSettings(Name) 
-  ).dependsOn(formatModule, clientScalaModule)
-   .aggregate(formatModule, clientScalaModule)
+  ).dependsOn(formatModule, clientScalaModule, clientJavaModule)
+   .aggregate(formatModule, clientScalaModule, clientJavaModule)
 }

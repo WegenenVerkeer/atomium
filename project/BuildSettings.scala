@@ -19,9 +19,7 @@ trait BuildSettings extends Dependencies {
   ))
 
   lazy val testSettings = Seq(
-    libraryDependencies ++= Seq(//TEST DEPENDENCIES
-      "org.scalatest" %% "scalatest" % "2.1.5" % "test"
-    )
+    libraryDependencies ++= mainTestDependencies
   ) ++ scalaTestOptions(Test) ++ scalaTestOptions(jacoco.Config)
 
   def projectSettings(projectName:String) = Seq(
@@ -33,13 +31,13 @@ trait BuildSettings extends Dependencies {
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
     resolvers += Classpaths.typesafeReleases,
-    libraryDependencies ++= mainDependencies ++ mainTestDependencies
+    libraryDependencies ++= mainDependencies
   )
 
   def buildSettings(projectName:String) = {
     Defaults.defaultSettings ++
       projectSettings(projectName) ++
-      awvsbtplugin.Plugin.defaultAppSettings ++
+      awvsbtplugin.Plugin.defaultAppSettings ++ 
       testSettings ++
       jacoco.settings
   }
