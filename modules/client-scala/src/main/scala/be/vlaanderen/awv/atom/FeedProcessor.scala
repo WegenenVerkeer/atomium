@@ -21,7 +21,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-  case class EntryOnNextFeed(nextFeedUrl:String) extends EventCursor
+  case class EntryOnNextFeed(nextFeedUrl:Link) extends EventCursor
   case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
@@ -47,7 +47,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       feedProvider.fetchFeed()
     } { feedPos =>
       // fetch feed voor processing
-      feedProvider.fetchFeed(feedPos.page)
+      feedProvider.fetchFeed(feedPos.link.href.path)
     }
 
     feedResult.map { feed => buildCursor(feed, initialPosition) }
@@ -161,8 +161,8 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     }
   }
 
-  private def cursorOnNextFeed(url:String) : Validation[String, EventCursor] = {
-    feedProvider.fetchFeed(url).map { feed => buildCursor(feed) }
+  private def cursorOnNextFeed(link:Link) : Validation[String, EventCursor] = {
+    feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
 

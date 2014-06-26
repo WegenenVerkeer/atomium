@@ -45,6 +45,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     def assertResult(block: FeedProcessingResult => Unit) = block(result)
   }
 
+
   test("Feed is empty") {
     Scenario(
       provider = feedProvider(),
@@ -65,7 +66,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       ),
 
       consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition("/feed/3", 2))
+      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
 
@@ -78,8 +79,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
       ),
 
       consumedEvents = List("c2", "a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition("/feed/2", 1)),
-      finalPosition = Some(FeedPosition("/feed/3", 2))
+      initialPosition = Some(FeedPosition(link("/feed/2"), 1)),
+      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
 
@@ -92,8 +93,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition("/feed/2", 2)),
-      finalPosition = Some(FeedPosition("/feed/3", 2))
+      initialPosition = Some(FeedPosition(link("/feed/2"), 2)),
+      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
 
@@ -107,8 +108,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition("/feed/2", 10)),
-      finalPosition = Some(FeedPosition("/feed/3", 2))
+      initialPosition = Some(FeedPosition(link("/feed/2"), 10)),
+      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
 
@@ -122,7 +123,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
       consumedEvents = List("a1", "b1", "c1"),
       initialPosition = None,
-      finalPosition = Some(FeedPosition("/feed/1", 2))
+      finalPosition = Some(FeedPosition(link("/feed/1"), 2))
     ) assertResult { result =>
       result.isFailure shouldBe true
     }
@@ -182,6 +183,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
     Feed("id", Url("base"), Option("title"), "update", links, entries.toList)
   }
 
+  def link(url:String) : Link = Link(Link.selfLink, Url(url))
+
   def feedProvider(feeds:Feed[String]*) = new TestFeedProvider(feeds.toList)
 
   /**
@@ -207,11 +210,11 @@ class FeedProcessorTest extends FunSuite with Matchers {
      * add 'first' and 'next' link to list of Feeds
      */
     @tailrec
-    private def linkFeeds(firstLink:String, current:StringFeed, others: Feeds, acc:Feeds = List()) : Feeds = {
+    private def linkFeeds(firstLink:Link, current:StringFeed, others: Feeds, acc:Feeds = List()) : Feeds = {
 
-      def addLink(feed:StringFeed, linkLabel:String, link:String) : StringFeed = {
+      def addLink(feed:StringFeed, linkLabel:String, link:Link) : StringFeed = {
         feed.copy (
-          links = feed.links :+ Link(linkLabel, Url(link))
+          links = feed.links :+ link.copy(rel = linkLabel)
         )
       }
 
@@ -238,7 +241,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
      */
     override def fetchFeed(page: String): Validation[String, Feed[String]] = {
       val feedOpt =  linkedFeeds.find {
-        feed => feed.selfLink == page
+        feed => feed.selfLink.href.path == page
       }
       optToValidation(feedOpt)
     }
