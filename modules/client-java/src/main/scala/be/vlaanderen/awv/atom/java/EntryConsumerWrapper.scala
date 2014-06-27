@@ -1,7 +1,7 @@
-package be.vlaanderen.awv.atom.javaapi
+package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.{FeedProcessingResult, Entry, FeedPosition}
-import be.vlaanderen.awv.atom.javaapi.{EntryConsumer => JEntryConsumer}
+import be.vlaanderen.awv.atom.{FeedProcessingError, FeedProcessingResult, Entry, FeedPosition}
+import be.vlaanderen.awv.atom.java.{EntryConsumer => JEntryConsumer}
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scalaz._
@@ -14,11 +14,14 @@ class EntryConsumerWrapper[E](javaEntryConsumer: JEntryConsumer[E]) extends
   override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
       javaEntryConsumer.consume(position, entry)
-      position.success[String]
+      position.success[FeedProcessingError]
     } catch {
       case ex:Exception =>
         logger.error(s"Error during entry [$entry] consumption", ex)
-        ex.getMessage.fail[FeedPosition]
+        FeedProcessingError(
+          position,
+          ex.getMessage
+        ).fail[FeedPosition]
     }
   }
 }

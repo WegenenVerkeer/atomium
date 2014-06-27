@@ -32,21 +32,21 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
    * Dus, het Success geval is een Unit. Data is geconsumeerd en
    * er is niks om terug te geven.
    */
-  def start() : FeedProcessingResult = {
-    initEventCursor() match {
+  def start() : Validation[FeedProcessingError, FeedPosition] = {
+    initEventCursor match {
       case Success(eventCursor) => process(eventCursor)
       case Failure(err) => err.failure[FeedPosition]
     }
   }
 
 
-  private def initEventCursor() : Validation[String, EventCursor] = {
+  private def initEventCursor : Validation[FeedProcessingError, EventCursor] = {
 
     val feedResult = initialPosition.fold {
-      // geen positie, fetch eerste feed
+      // no initial position, fetch first feed
       feedProvider.fetchFeed()
     } { feedPos =>
-      // fetch feed voor processing
+      // fetch feed according to position
       feedProvider.fetchFeed(feedPos.link.href.path)
     }
 
@@ -84,7 +84,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
           case Failure(errorMessages) => errorMessages.failure[FeedPosition]
         }
 
-      case EndOfEntries(lastFeedPos) => lastFeedPos.success[String] // we zijn klaar
+      case EndOfEntries(lastFeedPos) => lastFeedPos.success[FeedProcessingError] // we are done
     }
 
   }
@@ -93,7 +93,11 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     try {
       entryConsumer.consume(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
-      case ex:Exception => ex.getMessage.failure[FeedPosition]
+      case ex:Exception =>
+        FeedProcessingError(
+          currentEvent.feedPosition,
+          ex.getMessage
+        ).failure[FeedPosition]
     }
   }
 
@@ -161,12 +165,12 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     }
   }
 
-  private def cursorOnNextFeed(link:Link) : Validation[String, EventCursor] = {
+  private def cursorOnNextFeed(link:Link) : Validation[FeedProcessingError, EventCursor] = {
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
 
-  private def buildNextEntryCursor(entryPointer:EntryPointer) : Validation[String, EventCursor] = {
+  private def buildNextEntryCursor(entryPointer:EntryPointer) : Validation[FeedProcessingError, EventCursor] = {
     val nextCursor =
       if (entryPointer.stillToProcessEntries.nonEmpty) {
         entryPointer.copy(
@@ -185,9 +189,9 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       // still a feed to go? go fetch it
       case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
       // no next feed link? stop processing, all entries were consumed
-      case end @ EndOfEntries(_) => end.success[String]
+      case end @ EndOfEntries(_) => end.success[FeedProcessingError]
       // wrap nextCursor in Validation
-      case _ => nextCursor.success[String]
+      case _ => nextCursor.success[FeedProcessingError]
 
     }
   }

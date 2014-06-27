@@ -34,17 +34,16 @@ object AtomiumBuild extends Build
   lazy val clientJavaModule = Project(
     clientJavaModuleName,
     file("modules/client-java"),
-    settings = buildSettings(clientJavaModuleName)
+    settings = buildSettings(clientJavaModuleName, javaDependencies)
   ).dependsOn(clientScalaModule)
    .aggregate(clientScalaModule)
 
 
-  
+
   //----------------------------------------------------------------
   lazy val main = Project(
     Name,
     file("."),
     settings = buildSettings(Name) 
-  ).dependsOn(formatModule, clientScalaModule, clientJavaModule)
-   .aggregate(formatModule, clientScalaModule, clientJavaModule)
+  ).aggregate(formatModule, clientScalaModule, clientJavaModule)
 }

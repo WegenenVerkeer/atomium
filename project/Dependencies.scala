@@ -14,4 +14,8 @@ trait Dependencies {
   val mainTestDependencies = Seq (
     "org.scalatest"           %% "scalatest"              % "2.2.0"    % "test"  
   )
+
+  val javaDependencies = Seq (
+    "org.functionaljava" % "functionaljava" % "3.0"
+  )
 }
