@@ -9,21 +9,16 @@ case class Feed[T](id: String,
 
   assert(links.exists(_.rel == Link.selfLink), "Link to self is mandatory")
 
-  val selfLink = buildUrl(Link.selfLink).get // safe, since invariant is check in constructor
+  val selfLink : Link = findLinkByName(Link.selfLink).get // safe, since invariant is checked in constructor
+  val nextLink : Option[Link] = findLinkByName(Link.nextLink)
+  val firstLink : Option[Link] = findLinkByName(Link.firstLink)
+  val previousLink : Option[Link] = findLinkByName(Link.previousLink)
+  val collectionLink : Option[Link] = findLinkByName(Link.collectionLink)
 
 
-  def firstFeedUrl: Option[Url] = {
-    links.find(link => link.rel == Link.firstLink) match {
-      case Some(link) => Some(link.href)
-      case None => None
-    }
-  }
-
-  def nextLink : Option[String] = buildUrl(Link.nextLink)
-
-  private def buildUrl(linkName:String) : Option[String] = {
+  def findLinkByName(linkName:String) : Option[Link] = {
     links.collectFirst {
-      case Link(`linkName`, url) => url.path
+      case link @ Link(`linkName`, _) => link
     }
   }
 }

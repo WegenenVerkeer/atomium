@@ -4,6 +4,6 @@ import scalaz._
 
 package object atom {
 
-  type FeedProcessingResult = Validation[String, FeedPosition]
+  type FeedProcessingResult = Validation[FeedProcessingError, FeedPosition]
 
 }

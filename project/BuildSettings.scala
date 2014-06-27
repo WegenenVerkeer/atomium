@@ -22,7 +22,7 @@ trait BuildSettings extends Dependencies {
     libraryDependencies ++= mainTestDependencies
   ) ++ scalaTestOptions(Test) ++ scalaTestOptions(jacoco.Config)
 
-  def projectSettings(projectName:String) = Seq(
+  def projectSettings(projectName:String, extraDependencies:Seq[ModuleID]) = Seq(
     organization := Organization,
     name := projectName,
     version := Version,
@@ -31,12 +31,13 @@ trait BuildSettings extends Dependencies {
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
     resolvers += Classpaths.typesafeReleases,
-    libraryDependencies ++= mainDependencies
+    libraryDependencies ++= mainDependencies ++ extraDependencies
   )
 
-  def buildSettings(projectName:String) = {
+
+  def buildSettings(projectName:String, extraDependencies:Seq[ModuleID] = Seq()) = {
     Defaults.defaultSettings ++
-      projectSettings(projectName) ++
+      projectSettings(projectName, extraDependencies) ++
       awvsbtplugin.Plugin.defaultAppSettings ++ 
       testSettings ++
       jacoco.settings

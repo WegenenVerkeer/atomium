@@ -1,6 +1,8 @@
-package be.vlaanderen.awv.atom.javaapi;
+package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.FeedPosition;
+import be.vlaanderen.awv.atom.FeedProcessingError;
+import fj.data.Validation;
 
 class FeedProcessor<E> {
 
@@ -18,9 +20,9 @@ class FeedProcessor<E> {
         );
     }
 
-    public void start() {
-        Validations.valueOrException(feedProcessorScala.start());
+    public Validation<FeedProcessingError, FeedPosition> start() {
+        scalaz.Validation<FeedProcessingError, FeedPosition> result = feedProcessorScala.start();
+        return Validations.toJavaValidation(result);
     }
-
 
 }
