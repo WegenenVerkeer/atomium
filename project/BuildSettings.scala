@@ -9,7 +9,7 @@ trait BuildSettings extends Dependencies {
 
   val Organization = "be.vlaanderen.awv"
   
-  val Version = "0.1.0" 
+  val Version = "0.1.1-SNAPSHOT"
   val ScalaVersion = "2.10.3"
   val ScalaBuildOptions = Seq("-unchecked", "-deprecation", "-feature", "-language:reflectiveCalls")
 
