@@ -3,14 +3,14 @@ package be.vlaanderen.awv.atom.providers
 import be.vlaanderen.awv.atom.{Feed, FeedEntryUnmarshaller, FeedProcessingError, FeedProvider}
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
-import play.api.Application
 import play.api.libs.ws.WS
+
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 
-class PlayWsBlockingProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeout:Duration)
+class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeout:Duration)
   extends FeedProvider[T] with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global

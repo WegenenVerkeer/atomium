@@ -30,6 +30,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
    * Success case contains the latest processed {{{FeedPosition}}}.
    * Failure a {{{FeedProcessingError}}}.
    *
+   * TODO: we should find a better way for doing this. Eventually two method, start() and startManaged().
    * @return Validation[FeedProcessingError, FeedPosition].
    *
    */
