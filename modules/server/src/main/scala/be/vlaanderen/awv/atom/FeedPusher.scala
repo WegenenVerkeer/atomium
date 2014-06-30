@@ -121,7 +121,7 @@ object FeedPusher {
 
     val updates = collection.mutable.ListBuffer.empty[FeedUpdateInfo[E]]
     previousPage foreach { page =>
-      val feedUpdate = FeedUpdateInfo(page, title, new DateTime(), false, List.empty[E],
+      val feedUpdate = FeedUpdateInfo(page, title, new DateTime(), isNew = false, List.empty[E],
         firstPage, determinePreviousPage(Some(page)), Some(currentPage))
       updates += feedUpdate
     }
