@@ -29,11 +29,11 @@ object AtomiumBuild extends Build
   ).dependsOn(formatModule)
    .aggregate(formatModule)
 
-  val serverScalaModuleName = Name + "-server-scala"
-  lazy val serverScalaModule = Project(
-    serverScalaModuleName,
-    file("modules/server-scala"),
-    settings = buildSettings(serverScalaModuleName)
+  val serverModuleName = Name + "-server"
+  lazy val serverModule = Project(
+    serverModuleName,
+    file("modules/server"),
+    settings = buildSettings(serverModuleName)
   ).dependsOn(formatModule)
 
   val serverMongoModuleName = Name + "-server-mongo"
@@ -46,7 +46,7 @@ object AtomiumBuild extends Build
         "org.mongodb" %% "casbah" % "2.5.0"
       )
     )
-  ).dependsOn(serverScalaModule)
+  ).dependsOn(serverModule)
 
   val serverJdbcModuleName = Name + "-server-jdbc"
   lazy val serverJdbcModule = Project(
@@ -57,7 +57,7 @@ object AtomiumBuild extends Build
         "com.typesafe.slick" %% "slick" % "2.0.0"
       )
     )
-  ).dependsOn(serverScalaModule)
+  ).dependsOn(serverModule)
    
 
 
@@ -77,5 +77,5 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(formatModule, clientScalaModule, serverScalaModule, serverMongoModuleName, serverJdbcModule)
+  ).aggregate(formatModule, clientScalaModule, serverModule, serverMongoModuleName, serverJdbcModule)
 }

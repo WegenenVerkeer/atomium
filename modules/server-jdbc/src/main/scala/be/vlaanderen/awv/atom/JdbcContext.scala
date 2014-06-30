@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom
 
-import java.sql.Connection
+import _root_.java.sql.Connection
 
 import scala.slick.backend.DatabaseComponent
 import scala.slick.jdbc.UnmanagedSession
