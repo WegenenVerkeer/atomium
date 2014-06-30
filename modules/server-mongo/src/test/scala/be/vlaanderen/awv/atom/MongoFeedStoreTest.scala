@@ -31,8 +31,7 @@ class MongoFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll w
   }
   
   def createFeedStore = new MongoFeedStore[Int](
-    client = new JavaMongoClient(),
-    dbName = "atom-test",
+    MongoContext(new JavaMongoClient().getDB("atom-test")),
     collectionName = "int_feed",
     feedInfoCollectionName = "feed_info",
     ser = i => MongoDBObject("value" -> i),

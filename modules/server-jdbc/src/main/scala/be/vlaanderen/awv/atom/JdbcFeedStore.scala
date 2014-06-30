@@ -1,6 +1,8 @@
 package be.vlaanderen.awv.atom
 
-class JdbcFeedStore[E] extends FeedStore[E] {
+class JdbcFeedStore[E](c: JdbcContext) extends FeedStore[E] {
+
+  lazy val context = c
 
   /**
    * Retrieves a page of the feed.
@@ -8,7 +10,10 @@ class JdbcFeedStore[E] extends FeedStore[E] {
    * @param page the page number
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(page: Long): Option[Feed[E]] = ???
+  override def getFeed(page: Long): Option[Feed[E]] = {
+    implicit val session = c.session
+    None
+  }
 
   /**
    * Updates the feed pages and feed info.

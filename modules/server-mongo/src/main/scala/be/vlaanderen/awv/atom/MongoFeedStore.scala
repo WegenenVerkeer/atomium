@@ -16,11 +16,12 @@ import org.joda.time.DateTime
  * @param urlProvider
  * @tparam E type of the elements in the feed
  */
-class MongoFeedStore[E](client: MongoClient, dbName: String, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
+class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
   import MongoFeedStore._
 
-  private lazy val scalaMongoClient = client.asScala
-  private lazy val db = scalaMongoClient(dbName)
+  lazy val context = c
+
+  private lazy val db = c.db.asScala
   private lazy val collection = db(collectionName)
   private lazy val feedInfoCollection = db(feedInfoCollectionName)
 
@@ -34,7 +35,7 @@ class MongoFeedStore[E](client: MongoClient, dbName: String, collectionName: Str
     Keys.NextPage -> (updateInfo.next getOrElse null)
   )
 
-  protected def feedLink(value: Option[Long], linkType: String) = {
+    protected def feedLink(value: Option[Long], linkType: String) = {
     value map { v =>
       Link(linkType, urlProvider.feedLink(v))
     } toList
