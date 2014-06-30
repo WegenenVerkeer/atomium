@@ -1,4 +1,5 @@
 import sbt._
+import Keys._
 
 
 
@@ -27,6 +28,36 @@ object AtomiumBuild extends Build
     settings = buildSettings(clientScalaModuleName, clientScalaDependencies)
   ).dependsOn(formatModule)
    .aggregate(formatModule)
+
+  val serverScalaModuleName = Name + "-server-scala"
+  lazy val serverScalaModule = Project(
+    serverScalaModuleName,
+    file("modules/server-scala"),
+    settings = buildSettings(serverScalaModuleName)
+  ).dependsOn(formatModule)
+
+  val serverMongoModuleName = Name + "-server-mongo"
+  lazy val serverMongoModule = Project(
+    serverMongoModuleName ,
+    file("modules/server-mongo"),
+    settings = buildSettings(serverMongoModuleName) ++ Seq(
+      libraryDependencies ++= Seq(
+        "org.mongodb" % "mongo-java-driver" % "2.0",
+        "org.mongodb" %% "casbah" % "2.5.0"
+      )
+    )
+  ).dependsOn(serverScalaModule)
+
+  val serverJdbcModuleName = Name + "-server-jdbc"
+  lazy val serverJdbcModule = Project(
+    serverJdbcModuleName,
+    file("modules/server-jdbc"),
+    settings = buildSettings(serverJdbcModuleName) ++ Seq(
+      libraryDependencies ++= Seq(
+        "com.typesafe.slick" %% "slick" % "2.0.0"
+      )
+    )
+  ).dependsOn(serverScalaModule)
    
 
 
@@ -45,6 +76,6 @@ object AtomiumBuild extends Build
   lazy val main = Project(
     Name,
     file("."),
-    settings = buildSettings(Name) 
-  ).aggregate(formatModule, clientScalaModule, clientJavaModule)
+    settings = buildSettings(Name)
+  ).aggregate(formatModule, clientScalaModule, serverScalaModule, serverMongoModuleName, serverJdbcModule)
 }
