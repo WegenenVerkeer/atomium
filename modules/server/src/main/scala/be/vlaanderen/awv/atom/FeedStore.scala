@@ -39,10 +39,10 @@ trait FeedStore[E] {
    *
    * This can be used as a hook (to check consistency, for example)
    */
-  def open = {}
+  def open()  : Unit = {}
 
   /**
    * This method is called when the [[be.vlaanderen.awv.atom.FeedPusher]] is stopped.
    */
-  def close = {}
+  def close() : Unit = {}
 }
