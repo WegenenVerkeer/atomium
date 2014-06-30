@@ -135,13 +135,13 @@ object FeedPusher {
           page = currentPage,
           title = title,
           updated = new DateTime(),
-          isNew = !(feedInfo.isDefined && currentPage == (feedInfo.get.lastPage)),
+          isNew = !(feedInfo.isDefined && currentPage == feedInfo.get.lastPage),
           newElements = current,
           first = firstPage,
           previous = previousPage,
           next = next map(_ => calculateNextPage(currentPage))
         )
-        countInFeed = current.size + (if (feedInfo.isDefined && currentPage == (feedInfo.get.lastPage))
+        countInFeed = current.size + (if (feedInfo.isDefined && currentPage == feedInfo.get.lastPage)
           feedInfo.get.count
         else
           0)
