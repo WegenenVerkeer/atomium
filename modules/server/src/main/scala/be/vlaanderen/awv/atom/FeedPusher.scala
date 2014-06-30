@@ -49,15 +49,15 @@ class FeedPusher[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String)
    *
    * This can be used to check integrity of the feeds.
    */
-  def start = {
-    feedStore.open
+  def start() : Unit = {
+    feedStore.open()
   }
 
   /**
    * This method should be called at shutdown of the application.
    */
-  def stop = {
-    feedStore.close
+  def stop() : Unit = {
+    feedStore.close()
   }
 
 }
