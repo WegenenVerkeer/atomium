@@ -12,7 +12,10 @@ trait BuildSettings {
   
   val Version = "0.1.1-SNAPSHOT"
   val ScalaVersion = "2.10.3"
-  val ScalaBuildOptions = Seq("-unchecked", "-deprecation", "-feature", "-language:reflectiveCalls")
+  val ScalaBuildOptions = Seq("-unchecked", "-deprecation", "-feature",
+    "-language:reflectiveCalls",
+    "-language:implicitConversions",
+    "-language:postfixOps")
 
 
   def scalaTestOptions(config: Configuration) = inConfig(config)(Seq(

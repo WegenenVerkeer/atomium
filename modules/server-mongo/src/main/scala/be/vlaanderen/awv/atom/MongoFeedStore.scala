@@ -7,20 +7,20 @@ import org.joda.time.DateTime
 /**
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a MongoDB collection.
  *
- * @param client
- * @param dbName name of the database
+ * @param c the context implementation
  * @param collectionName name of the collection that contains the feed pages
  * @param feedInfoCollectionName name of the collection that contains the feed info
  * @param ser function to serialize an element to a DBObject
- * @param deser function to serialize a DBObject to an element
+ * @param deser function to deserialize a DBObject to an element
  * @param urlProvider
  * @tparam E type of the elements in the feed
  */
-class MongoFeedStore[E](client: MongoClient, dbName: String, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
+class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
   import MongoFeedStore._
 
-  private lazy val scalaMongoClient = client.asScala
-  private lazy val db = scalaMongoClient(dbName)
+  lazy val context = c
+
+  private lazy val db = c.db.asScala
   private lazy val collection = db(collectionName)
   private lazy val feedInfoCollection = db(feedInfoCollectionName)
 

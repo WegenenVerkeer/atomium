@@ -179,7 +179,7 @@ class FeedServiceTest extends FunSuite with Matchers with BeforeAndAfterAll {
 
   scenarios foreach { scenario =>
     test(scenario.description) {
-      val (updates, tr) = FeedService.determineFeedUpdates(scenario.elementsToPush, title, entriesPerPage, scenario.feedInfo)
+      val (updates, tr) = FeedPusher.determineFeedUpdates(scenario.elementsToPush, title, entriesPerPage, scenario.feedInfo)
       updates should be (scenario.resultingUpdates)
       tr should be (scenario.resultingInfo)
     }

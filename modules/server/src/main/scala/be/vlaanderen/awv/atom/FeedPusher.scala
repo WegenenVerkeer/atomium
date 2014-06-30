@@ -5,13 +5,13 @@ import org.joda.time.{DateTime, LocalDateTime}
 import scala.annotation.tailrec
 
 /**
- * A feed service is responsible for atom feeds for elements of type `E`.
+ * A feed pusher is responsible for atom feeds for elements of type `E`.
  *
  * A feed service can be used to
  *  - add new elements to the feed
  *  - retrieve a page of the feed
  *
- * A feed service is not responsible for persistence of the entries and pages in feeds, this is
+ * A feed pusher is not responsible for persistence of the entries and pages in feeds, this is
  * delegated to an instance of [[be.vlaanderen.awv.atom.FeedStore]].
  * 
  * Adding new elements to a specific feed is not thread safe!
@@ -21,7 +21,7 @@ import scala.annotation.tailrec
  * @param title the title of the feed
  * @tparam E type of the elements in the feed
  */
-class FeedService[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String) {
+class FeedPusher[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String) {
 
   /**
    * Adds new elements to the feed.
@@ -30,20 +30,11 @@ class FeedService[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String
    *
    * @param elements the elements to add
    */
-  def push(elements: Iterable[E]) {
+  def push(elements: Iterable[E])(context: Context) {
     val feedInfo = feedStore.getFeedInfo
-    val (feedUpdates, updatedFeedInfo) = FeedService.determineFeedUpdates(elements, title, entriesPerPage, feedInfo)
+    val (feedUpdates, updatedFeedInfo) = FeedPusher.determineFeedUpdates(elements, title, entriesPerPage, feedInfo)
     feedStore.update(feedUpdates, updatedFeedInfo)
   }
-
-  /**
-   * Adds a new element to the feed.
-   *
-   * Adding a new element to a specific feed is not thread safe!
-   *
-   * @param element the element to add
-   */
-  def push(element: E): Unit = push(List(element))
 
   /**
    * Retrieves a page of the feed.
@@ -71,7 +62,7 @@ class FeedService[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String
 
 }
 
-object FeedService {
+object FeedPusher {
 
   /**
    * Determines the resulting updates when adding new elements to a feed.

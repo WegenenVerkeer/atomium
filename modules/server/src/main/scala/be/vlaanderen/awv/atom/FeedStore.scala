@@ -9,6 +9,8 @@ package be.vlaanderen.awv.atom
  */
 trait FeedStore[E] {
 
+  def context: Context
+
   /**
    * Retrieves a page of the feed.
    *
@@ -33,14 +35,14 @@ trait FeedStore[E] {
   def update(feedUpdates: List[FeedUpdateInfo[E]], feedInfo: FeedInfo)
 
   /**
-   * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is started.
+   * This method is called when the [[be.vlaanderen.awv.atom.FeedPusher]] is started.
    *
    * This can be used as a hook (to check consistency, for example)
    */
   def open = {}
 
   /**
-   * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is stopped.
+   * This method is called when the [[be.vlaanderen.awv.atom.FeedPusher]] is stopped.
    */
   def close = {}
 }
