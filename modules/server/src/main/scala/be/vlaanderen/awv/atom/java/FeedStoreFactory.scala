@@ -2,7 +2,6 @@ package be.vlaanderen.awv.atom.java
 
 import be.vlaanderen.awv.atom.Context
 
-// TODO
-trait FeedStoreFactory {
-  def create[C <: Context](feedName: String, context: C)
+trait FeedStoreFactory[E, C <: Context] {
+  def create(feedName: String, context: C): FeedStore[E]
 }
