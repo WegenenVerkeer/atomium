@@ -4,7 +4,8 @@ import sbt._
 
 object AtomiumBuild extends Build
                        with BuildSettings {
-  
+  import Dependencies._
+
   val Name = "atomium"
 
 
@@ -23,7 +24,7 @@ object AtomiumBuild extends Build
   lazy val clientScalaModule = Project(
     clientScalaModuleName,
     file("modules/client-scala"),
-    settings = buildSettings(clientScalaModuleName)
+    settings = buildSettings(clientScalaModuleName, clientScalaDependencies)
   ).dependsOn(formatModule)
    .aggregate(formatModule)
    

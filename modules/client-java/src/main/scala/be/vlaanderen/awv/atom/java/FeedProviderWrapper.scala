@@ -20,4 +20,7 @@ class FeedProviderWrapper[E](javaFeedProvider: JFeedProvider[E])
     Validations.toScalazValidation(result)
   }
 
+  override def start(): Unit = javaFeedProvider.start()
+
+  override def stop(): Unit = javaFeedProvider.stop()
 }

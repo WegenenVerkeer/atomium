@@ -3,6 +3,7 @@ package be.vlaanderen.awv.atom
 import scala.annotation.tailrec
 import scalaz._
 import Scalaz._
+import resource._
 
 class FeedProcessor[E](initialPosition:Option[FeedPosition],
                        feedProvider: FeedProvider[E],
@@ -10,12 +11,11 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
   def this(initialPosition:FeedPosition, feedProvider: FeedProvider[E], entryConsumer: EntryConsumer[E]) =
     this(Option(initialPosition), feedProvider, entryConsumer)
-  
+
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
   trait EventCursor
-
   case class EntryPointer(entryToProcess: Entry[EntryType],
                           stillToProcessEntries: Entries,
                           feedPosition:FeedPosition,
@@ -26,19 +26,38 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
 
   /**
-   * Ofwel zijn de Feeds geconsumeerd en we hebben niks om terug te geven ofwel
-   * hebben we een foutmelding.
+   * Start the consuming of Feeds. Returns a {{{Validation[FeedProcessingError, FeedPosition]}}}.
+   * Success case contains the latest processed {{{FeedPosition}}}.
+   * Failure a {{{FeedProcessingError}}}.
    *
-   * Dus, het Success geval is een Unit. Data is geconsumeerd en
-   * er is niks om terug te geven.
+   * @return Validation[FeedProcessingError, FeedPosition].
+   *
    */
   def start() : Validation[FeedProcessingError, FeedPosition] = {
-    initEventCursor match {
-      case Success(eventCursor) => process(eventCursor)
-      case Failure(err) => err.failure[FeedPosition]
+
+    // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
+    // but we can't want to pollute the interface if it, because we intend to use it from Java as well
+    implicit val manif  = new Manifest[FeedProvider[E]] {
+      override def runtimeClass: Class[_] = classOf[FeedProvider[E]]
+    }
+    implicit val feedProvResource = FeedProvider.managedFeedProvider(feedProvider)
+
+    val extResult = managed(feedProvider).map { provider =>
+      // FeedProvider must be managed
+      initEventCursor match {
+        case Success(eventCursor) => process(eventCursor)
+        case Failure(err) => err.failure[FeedPosition]
+      }
+    }
+
+    extResult.either match {
+      case Left(throwables) =>
+        val messages = throwables.map(_.getMessage).mkString("[", "] | [", "[")
+        FeedProcessingError(None, messages).fail[FeedPosition]
+      case Right(validation) => validation
+
     }
   }
-
 
   private def initEventCursor : Validation[FeedProcessingError, EventCursor] = {
 
@@ -48,7 +67,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     } { feedPos =>
       // fetch feed according to position
       feedProvider.fetchFeed(feedPos.link.href.path)
-    }
+                     }
 
     feedResult.map { feed => buildCursor(feed, initialPosition) }
   }
@@ -95,7 +114,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     } catch {
       case ex:Exception =>
         FeedProcessingError(
-          currentEvent.feedPosition,
+          Some(currentEvent.feedPosition),
           ex.getMessage
         ).failure[FeedPosition]
     }
@@ -195,6 +214,5 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
     }
   }
-
 
 }

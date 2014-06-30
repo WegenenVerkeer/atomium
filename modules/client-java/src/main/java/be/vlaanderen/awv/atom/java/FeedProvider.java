@@ -7,4 +7,7 @@ import fj.data.Validation;
 interface FeedProvider<T> {
     Validation<FeedProcessingError, Feed<T>> fetchFeed();
     Validation<FeedProcessingError, Feed<T>> fetchFeed(String page);
+
+    void start();
+    void stop();
 }

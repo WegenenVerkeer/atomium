@@ -1,13 +1,14 @@
 
 import sbt._
 
-trait Dependencies {
+object Dependencies {
 
   val mainDependencies = Seq(
     "com.typesafe"        %%  "scalalogging-slf4j"    % "1.0.1",
     "ch.qos.logback"      %   "logback-classic"       % "1.1.1",
     "joda-time"           %   "joda-time"             % "2.3",
-    "com.typesafe.play"   %%  "play-json"             % "2.2.2",
+    "com.typesafe.play"   %%  "play-json"             % "2.3.0",
+    "com.jsuereth"        %%  "scala-arm"             % "1.3",
     "org.scalaz"          %%  "scalaz-core"           % "7.0.5"
   )
 
@@ -15,6 +16,9 @@ trait Dependencies {
     "org.scalatest"           %% "scalatest"              % "2.2.0"    % "test"  
   )
 
+  val clientScalaDependencies = Seq (
+    "com.typesafe.play"   %%  "play-ws"             % "2.3.0"
+  )
   val javaDependencies = Seq (
     "org.functionaljava" % "functionaljava" % "3.0"
   )

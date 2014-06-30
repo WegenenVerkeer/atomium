@@ -17,9 +17,9 @@ class EntryConsumerWrapper[E](javaEntryConsumer: JEntryConsumer[E]) extends
       position.success[FeedProcessingError]
     } catch {
       case ex:Exception =>
-        logger.error(s"Error during entry [$entry] consumption", ex)
+        logger.error(s"Error during entry consumption [$entry]", ex)
         FeedProcessingError(
-          position,
+          Option(position),
           ex.getMessage
         ).fail[FeedPosition]
     }

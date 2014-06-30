@@ -29,7 +29,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
   }
 
 
-  case class Scenario(provider:FeedProvider[String],
+  case class Scenario(provider:TestFeedProvider,
                       consumedEvents:List[String],
                       initialPosition:Option[FeedPosition] = None,
                       finalPosition:Option[FeedPosition]) {
@@ -37,10 +37,14 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val consumer = new StatefulEntryConsumer
     val process = new FeedProcessor[String](initialPosition, provider, consumer)
 
+    provider.isStarted shouldBe false
     val result = process.start()
+    provider.isStopped shouldBe true
 
     consumedEvents shouldBe consumer.consumedEvents.toList
     finalPosition shouldBe consumer.finalPosition
+
+
 
     def assertResult(block: FeedProcessingResult => Unit) = block(result)
   }
@@ -139,7 +143,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val foutMelding = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
       override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-        FeedProcessingError(position, foutMelding).failure[FeedPosition]
+        FeedProcessingError(Option(position), foutMelding).failure[FeedPosition]
       }
     }
 
@@ -192,7 +196,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
    */
   def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(feeds.toList) {
     override def fetchFeed(page: String): Validation[FeedProcessingError, Feed[String]] = {
-      FeedProcessingError(FeedPosition(link(page), 0), "Can't fetch feed").failure[Feed[String]]
+      assert(isStarted, "Provider must be managed")
+      FeedProcessingError(None, "Can't fetch feed").failure[Feed[String]]
     }
   }
 
@@ -205,6 +210,11 @@ class FeedProcessorTest extends FunSuite with Matchers {
         case Nil => List()
       }
     }
+
+    private var _started = false
+    
+    def isStarted = _started
+    def isStopped = !isStarted
 
     /**
      * add 'first' and 'next' link to list of Feeds
@@ -233,13 +243,16 @@ class FeedProcessorTest extends FunSuite with Matchers {
     /**
      * Return first feed or a Failure
      */
-    override def fetchFeed(): Validation[FeedProcessingError, Feed[String]] =
+    override def fetchFeed(): Validation[FeedProcessingError, Feed[String]] = {
+      assert(isStarted, "Provider must be managed")
       optToValidation(linkedFeeds.headOption)
+    }
 
     /**
      * Return feed whose selfLink equals 'page or Failure
      */
     override def fetchFeed(page: String): Validation[FeedProcessingError, Feed[String]] = {
+      assert(isStarted, "Provider must be managed")
       val feedOpt =  linkedFeeds.find {
         feed => feed.selfLink.href.path == page
       }
@@ -248,10 +261,19 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
     private def optToValidation(feedOpt:Option[Feed[String]]) = {
       feedOpt match {
-        case None => FeedProcessingError(FeedPosition(link(""), 0), "no feed found").failure[Feed[String]]
+        case None => FeedProcessingError(None, "no feed found").failure[Feed[String]]
         case Some(feed) => feed.success[FeedProcessingError]
       }
     }
+
+    override def start(): Unit = {
+      _started = true
+    }
+
+    override def stop(): Unit = {
+      _started = false
+    }
+
   }
 
 }

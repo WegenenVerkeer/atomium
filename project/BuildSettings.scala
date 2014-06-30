@@ -5,8 +5,9 @@ import de.johoop.jacoco4sbt._
 import JacocoPlugin._
 import scala.util.Properties
 
-trait BuildSettings extends Dependencies {
+trait BuildSettings {
 
+  import Dependencies._
   val Organization = "be.vlaanderen.awv"
   
   val Version = "0.1.1-SNAPSHOT"
@@ -22,6 +23,7 @@ trait BuildSettings extends Dependencies {
     libraryDependencies ++= mainTestDependencies
   ) ++ scalaTestOptions(Test) ++ scalaTestOptions(jacoco.Config)
 
+  
   def projectSettings(projectName:String, extraDependencies:Seq[ModuleID]) = Seq(
     organization := Organization,
     name := projectName,
@@ -30,7 +32,7 @@ trait BuildSettings extends Dependencies {
     scalacOptions := ScalaBuildOptions,
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
-    resolvers += Classpaths.typesafeReleases,
+    resolvers += Resolver.typesafeRepo("releases"),
     libraryDependencies ++= mainDependencies ++ extraDependencies
   )
 

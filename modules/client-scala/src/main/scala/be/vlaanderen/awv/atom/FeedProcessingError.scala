@@ -1,3 +1,3 @@
 package be.vlaanderen.awv.atom
 
-case class FeedProcessingError(feedPos:FeedPosition, message:String)
+case class FeedProcessingError(feedPos:Option[FeedPosition], message:String)
