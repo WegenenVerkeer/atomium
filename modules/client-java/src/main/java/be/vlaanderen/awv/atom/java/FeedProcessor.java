@@ -6,14 +6,14 @@ import fj.data.Validation;
 
 class FeedProcessor<E> {
 
-    private final be.vlaanderen.awv.atom.FeedProcessor feedProcessorScala;
+    private final be.vlaanderen.awv.atom.FeedProcessor underlying;
 
     FeedProcessor(FeedProvider<E> feedProvider, EntryConsumer<E> entryConsumer) {
         this(null, feedProvider, entryConsumer);
     }
 
     FeedProcessor(FeedPosition feedPosition, FeedProvider<E> feedProvider, EntryConsumer<E> entryConsumer) {
-        feedProcessorScala = new be.vlaanderen.awv.atom.FeedProcessor<E>(
+        underlying = new be.vlaanderen.awv.atom.FeedProcessor<E>(
             feedPosition,
             new FeedProviderWrapper<E>(feedProvider),
             new EntryConsumerWrapper<E>(entryConsumer)
@@ -21,7 +21,7 @@ class FeedProcessor<E> {
     }
 
     public Validation<FeedProcessingError, FeedPosition> start() {
-        scalaz.Validation<FeedProcessingError, FeedPosition> result = feedProcessorScala.start();
+        scalaz.Validation<FeedProcessingError, FeedPosition> result = underlying.start();
         return Validations.toJavaValidation(result);
     }
 

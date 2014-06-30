@@ -8,12 +8,12 @@ import scalaz._
 import Scalaz._
 import scalaz.ValidationNel
 
-class EntryConsumerWrapper[E](javaEntryConsumer: JEntryConsumer[E]) extends
+class EntryConsumerWrapper[E](underlying: JEntryConsumer[E]) extends
   be.vlaanderen.awv.atom.EntryConsumer[E] with Logging {
 
   override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
-      javaEntryConsumer.consume(position, entry)
+      underlying.consume(position, entry)
       position.success[FeedProcessingError]
     } catch {
       case ex:Exception =>

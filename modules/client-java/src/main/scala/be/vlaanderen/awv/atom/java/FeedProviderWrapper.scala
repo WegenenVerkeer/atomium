@@ -7,20 +7,20 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scalaz._
 
 
-class FeedProviderWrapper[E](javaFeedProvider: JFeedProvider[E])
+class FeedProviderWrapper[E](underlying: JFeedProvider[E])
   extends be.vlaanderen.awv.atom.FeedProvider[E] with Logging {
 
   def fetchFeed(): Validation[FeedProcessingError, Feed[E]] = {
-    val result = javaFeedProvider.fetchFeed
+    val result = underlying.fetchFeed
     Validations.toScalazValidation(result)
   }
 
   def fetchFeed(page: String): Validation[FeedProcessingError, Feed[E]] = {
-    val result = javaFeedProvider.fetchFeed(page)
+    val result = underlying.fetchFeed(page)
     Validations.toScalazValidation(result)
   }
 
-  override def start(): Unit = javaFeedProvider.start()
+  override def start(): Unit = underlying.start()
 
-  override def stop(): Unit = javaFeedProvider.stop()
+  override def stop(): Unit = underlying.stop()
 }
