@@ -20,8 +20,8 @@ class MongoFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll w
   }
 
   override protected def afterEach() = {
-    MongoClient()("atom-test")("int_feed") remove MongoDBObject.empty
-    MongoClient()("atom-test")("feed_info") remove MongoDBObject.empty
+    MongoClient()("atom-test")("int_feed") remove(MongoDBObject.empty)
+    MongoClient()("atom-test")("feed_info") remove(MongoDBObject.empty)
   }
 
   def createUrlBuilder = new UrlBuilder {
@@ -30,17 +30,14 @@ class MongoFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll w
     override def collectionLink: Url = ???
   }
   
-  def createFeedStore = {
-    val db = new JavaMongoClient().getDB("atom-test")
-    new MongoFeedStore[Int](
-      context = MongoContext(),
-      feedCollection = db.getCollection("int_feed"),
-      feedInfoCollection = db.getCollection("feed_info"),
-      ser = i => MongoDBObject("value" -> i),
-      deser = dbo => dbo.as[Int]("value"),
-      urlProvider = createUrlBuilder
-    )
-  }
+  def createFeedStore = new MongoFeedStore[Int](
+    MongoContext(new JavaMongoClient().getDB("atom-test")),
+    collectionName = "int_feed",
+    feedInfoCollectionName = "feed_info",
+    ser = i => MongoDBObject("value" -> i),
+    deser = dbo => dbo.as[Int]("value"),
+    urlProvider = createUrlBuilder
+  )
 
   test("update should update feed collection") {
     val feedStore = createFeedStore
@@ -108,7 +105,7 @@ class MongoFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll w
     feedPage.id should be ("2")
     feedPage.base should be (Url("/"))
     feedPage.title should be (Some("Test"))
-    feedPage.updated should be (new DateTime().toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"))
+    feedPage.updated should be ((new DateTime()).toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"))
     feedPage.selfLink.href should be (Url("/2"))
     feedPage.firstLink.map(_.href) should be (Some(Url("/1")))
     feedPage.previousLink.map(_.href) should be (Some(Url("/1")))

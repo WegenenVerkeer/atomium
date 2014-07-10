@@ -1,32 +1,35 @@
 package be.vlaanderen.awv.atom
 
-import com.mongodb.{DBCollection, MongoClient}
+import com.mongodb.MongoClient
 import com.mongodb.casbah.Imports._
 import org.joda.time.DateTime
 
 /**
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a MongoDB collection.
  *
- * @param feedCollection the collection that contains the feed pages
- * @param feedInfoCollection the collection that contains the feed info
+ * @param c the context implementation
+ * @param collectionName name of the collection that contains the feed pages
+ * @param feedInfoCollectionName name of the collection that contains the feed info
  * @param ser function to serialize an element to a DBObject
  * @param deser function to deserialize a DBObject to an element
  * @param urlProvider
  * @tparam E type of the elements in the feed
  */
-class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, feedInfoCollection: DBCollection, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
+class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
   import MongoFeedStore._
 
-  val feedCollectionS = feedCollection.asScala
-  val feedInfoCollectionS = feedInfoCollection.asScala
+  lazy val context = c
 
+  private lazy val db = c.db.asScala
+  private lazy val collection = db(collectionName)
+  private lazy val feedInfoCollection = db(feedInfoCollectionName)
 
   protected def feedUpdate2DbObject(updateInfo: FeedUpdateInfo[E]) = MongoDBObject(
     Keys.Page -> updateInfo.page,
     Keys.FirstPage -> updateInfo.first,
     Keys.Title -> updateInfo.title,
     Keys.Updated -> updateInfo.updated,
-    Keys.Elements -> MongoDBList(updateInfo.newElements map ser:_*),
+    Keys.Elements -> MongoDBList((updateInfo.newElements map ser):_*),
     Keys.PreviousPage -> (updateInfo.previous getOrElse null),
     Keys.NextPage -> (updateInfo.next getOrElse null)
   )
@@ -54,7 +57,7 @@ class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, 
   )
 
   protected def feedInfo2DbObject(updateInfo: FeedInfo) = MongoDBObject(
-    Keys.Feed -> feedCollection.getName,
+    Keys.Feed -> collectionName,
     Keys.Count -> updateInfo.count,
     Keys.LastPage -> updateInfo.lastPage
   )
@@ -75,7 +78,7 @@ class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, 
     feedUpdates foreach { feedUpdate =>
       if (feedUpdate.isNew) {
         val dbo = feedUpdate2DbObject(feedUpdate)
-        feedCollectionS.update(
+        collection.update(
           MongoDBObject(Keys.Page -> feedUpdate.page),
           dbo,
           upsert = true,
@@ -83,9 +86,9 @@ class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, 
           concern = WriteConcern.Safe)
       } else {
         val dbo =
-          $set(Seq(Keys.NextPage -> feedUpdate.next.orNull)) ++
-          $pushAll(Keys.Elements -> MongoDBList(feedUpdate.newElements map ser:_*))
-        feedCollectionS.update(
+          $set(Seq(Keys.NextPage -> (feedUpdate.next getOrElse null))) ++
+          $pushAll(Keys.Elements -> MongoDBList((feedUpdate.newElements map ser):_*))
+        collection.update(
           MongoDBObject(Keys.Page -> feedUpdate.page),
           dbo,
           upsert = false,
@@ -94,8 +97,8 @@ class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, 
       }
     }
 
-    feedInfoCollectionS.update(
-      MongoDBObject(Keys.Feed -> feedCollection.getName),
+    feedInfoCollection.update(
+      MongoDBObject(Keys.Feed -> collectionName),
       feedInfo2DbObject(feedInfo),
       upsert = true,
       multi = false,
@@ -104,28 +107,28 @@ class MongoFeedStore[E](val context:MongoContext, feedCollection: DBCollection, 
   }
 
   override def getFeedInfo: Option[FeedInfo] = {
-    feedInfoCollectionS.findOne(MongoDBObject(Keys.Feed -> feedCollection.getName)) map dbObject2FeedInfo
+    feedInfoCollection.findOne(MongoDBObject(Keys.Feed -> collectionName)) map dbObject2FeedInfo
   }
 
   override def getFeed(page: Long): Option[Feed[E]] = {
     val feedInfo = getFeedInfo
-    val feedOpt: Option[Feed[E]] = feedCollectionS findOne MongoDBObject(Keys.Page -> page) map dbObject2Feed
+    val feedOpt: Option[Feed[E]] = collection findOne(MongoDBObject(Keys.Page -> page)) map dbObject2Feed
     feedOpt
   }
 }
 
 object MongoFeedStore {
   object Keys {
-    val Page = "page"
-    val FirstPage = "first"
-    val PreviousPage = "previous"
-    val NextPage = "next"
-    val Title = "title"
-    val Updated = "updated"
-    val Elements = "elements"
+    lazy val Page = "page"
+    lazy val FirstPage = "first"
+    lazy val PreviousPage = "previous"
+    lazy val NextPage = "next"
+    lazy val Title = "title"
+    lazy val Updated = "updated"
+    lazy val Elements = "elements"
 
-    val Feed = "feed"
-    val Count = "count"
-    val LastPage = "last_page"
+    lazy val Feed = "feed"
+    lazy val Count = "count"
+    lazy val LastPage = "last_page"
   }
 }
