@@ -29,6 +29,9 @@ object AtomiumBuild extends Build
   ).dependsOn(formatModule)
    .aggregate(formatModule)
 
+
+
+  //----------------------------------------------------------------
   val serverModuleName = Name + "-server"
   lazy val serverModule = Project(
     serverModuleName,
@@ -36,6 +39,9 @@ object AtomiumBuild extends Build
     settings = buildSettings(serverModuleName)
   ).dependsOn(formatModule)
 
+
+
+  //----------------------------------------------------------------
   val serverMongoModuleName = Name + "-server-mongo"
   lazy val serverMongoModule = Project(
     serverMongoModuleName ,
@@ -48,6 +54,9 @@ object AtomiumBuild extends Build
     )
   ).dependsOn(serverModule)
 
+
+
+  //----------------------------------------------------------------
   val serverJdbcModuleName = Name + "-server-jdbc"
   lazy val serverJdbcModule = Project(
     serverJdbcModuleName,
