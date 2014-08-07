@@ -11,4 +11,9 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, title:
     push(List(element))(context)
   }
 
+  def getFeed(page:Long)(implicit context: C):Option[Feed[E]] = {
+    val feedPusher = new FeedPusher[E](feedStoreFactory(feedName, context), entriesPerPage, title)
+    feedPusher.getFeed(page)
+  }
+
 }

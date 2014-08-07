@@ -9,5 +9,8 @@ class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage:
       (name, context) => feedStoreFactory.create(name, context))
 
   def push(elements: java.lang.Iterable[E]) = underlying.push(elements.asScala)(context)
+
   def push(element: E) = underlying.push(element)(context)
+
+  def getFeed(page:Long) = underlying.getFeed(page)(context)
 }
