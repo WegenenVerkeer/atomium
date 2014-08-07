@@ -34,7 +34,7 @@ class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollect
     Keys.NextPage -> (updateInfo.next getOrElse null)
   )
 
-  protected def feedLink(value: Option[Long], linkType: String) = {
+    protected def feedLink(value: Option[Long], linkType: String) = {
     value map { v =>
       Link(linkType, urlProvider.feedLink(v))
     } toList

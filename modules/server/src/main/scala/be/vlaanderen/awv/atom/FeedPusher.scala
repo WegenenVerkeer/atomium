@@ -49,15 +49,15 @@ class FeedPusher[E](feedStore: FeedStore[E], entriesPerPage: Int, title: String)
    *
    * This can be used to check integrity of the feeds.
    */
-  def start = {
-    feedStore.open
+  def start() : Unit = {
+    feedStore.open()
   }
 
   /**
    * This method should be called at shutdown of the application.
    */
-  def stop = {
-    feedStore.close
+  def stop() : Unit = {
+    feedStore.close()
   }
 
 }
@@ -121,7 +121,7 @@ object FeedPusher {
 
     val updates = collection.mutable.ListBuffer.empty[FeedUpdateInfo[E]]
     previousPage foreach { page =>
-      val feedUpdate = FeedUpdateInfo(page, title, new DateTime(), false, List.empty[E],
+      val feedUpdate = FeedUpdateInfo(page, title, new DateTime(), isNew = false, List.empty[E],
         firstPage, determinePreviousPage(Some(page)), Some(currentPage))
       updates += feedUpdate
     }
@@ -135,13 +135,13 @@ object FeedPusher {
           page = currentPage,
           title = title,
           updated = new DateTime(),
-          isNew = !(feedInfo.isDefined && currentPage == (feedInfo.get.lastPage)),
+          isNew = !(feedInfo.isDefined && currentPage == feedInfo.get.lastPage),
           newElements = current,
           first = firstPage,
           previous = previousPage,
           next = next map(_ => calculateNextPage(currentPage))
         )
-        countInFeed = current.size + (if (feedInfo.isDefined && currentPage == (feedInfo.get.lastPage))
+        countInFeed = current.size + (if (feedInfo.isDefined && currentPage == feedInfo.get.lastPage)
           feedInfo.get.count
         else
           0)
