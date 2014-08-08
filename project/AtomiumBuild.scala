@@ -49,7 +49,7 @@ object AtomiumBuild extends Build
     settings = buildSettings(serverMongoModuleName) ++ Seq(
       libraryDependencies ++= Seq(
         "org.mongodb" % "mongo-java-driver" % "2.0",
-        "org.mongodb" %% "casbah" % "2.5.0"
+        "org.mongodb" %% "casbah" % "2.6.2"
       )
     )
   ).dependsOn(serverModule)

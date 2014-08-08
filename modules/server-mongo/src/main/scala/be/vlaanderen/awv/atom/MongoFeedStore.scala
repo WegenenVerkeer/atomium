@@ -86,7 +86,7 @@ class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollect
           concern = WriteConcern.Safe)
       } else {
         val dbo =
-          $set(Seq(Keys.NextPage -> (feedUpdate.next getOrElse null))) ++
+          $set(Keys.NextPage -> (feedUpdate.next getOrElse null)) ++
           $pushAll(Keys.Elements -> MongoDBList((feedUpdate.newElements map ser):_*))
         collection.update(
           MongoDBObject(Keys.Page -> feedUpdate.page),
