@@ -20,6 +20,7 @@ object Dependencies {
     "com.typesafe.play"   %%  "play-ws"             % "2.3.0"
   )
   val javaDependencies = Seq (
-    "org.functionaljava" % "functionaljava" % "3.0"
+    "org.functionaljava" % "functionaljava" % "3.0",
+    "junit" % "junit" % "4.11" % "test"
   )
 }
