@@ -11,12 +11,15 @@ import java.util.List;
 
 public class FeedProcessorTest {
 
+    private static final String FEED_URL_PAGE1 = "http://example.com/feeds/1";
+
     @Test
     public void test() {
         System.out.println("Start processing");
 
         // create the feed position from where you want to start processing
-        FeedPosition position = new FeedPosition(new Link("self", new Url("http://example.com/feeds/1")), 1);
+        // index -1 to assure all items are processed, index is position of last read entry in page
+        FeedPosition position = new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider();
@@ -34,7 +37,7 @@ public class FeedProcessorTest {
             Assert.fail(result.fail().message());
         }
         else {
-            Assert.assertEquals("http://example.com/feeds/1", result.success().link().href().path());
+            Assert.assertEquals(FEED_URL_PAGE1, result.success().link().href().path());
         }
     }
 
@@ -62,12 +65,12 @@ public class FeedProcessorTest {
     class ExampleFeedProvider implements FeedProvider<ExampleFeedEntry> {
         @Override
         public Validation<FeedProcessingError, Feed<ExampleFeedEntry>> fetchFeed() {
-            return fetchFeed("1");
+            return fetchFeed("http://example.com/feeds/1");
         }
 
         @Override
-        public Validation<FeedProcessingError, Feed<ExampleFeedEntry>> fetchFeed(String page) {
-            System.out.println("Fetching page " + page);
+        public Validation<FeedProcessingError, Feed<ExampleFeedEntry>> fetchFeed(String url) {
+            System.out.println("Fetching page " + url);
 
             List<Entry<ExampleFeedEntry>> entries = new ArrayList<Entry<ExampleFeedEntry>>();
             List<ExampleFeedEntry> values = new ArrayList<ExampleFeedEntry>();
@@ -78,7 +81,7 @@ public class FeedProcessorTest {
                     scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
 
             List<Link> feedLinks = new ArrayList<Link>();
-            feedLinks.add(new Link("self", new Url("http://example.com/feeds/1")));
+            feedLinks.add(new Link("self", new Url(url)));
 
             Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
                     "1",
