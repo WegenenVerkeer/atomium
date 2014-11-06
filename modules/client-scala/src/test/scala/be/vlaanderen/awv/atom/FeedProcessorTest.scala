@@ -174,7 +174,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     }
 
     val links = List(Link(Link.selfLink, Url(url)))
-    Feed("id", Url("base"), Option("title"), "update", links, entries.toList)
+    Feed(Url("base"), Option("title"), "update", links, entries.toList)
   }
 
   def link(url:String) : Link = Link(Link.selfLink, Url(url))

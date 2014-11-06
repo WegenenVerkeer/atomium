@@ -14,35 +14,34 @@ trait FeedStore[E] {
   /**
    * Retrieves a page of the feed.
    *
-   * @param page the page number
+   * @param start the starting entry
+   * @param pageSize the number of entries
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(page: Long): Option[Feed[E]]
+  def getFeed(start: Int, pageSize: Int): Option[Feed[E]]
 
   /**
-   * Gets the feed info.
-   * 
-   * @return the feed info or None if the feed is not persisted yet
+   * Retrieves the head of the feed. This is the first page containing the most recent entries
+   * @param pageSize
+   * @return the head of the feed
    */
-  def getFeedInfo: Option[FeedInfo]
+  def getHeadOfFeed(pageSize: Int): Option[Feed[E]]
 
   /**
-   * Updates the feed pages and feed info.
-   * 
-   * @param feedUpdates
-   * @param feedInfo
+   * push a list of entries to the feed
+   * @param entries the entries to push to the feed
    */
-  def update(feedUpdates: List[FeedUpdateInfo[E]], feedInfo: FeedInfo)
+  def push(entries: Iterable[E])
 
   /**
-   * This method is called when the [[be.vlaanderen.awv.atom.FeedPusher]] is started.
-   *
+   * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is started.
    * This can be used as a hook (to check consistency, for example)
    */
   def open()  : Unit = {}
 
   /**
-   * This method is called when the [[be.vlaanderen.awv.atom.FeedPusher]] is stopped.
+   * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is stopped.
    */
   def close() : Unit = {}
+
 }

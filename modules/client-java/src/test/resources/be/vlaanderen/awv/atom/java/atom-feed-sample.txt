@@ -1,6 +1,4 @@
 {
-
-    "id": "1",
     "base": "http://sample.com/feeds/registraties",
     "title": "Registraties",
     "updated": "2014-08-12T13:22:30.498+02:00",
@@ -10,7 +8,7 @@
             "href": "http://sample.com/feeds/registraties/feed/1"
         },
         {
-            "rel": "first",
+            "rel": "last",
             "href": "http://sample.com/feeds/registraties/feed/1"
         }
     ],

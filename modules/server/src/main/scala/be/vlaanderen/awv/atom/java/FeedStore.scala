@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.{Context, Feed, FeedUpdateInfo, FeedInfo}
+import be.vlaanderen.awv.atom.{Context, Feed}
 
 /**
  * Wrapper wround the [[be.vlaanderen.awv.atom.FeedStore]] that offers a Java-like interface.
@@ -15,23 +15,23 @@ abstract class FeedStore[E] extends be.vlaanderen.awv.atom.FeedStore[E] {
   /**
    * Retrieves a page of the feed.
    *
-   * @param page the page number
+   * @param start the starting entry
+   * @param pageSize the number of entries in the feed page            
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(page: Long): Option[Feed[E]] = underlying.getFeed(page)
+  override def getFeed(start: Int, pageSize: Int): Option[Feed[E]] = underlying.getFeed(start, pageSize)
 
   /**
-   * Updates the feed pages and feed info.
-   *
-   * @param feedUpdates
-   * @param feedInfo
+   * retrieve the head of the feed, i.e. the feed page containing the most recent entries
+   * @param pageSize the number of entries to return
+   * @return the head of the feed
    */
-  override def update(feedUpdates: List[FeedUpdateInfo[E]], feedInfo: FeedInfo): Unit = underlying.update(feedUpdates, feedInfo)
+  override def getHeadOfFeed(pageSize: Int): Option[Feed[E]] = underlying.getHeadOfFeed(pageSize)
 
   /**
-   * Gets the feed info.
-   *
-   * @return the feed info or None if the feed is not persisted yet
+   * Push entries onto the feed
+   * @param entries the entries to push to the feed
    */
-  override def getFeedInfo: Option[FeedInfo] = underlying.getFeedInfo
+  override def push(entries: Iterable[E]) = underlying.push(entries)
+
 }

@@ -36,9 +36,9 @@ class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage:
 
   /**
    * Retrieves a feed page.
-   *
-   * @param page the page number
+   * @param start the starting entry
+   * @param count the number of entries
    * @return the feed page
    */
-  def getFeed(page:Long) = underlying.getFeed(page)(context)
+  def getFeed(start:Int, count:Int) = underlying.getFeedPage(start, count)(context)
 }

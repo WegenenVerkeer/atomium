@@ -120,7 +120,6 @@ public class FeedProcessorTest {
             }
 
             Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
-                    "1",
                     new Url(FEED_URL),
                     new Some("Blabla"),
                     "2014-08-08T18:04:14.385+02:00",
