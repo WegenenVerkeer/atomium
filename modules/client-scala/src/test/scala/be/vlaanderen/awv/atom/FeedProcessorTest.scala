@@ -29,11 +29,10 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   case class Scenario(provider:TestFeedProvider,
                       consumedEvents:List[String],
-                      initialPosition:Option[FeedPosition] = None,
                       finalPosition:Option[FeedPosition]) {
 
     val consumer = new StatefulEntryConsumer
-    val process = new FeedProcessor[String](initialPosition, provider, consumer)
+    val process = new FeedProcessor[String](provider, consumer)
 
     provider.isStarted shouldBe false
     val result = process.start()
@@ -42,17 +41,14 @@ class FeedProcessorTest extends FunSuite with Matchers {
     consumedEvents shouldBe consumer.consumedEvents.toList
     finalPosition shouldBe consumer.finalPosition
 
-
-
     def assertResult(block: FeedProcessingResult => Unit) = block(result)
   }
 
 
   test("Feed is empty") {
     Scenario(
-      provider = feedProvider(),
+      provider = feedProvider(None),
       consumedEvents = List(),
-      initialPosition = None,
       finalPosition = None
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -61,7 +57,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   test("Feed is consumed from begin to end") {
     Scenario(
-      provider = feedProvider(
+      provider = feedProvider(initialPosition = None,
         feed("/feed/1")("a1", "b1", "c1"),
         feed("/feed/2")("a2", "b2", "c2"),
         feed("/feed/3")("a3", "b3", "c3")
@@ -74,28 +70,26 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   test("Feed is consumed from position [/feed/2,1] until end") {
     Scenario(
-      provider = feedProvider(
+      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 1)),
         feed("/feed/1")("a1", "b1", "c1"),
         feed("/feed/2")("a2", "b2", "c2"),
         feed("/feed/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("c2", "a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition(link("/feed/2"), 1)),
       finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
 
   test("Feed is consumed from position [/feed/2,2] until end") {
     Scenario(
-      provider = feedProvider(
+      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 2)),
         feed("/feed/1")("a1", "b1", "c1"),
         feed("/feed/2")("a2", "b2", "c2"),
         feed("/feed/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition(link("/feed/2"), 2)),
       finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
@@ -103,14 +97,13 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   test("Feed is consumed from position [/feed/2,10] until end. Latest successful position is wrong, it's outside feed") {
     Scenario(
-      provider = feedProvider(
+      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 10)),
         feed("/feed/1")("a1", "b1", "c1"),
         feed("/feed/2")("a2", "b2", "c2"),
         feed("/feed/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      initialPosition = Some(FeedPosition(link("/feed/2"), 10)),
       finalPosition = Some(FeedPosition(link("/feed/3"), 2))
     )
   }
@@ -124,7 +117,6 @@ class FeedProcessorTest extends FunSuite with Matchers {
       ),
 
       consumedEvents = List("a1", "b1", "c1"),
-      initialPosition = None,
       finalPosition = Some(FeedPosition(link("/feed/1"), 2))
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -132,7 +124,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
   }
 
   test("Error when consuming Entry") {
-    val provider = feedProvider(
+    val provider = feedProvider(initialPosition = None,
       feed("/feed/1")("a1", "b1", "c1"),
       feed("/feed/2")("a2", "b2", "c2"),
       feed("/feed/3")("a3", "b3", "c3")
@@ -145,7 +137,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       }
     }
 
-    val processor = new FeedProcessor[String](None, provider, consumer)
+    val processor = new FeedProcessor[String](provider, consumer)
     val result = processor.start()
     result.isFailure shouldBe true
     result.failed.map { error =>
@@ -154,7 +146,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
   }
 
   test("Exception when consuming Entry is wrapped on a Failure") {
-    val provider = feedProvider(
+    val provider = feedProvider(initialPosition = None,
       feed("/feed/1")("a1", "b1", "c1"),
       feed("/feed/2")("a2", "b2", "c2"),
       feed("/feed/3")("a3", "b3", "c3")
@@ -167,7 +159,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       }
     }
 
-    val processor = new FeedProcessor[String](None, provider, consumer)
+    val processor = new FeedProcessor[String](provider, consumer)
     val result = processor.start()
     result.isFailure shouldBe true
     result.failed.map { error =>
@@ -187,19 +179,21 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   def link(url:String) : Link = Link(Link.selfLink, Url(url))
 
-  def feedProvider(feeds:Feed[String]*) = new TestFeedProvider(feeds.toList)
+  def feedProvider(initialPosition:Option[FeedPosition],
+                   feeds:Feed[String]*) = new TestFeedProvider(initialPosition, feeds.toList)
 
   /**
    * Bogus provider. Never returns the next Feed
    */
-  def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(feeds.toList) {
+  def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(None, feeds.toList) {
     override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       Failure(FeedProcessingException(None, "Can't fetch feed"))
     }
   }
 
-  class TestFeedProvider(feeds: Feeds) extends FeedProvider[String] {
+  class TestFeedProvider(initialPos:Option[FeedPosition],
+                         feeds: Feeds) extends FeedProvider[String] {
 
     val linkedFeeds = {
       // build links between feeds
@@ -243,7 +237,11 @@ class FeedProcessorTest extends FunSuite with Matchers {
      */
     override def fetchFeed(): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
-      optToTry(linkedFeeds.headOption)
+      initialPosition match {
+        case None => optToTry(linkedFeeds.headOption)
+        case Some(position) => fetchFeed(position.link.href.path)
+      }
+
     }
 
     /**
@@ -272,6 +270,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       _started = false
     }
 
+    override def initialPosition: Option[FeedPosition] = initialPos
   }
 
 }

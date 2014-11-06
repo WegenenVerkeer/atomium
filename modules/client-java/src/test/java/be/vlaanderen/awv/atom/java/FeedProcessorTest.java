@@ -27,7 +27,7 @@ public class FeedProcessorTest {
         ExampleEntryConsumer consumer = new ExampleEntryConsumer();
 
         // create the processor
-        FeedProcessor<ExampleFeedEntry> processor = new FeedProcessor<ExampleFeedEntry>(position, provider, consumer);
+        FeedProcessor<ExampleFeedEntry> processor = new FeedProcessor<ExampleFeedEntry>(provider, consumer);
 
         // start processing the new feed pages and its entries
         processor.start();
@@ -67,6 +67,16 @@ public class FeedProcessorTest {
     }
 
     static class ExampleFeedProvider implements FeedProvider<ExampleFeedEntry> {
+
+        /**
+         * @return the feed position from where you want to start processing
+         * index -1 to assure all items are processed, index is position of last read entry in page
+         */
+        @Override
+        public FeedPosition getInitialPosition() {
+            return new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
+        }
+
         @Override
         public Feed<ExampleFeedEntry> fetchFeed() {
             throw new UnsupportedOperationException("Should be called with a feed URL.");

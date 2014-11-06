@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom.providers
 
-import be.vlaanderen.awv.atom.{Feed, FeedEntryUnmarshaller, FeedProcessingException, FeedProvider}
+import be.vlaanderen.awv.atom._
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
 import play.api.libs.ws.WS
@@ -9,7 +9,9 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
 
-class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeout:Duration)
+class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
+                                                          feedPosition: Option[FeedPosition],
+                                                          timeout:Duration)
   extends FeedProvider[T] with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -34,7 +36,11 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeou
   }
 
   override def fetchFeed(): FeedResult = {
-    awaitResult(fetchFeedAsync)
+    initialPosition match {
+      case None => awaitResult(fetchFeedAsync)
+      case Some(position) => awaitResult(fetchFeedAsync(position.link.href.path))
+    }
+
   }
 
   override def fetchFeed(page: String): FeedResult = {
@@ -89,7 +95,5 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeou
     }
   }
 
-
-
-
+  override def initialPosition: Option[FeedPosition] = feedPosition
 }

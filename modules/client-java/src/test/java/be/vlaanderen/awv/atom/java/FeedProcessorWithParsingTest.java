@@ -7,10 +7,8 @@ package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
 import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.Assertions;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.junit.Assert;
 import org.junit.Test;
 import scala.Some;
 
@@ -29,14 +27,14 @@ public class FeedProcessorWithParsingTest {
         FeedPosition position = new FeedPosition(new Link("self", new Url(FEED_URL)), -1); // postion (-1) is meest recent verwerkte
 
         // create the feed provider
-        ExampleFeedProvider provider = new ExampleFeedProvider();
+        ExampleFeedProvider provider = new ExampleFeedProvider(position);
 
         // create your entry consumer
         ExampleEntryConsumer consumer = new ExampleEntryConsumer();
 
         // create the processor
         FeedProcessor<EventFeedEntryTo>
-                processor = new FeedProcessor<EventFeedEntryTo>(position, provider, consumer);
+                processor = new FeedProcessor<EventFeedEntryTo>(provider, consumer);
 
         // start processing the new feed pages and its entries
         processor.start();
@@ -62,7 +60,12 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleFeedProvider implements FeedProvider<EventFeedEntryTo> {
 
+        private final FeedPosition initialPostion;
         private ObjectMapper mapper = new ObjectMapper();
+
+        public ExampleFeedProvider(FeedPosition initialPostion) {
+            this.initialPostion = initialPostion;
+        }
 
         @Override
         public Feed<EventFeedEntryTo> fetchFeed() {
@@ -96,6 +99,11 @@ public class FeedProcessorWithParsingTest {
 
         @Override
         public void stop() {}
+
+        @Override
+        public FeedPosition getInitialPosition() {
+            return initialPostion;
+        }
     }
 
 }

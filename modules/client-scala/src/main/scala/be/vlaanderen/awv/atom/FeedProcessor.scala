@@ -5,12 +5,8 @@ import resource._
 
 import scala.util.{Failure, Success, Try}
 
-class FeedProcessor[E](initialPosition:Option[FeedPosition],
-                       feedProvider: FeedProvider[E],
+class FeedProcessor[E](feedProvider: FeedProvider[E],
                        entryConsumer: EntryConsumer[E]) {
-
-  def this(initialPosition:FeedPosition, feedProvider: FeedProvider[E], entryConsumer: EntryConsumer[E]) =
-    this(Option(initialPosition), feedProvider, entryConsumer)
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
@@ -58,16 +54,9 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
   }
 
   private def initEventCursor : Try[EventCursor] = {
-
-    val feedResult = initialPosition.fold {
-      // no initial position, fetch first feed
-      feedProvider.fetchFeed()
-    } { feedPos =>
-      // fetch feed according to position
-      feedProvider.fetchFeed(feedPos.link.href.path)
+    feedProvider.fetchFeed().map {
+      feed => buildCursor(feed, feedProvider.initialPosition)
     }
-
-    feedResult.map { feed => buildCursor(feed, initialPosition) }
   }
 
 
