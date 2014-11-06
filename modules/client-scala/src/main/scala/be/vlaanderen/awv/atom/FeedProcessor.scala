@@ -44,7 +44,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
     val extResult = managed(feedProvider).map { provider =>
       // FeedProvider must be managed
-      initEventCursor map { eventCursor => process(eventCursor) }
+      initEventCursor flatMap process
     }
 
     extResult.either match {
