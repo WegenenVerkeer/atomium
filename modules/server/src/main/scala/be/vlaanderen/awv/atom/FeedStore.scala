@@ -1,7 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{FeedContent, Link, Feed}
-
 /**
  * A feed store is responsible for the persistence of feeds.
  *
@@ -9,10 +7,9 @@ import be.vlaanderen.awv.atom.format.{FeedContent, Link, Feed}
  * 
  * @tparam E type of the elements in the feed
  */
-trait FeedStore[E <: FeedContent] {
+trait FeedStore[E] {
 
   def context: Context
-  def urlProvider: UrlBuilder
 
   /**
    * Retrieves a page of the feed.
@@ -45,14 +42,6 @@ trait FeedStore[E <: FeedContent] {
   def push(entries: Iterable[E])
 
   /**
-   * push a single entry to the feed
-   * @param entry the entry to push to the feed
-   */
-  def push(entry: E): Unit  = {
-    push(List(entry))
-  }
-
-  /**
    * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is started.
    * This can be used as a hook (to check consistency, for example)
    */
@@ -62,23 +51,4 @@ trait FeedStore[E <: FeedContent] {
    * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is stopped.
    */
   def close() : Unit = {}
-
-  protected def getNextLink(start: Int, count: Int) : Option[Link] = {
-    if (start - count >= 0)
-      Some(link(Link.nextLink, start-count, count))
-    else
-      None
-  }
-
-  protected def getPreviousLink(start: Int, count: Int, total: Int): Option[Link] = {
-    if (start + count < total)
-      Some(link(Link.previousLink, start+count, count))
-    else
-      None
-  }
-
-  protected def link(l: String, start: Int, pageSize: Int): Link = {
-    Link(l, urlProvider.feedLink(start, pageSize))
-  }
-
 }

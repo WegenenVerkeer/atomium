@@ -4,9 +4,8 @@ import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.models._
 import org.joda.time.LocalDateTime
 import slick.SlickPostgresDriver.simple._
-import scala.collection.JavaConversions._
 
-/**
+/**             
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a Postgres database.
  *
  * @param c the context implementation

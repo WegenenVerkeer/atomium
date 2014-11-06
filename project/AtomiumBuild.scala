@@ -1,6 +1,7 @@
 import play.PlayScala
 import sbt.Keys._
 import sbt._
+import Keys._
 
 
 
@@ -48,17 +49,17 @@ object AtomiumBuild extends Build
 
 
   //----------------------------------------------------------------
-//  val serverMongoModuleName = Name + "-server-mongo"
-//  lazy val serverMongoModule = Project(
-//    serverMongoModuleName ,
-//    file("modules/server-mongo"),
-//    settings = buildSettings(serverMongoModuleName) ++ Seq(
-//      libraryDependencies ++= Seq(
-//        "org.mongodb" % "mongo-java-driver" % "2.0",
-//        "org.mongodb" %% "casbah" % "2.6.2"
-//      )
-//    )
-//  ).dependsOn(serverModule)
+  val serverMongoModuleName = Name + "-server-mongo"
+  lazy val serverMongoModule = Project(
+    serverMongoModuleName ,
+    file("modules/server-mongo"),
+    settings = buildSettings(serverMongoModuleName) ++ Seq(
+      libraryDependencies ++= Seq(
+        "org.mongodb" % "mongo-java-driver" % "2.0",
+        "org.mongodb" %% "casbah" % "2.6.2"
+      )
+    )
+  ).dependsOn(serverModule)
 
 
 
@@ -113,6 +114,5 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, /*serverMongoModuleName, */serverJdbcModule,
-    serverPlayModule)
+  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, serverMongoModuleName, serverJdbcModule)
 }

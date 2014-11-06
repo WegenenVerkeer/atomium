@@ -5,7 +5,7 @@ import org.joda.time.LocalDateTime
 
 class EntryTable(tag: Tag, tableName: String) extends Table[EntryModel](tag, tableName) {
 
-  def id = column[Option[Long]]("id", O.AutoInc, O.PrimaryKey)
+  def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
 
   def value = column[String]("value")
 

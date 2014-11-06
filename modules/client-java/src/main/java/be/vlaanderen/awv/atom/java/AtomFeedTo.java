@@ -26,7 +26,6 @@ import java.util.ArrayList;
 @Data
 public class AtomFeedTo<T> {
 
-    private String id;
     private String base; // base URL
     private String title;
     private DateTime updated;

@@ -1,9 +1,8 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.format.FeedContent
 import be.vlaanderen.awv.atom.{UrlBuilder, JdbcContext}
 
-class JdbcFeedStore[E <: FeedContent](c: JdbcContext, feedName: String, title: String, mapper: ElementMapper[E], urlProvider: UrlBuilder) extends FeedStore[E] {
+class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: String, mapper: ElementMapper[E], urlProvider: UrlBuilder) extends FeedStore[E] {
   override def underlying: be.vlaanderen.awv.atom.FeedStore[E] = new be.vlaanderen.awv.atom.JdbcFeedStore[E](
     c = c,
     feedName = feedName,
