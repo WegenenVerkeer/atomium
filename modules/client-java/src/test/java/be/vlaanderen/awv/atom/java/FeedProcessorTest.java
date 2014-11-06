@@ -51,7 +51,7 @@ public class FeedProcessorTest {
 
     static class ExampleEntryConsumer implements EntryConsumer<ExampleFeedEntry> {
         @Override
-        public void consume(FeedPosition position, Entry<ExampleFeedEntry> entry) {
+        public void accept(FeedPosition position, Entry<ExampleFeedEntry> entry) {
             System.out.println("Consuming position " + position.index() + " entry " + entry.content());
             try {
                 handleEvent(entry.content().value().head(), position);
@@ -73,7 +73,7 @@ public class FeedProcessorTest {
         }
 
         @Override
-        public Feed<ExampleFeedEntry> fetchFeed(String url) {
+        public Feed<ExampleFeedEntry> fetchFeed(String page) {
             System.out.println("Fetching page " + page);
             int intPage = 0;
             //intPage = Integer.parseInt(page);  // @todo make it fail --- with message "null"

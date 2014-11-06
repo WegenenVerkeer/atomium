@@ -5,5 +5,5 @@ import be.vlaanderen.awv.atom.FeedPosition;
 import be.vlaanderen.awv.atom.FeedProcessingException;
 
 public interface EntryConsumer<E> {
-    void consume(FeedPosition position, Entry<E> entry) throws FeedProcessingException;
+    void accept(FeedPosition position, Entry<E> entry) throws FeedProcessingException;
 }

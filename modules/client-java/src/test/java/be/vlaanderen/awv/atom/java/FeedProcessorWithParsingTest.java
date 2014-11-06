@@ -5,13 +5,7 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.Entry;
-import be.vlaanderen.awv.atom.Feed;
-import be.vlaanderen.awv.atom.FeedPosition;
-import be.vlaanderen.awv.atom.FeedProcessingError;
-import be.vlaanderen.awv.atom.Link;
-import be.vlaanderen.awv.atom.Url;
-import fj.data.Validation;
+import be.vlaanderen.awv.atom.*;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -45,32 +39,18 @@ public class FeedProcessorWithParsingTest {
                 processor = new FeedProcessor<EventFeedEntryTo>(position, provider, consumer);
 
         // start processing the new feed pages and its entries
-        Validation<FeedProcessingError, FeedPosition> result = processor.start();
+        processor.start();
 
-        if (result.isFail()) {
-            System.out.println(result.fail());
-            System.out.println(result.fail().message());
-            System.out.println(result.fail().feedPosition());
-            System.out.println(result.fail().productIterator());
-            System.out.println(result.fail().productPrefix());
-            System.out.println(result.fail().productPrefix());
-            Assert.fail(result.fail().message());
-        }
-        else {
-            Assertions.assertThat(result.success().link().href().path()).
-                    isEqualTo("http://sample.com/feeds/registraties/feed/1");
-        }
     }
 
     static class ExampleEntryConsumer implements EntryConsumer<EventFeedEntryTo> {
         @Override
-        public Validation<FeedProcessingError, FeedPosition> consume(FeedPosition position, Entry<EventFeedEntryTo> entry) {
+        public void accept(FeedPosition position, Entry<EventFeedEntryTo> entry) {
             System.out.println("Consuming position " + position.index() + " entry " + entry.content());
             try {
                 handleEvent(entry.content().value().head(), position);
-                return Validation.success(position);
             } catch (Exception e) {
-                return Validation.fail(new FeedProcessingError(new Some(position), e.getMessage()));
+                throw new FeedProcessingException(new Some(position), e.getMessage());
             }
         }
 
@@ -85,17 +65,17 @@ public class FeedProcessorWithParsingTest {
         private ObjectMapper mapper = new ObjectMapper();
 
         @Override
-        public Validation<FeedProcessingError, Feed<EventFeedEntryTo>> fetchFeed() {
+        public Feed<EventFeedEntryTo> fetchFeed() {
             System.out.println("fetchFeed");
             return fetchFeed(FEED_URL);
         }
 
         @Override
-        public Validation<FeedProcessingError, Feed<EventFeedEntryTo>> fetchFeed(String page) {
+        public Feed<EventFeedEntryTo> fetchFeed(String page) {
             System.out.println("Fetching page " + page);
 
             if (!FEED_URL.equals(page)) {
-                return Validation.fail(new FeedProcessingError(Some.<FeedPosition>empty(), "not found"));
+                throw new FeedProcessingException(Some.<FeedPosition>empty(), "not found");
             }
 
             try {
@@ -105,10 +85,9 @@ public class FeedProcessorWithParsingTest {
                 AtomFeedTo<EventFeedEntryTo> feed =
                         mapper.readValue(json, new TypeReference<AtomFeedTo<EventFeedEntryTo>>() {});
 
-                return Validation.success(feed.toAtomium());
+                return feed.toAtomium();
             } catch (IOException ioe) {
-                return Validation.fail(new FeedProcessingError(Some.<FeedPosition>empty(),
-                        "Cannot open template " + ioe.getMessage()));
+                throw new FeedProcessingException(Some.<FeedPosition>empty(), "Cannot open template " + ioe.getMessage());
             }
         }
 

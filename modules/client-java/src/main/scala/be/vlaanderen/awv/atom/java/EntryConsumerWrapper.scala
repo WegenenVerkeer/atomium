@@ -11,7 +11,7 @@ class EntryConsumerWrapper[E](underlying: JEntryConsumer[E]) extends
 
   override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
-      underlying.consume(position, entry)
+      underlying.accept(position, entry)
       Success()
     } catch {
       case ex:Exception =>

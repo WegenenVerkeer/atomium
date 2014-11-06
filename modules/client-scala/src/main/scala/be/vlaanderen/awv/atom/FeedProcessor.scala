@@ -44,10 +44,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
     val extResult = managed(feedProvider).map { provider =>
       // FeedProvider must be managed
-      initEventCursor match {
-        case Success(eventCursor) => process(eventCursor)
-        case Failure(ex) => Failure(ex)
-      }
+      initEventCursor map { eventCursor => process(eventCursor) }
     }
 
     extResult.either match {
@@ -93,11 +90,13 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
         // gelukt? process volgende event
         // volgende EventCursor kan een EndOfEvents of een EventOnNextFeed
         // in geval van een EventOnNextFeed, we kunnen we een fout krijgen bij ophalen van volgende feed
+        // map on Try does not work here, because of tailrec
         nextEventOrFailure match {
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
 
+      // map on Try does not work here, because of tailrec
       case EntryOnNextFeed(nextFeedUrl) =>
         cursorOnNextFeed(nextFeedUrl) match {
           case Success(next) => process(next)
