@@ -24,7 +24,6 @@ import java.util.ArrayList;
 @Data
 public class AtomFeedTo<T> {
 
-    private String id;
     private String base; // base URL
     private String title;
     private String updated;
@@ -39,7 +38,6 @@ public class AtomFeedTo<T> {
     public Feed<T> toAtomium() {
 
         return new Feed<T>(
-                id,
                 new Url(base),
                 new Some(title),
                 updated,

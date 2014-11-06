@@ -21,8 +21,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, title:
    * @param context the context, which is required for feed stores
    */
   def push(elements: Iterable[E])(implicit context: C): Unit = {
-    val feedPusher = new FeedPusher[E](feedStoreFactory(feedName, context), entriesPerPage, title)
-    feedPusher.push(elements)(context)
+    feedStoreFactory(feedName, context).push(elements)
   }
 
   /**
@@ -35,16 +34,16 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, title:
     push(List(element))(context)
   }
 
-  /**
-   * Retrieves a feed page.
-   *
-   * @param page the page number
-   * @param context the context, which is required for feed stores
-   * @return the feed page
-   */
-  def getFeed(page:Long)(implicit context: C):Option[Feed[E]] = {
-    val feedPusher = new FeedPusher[E](feedStoreFactory(feedName, context), entriesPerPage, title)
-    feedPusher.getFeed(page)
+  def getFeedPage(start: Int, count:Int)(implicit context: C):Option[Feed[E]] = {
+    if (count == entriesPerPage /*&& start % count == 0*/) { // TODO start parameter should be ok
+      feedStoreFactory(feedName, context).getFeed(start, count)
+    } else {
+      None
+    }
+  }
+  
+  def getHeadOfFeed()(implicit context: C) : Option[Feed[E]] = {
+    feedStoreFactory(feedName, context).getHeadOfFeed(entriesPerPage)
   }
 
 }

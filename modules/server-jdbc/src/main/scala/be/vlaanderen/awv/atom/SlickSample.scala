@@ -1,10 +1,11 @@
 package be.vlaanderen.awv.atom
 
-import scala.slick.driver.H2Driver.simple.{Session,Database}
-import JdbcContext._
+import be.vlaanderen.awv.atom.JdbcContext._
+
+import scala.slick.driver.H2Driver.simple.Database
 
 object SlickSample {
-  val feedStoreFactory: (String, JdbcContext) => FeedStore[Int] = (feedName, context) => new JdbcFeedStore[Int](context, "int_feed", null, null, null)
+  val feedStoreFactory: (String, JdbcContext) => FeedStore[Int] = (feedName, context) => new JdbcFeedStore[Int](context, "int_feed", None, null, null, null)
   val feedService = new FeedService[Int, JdbcContext]("int_feed", 100, "int_feed", feedStoreFactory)
 
   case class Element(i: Int)
