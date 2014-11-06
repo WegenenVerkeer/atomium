@@ -3,11 +3,11 @@ package be.vlaanderen.awv.atom
 import com.typesafe.scalalogging.slf4j.Logging
 import resource.Resource
 import scala.language.implicitConversions
-import scalaz._
+import scala.util.Try
 
 trait FeedProvider[T]  {
-  def fetchFeed() : Validation[FeedProcessingError, Feed[T]]
-  def fetchFeed(page:String) : Validation[FeedProcessingError, Feed[T]]
+  def fetchFeed() : Try[Feed[T]]
+  def fetchFeed(page:String) : Try[Feed[T]]
   def start() : Unit
   def stop() : Unit
 }

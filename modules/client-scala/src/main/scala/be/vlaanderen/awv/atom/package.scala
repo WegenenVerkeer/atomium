@@ -1,10 +1,10 @@
 package be.vlaanderen.awv
 
-import scalaz._
+import scala.util.Try
 
 package object atom {
 
-  type FeedProcessingResult = Validation[FeedProcessingError, FeedPosition]
+  type FeedProcessingResult = Try[Unit]
 
-  type FeedEntryUnmarshaller[T] = (String) => Validation[FeedProcessingError, Feed[T]]
+  type FeedEntryUnmarshaller[T] = (String) => Try[Feed[T]]
 }

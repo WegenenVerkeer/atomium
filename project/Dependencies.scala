@@ -8,8 +8,7 @@ object Dependencies {
     "ch.qos.logback"      %   "logback-classic"       % "1.1.1",
     "joda-time"           %   "joda-time"             % "2.3",
     "com.typesafe.play"   %%  "play-json"             % "2.3.0",
-    "com.jsuereth"        %%  "scala-arm"             % "1.3",
-    "org.scalaz"          %%  "scalaz-core"           % "7.0.5"
+    "com.jsuereth"        %%  "scala-arm"             % "1.3"
   )
 
   val mainTestDependencies = Seq (
@@ -19,8 +18,8 @@ object Dependencies {
   val clientScalaDependencies = Seq (
     "com.typesafe.play"   %%  "play-ws"             % "2.3.0"
   )
+
   val javaDependencies = Seq (
-    "org.functionaljava" % "functionaljava" % "3.0",
     "junit" % "junit" % "4.11" % "test"
   )
 }

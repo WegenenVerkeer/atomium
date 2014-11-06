@@ -2,9 +2,8 @@ package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.Entry;
 import be.vlaanderen.awv.atom.FeedPosition;
-import be.vlaanderen.awv.atom.FeedProcessingError;
-import fj.data.Validation;
+import be.vlaanderen.awv.atom.FeedProcessingException;
 
 public interface EntryConsumer<E> {
-    Validation<FeedProcessingError, FeedPosition> consume(FeedPosition position, Entry<E> entry);
+    void consume(FeedPosition position, Entry<E> entry) throws FeedProcessingException;
 }

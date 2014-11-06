@@ -1,21 +1,20 @@
 package be.vlaanderen.awv.atom.providers
 
-import be.vlaanderen.awv.atom.{Feed, FeedEntryUnmarshaller, FeedProcessingError, FeedProvider}
+import be.vlaanderen.awv.atom.{Feed, FeedEntryUnmarshaller, FeedProcessingException, FeedProvider}
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
 import play.api.libs.ws.WS
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
-import scalaz.Scalaz._
-import scalaz._
+import scala.util.{Failure, Success, Try}
 
 class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeout:Duration)
   extends FeedProvider[T] with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  type FeedResult =  Validation[FeedProcessingError, Feed[T]]
+  type FeedResult =  Try[Feed[T]]
   type FutureResult = Future[FeedResult]
 
   private var managedPlayAppOpt : Option[ManagedPlayApp] = None
@@ -59,7 +58,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeou
         case Success(feed) => feed.firstLink match {
           case Some(link) => fetch(link.href.path)
           // !!! can't proceed without a first link - game over !!!
-          case None => sys.error("First feed url is emply!!!")
+          case None => sys.error("First feed url is empty!!!")
         }
         // Validation failure? wrap it in a new Future
         // NOTE: although the Validation is a Failure, we should return a Success.
@@ -77,10 +76,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String, timeou
     } catch {
       case e:Exception =>
         logger.error(s"Error while fetching feed", e)
-        FeedProcessingError(
-          None,
-          e.getMessage
-        ).failure[Feed[T]]
+        Failure(FeedProcessingException(None, e.getMessage))
     }
   }
 

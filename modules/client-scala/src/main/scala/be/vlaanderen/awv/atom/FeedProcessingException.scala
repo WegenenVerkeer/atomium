@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom
 
-case class FeedProcessingError(feedPositionOpt:Option[FeedPosition], message:String) {
+case class FeedProcessingException(feedPositionOpt:Option[FeedPosition], message:String) extends RuntimeException {
 
   /**
    * Returns the {{{FeedPosition}}} or null if none is available.

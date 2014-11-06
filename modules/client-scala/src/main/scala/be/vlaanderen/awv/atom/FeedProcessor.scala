@@ -1,9 +1,9 @@
 package be.vlaanderen.awv.atom
 
 import scala.annotation.tailrec
-import scalaz._
-import Scalaz._
 import resource._
+
+import scala.util.{Failure, Success, Try}
 
 class FeedProcessor[E](initialPosition:Option[FeedPosition],
                        feedProvider: FeedProvider[E],
@@ -26,15 +26,14 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
 
   /**
-   * Start the consuming of Feeds. Returns a {{{Validation[FeedProcessingError, FeedPosition]}}}.
-   * Success case contains the latest processed {{{FeedPosition}}}.
+   * Start the consuming of Feeds. Returns a {{{Try[Unit]}}}.
    * Failure a {{{FeedProcessingError}}}.
    *
    * TODO: we should find a better way for doing this. Eventually two method, start() and startManaged().
-   * @return Validation[FeedProcessingError, FeedPosition].
+   * @return Try[Unit].
    *
    */
-  def start() : Validation[FeedProcessingError, FeedPosition] = {
+  def start() : Try[Unit] = {
 
     // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
     // but we can't want to pollute the interface if it, because we intend to use it from Java as well
@@ -47,20 +46,21 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       // FeedProvider must be managed
       initEventCursor match {
         case Success(eventCursor) => process(eventCursor)
-        case Failure(err) => err.failure[FeedPosition]
+        case Failure(ex) => Failure(ex)
       }
     }
 
     extResult.either match {
       case Left(throwables) =>
         val messages = throwables.map(_.getMessage).mkString("[", "] | [", "[")
-        FeedProcessingError(None, messages).fail[FeedPosition]
-      case Right(validation) => validation
+        Failure(FeedProcessingException(None, messages))
+      case Right(Failure(ex)) => Failure(ex)
+      case Right(_) => Success()
 
     }
   }
 
-  private def initEventCursor : Validation[FeedProcessingError, EventCursor] = {
+  private def initEventCursor : Try[EventCursor] = {
 
     val feedResult = initialPosition.fold {
       // no initial position, fetch first feed
@@ -95,16 +95,16 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
         // in geval van een EventOnNextFeed, we kunnen we een fout krijgen bij ophalen van volgende feed
         nextEventOrFailure match {
           case Success(next) => process(next)
-          case Failure(errorMessages) => errorMessages.failure[FeedPosition]
+          case Failure(ex) => Failure(ex)
         }
 
       case EntryOnNextFeed(nextFeedUrl) =>
         cursorOnNextFeed(nextFeedUrl) match {
           case Success(next) => process(next)
-          case Failure(errorMessages) => errorMessages.failure[FeedPosition]
+          case Failure(ex) => Failure(ex)
         }
 
-      case EndOfEntries(lastFeedPos) => lastFeedPos.success[FeedProcessingError] // we are done
+      case EndOfEntries(lastFeedPos) => Success() // we are done
     }
 
   }
@@ -114,10 +114,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       entryConsumer.consume(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
       case ex:Exception =>
-        FeedProcessingError(
-          Some(currentEvent.feedPosition),
-          ex.getMessage
-        ).failure[FeedPosition]
+        Failure(ex)
     }
   }
 
@@ -185,12 +182,12 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     }
   }
 
-  private def cursorOnNextFeed(link:Link) : Validation[FeedProcessingError, EventCursor] = {
+  private def cursorOnNextFeed(link:Link) : Try[EventCursor] = {
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
 
-  private def buildNextEntryCursor(entryPointer:EntryPointer) : Validation[FeedProcessingError, EventCursor] = {
+  private def buildNextEntryCursor(entryPointer:EntryPointer) : Try[EventCursor] = {
     val nextCursor =
       if (entryPointer.stillToProcessEntries.nonEmpty) {
         entryPointer.copy(
@@ -209,9 +206,9 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
       // still a feed to go? go fetch it
       case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
       // no next feed link? stop processing, all entries were consumed
-      case end @ EndOfEntries(_) => end.success[FeedProcessingError]
-      // wrap nextCursor in Validation
-      case _ => nextCursor.success[FeedProcessingError]
+      case end @ EndOfEntries(_) => Success(end)
+      // wrap nextCursor in Success
+      case _ => Success(nextCursor)
 
     }
   }

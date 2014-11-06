@@ -1,9 +1,7 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
-import fj.data.Validation;
 import org.junit.Test;
-import org.junit.Assert;
 import scala.Some;
 
 import java.util.ArrayList;
@@ -31,14 +29,7 @@ public class FeedProcessorTest {
         FeedProcessor<ExampleFeedEntry> processor = new FeedProcessor<ExampleFeedEntry>(position, provider, consumer);
 
         // start processing the new feed pages and its entries
-        Validation<FeedProcessingError, FeedPosition> result = processor.start();
-
-        if (result.isFail()) {
-            Assert.fail(result.fail().message());
-        }
-        else {
-            Assert.assertEquals(FEED_URL_PAGE1, result.success().link().href().path());
-        }
+        processor.start();
     }
 
     class ExampleFeedEntry {
@@ -47,13 +38,12 @@ public class FeedProcessorTest {
 
     class ExampleEntryConsumer implements EntryConsumer<ExampleFeedEntry> {
         @Override
-        public Validation<FeedProcessingError, FeedPosition> consume(FeedPosition position, Entry<ExampleFeedEntry> entry) {
+        public void consume(FeedPosition position, Entry<ExampleFeedEntry> entry) {
             System.out.println("Consuming position " + position.index());
             try {
                 handleEvent(entry.content().value().head(), position);
-                return Validation.success(position);
             } catch (Exception e) {
-                return Validation.fail(new FeedProcessingError(new Some(position), e.getMessage()));
+                throw new FeedProcessingException(new Some(position), e.getMessage());
             }
         }
 
@@ -64,12 +54,12 @@ public class FeedProcessorTest {
 
     class ExampleFeedProvider implements FeedProvider<ExampleFeedEntry> {
         @Override
-        public Validation<FeedProcessingError, Feed<ExampleFeedEntry>> fetchFeed() {
+        public Feed<ExampleFeedEntry> fetchFeed() {
             return fetchFeed("http://example.com/feeds/1");
         }
 
         @Override
-        public Validation<FeedProcessingError, Feed<ExampleFeedEntry>> fetchFeed(String url) {
+        public Feed<ExampleFeedEntry> fetchFeed(String url) {
             System.out.println("Fetching page " + url);
 
             List<Entry<ExampleFeedEntry>> entries = new ArrayList<Entry<ExampleFeedEntry>>();
@@ -91,7 +81,7 @@ public class FeedProcessorTest {
                     scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
                     scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList()
             );
-            return Validation.success(feed);
+            return feed;
         }
 
         @Override

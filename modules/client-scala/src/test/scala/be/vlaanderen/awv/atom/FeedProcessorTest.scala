@@ -4,9 +4,7 @@ package be.vlaanderen.awv.atom
 import org.scalatest.{Matchers, FunSuite}
 import scala.annotation.tailrec
 import scala.collection.mutable
-import scalaz.Scalaz._
-import scalaz._
-
+import scala.util.{Failure, Success, Try}
 
 class FeedProcessorTest extends FunSuite with Matchers {
 
@@ -24,7 +22,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       eventEntry.content.value.foreach { e =>
         consumedEvents += e
       }
-      position.success[FeedProcessingError]
+      Success()
     }
   }
 
@@ -143,15 +141,15 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val foutMelding = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
       override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-        FeedProcessingError(Option(position), foutMelding).failure[FeedPosition]
+        Failure(FeedProcessingException(Option(position), foutMelding))
       }
     }
 
     val processor = new FeedProcessor[String](None, provider, consumer)
     val result = processor.start()
     result.isFailure shouldBe true
-    result.swap.map { error =>
-      error.message shouldBe foutMelding
+    result.failed.map { error =>
+      error shouldBe foutMelding
     }
   }
 
@@ -172,8 +170,8 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val processor = new FeedProcessor[String](None, provider, consumer)
     val result = processor.start()
     result.isFailure shouldBe true
-    result.swap.map { error =>
-      error.message shouldBe foutMelding
+    result.failed.map { error =>
+      error shouldBe foutMelding
     }
   }
 
@@ -195,9 +193,9 @@ class FeedProcessorTest extends FunSuite with Matchers {
    * Bogus provider. Never returns the next Feed
    */
   def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(feeds.toList) {
-    override def fetchFeed(page: String): Validation[FeedProcessingError, Feed[String]] = {
+    override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
-      FeedProcessingError(None, "Can't fetch feed").failure[Feed[String]]
+      Failure(FeedProcessingException(None, "Can't fetch feed"))
     }
   }
 
@@ -243,26 +241,26 @@ class FeedProcessorTest extends FunSuite with Matchers {
     /**
      * Return first feed or a Failure
      */
-    override def fetchFeed(): Validation[FeedProcessingError, Feed[String]] = {
+    override def fetchFeed(): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
-      optToValidation(linkedFeeds.headOption)
+      optToTry(linkedFeeds.headOption)
     }
 
     /**
      * Return feed whose selfLink equals 'page or Failure
      */
-    override def fetchFeed(page: String): Validation[FeedProcessingError, Feed[String]] = {
+    override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       val feedOpt =  linkedFeeds.find {
         feed => feed.selfLink.href.path == page
       }
-      optToValidation(feedOpt)
+      optToTry(feedOpt)
     }
 
-    private def optToValidation(feedOpt:Option[Feed[String]]) = {
+    private def optToTry(feedOpt:Option[Feed[String]]) = {
       feedOpt match {
-        case None => FeedProcessingError(None, "no feed found").failure[Feed[String]]
-        case Some(feed) => feed.success[FeedProcessingError]
+        case None => Failure(FeedProcessingException(None, "no feed found"))
+        case Some(feed) => Success(feed)
       }
     }
 
