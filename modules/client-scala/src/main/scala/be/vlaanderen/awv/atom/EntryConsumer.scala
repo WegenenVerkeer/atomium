@@ -1,6 +1,4 @@
 package be.vlaanderen.awv.atom
 
 
-trait EntryConsumer[E] {
-  def consume(position:FeedPosition, entry:Entry[E]) : FeedProcessingResult
-}
+trait EntryConsumer[E] extends ((FeedPosition, Entry[E]) => FeedProcessingResult)

@@ -17,7 +17,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     var finalPosition:Option[FeedPosition] = None
     var consumedEvents = new mutable.ListBuffer[String]
 
-    override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
+    override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
       finalPosition = Option(position)
       eventEntry.content.value.foreach { e =>
         consumedEvents += e
@@ -138,10 +138,10 @@ class FeedProcessorTest extends FunSuite with Matchers {
       feed("/feed/3")("a3", "b3", "c3")
     )
 
-    val foutMelding = "Error when consuming Entry"
+    val errorMessage = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-        Failure(FeedProcessingException(Option(position), foutMelding))
+      override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
+        Failure(FeedProcessingException(Option(position), errorMessage))
       }
     }
 
@@ -149,21 +149,21 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val result = processor.start()
     result.isFailure shouldBe true
     result.failed.map { error =>
-      error shouldBe foutMelding
+      error shouldBe errorMessage
     }
   }
 
-  test("Exception when consuming Entry is wrapped on Validation failure") {
+  test("Exception when consuming Entry is wrapped on a Failure") {
     val provider = feedProvider(
       feed("/feed/1")("a1", "b1", "c1"),
       feed("/feed/2")("a2", "b2", "c2"),
       feed("/feed/3")("a3", "b3", "c3")
     )
 
-    val foutMelding = "Exception when consuming Entry"
+    val errorMessage = "Exception when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def consume(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-        throw new RuntimeException(foutMelding)
+      override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
+        throw new RuntimeException(errorMessage)
       }
     }
 
@@ -171,7 +171,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     val result = processor.start()
     result.isFailure shouldBe true
     result.failed.map { error =>
-      error shouldBe foutMelding
+      error shouldBe errorMessage
     }
   }
 

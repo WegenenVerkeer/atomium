@@ -1,15 +1,15 @@
 package be.vlaanderen.awv.atom.java
 
+import be.vlaanderen.awv.atom
 import be.vlaanderen.awv.atom.{FeedProcessingException, FeedProcessingResult, Entry, FeedPosition}
-import be.vlaanderen.awv.atom.java.{EntryConsumer => JEntryConsumer}
+import be.vlaanderen.awv.atom.java
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.util.{Success, Failure}
 
-class EntryConsumerWrapper[E](underlying: JEntryConsumer[E]) extends
-  be.vlaanderen.awv.atom.EntryConsumer[E] with Logging {
+class EntryConsumerWrapper[E](underlying: java.EntryConsumer[E]) extends atom.EntryConsumer[E] with Logging {
 
-  override def consume(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
+  override def apply(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {
       underlying.accept(position, entry)
       Success()

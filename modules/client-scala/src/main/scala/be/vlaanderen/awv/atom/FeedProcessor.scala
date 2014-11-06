@@ -36,7 +36,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
   def start() : Try[Unit] = {
 
     // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
-    // but we can't want to pollute the interface if it, because we intend to use it from Java as well
+    // but we don't want to pollute the interface if it, because we intend to use it from Java as well
     implicit val manif  = new Manifest[FeedProvider[E]] {
       override def runtimeClass: Class[_] = classOf[FeedProvider[E]]
     }
@@ -65,7 +65,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
     } { feedPos =>
       // fetch feed according to position
       feedProvider.fetchFeed(feedPos.link.href.path)
-                     }
+    }
 
     feedResult.map { feed => buildCursor(feed, initialPosition) }
   }
@@ -110,7 +110,7 @@ class FeedProcessor[E](initialPosition:Option[FeedPosition],
 
   private def consumeEvent(currentEvent:EntryPointer) : FeedProcessingResult = {
     try {
-      entryConsumer.consume(currentEvent.feedPosition, currentEvent.entryToProcess)
+      entryConsumer.apply(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
       case ex:Exception =>
         Failure(ex)

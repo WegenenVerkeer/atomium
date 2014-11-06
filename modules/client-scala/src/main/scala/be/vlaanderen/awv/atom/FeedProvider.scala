@@ -14,7 +14,7 @@ trait FeedProvider[T]  {
 
 
 object FeedProvider extends Logging {
-  implicit def managedFeedProvider[T](provider : FeedProvider[T]) = new Resource[FeedProvider[T]] {
+  implicit def managedFeedProvider[T](provider : FeedProvider[T]) : Resource[FeedProvider[T]] = new Resource[FeedProvider[T]] {
     override def open(r: FeedProvider[T]): Unit = {
       logger.debug(s"Opening ${r.getClass.getSimpleName} ... ")
       provider.start()
