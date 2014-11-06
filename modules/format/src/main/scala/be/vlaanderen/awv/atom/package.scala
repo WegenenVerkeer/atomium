@@ -39,22 +39,20 @@ package object atom {
 
   // candidate for macro format
   implicit def feedWrites[T](implicit fmt: Writes[T]): Writes[Feed[T]] = (
-    (__ \ "id").write[String] and
     (__ \ "base").write[Url] and
     (__ \ "title").writeNullable[String] and
     (__ \ "updated").write[String] and
     (__ \ "links").write[List[Link]] and
     (__ \ "entries").write[List[Entry[T]]]
-  )(in => (in.id, in.base, in.title, in.updated, in.links, in.entries))
+  )(in => (in.base, in.title, in.updated, in.links, in.entries))
 
   implicit def feedReads[T](implicit fmt: Reads[T]): Reads[Feed[T]] = (
-    (__ \ "id").read[String] and
     (__ \ "base").read[Url] and
     (__ \ "title").readNullable[String] and
     (__ \ "updated").read[String] and
     (__ \ "links").read[List[Link]] and
     (__ \ "entries").read[List[Entry[T]]]
-  )((id, base, title, updated, links, entries) => Feed[T](id, base, title, updated, links, entries))
+  )((base, title, updated, links, entries) => Feed[T](base, title, updated, links, entries))
 
 
 

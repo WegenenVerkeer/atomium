@@ -1,6 +1,7 @@
 package be.vlaanderen.awv.atom
 
 import be.vlaanderen.awv.atom.models._
+import org.joda.time.LocalDateTime
 import slick.SlickPostgresDriver.simple._
 
 /**
@@ -10,108 +11,74 @@ import slick.SlickPostgresDriver.simple._
  * @param feedName the name of the feed
  * @param ser function to serialize an element to a String
  * @param deser function to deserialize a String to an element
- * @param urlProvider
+ * @param urlProvider helper to build urls
  * @tparam E type of the elements in the feed
  */
-class JdbcFeedStore[E](c: JdbcContext, feedName: String, ser: E => String, deser: String => E, urlProvider: UrlBuilder) extends FeedStore[E] {
+class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlProvider: UrlBuilder) extends FeedStore[E] {
 
   lazy val context = c
 
-  protected def feedLink(value: Option[Long], linkType: String) = {
-    value map { v =>
-      Link(linkType, urlProvider.feedLink(v))
-    } toList
-  }
-
-  /**
-   * Retrieves a page of the feed.
-   *
-   * @param page the page number
-   * @return the feed page or `None` if the page is not found
-   */
-  override def getFeed(page: Long): Option[Feed[E]] = {
+  lazy val feedModel : FeedModel = {
     implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    def eventQuery(feedId: Long) = for {
-      fe <- EntryTable if fe.feedName === feedName && fe.feedId === feedId
-    } yield fe
-    for {
-      feed <- FeedTable.findById(page, feedName)
-      entries <- Some(eventQuery(feed.id).list)
-    } yield Feed(
-      id = feed.id.toString,
-      base = urlProvider.base,
-      title = feed.title,
-      updated = feed.timestamp.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"),
-      links =
-        feedLink(Some(feed.id), Link.selfLink) ++
-        feedLink(Some(feed.first), Link.firstLink) ++
-        feedLink(feed.next, Link.nextLink) ++
-        feedLink(feed.previous, Link.previousLink),
-      entries = entries map { entry =>
-        Entry(Content(List(deser(entry.value)), ""), Nil)
-      }
-    )
-  }
-
-  /**
-   * Updates the feed pages and feed info.
-   *
-   * @param feedUpdates
-   * @param feedInfo
-   */
-  override def update(feedUpdates: List[FeedUpdateInfo[E]], feedInfo: FeedInfo): Unit = {
-    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    feedUpdates foreach { feedUpdate =>
-      val feedModel = FeedModel(
-        id = feedUpdate.page,
-        name = feedName,
-        title = Some(feedUpdate.title),
-        timestamp = feedUpdate.updated.toLocalDateTime,
-        first = feedUpdate.first,
-        previous = feedUpdate.previous,
-        next = feedUpdate.next
-      )
-
-      // create new feed or update existing feed
-      if (feedUpdate.isNew) {
-        FeedTable += feedModel
-      } else {
-        FeedTable.updateFeed(feedModel)
-      }
-
-      // insert new entries
-      feedUpdate.newElements foreach { element =>
-        val entry = EntryModel(
-          feedId = feedUpdate.page,
-          feedName = feedName,
-          value = ser(element)
-        )
-        EntryTable += entry
-      }
-
-      // save current feed info object
-      val feedInfoModel = FeedInfoModel(
-        feedName = feedName,
-        lastPageId = feedInfo.lastPage,
-        count = feedInfo.count
-      )
-
-      FeedInfoTable += feedInfoModel
+    FeedTable.findByName(feedName).getOrElse {
+      val id = FeedTable returning FeedTable.map(_.id) += new FeedModel(None, feedName, title)
+      val f = new FeedModel(id, feedName, title)
+      f.entriesTableQuery.ddl.create
+      f
     }
   }
 
-  /**
-   * Gets the feed info.
-   *
-   * @return the feed info or None if the feed is not persisted yet
-   */
-  override def getFeedInfo: Option[FeedInfo] = {
-    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    for {
-      fim <- FeedInfoTable.findLastByFeedName(feedName)
-    } yield FeedInfo(
-      count = fim.count,
-      lastPage = fim.lastPageId
-    )
+  override def getHeadOfFeed(pageSize: Int): Option[Feed[E]] = {
+    val max = maxId.toInt
+    if (max > 0) {
+      getFeed(((max-1) / pageSize) * pageSize, pageSize)
+    } else None
   }
+
+  override def getFeed(start:Int, pageSize: Int): Option[Feed[E]] = {
+    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+
+    //SELECT * from 'entries_table' WHERE ID >= start ORDER BY ID LIMIT count
+    for {
+      entries <- Some(feedModel.entriesTableQuery.sortBy(_.id).drop(start).take(pageSize).list().reverse); if entries.size > 0
+    } yield Feed(
+      base = urlProvider.base / feedName,
+      title = feedModel.title,
+      updated = entries.head.timestamp.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"),
+      links = List(Link(Link.selfLink, urlProvider.feedLink(start, pageSize)),
+        Link(Link.lastLink, urlProvider.feedLink(0, pageSize))) ++
+        getNextLink(start, pageSize) ++ getPreviousLink(start, pageSize),
+      entries = entries map { entry =>
+        Entry(Content(List(deser(entry.value)), ""), Nil)
+    })
+  }
+
+  override def push(entries: Iterable[E]): Unit = {
+    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+    val timestamp: LocalDateTime = new LocalDateTime()
+    entries foreach { entry =>
+      feedModel.entriesTableQuery += EntryModel(0, ser(entry), timestamp)
+    }
+  }
+
+  def getNextLink(start: Int, count: Int) : Option[Link] = {
+    if (start - count >= 0)
+      Some(Link(Link.nextLink, urlProvider.feedLink(start-count, count)))
+    else
+      None
+  }
+  
+  private def maxId: Long = {
+    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+    Query(feedModel.entriesTableQuery.map(_.id).max).first().getOrElse(0)
+  }
+
+  def getPreviousLink(start: Int, count: Int): Option[Link] = {
+    implicit val session = c.session.asInstanceOf[be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple.Session] // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+    if (start + count < maxId)
+      Some(Link(Link.previousLink, urlProvider.feedLink(start+count, count)))
+    else
+      None
+  }
+
 }

@@ -1,16 +1,16 @@
 package be.vlaanderen.awv.atom.models
 
 import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
+import org.joda.time.LocalDateTime
 
-import scala.slick.lifted.TableQuery
+class EntryTable(tag: Tag, tableName: String) extends Table[EntryModel](tag, tableName) {
 
-class EntryTable(tag: Tag) extends Table[EntryModel](tag, "FEED_ENTRY") {
+  def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
 
-  def feedName = column[String]("feed_name")
   def value = column[String]("value")
-  def feedId = column[Long]("feed_id")
 
-  def * = (feedName, value, feedId) <> (EntryModel.tupled, EntryModel.unapply)
+  def timestamp = column[LocalDateTime]("timestamp", O.NotNull)
+
+  def * = (id, value, timestamp) <>(EntryModel.tupled, EntryModel.unapply)
+
 }
-
-object EntryTable extends TableQuery(new EntryTable(_))

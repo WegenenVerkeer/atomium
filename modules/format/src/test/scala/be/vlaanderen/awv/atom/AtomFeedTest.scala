@@ -15,7 +15,7 @@ class AtomFeedTest extends FunSuite with Matchers with Logging {
   )
   val entry = Entry(content, List(link))
 
-  val feed = Feed("id", url, Some("title"), "update", List(link), List(entry))
+  val feed = Feed(url, Some("title"), "update", List(link), List(entry))
 
   test("must ser/deser a URL") {
     serializeAndDeserialize(url)

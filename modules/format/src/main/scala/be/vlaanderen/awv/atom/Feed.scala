@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom
 
-case class Feed[T](id: String,
-                   base: Url, 
+case class Feed[T](base: Url,
                    title: Option[String], 
                    updated: String, 
                    links: List[Link], 
@@ -13,6 +12,7 @@ case class Feed[T](id: String,
   val nextLink : Option[Link] = findLinkByName(Link.nextLink)
   val firstLink : Option[Link] = findLinkByName(Link.firstLink)
   val previousLink : Option[Link] = findLinkByName(Link.previousLink)
+  val lastLink : Option[Link] = findLinkByName(Link.lastLink)
   val collectionLink : Option[Link] = findLinkByName(Link.collectionLink)
 
 
