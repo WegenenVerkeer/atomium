@@ -17,13 +17,14 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-  case class EntryOnNextFeed(nextFeedUrl:Link) extends EventCursor
+  case class EntryOnNextPage(nextPageUrl:Link) extends EventCursor
   case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
   /**
    * Start the consuming of Feeds. Returns a {{{Try[Unit]}}}.
-   * Failure a {{{FeedProcessingError}}}.
+   * In case of success a Success[Unit]
+   * or in case of failure a Failure[FeedProcessingException]
    *
    * TODO: we should find a better way for doing this. Eventually two method, start() and startManaged().
    * @return Try[Unit].
@@ -64,10 +65,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
   private def process(cursor:EventCursor) : FeedProcessingResult = {
 
     //!!! NOTE !!!
-    // code hieronder bevat twee pattern matching over een Validation[String, EventCursor]
-    // die precies hetzelfde zijn.
-    // Moet zo blijven anders kan scalac geen tail call opt doen
-    // en we WILLEN een tailrec hier
+    // we perform two times the same pattern matching on a Try[EventCursor]
+    // we need to do this otherwise we can't have tail call optimization and we absolutely need tailrec here
     cursor match {
       case currentEvent:EntryPointer =>
 
@@ -76,18 +75,19 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           nextEvent <- buildNextEntryCursor(currentEvent)
         } yield nextEvent
 
-        // gelukt? process volgende event
-        // volgende EventCursor kan een EndOfEvents of een EventOnNextFeed
-        // in geval van een EventOnNextFeed, we kunnen we een fout krijgen bij ophalen van volgende feed
-        // map on Try does not work here, because of tailrec
+        // fetch nextEvent cursor:
+        // next EventCursor could be an EndOfEntries or an EntryOnNextPage.
+        // in case of EntryOnNextPage we could fail to retrive the next page of the feed.
+        // in case of Success we process the next EventCursor
+        // mapping on Try does not work here, because of tailrec
         nextEventOrFailure match {
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
 
       // map on Try does not work here, because of tailrec
-      case EntryOnNextFeed(nextFeedUrl) =>
-        cursorOnNextFeed(nextFeedUrl) match {
+      case EntryOnNextPage(nextPageUrl) =>
+        cursorOnNextPage(nextPageUrl) match {
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
@@ -107,15 +107,15 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
   }
 
   /**
-   * Build een EventCursor volgens de volgende regels:
+   * Build an EventCursor according to the following rules:
    *
    * <ul>
-   *  <li>Als er geen FeedPosition is, maak een nieuwe cursor met een volledige Feed en index op 0</li>
-   *  <li>Is er een geldig FeedPosition, increase index, drop entries tot aan de nieuwe index en maak nieuwe cursor.</li>
-   *  <li>Is het laatste element van die Feed al geconsumeerd?
+   *  <li>If there is no FeedPosition => create a new cursor on a full Feed with index 0</li>
+   *  <li>If there is a valid FeedPosition => increase index and drop entries preceeding new index and create new cursor.</li>
+   *  <li>If the last element of this page is already consumed
    *    <ul>
-   *      <li>Ga naar de volgende feed als een Link 'next' bestaat. Maak een EventOnNextFeed cursor.</li>
-   *      <li>Is er geen Link naar een volgende Feed? Dan maak een EndOfEvents cursor.</li>
+   *      <li>If there is 'next' Link  create an EntryOnNextPage cursor on the next page of the feed</li>
+   *      <li>If there is no 'next' Link then create and EndOfEntries cursor.</li>
    *    </ul>
    *  </li>
    * </ul>
@@ -132,8 +132,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       )
     }
 
-    def nextFeedOrEnd(feed:Feed[EntryType]) = {
-      // we go to next feed page or we reached the EndOfEntries
+    def nextPageOrEnd(feed:Feed[EntryType]) = {
+      // we go to next page of feed or we reached the EndOfEntries
       def endOfEntries = {
         feedPosition match {
           case Some(feedPos) => EndOfEntries(feedPos)
@@ -144,7 +144,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       }
 
       feed.nextLink match {
-        case Some(nextLink) => EntryOnNextFeed(nextLink)
+        case Some(nextLink) => EntryOnNextPage(nextLink)
         case None => endOfEntries
       }
 
@@ -152,25 +152,25 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
 
     if (feed.entries.nonEmpty) {
       feedPosition match {
-        // geen FeedPosition betekent begin van een nieuwe Feed
+        // no FeedPosition means start of new Feed
         case None => buildCursorWithPositionOn(feed, 0)
         case Some(feedPos) =>
-          // zijn er nog entries om te verwerken
+          // are there still entries to process?
           val nextIndex = feedPos.index + 1
           val remainingEntries = feed.entries.drop(nextIndex)
           remainingEntries match {
-            case Nil => nextFeedOrEnd(feed)
+            case Nil => nextPageOrEnd(feed)
             case _ =>
               val partialFeed = feed.copy(entries = remainingEntries)
               buildCursorWithPositionOn(partialFeed, nextIndex)
           }
       }
     } else {
-      nextFeedOrEnd(feed)
+      nextPageOrEnd(feed)
     }
   }
 
-  private def cursorOnNextFeed(link:Link) : Try[EventCursor] = {
+  private def cursorOnNextPage(link:Link) : Try[EventCursor] = {
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
@@ -186,14 +186,14 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       } else {
         entryPointer.feed.nextLink match {
           case None => EndOfEntries(entryPointer.feedPosition)
-          case Some(url) => EntryOnNextFeed(url)
+          case Some(url) => EntryOnNextPage(url)
         }
       }
 
     nextCursor match {
-      // still a feed to go? go fetch it
-      case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
-      // no next feed link? stop processing, all entries were consumed
+      // still a page to go? go fetch it
+      case EntryOnNextPage(nextPageUrl) => cursorOnNextPage(nextPageUrl)
+      // no next link? stop processing, all entries were consumed
       case end @ EndOfEntries(_) => Success(end)
       // wrap nextCursor in Success
       case _ => Success(nextCursor)
