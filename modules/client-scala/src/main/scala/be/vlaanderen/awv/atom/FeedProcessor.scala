@@ -30,11 +30,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-<<<<<<< HEAD
-  case class EntryOnNextPage(nextPageUrl:Link) extends EventCursor
-=======
   case class EntryOnPreviousFeed(previousFeedUrl:Link) extends EventCursor
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
   case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
@@ -103,13 +99,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
 
       // map on Try does not work here, because of tailrec
-<<<<<<< HEAD
-      case EntryOnNextPage(nextPageUrl) =>
-        cursorOnNextPage(nextPageUrl) match {
-=======
       case EntryOnPreviousFeed(previousFeedUrl) =>
         cursorOnPreviousFeed(previousFeedUrl) match {
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
@@ -136,13 +127,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    *  <li>If there is a valid FeedPosition => increase index and drop entries preceeding new index and create new cursor.</li>
    *  <li>If the last element of this page is already consumed
    *    <ul>
-<<<<<<< HEAD
-   *      <li>If there is 'next' Link  create an EntryOnNextPage cursor on the next page of the feed</li>
-   *      <li>If there is no 'next' Link then create and EndOfEntries cursor.</li>
-=======
-   *      <li>Ga naar de vorige feed (more recent) als een Link 'previous' bestaat. Maak een EventOnPreviousFeed cursor.</li>
-   *      <li>Is er geen Link naar een volgende Feed? Dan maak een EndOfEvents cursor.</li>
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
+   *      <li>If there is 'previous' Link  create an EntryOnPreviousFeed cursor on the next page of the feed</li>
+   *      <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
    *    </ul>
    *  </li>
    * </ul>
@@ -159,13 +145,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       )
     }
 
-<<<<<<< HEAD
-    def nextPageOrEnd(feed:Feed[EntryType]) = {
-      // we go to next page of feed or we reached the EndOfEntries
-=======
     def previousFeedOrEnd(feed:Feed[EntryType]) = {
       // we go to previous feed page or we reached the EndOfEntries
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
       def endOfEntries = {
         feedPosition match {
           case Some(feedPos) => EndOfEntries(feedPos)
@@ -175,13 +156,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
       }
 
-<<<<<<< HEAD
-      feed.nextLink match {
-        case Some(nextLink) => EntryOnNextPage(nextLink)
-=======
       feed.previousLink match {
         case Some(previousLink) => EntryOnPreviousFeed(previousLink)
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
         case None => endOfEntries
       }
 
@@ -196,30 +172,18 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           val nextIndex = feedPos.index + 1
           val remainingEntries = feed.entries.drop(nextIndex)
           remainingEntries match {
-<<<<<<< HEAD
-            case Nil => nextPageOrEnd(feed)
-=======
             case Nil => previousFeedOrEnd(feed)
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
             case _ =>
               val partialFeed = feed.copy(entries = remainingEntries)
               buildCursorWithPositionOn(partialFeed, nextIndex)
           }
       }
     } else {
-<<<<<<< HEAD
-      nextPageOrEnd(feed)
-    }
-  }
-
-  private def cursorOnNextPage(link:Link) : Try[EventCursor] = {
-=======
       previousFeedOrEnd(feed)
     }
   }
 
   private def cursorOnPreviousFeed(link:Link) : Try[EventCursor] = {
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
@@ -235,24 +199,14 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       } else {
         entryPointer.feed.previousLink match {
           case None => EndOfEntries(entryPointer.feedPosition)
-<<<<<<< HEAD
-          case Some(url) => EntryOnNextPage(url)
-=======
           case Some(url) => EntryOnPreviousFeed(url)
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
         }
       }
 
     nextCursor match {
-<<<<<<< HEAD
-      // still a page to go? go fetch it
-      case EntryOnNextPage(nextPageUrl) => cursorOnNextPage(nextPageUrl)
-      // no next link? stop processing, all entries were consumed
-=======
       // still a feed to go? go fetch it
       case EntryOnPreviousFeed(previousFeedUrl) => cursorOnPreviousFeed(previousFeedUrl)
       // no next feed link? stop processing, all entries were consumed
->>>>>>> AT-9: reverse first/last, next/previous link rel concepts
       case end @ EndOfEntries(_) => Success(end)
       // wrap nextCursor in Success
       case _ => Success(nextCursor)
