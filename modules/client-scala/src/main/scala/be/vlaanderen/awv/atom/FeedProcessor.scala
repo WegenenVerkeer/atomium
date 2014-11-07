@@ -90,7 +90,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
 
         // fetch nextEvent cursor:
         // next EventCursor could be an EndOfEntries or an EntryOnNextPage.
-        // in case of EntryOnNextPage we could fail to retrive the next page of the feed.
+        // in case of EntryOnPreviousFeed we could fail to retrive the next page of the feed.
         // in case of Success we process the next EventCursor
         // mapping on Try does not work here, because of tailrec
         nextEventOrFailure match {
@@ -127,7 +127,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    *  <li>If there is a valid FeedPosition => increase index and drop entries preceeding new index and create new cursor.</li>
    *  <li>If the last element of this page is already consumed
    *    <ul>
-   *      <li>If there is a 'previous' Link  create an EntryOnPreviousFeed cursor on the previous page of the feed</li>
+   *      <li>If there is 'previous' Link  create an EntryOnPreviousFeed cursor on the next page of the feed</li>
    *      <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
    *    </ul>
    *  </li>
