@@ -1,0 +1,11 @@
+highlighter: pygments
+name: Atomium
+description: TODO
+url: http://WegenenVerkeer.github.com/atomium/
+markdown: kramdown
+
+repository: https://github.com/WegenenVerkeer/atomium
+
+collections:
+  docs:
+    output: true
