@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom
+package be.vlaanderen.awv.atom.format
 
 /**
  * Representation of an entry in an Atom feed. The entry acts as a container for metadata and data associated with the

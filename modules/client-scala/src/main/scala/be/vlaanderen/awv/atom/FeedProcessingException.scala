@@ -7,4 +7,6 @@ case class FeedProcessingException(feedPositionOpt:Option[FeedPosition], message
    * (For easy access from Java API)
    */
   def feedPosition = feedPositionOpt.orNull
+
+  override def getMessage: String = message
 }

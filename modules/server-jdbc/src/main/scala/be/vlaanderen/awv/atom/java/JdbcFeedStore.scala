@@ -12,6 +12,6 @@ class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: String, mapper: 
     },
     ser = (e) => mapper.serialize(e),
     deser = (v) => mapper.deserialize(v),
-    urlProvider = urlProvider
+    urlBuilder = urlProvider
   )
 }

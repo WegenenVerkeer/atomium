@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom
+package be.vlaanderen.awv.atom.format
 
 /**
  * A wrapper for an URL that adds a path constructor.

@@ -5,8 +5,8 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.Link;
-import be.vlaanderen.awv.atom.Url;
+import be.vlaanderen.awv.atom.format.Link;
+import be.vlaanderen.awv.atom.format.Url;
 import lombok.Data;
 
 /**
