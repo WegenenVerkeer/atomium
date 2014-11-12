@@ -15,7 +15,7 @@ import java.io.File;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test JSON parsing van de Atom feed (met generisch entry type).
+ * Tests JSON parsing of Atom feed (with generic entry type).
  */
 public class JacksonParseAtomFeedTest {
 

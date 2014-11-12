@@ -26,3 +26,8 @@ The `atomium-server-jdbc` module provides a feed store implementation that store
 {% highlight scala %}
 libraryDependencies += "be.vlaanderen.awv" % "atomium-server-jdbc" % "{{site.version}}"
 {% endhighlight %}
+
+## TODO
+
+- configuration
+- database structure

@@ -9,7 +9,7 @@ import scala.slick.driver.PostgresDriver
 import scala.slick.lifted.Column
 
 /**
- * De driver heeft een bug met month handling in versie 0.5.0-RC1, fix deze hier tot nieuwe versie uitkomt waarin dit gefixed is
+ * This driver has a bug in month handling in version 0.5.0-RC1, we fix this here until the bug is fixed
  */
 trait FixedPgDateSupportJoda extends date.PgDateExtensions with date.PgDateJavaTypes with utils.PgCommonJdbcTypes { driver: PostgresDriver =>
 

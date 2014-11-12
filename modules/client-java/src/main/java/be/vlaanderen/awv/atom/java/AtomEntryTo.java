@@ -25,7 +25,7 @@ public class AtomEntryTo<T> {
     private FeedLinkTo[] links;
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */

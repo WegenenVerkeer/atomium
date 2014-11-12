@@ -23,7 +23,7 @@ public class AtomEntryContentTo<T> {
     private String rawType;
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */
