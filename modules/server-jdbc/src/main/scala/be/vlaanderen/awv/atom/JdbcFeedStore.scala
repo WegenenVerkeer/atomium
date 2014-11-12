@@ -15,7 +15,7 @@ import slick.SlickPostgresDriver.simple._
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class JdbcFeedStore[E <: FeedContent](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlBuilder: UrlBuilder) extends FeedStore[E] {
+class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlBuilder: UrlBuilder) extends FeedStore[E] {
 
   lazy val context = c
   val urlProvider = urlBuilder

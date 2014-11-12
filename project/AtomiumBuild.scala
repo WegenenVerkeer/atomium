@@ -2,6 +2,7 @@ import play.PlayScala
 import sbt.Keys._
 import sbt._
 import Keys._
+import play.PlayScala
 
 
 
@@ -115,4 +116,6 @@ object AtomiumBuild extends Build
     file("."),
     settings = buildSettings(Name)
   ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, serverMongoModuleName, serverJdbcModule)
+  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, /*serverMongoModuleName, */serverJdbcModule,
+    serverPlayModule)
 }

@@ -1,9 +1,9 @@
-package be.vlaanderen.awv
+package be.vlaanderen.awv.atom
+
+package object format {
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-
-package object atom {
 
   implicit val urlFormat = new Format[Url] {
     override def writes(url: Url): JsValue = JsString(url.path)
@@ -11,8 +11,8 @@ package object atom {
       case JsString(value) => JsSuccess(Url(value))
       case _ => JsError(s"Can't read url value from $json")
     }
-  } 
-    
+  }
+
   implicit val linkFormat = Json.format[Link]
 
   implicit def contentWrites[T](implicit fmt: Writes[T]): Writes[Content[T]] = (

@@ -1,13 +1,13 @@
 package controllers
 
+import be.vlaanderen.awv.atom.{UrlBuilder, Context, FeedStore}
 import be.vlaanderen.awv.atom.format._
-import be.vlaanderen.awv.atom.{Context, FeedStore, UrlBuilder}
 import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer
 
-class MemoryFeedStore[T <: FeedContent](feedName: String, baseUrl: Url, title : Option[String], contentType: String = "text/plain") extends FeedStore[T] {
-  val entries: ListBuffer[(T, LocalDateTime)] = new ListBuffer[(T, LocalDateTime)]
+class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String]) extends FeedStore[T] {
+  val entries: ListBuffer[(List[T], LocalDateTime)] = new ListBuffer[(List[T], LocalDateTime)]
 
   val urlProvider : UrlBuilder = new UrlBuilder {
 

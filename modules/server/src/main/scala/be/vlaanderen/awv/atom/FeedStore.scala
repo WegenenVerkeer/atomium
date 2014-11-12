@@ -1,5 +1,7 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.format.{Link, Feed}
+
 /**
  * A feed store is responsible for the persistence of feeds.
  *
@@ -51,4 +53,5 @@ trait FeedStore[E] {
    * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is stopped.
    */
   def close() : Unit = {}
+
 }

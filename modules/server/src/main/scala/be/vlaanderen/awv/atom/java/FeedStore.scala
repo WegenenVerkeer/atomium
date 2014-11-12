@@ -1,6 +1,7 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.{Context, Feed}
+import be.vlaanderen.awv.atom.format.Feed
+import be.vlaanderen.awv.atom.{UrlBuilder, Context}
 
 /**
  * Wrapper wround the [[be.vlaanderen.awv.atom.FeedStore]] that offers a Java-like interface.
@@ -11,6 +12,8 @@ abstract class FeedStore[E] extends be.vlaanderen.awv.atom.FeedStore[E] {
   def underlying: be.vlaanderen.awv.atom.FeedStore[E]
 
   override def context: Context = underlying.context
+
+  override def urlProvider: UrlBuilder = underlying.urlProvider
 
   /**
    * Retrieves a page of the feed.

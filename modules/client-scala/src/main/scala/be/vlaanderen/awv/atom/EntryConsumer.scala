@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{FeedContent, Entry}
+import be.vlaanderen.awv.atom.format.Entry
 
 
 /**

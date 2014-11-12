@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format._
+import be.vlaanderen.awv.atom.format.Feed
 import com.typesafe.scalalogging.slf4j.Logging
 import resource.Resource
 import scala.language.implicitConversions
