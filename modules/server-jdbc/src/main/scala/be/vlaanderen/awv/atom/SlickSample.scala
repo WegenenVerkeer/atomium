@@ -6,7 +6,7 @@ import scala.slick.driver.H2Driver.simple.Database
 
 object SlickSample {
   val feedStoreFactory: (String, JdbcContext) => FeedStore[Int] = (feedName, context) => new JdbcFeedStore[Int](context, "int_feed", None, null, null, null)
-  val feedService = new FeedService[Int, JdbcContext]("int_feed", 100, "int_feed", feedStoreFactory)
+  val feedService = new FeedService[Int, JdbcContext]("int_feed", 100, feedStoreFactory)
 
   case class Element(i: Int)
 

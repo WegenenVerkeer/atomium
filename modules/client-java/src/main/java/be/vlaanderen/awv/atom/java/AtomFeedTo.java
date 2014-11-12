@@ -5,13 +5,14 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.Entry;
-import be.vlaanderen.awv.atom.Feed;
-import be.vlaanderen.awv.atom.Link;
-import be.vlaanderen.awv.atom.Url;
+import be.vlaanderen.awv.atom.format.Entry;
+import be.vlaanderen.awv.atom.format.Feed;
+import be.vlaanderen.awv.atom.format.Link;
+import be.vlaanderen.awv.atom.format.Url;
 import lombok.Data;
 import scala.Some;
 import scala.collection.JavaConverters;
+import scala.collection.immutable.HashMap;
 import scala.collection.immutable.List;
 
 import java.util.ArrayList;
@@ -42,7 +43,8 @@ public class AtomFeedTo<T> {
                 new Some(title),
                 updated,
                 toFeedLinks(links),
-                toFeedEntries(entries)
+                toFeedEntries(entries),
+                new HashMap<String, String>()
         );
     }
 

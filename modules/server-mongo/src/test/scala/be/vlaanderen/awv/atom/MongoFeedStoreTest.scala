@@ -1,5 +1,6 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.format.Url
 import com.mongodb.casbah.commons.conversions.scala.{DeregisterJodaTimeConversionHelpers, RegisterJodaTimeConversionHelpers}
 import com.mongodb.{MongoClient => JavaMongoClient}
 import com.mongodb.casbah.commons.MongoDBObject

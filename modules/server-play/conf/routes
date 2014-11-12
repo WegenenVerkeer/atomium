@@ -1,0 +1,7 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET        /feeds/my_feed                         @controllers.MyFeedController.getHeadOfFeed()
+GET        /feeds/my_feed/:start/:pageSize        @controllers.MyFeedController.getFeedPage(start : Int, pageSize: Int)
+

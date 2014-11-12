@@ -1,5 +1,6 @@
 import sbt._
 import Keys._
+import play.PlayScala
 
 
 
@@ -70,6 +71,13 @@ object AtomiumBuild extends Build
   ).dependsOn(serverModule)
    
 
+  val serverPlayModuleName = Name + "-server-play"
+  lazy val serverPlayModule = Project(
+    serverPlayModuleName,
+    file("modules/server-play")
+  ).enablePlugins(PlayScala)
+    .dependsOn(serverModule)
+
 
   //----------------------------------------------------------------
   val clientJavaModuleName = Name + "-client-java"
@@ -99,5 +107,6 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, /*serverMongoModuleName, */serverJdbcModule)
+  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, /*serverMongoModuleName, */serverJdbcModule,
+    serverPlayModule)
 }

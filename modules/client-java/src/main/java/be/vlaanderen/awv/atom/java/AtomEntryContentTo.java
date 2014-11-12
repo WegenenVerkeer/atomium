@@ -5,7 +5,7 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.Content;
+import be.vlaanderen.awv.atom.format.Content;
 import lombok.Data;
 import scala.collection.JavaConverters;
 

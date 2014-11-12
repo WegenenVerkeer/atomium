@@ -1,5 +1,7 @@
 package be.vlaanderen.awv
 
+import be.vlaanderen.awv.atom.format.Feed
+
 import scala.util.Try
 
 package object atom {

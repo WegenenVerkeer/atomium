@@ -1,5 +1,6 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.format.Url
 import be.vlaanderen.awv.atom.models._
 import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.{DateTime, DateTimeUtils, LocalDateTime}
@@ -41,7 +42,7 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     title = Some("Test"),
     ser = i => i.toString,
     deser = s => Integer.parseInt(s),
-    urlProvider = createUrlBuilder
+    urlBuilder = createUrlBuilder
   )
 
   test("push should store entry") {
@@ -77,7 +78,7 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     lastPage.previousLink.map(_.href) should be (Some(Url("/2/2")))
     lastPage.nextLink.map(_.href) should be (None)
     lastPage.entries.size should be (2)
-    //check reverse order
+    //check reverse chronological order
     lastPage.entries(0).content.value should be (List(2))
     lastPage.entries(1).content.value should be (List(1))
 
