@@ -1,5 +1,7 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.format.Entry
+
 
 /**
  * An entry consumer is responsible for consuming the new entries offered by the feed processor.

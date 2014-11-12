@@ -1,8 +1,10 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
+import be.vlaanderen.awv.atom.format.*;
 import org.junit.Test;
 import scala.Some;
+import scala.collection.immutable.HashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,12 +72,12 @@ public class FeedProcessorTest {
          */
         @Override
         public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
+            return new FeedPosition(new Url(FEED_URL_PAGE1), -1, new HashMap<String, String>());
         }
 
         @Override
         public Feed<ExampleFeedEntry> fetchFeed() {
-            return fetchFeed(getInitialPosition().link().href().path());
+            return fetchFeed(getInitialPosition().url().path());
         }
 
         @Override
@@ -120,7 +122,8 @@ public class FeedProcessorTest {
                     new Some("Blabla"),
                     "2014-08-08T18:04:14.385+02:00",
                     scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
-                    scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList()
+                    scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList(),
+                    new HashMap<String, String>()
             );
             return feed;
         }

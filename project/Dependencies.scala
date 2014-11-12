@@ -12,8 +12,10 @@ object Dependencies {
   )
 
   val mainTestDependencies = Seq (
-    "org.scalatest"           %% "scalatest"              % "2.2.0"    % "test",
-    "com.h2database"          %  "h2"                     % "1.0.60"
+    "org.scalatest"            %% "scalatest"              % "2.2.0"    % "test",
+    "com.h2database"           %  "h2"                     % "1.0.60",
+    "de.leanovate.play-mockws" %% "play-mockws"            % "0.12"     % "test",
+    "com.typesafe.play"        %% "play-test"              % "2.3.0"    % "test"
   )
 
   val clientScalaDependencies = Seq (

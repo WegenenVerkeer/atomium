@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom
+package be.vlaanderen.awv.atom.format
 
 /**
  * Representation of a link in an Atom feed.

@@ -5,8 +5,8 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.Entry;
-import be.vlaanderen.awv.atom.Link;
+import be.vlaanderen.awv.atom.format.Entry;
+import be.vlaanderen.awv.atom.format.Link;
 import lombok.Data;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.List;
