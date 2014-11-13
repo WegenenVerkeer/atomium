@@ -1,6 +1,6 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{FeedContent, Entry, Feed, Url}
+import be.vlaanderen.awv.atom.format.{Entry, Feed, Url}
 import resource._
 
 import scala.annotation.tailrec
@@ -205,7 +205,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       }
 
     nextCursor match {
-      // still a feed to go? go fetch it
+      // still a page to go? go fetch it
       case EntryOnPreviousFeedPage(previousFeedUrl) => cursorOnPreviousFeedPage(previousFeedUrl)
       // no next feed link? stop processing, all entries were consumed
       case end @ EndOfEntries(_) => Success(end)

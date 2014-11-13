@@ -5,7 +5,6 @@ import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.jformat.JFeed
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.ning.http.client.Response
-import com.sun.jersey.api.json.JSONJAXBContext
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.DateTime
 import play.api.http.HeaderNames
@@ -31,7 +30,7 @@ import scala.util.{Failure, Success, Try}
  * @tparam T the type of the entries in the feed
  */
 //TODO long polling support: see https://github.com/EventStore/EventStore/wiki/HTTP-LongPoll-Header
-class PlayWsBlockingFeedProvider[T <: FeedContent](feedUrl:String,
+class PlayWsBlockingFeedProvider[T](feedUrl:String,
                                                    var feedPosition: Option[FeedPosition],
                                                    contentType: String = "application/xml",
                                                    timeout:Duration = 30.seconds,
@@ -54,7 +53,6 @@ class PlayWsBlockingFeedProvider[T <: FeedContent](feedUrl:String,
     val managedPlayApp = new ManagedPlayApp
     managedPlayApp.onStart()
     managedPlayAppOpt = Some(managedPlayApp)
-
   }
 
   override def stop() : Unit = {
