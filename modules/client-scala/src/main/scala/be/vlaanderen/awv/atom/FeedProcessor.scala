@@ -17,7 +17,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-  case class EntryOnNextFeed(nextFeedUrl:Link) extends EventCursor
+  case class EntryOnPreviousFeed(previousFeedUrl:Link) extends EventCursor
   case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
@@ -86,8 +86,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
 
       // map on Try does not work here, because of tailrec
-      case EntryOnNextFeed(nextFeedUrl) =>
-        cursorOnNextFeed(nextFeedUrl) match {
+      case EntryOnPreviousFeed(previousFeedUrl) =>
+        cursorOnPreviousFeed(previousFeedUrl) match {
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
@@ -114,7 +114,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    *  <li>Is er een geldig FeedPosition, increase index, drop entries tot aan de nieuwe index en maak nieuwe cursor.</li>
    *  <li>Is het laatste element van die Feed al geconsumeerd?
    *    <ul>
-   *      <li>Ga naar de volgende feed als een Link 'next' bestaat. Maak een EventOnNextFeed cursor.</li>
+   *      <li>Ga naar de vorige feed (more recent) als een Link 'previous' bestaat. Maak een EventOnPreviousFeed cursor.</li>
    *      <li>Is er geen Link naar een volgende Feed? Dan maak een EndOfEvents cursor.</li>
    *    </ul>
    *  </li>
@@ -132,8 +132,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       )
     }
 
-    def nextFeedOrEnd(feed:Feed[EntryType]) = {
-      // we go to next feed page or we reached the EndOfEntries
+    def previousFeedOrEnd(feed:Feed[EntryType]) = {
+      // we go to previous feed page or we reached the EndOfEntries
       def endOfEntries = {
         feedPosition match {
           case Some(feedPos) => EndOfEntries(feedPos)
@@ -143,8 +143,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
       }
 
-      feed.nextLink match {
-        case Some(nextLink) => EntryOnNextFeed(nextLink)
+      feed.previousLink match {
+        case Some(previousLink) => EntryOnPreviousFeed(previousLink)
         case None => endOfEntries
       }
 
@@ -159,18 +159,18 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           val nextIndex = feedPos.index + 1
           val remainingEntries = feed.entries.drop(nextIndex)
           remainingEntries match {
-            case Nil => nextFeedOrEnd(feed)
+            case Nil => previousFeedOrEnd(feed)
             case _ =>
               val partialFeed = feed.copy(entries = remainingEntries)
               buildCursorWithPositionOn(partialFeed, nextIndex)
           }
       }
     } else {
-      nextFeedOrEnd(feed)
+      previousFeedOrEnd(feed)
     }
   }
 
-  private def cursorOnNextFeed(link:Link) : Try[EventCursor] = {
+  private def cursorOnPreviousFeed(link:Link) : Try[EventCursor] = {
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
@@ -184,15 +184,15 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           feedPosition = entryPointer.feedPosition.copy(index = entryPointer.feedPosition.index + 1) // moving position forward
         )
       } else {
-        entryPointer.feed.nextLink match {
+        entryPointer.feed.previousLink match {
           case None => EndOfEntries(entryPointer.feedPosition)
-          case Some(url) => EntryOnNextFeed(url)
+          case Some(url) => EntryOnPreviousFeed(url)
         }
       }
 
     nextCursor match {
       // still a feed to go? go fetch it
-      case EntryOnNextFeed(nextFeedUrl) => cursorOnNextFeed(nextFeedUrl)
+      case EntryOnPreviousFeed(previousFeedUrl) => cursorOnPreviousFeed(previousFeedUrl)
       // no next feed link? stop processing, all entries were consumed
       case end @ EndOfEntries(_) => Success(end)
       // wrap nextCursor in Success
