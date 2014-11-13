@@ -72,13 +72,13 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
    */
   def fetchFeedAsync : FutureResult = {
 
-    def fetchFirstFeed(feedResult:FeedResult) : FutureResult = {
+    def fetchLastFeed(feedResult:FeedResult) : FutureResult = {
       feedResult match {
-        // Validation success? we must have a Feed with a firstLink
-        case Success(feed) => feed.firstLink match {
+        // Success? we must have a Feed with a lastLink
+        case Success(feed) => feed.lastLink match {
           case Some(link) => fetch(link.href.path)
-          // !!! can't proceed without a first link - game over !!!
-          case None => sys.error("First feed url is empty!!!")
+          // !!! can't proceed without a last link - game over !!!
+          case None => sys.error("last feed url is empty!!!")
         }
         // Validation failure? wrap it in a new Future
         // NOTE: although the Validation is a Failure, we should return a Success.
@@ -87,7 +87,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
       }
     }
 
-    fetch(feedUrl).flatMap(fetchFirstFeed)
+    fetch(feedUrl).flatMap(fetchLastFeed)
   }
 
   private def awaitResult(futureResult: FutureResult) : FeedResult = {
