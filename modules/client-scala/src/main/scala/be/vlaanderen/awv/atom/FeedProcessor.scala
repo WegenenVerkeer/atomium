@@ -30,7 +30,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
                           feedPosition:FeedPosition,
                           feed:Feed[EntryType]) extends EventCursor
 
-  case class EntryOnNextPage(nextPageUrl:Link) extends EventCursor
+  case class EntryOnPreviousFeed(previousFeedUrl:Link) extends EventCursor
   case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
 
 
@@ -99,8 +99,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
 
       // map on Try does not work here, because of tailrec
-      case EntryOnNextPage(nextPageUrl) =>
-        cursorOnNextPage(nextPageUrl) match {
+      case EntryOnPreviousFeed(previousFeedUrl) =>
+        cursorOnPreviousFeed(previousFeedUrl) match {
           case Success(next) => process(next)
           case Failure(ex) => Failure(ex)
         }
@@ -127,8 +127,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    *  <li>If there is a valid FeedPosition => increase index and drop entries preceeding new index and create new cursor.</li>
    *  <li>If the last element of this page is already consumed
    *    <ul>
-   *      <li>If there is 'next' Link  create an EntryOnNextPage cursor on the next page of the feed</li>
-   *      <li>If there is no 'next' Link then create and EndOfEntries cursor.</li>
+   *      <li>If there is a 'previous' Link  create an EntryOnPreviousFeed cursor on the previous page of the feed</li>
+   *      <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
    *    </ul>
    *  </li>
    * </ul>
@@ -145,8 +145,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       )
     }
 
-    def nextPageOrEnd(feed:Feed[EntryType]) = {
-      // we go to next page of feed or we reached the EndOfEntries
+    def previousFeedOrEnd(feed:Feed[EntryType]) = {
+      // we go to previous feed page or we reached the EndOfEntries
       def endOfEntries = {
         feedPosition match {
           case Some(feedPos) => EndOfEntries(feedPos)
@@ -156,8 +156,8 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         }
       }
 
-      feed.nextLink match {
-        case Some(nextLink) => EntryOnNextPage(nextLink)
+      feed.previousLink match {
+        case Some(previousLink) => EntryOnPreviousFeed(previousLink)
         case None => endOfEntries
       }
 
@@ -172,18 +172,18 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           val nextIndex = feedPos.index + 1
           val remainingEntries = feed.entries.drop(nextIndex)
           remainingEntries match {
-            case Nil => nextPageOrEnd(feed)
+            case Nil => previousFeedOrEnd(feed)
             case _ =>
               val partialFeed = feed.copy(entries = remainingEntries)
               buildCursorWithPositionOn(partialFeed, nextIndex)
           }
       }
     } else {
-      nextPageOrEnd(feed)
+      previousFeedOrEnd(feed)
     }
   }
 
-  private def cursorOnNextPage(link:Link) : Try[EventCursor] = {
+  private def cursorOnPreviousFeed(link:Link) : Try[EventCursor] = {
     feedProvider.fetchFeed(link.href.path).map { feed => buildCursor(feed) }
   }
 
@@ -197,16 +197,16 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           feedPosition = entryPointer.feedPosition.copy(index = entryPointer.feedPosition.index + 1) // moving position forward
         )
       } else {
-        entryPointer.feed.nextLink match {
+        entryPointer.feed.previousLink match {
           case None => EndOfEntries(entryPointer.feedPosition)
-          case Some(url) => EntryOnNextPage(url)
+          case Some(url) => EntryOnPreviousFeed(url)
         }
       }
 
     nextCursor match {
-      // still a page to go? go fetch it
-      case EntryOnNextPage(nextPageUrl) => cursorOnNextPage(nextPageUrl)
-      // no next link? stop processing, all entries were consumed
+      // still a feed to go? go fetch it
+      case EntryOnPreviousFeed(previousFeedUrl) => cursorOnPreviousFeed(previousFeedUrl)
+      // no pevious feed link? stop processing, all entries were consumed
       case end @ EndOfEntries(_) => Success(end)
       // wrap nextCursor in Success
       case _ => Success(nextCursor)

@@ -16,10 +16,6 @@ public class FeedProcessorTest {
     public void test() {
         System.out.println("Start processing");
 
-        // create the feed position from where you want to start processing
-        // index -1 to assure all items are processed, index is position of last read entry in page
-        FeedPosition position = new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
-
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider();
 
@@ -79,7 +75,7 @@ public class FeedProcessorTest {
 
         @Override
         public Feed<ExampleFeedEntry> fetchFeed() {
-            throw new UnsupportedOperationException("Should be called with a feed URL.");
+            return fetchFeed(getInitialPosition().link().href().path());
         }
 
         @Override
@@ -110,13 +106,13 @@ public class FeedProcessorTest {
                     scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
 
             List<Link> feedLinks = new ArrayList<Link>();
-            feedLinks.add(new Link("first", new Url(FEED_URL_PAGE1)));
+            feedLinks.add(new Link("last", new Url(FEED_URL_PAGE1)));
             feedLinks.add(new Link("self", new Url(FEED_URL + intPage)));
             if (intPage < 3) {
-                feedLinks.add(new Link("next", new Url(FEED_URL + (intPage + 1))));
+                feedLinks.add(new Link("previous", new Url(FEED_URL + (intPage + 1))));
             }
             if (intPage > 0) {
-                feedLinks.add(new Link("previous", new Url(FEED_URL + (intPage - 1))));
+                feedLinks.add(new Link("next", new Url(FEED_URL + (intPage - 1))));
             }
 
             Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
