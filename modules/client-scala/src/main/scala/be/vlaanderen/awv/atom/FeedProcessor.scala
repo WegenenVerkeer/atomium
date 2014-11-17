@@ -5,6 +5,19 @@ import resource._
 
 import scala.util.{Failure, Success, Try}
 
+/**
+ * A feed processor fetches pages from the feed and offers the new items to the entry consumer.
+ *
+ * The processor decides which feed page to fetch and which items are considered as new items based on the initial feed
+ * position.
+ *
+ * The processor uses the feed provider to fetch the feed pages.
+ *
+ * @param feedProvider the feed provider is responsible for fetching the feed pages
+ * @param entryConsumer the entry consumer is responsible to consume the new entries
+ *
+ * @tparam E the type of the entries in the feed
+ */
 class FeedProcessor[E](feedProvider: FeedProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 

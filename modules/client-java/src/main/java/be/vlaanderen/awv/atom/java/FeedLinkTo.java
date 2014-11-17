@@ -19,7 +19,7 @@ public class FeedLinkTo {
     private String href; // link URL
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */
