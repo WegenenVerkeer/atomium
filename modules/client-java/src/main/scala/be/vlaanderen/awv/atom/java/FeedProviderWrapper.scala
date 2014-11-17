@@ -6,6 +6,12 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.util.{Failure, Try, Success}
 
+/**
+ * Wrapper around the [[be.vlaanderen.awv.atom.FeedProvider]] that offers a Java-like interface.
+ *
+ * @param underlying the underlying [[be.vlaanderen.awv.atom.FeedProvider]]
+ * @tparam E the type of the entries in the feed
+ */
 class FeedProviderWrapper[E](underlying: JFeedProvider[E])
   extends be.vlaanderen.awv.atom.FeedProvider[E] with Logging {
 

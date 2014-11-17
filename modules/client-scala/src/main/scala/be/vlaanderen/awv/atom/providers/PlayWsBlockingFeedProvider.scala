@@ -9,6 +9,20 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
 
+/**
+ * An implementation of [[be.vlaanderen.awv.atom.FeedProvider]] that uses the Play WS API for fetching feed pages via
+ * HTTP.
+ *
+ * Although the Play WS API offers an async interface, this class blocks on request since the [[be.vlaanderen.awv.atom.FeedProvider]]
+ * doesn't offer an async interface yet.
+ *
+ * If you want to use this implementation you will need to add a dependency on the Play WS API library.
+ *
+ * @param feedUrl the url of the feed that will be fetched
+ * @param timeout the HTTP connection timeout
+ *
+ * @tparam T the type of the entries in the feed
+ */
 class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
                                                           feedPosition: Option[FeedPosition],
                                                           timeout:Duration)

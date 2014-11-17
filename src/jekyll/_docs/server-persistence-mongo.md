@@ -3,6 +3,7 @@ layout: docs
 title: Mongo
 page_title: Server - Mongo
 prev_section: server-persistence-jdbc
+next_section: server-samples
 permalink: /docs/server-persistence-mongo/
 ---
 

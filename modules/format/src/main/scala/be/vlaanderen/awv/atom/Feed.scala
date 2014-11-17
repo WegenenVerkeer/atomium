@@ -1,5 +1,16 @@
 package be.vlaanderen.awv.atom
 
+/**
+ * Representation of a (page in an) Atom feed.
+ *
+ * @param id the feed ID
+ * @param base the base URI
+ * @param title the feed title
+ * @param updated indicates when the feed was last updated
+ * @param links the links associated with this feed
+ * @param entries the entries in the feed page
+ * @tparam T the type of entry
+ */
 case class Feed[T](id: String,
                    base: Url, 
                    title: Option[String], 

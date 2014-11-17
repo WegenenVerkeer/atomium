@@ -1,5 +1,11 @@
 package be.vlaanderen.awv.atom
 
+/**
+ * Representation of a link in an Atom feed.
+ *
+ * @param rel
+ * @param href
+ */
 case class Link(rel: String, href: Url)
 
 object Link {

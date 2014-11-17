@@ -2,7 +2,7 @@
 layout: docs
 title: General
 page_title: Server - General
-prev_section: client-scala
+prev_section: client-samples
 next_section: server-java
 permalink: /docs/server-general/
 ---
