@@ -6,6 +6,7 @@ import scala.language.implicitConversions
 import scala.util.Try
 
 trait FeedProvider[T]  {
+  def initialPosition: Option[FeedPosition]
   def fetchFeed() : Try[Feed[T]]
   def fetchFeed(page:String) : Try[Feed[T]]
   def start() : Unit
