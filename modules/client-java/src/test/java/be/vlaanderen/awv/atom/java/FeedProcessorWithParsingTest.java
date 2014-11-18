@@ -54,7 +54,7 @@ public class FeedProcessorWithParsingTest {
         public void accept(FeedPosition position, Entry<EventFeedEntryTo> entry) {
             System.out.println("Consuming position " + position.index() + " entry " + entry.content());
             try {
-                handleEvent(entry.content().value().head(), position);
+                handleEvent(entry.content().value(), position);
             } catch (Exception e) {
                 throw new FeedProcessingException(new Some(position), e.getMessage());
             }

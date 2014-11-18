@@ -14,6 +14,8 @@ package be.vlaanderen.awv.atom
  */
 class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, title: String, feedStoreFactory: (String, C) => FeedStore[E]) {
 
+class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
+
   /**
    * Adds elements to the feed.
    *

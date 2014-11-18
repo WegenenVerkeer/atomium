@@ -1,7 +1,7 @@
 package be.vlaanderen.awv.atom.java
 
 import be.vlaanderen.awv.atom
-import be.vlaanderen.awv.atom.format.Entry
+import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.{FeedProcessingException, FeedProcessingResult, FeedPosition}
 import be.vlaanderen.awv.atom.java
 import com.typesafe.scalalogging.slf4j.Logging

@@ -31,10 +31,10 @@ public class JacksonParseAtomFeedTest {
         AtomFeedTo feed = mapper.readValue(json, new TypeReference<AtomFeedTo<EventFeedEntryTo>>() { });
 
         System.out.println(feed.getEntries()[0].getContent().getRawType());
-        System.out.println(feed.getEntries()[0].getContent().getValue()[0].getClass());
-        System.out.println(feed.getEntries()[0].getContent().getValue()[0]);
+        System.out.println(feed.getEntries()[0].getContent().getValue().getClass());
+        System.out.println(feed.getEntries()[0].getContent().getValue());
         assertThat(feed).isNotNull();
-        assertThat(feed.getEntries()[0].getContent().getValue()[0]).isInstanceOf(EventFeedEntryTo.class);
+        assertThat(feed.getEntries()[0].getContent().getValue()).isInstanceOf(EventFeedEntryTo.class);
     }
 
 }

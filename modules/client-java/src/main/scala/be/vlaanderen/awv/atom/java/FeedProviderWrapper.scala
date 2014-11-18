@@ -1,11 +1,12 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.format.Feed
+import be.vlaanderen.awv.atom.FeedPosition
+import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.java.{FeedProvider => JFeedProvider}
 import be.vlaanderen.awv.atom.{FeedPosition, FeedProcessingException}
 import com.typesafe.scalalogging.slf4j.Logging
 
-import scala.util.{Failure, Try, Success}
+import scala.util.{Failure, Success, Try}
 
 /**
  * Wrapper around the [[be.vlaanderen.awv.atom.FeedProvider]] that offers a Java-like interface.
