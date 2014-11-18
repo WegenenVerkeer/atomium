@@ -1,59 +1,69 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.jformat._
+import org.joda.time.DateTime
+import org.joda.time.format.{ISODateTimeFormat, DateTimeFormatterBuilder, DateTimeFormatter}
+import scala.collection.JavaConverters._
+
+
 package object format {
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+  implicit def feed2JFeed[T <: FeedContent](feed: Feed[T]): JFeed[T] = {
+    val jfeed = new JFeed[T]
+    jfeed.setBase(feed.base.path)
+    jfeed.setId(feed.id)
+    jfeed.setTitle(feed.title.getOrElse(null))
+    jfeed.setGenerator(feed.generator.map(g => generator2JGenerator(g)).getOrElse(null))
+    jfeed.setUpdated(feed.updated)
+    jfeed.setLinks(feed.links.map(l => new JLink(l.rel, l.href.path)).asJava)
+    jfeed.setEntries(feed.entries.map(e => entry2JEntry(e)).asJava)
+    jfeed
+  }
 
-  implicit val urlFormat = new Format[Url] {
-    override def writes(url: Url): JsValue = JsString(url.path)
-    override def reads(json: JsValue): JsResult[Url] = json match {
-      case JsString(value) => JsSuccess(Url(value))
-      case _ => JsError(s"Can't read url value from $json")
+  implicit def generator2JGenerator(generator: Generator): JGenerator = {
+    new JGenerator(generator.text, generator.uri.map(u => u.path).getOrElse(null),
+      generator.version.getOrElse(null.asInstanceOf[String]))
+  }
+
+  implicit def entry2JEntry[T <: FeedContent](entry: Entry[T]): JEntry[T] = {
+    new JEntry[T](new JContent[T](entry.content.value, entry.content.`type`),
+      entry.links.map(l => new JLink(l.rel, l.href.path)).asJava)
+  }
+
+  implicit def jFeed2Feed[T <: FeedContent](jfeed: JFeed[T]): Feed[T] = {
+    Feed(Url(jfeed.getBase), jfeed.getId, Option(jfeed.getTitle), jfeed.getGenerator, jfeed.getUpdated,
+      jfeed.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList,
+      jfeed.getEntries.asScala.map(e => jEntry2Entry(e)).toList)
+  }
+
+  implicit def jGenerator2Generator(jGenerator: JGenerator): Option[Generator] = {
+    jGenerator match {
+      case null => None
+      case _ => Some(Generator(jGenerator.getText, Option(jGenerator.getUri).map(p => Url(p)),
+        Option(jGenerator.getVersion)))
     }
   }
 
-  implicit val linkFormat = Json.format[Link]
-
-  implicit def contentWrites[T](implicit fmt: Writes[T]): Writes[Content[T]] = (
-    (__ \ "value").write[List[T]] and
-    (__ \ "rawType").write[String]
-  )(in => (in.value, in.rawType))
-
-  implicit def contentReads[T](implicit fmt: Reads[T]): Reads[Content[T]] = (
-    (__ \ "value").read[List[T]] and
-    (__ \ "rawType").read[String]
-  )((value, rawType) => Content[T](value, rawType))
+  implicit def jEntry2Entry[T <: FeedContent](jEntry: JEntry[T]): Entry[T] = {
+    Entry[T](Content[T](jEntry.getContent.getValue, jEntry.getContent.getType),
+      jEntry.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList)
+  }
 
 
-  implicit def entryWrites[T](implicit fmt: Writes[T]): Writes[Entry[T]] = (
-    (__ \ "content").write[Content[T]] and
-    (__ \ "links").write[List[Link]]
-  )(in => (in.content, in.links))
-
-  implicit def entryReads[T](implicit fmt: Reads[T]): Reads[Entry[T]] = (
-    (__ \ "content").read[Content[T]] and
-    (__ \ "links").read[List[Link]]
-  )((content, links) => Entry[T](content, links))
+  val outputFormatterWithSecondsAndOptionalTZ: DateTimeFormatter = new DateTimeFormatterBuilder()
+    .append(ISODateTimeFormat.dateHourMinuteSecond)
+    .appendTimeZoneOffset("Z", true, 2, 4)
+    .toFormatter
 
 
-  // candidate for macro format
-  implicit def feedWrites[T](implicit fmt: Writes[T]): Writes[Feed[T]] = (
-    (__ \ "base").write[Url] and
-    (__ \ "title").writeNullable[String] and
-    (__ \ "updated").write[String] and
-    (__ \ "links").write[List[Link]] and
-    (__ \ "entries").write[List[Entry[T]]]
-  )(in => (in.base, in.title, in.updated, in.links, in.entries))
+  def randomUuidUri = s"urn:uuid:${java.util.UUID.randomUUID().toString}"
 
-  implicit def feedReads[T](implicit fmt: Reads[T]): Reads[Feed[T]] = (
-    (__ \ "base").read[Url] and
-    (__ \ "title").readNullable[String] and
-    (__ \ "updated").read[String] and
-    (__ \ "links").read[List[Link]] and
-    (__ \ "entries").read[List[Entry[T]]]
-  )((base, title, updated, links, entries) => Feed[T](base, title, updated, links, entries))
-
-
+  /**
+   * The actual type of the Content in the feed MUST be either a String, a Class annotated with @XmlRootElement or
+   * a JAXBElement wrapped object
+   * but this is too difficult to represent in the scala's type system. A union type should be possible,
+   * but a type that represents annotated classes?
+   */
+  type FeedContent = AnyRef
 
 } 

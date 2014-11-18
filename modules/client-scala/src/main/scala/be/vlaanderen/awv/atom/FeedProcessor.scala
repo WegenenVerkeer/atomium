@@ -1,12 +1,12 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{Entry, Feed, Url}
+import be.vlaanderen.awv.atom.format.{FeedContent, Entry, Feed, Url}
 import resource._
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-class FeedProcessor[E](feedProvider: FeedProvider[E],
+class FeedProcessor[E <: FeedContent](feedProvider: FeedProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 
   type EntryType = E

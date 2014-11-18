@@ -2,20 +2,22 @@ package be.vlaanderen.awv.atom.providers
 
 import be.vlaanderen.awv.atom._
 import be.vlaanderen.awv.atom.format._
+import com.sun.jersey.api.json.{JSONConfiguration, JSONJAXBContext}
 import mockws._
+import org.joda.time.DateTime
 import org.scalatest.{FunSuite, Matchers}
-import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.Results._
 import play.api.test.Helpers._
 
-import scala.util.Success
+import scala.collection.JavaConversions._
 
 class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
 
-  implicit val unmarshaller : FeedEntryUnmarshaller[String] = {
-    responseBody => Success(Json.parse(responseBody).as[Feed[String]])
-  }
+  val config: JSONConfiguration = JSONConfiguration.mapped.rootUnwrapping(true).
+    xml2JsonNs(Map("http://www.w3.org/2005/Atom" -> "", "http://www.w3.org/XML/1998/namespace" -> "")).
+    arrays("link", "entry").build
+  implicit val jsonJaxbContext = new JSONJAXBContext(config, "be.vlaanderen.awv.atom.jformat")
 
   test("Feed not found") {
     val notFoundRoute = Route {
@@ -49,30 +51,33 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
     }
   }
 
+  val updated = outputFormatterWithSecondsAndOptionalTZ.print(new DateTime())
+
   val page1: String = """{
-                        |  "base" : "http://example.com/",
+                        |  "base" : "http://example.com",
+                        |  "id" : "http://example.com",
                         |  "title" : "title",
-                        |  "updated" : "update",
+                        |  "updated" : "2014-01-01",
                         |  "links" : [ {
                         |    "rel" : "self",
-                        |    "href" : "feed/1"
+                        |    "href" : "http://example.com/feed/1"
                         |  }, {
                         |    "rel" : "last",
-                        |    "href" : "feed/1"
+                        |    "href" : "/feed/1"
                         |  }, {
                         |    "rel" : "previous",
-                        |    "href" : "feed/2"
+                        |    "href" : "/feed/2"
                         |  } ],
                         |  "entries" : [ {
                         |    "content" : {
-                        |      "value" : [ "a1", "b1", "c1" ],
-                        |      "rawType" : "application/json"
+                        |      "value" : "a1",
+                        |      "rawType" : "text/plain"
                         |    },
                         |    "links" : [ ]
                         |  }, {
                         |    "content" : {
-                        |      "value" : [ "d1", "e1" ],
-                        |      "rawType" : "application/json"
+                        |      "value" : "b1",
+                        |      "rawType" : "text/plain"
                         |    },
                         |    "links" : [ ]
                         |  }]
@@ -80,29 +85,30 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
                         | """.stripMargin
 
   val page2: String = """{
-                        |  "base" : "http://example.com/",
+                        |  "base" : "http://example.com",
+                        |  "id" : "http://example.com",
                         |  "title" : "title",
-                        |  "updated" : "update",
+                        |  "updated" : "2014-01-01",
                         |  "links" : [ {
                         |    "rel" : "self",
-                        |    "href" : "feed/2"
+                        |    "href" : "http://example.com/feed/2"
                         |  }, {
                         |    "rel" : "last",
-                        |    "href" : "feed/1"
+                        |    "href" : "/feed/1"
                         |  }, {
                         |    "rel" : "next",
-                        |    "href" : "feed/1"
+                        |    "href" : "/feed/1"
                         |  } ],
                         |  "entries" : [ {
                         |    "content" : {
-                        |      "value" : [ "a2", "b2", "c2" ],
-                        |      "rawType" : "application/json"
+                        |      "value" : "a2",
+                        |      "rawType" : "text/plain"
                         |    },
                         |    "links" : [ ]
                         |  }, {
                         |    "content" : {
-                        |      "value" : [ "d2", "e2" ],
-                        |      "rawType" : "application/json"
+                        |      "value" : "b2",
+                        |      "rawType" : "text/plain"
                         |    },
                         |    "links" : [ ]
                         |  } ]
@@ -118,7 +124,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, wsClient = Some(MockWS(route))),
-      consumedEvents = List("a1", "b1", "c1", "d1", "e1", "a2", "b2", "c2", "d2", "e2"),
+      consumedEvents = List("a1", "b1", "a2", "b2"),
       //finalPosition is on second element (index=1) of second feed page
       finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
     )
@@ -134,7 +140,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
         Some(FeedPosition(Url("http://example.com/feed/1"), 0)), wsClient = Some(MockWS(route))),
-      consumedEvents = List("d1", "e1", "a2", "b2", "c2", "d2", "e2"),
+      consumedEvents = List("b1", "a2", "b2"),
       //finalPosition is on second element (index=1) of second feed page
       finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
     )

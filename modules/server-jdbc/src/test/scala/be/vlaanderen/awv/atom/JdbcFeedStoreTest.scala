@@ -13,7 +13,7 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
 
   implicit var session: Session = _
 
-  var feedStore: JdbcFeedStore[Int] = _
+  var feedStore: JdbcFeedStore[String] = _
 
   override protected def beforeEach() = {
     session = Database.forURL("jdbc:h2:mem:test", driver="org.h2.Driver").createSession()
@@ -36,17 +36,17 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = new JdbcFeedStore[Int](
+  def createFeedStore = new JdbcFeedStore[String](
     JdbcContext(session),
     feedName = "int_feed",
     title = Some("Test"),
-    ser = i => i.toString,
-    deser = s => Integer.parseInt(s),
+    ser = s => s,
+    deser = s => s,
     urlBuilder = createUrlBuilder
   )
 
   test("push should store entry") {
-    feedStore.push(List(1))
+    feedStore.push(List("1"))
 
     FeedTable.length.run should be(1)
     val feedModel = FeedTable.findByName("int_feed").get
@@ -63,24 +63,23 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
   }
 
   test("getFeed returns correct page of the feed") {
-    feedStore.push(List(1))
-    feedStore.push(List(2))
-    feedStore.push(List(3))
-    feedStore.push(List(4))
+    feedStore.push(1.toString)
+    feedStore.push(2.toString)
+    feedStore.push(3.toString)
+    feedStore.push(4.toString)
 
     //validate last feed page = oldest page
     val lastPage = feedStore.getFeed(0, 2).get
-    lastPage.base should be (Url("http://www.example.org/feeds/int_feed"))
     lastPage.title should be (Some("Test"))
-    lastPage.updated should be (new DateTime().toString("yyyy-MM-dd'T'HH:mm:ss.SSS"))
+    lastPage.updated should be (new DateTime())
     lastPage.selfLink.href should be (Url("/0/2"))
     lastPage.lastLink.map(_.href) should be (Some(Url("/0/2")))
     lastPage.previousLink.map(_.href) should be (Some(Url("/2/2")))
     lastPage.nextLink.map(_.href) should be (None)
     lastPage.entries.size should be (2)
     //check reverse chronological order
-    lastPage.entries(0).content.value should be (List(2))
-    lastPage.entries(1).content.value should be (List(1))
+    lastPage.entries(0).content.value should be (2.toString)
+    lastPage.entries(1).content.value should be (1.toString)
 
     //validate first feed page = newest page
     val firstPage = feedStore.getFeed(2, 2).get
@@ -89,8 +88,8 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     firstPage.previousLink.map(_.href) should be (None)
     firstPage.nextLink.map(_.href) should be (Some(Url("/0/2")))
     firstPage.entries.size should be (2)
-    firstPage.entries(0).content.value should be (List(4))
-    firstPage.entries(1).content.value should be (List(3))
+    firstPage.entries(0).content.value should be (4.toString)
+    firstPage.entries(1).content.value should be (3.toString)
 
     //head of feed = first page containing newest entries
     val headOfFeed = feedStore.getHeadOfFeed(2).get
@@ -100,7 +99,7 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     val emptyPage = feedStore.getFeed(4, 2) should be (None)
 
     //push extra element
-    feedStore.push(List(5))
+    feedStore.push(List(5.toString))
     val newFirstPage = feedStore.getFeed(4, 2).get
     newFirstPage.entries.size should be (1)
     val newHeadPage = feedStore.getHeadOfFeed(2).get

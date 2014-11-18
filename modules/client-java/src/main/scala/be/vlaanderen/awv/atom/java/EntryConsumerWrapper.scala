@@ -1,14 +1,14 @@
 package be.vlaanderen.awv.atom.java
 
 import be.vlaanderen.awv.atom
-import be.vlaanderen.awv.atom.format.Entry
+import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.{FeedProcessingException, FeedProcessingResult, FeedPosition}
 import be.vlaanderen.awv.atom.java
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.util.{Success, Failure}
 
-class EntryConsumerWrapper[E](underlying: java.EntryConsumer[E]) extends atom.EntryConsumer[E] with Logging {
+class EntryConsumerWrapper[E <: FeedContent](underlying: java.EntryConsumer[E]) extends atom.EntryConsumer[E] with Logging {
 
   override def apply(position: FeedPosition, entry: Entry[E]): FeedProcessingResult = {
     try {

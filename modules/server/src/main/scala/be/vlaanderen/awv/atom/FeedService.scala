@@ -1,8 +1,8 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Feed
+import be.vlaanderen.awv.atom.format.{FeedContent, Feed}
 
-class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
+class FeedService[E <: FeedContent, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
 
   /**
    * @param elements elements to push onto the feed

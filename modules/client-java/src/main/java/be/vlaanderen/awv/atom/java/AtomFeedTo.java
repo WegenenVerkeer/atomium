@@ -10,6 +10,7 @@ import be.vlaanderen.awv.atom.format.Feed;
 import be.vlaanderen.awv.atom.format.Link;
 import be.vlaanderen.awv.atom.format.Url;
 import lombok.Data;
+import org.joda.time.DateTime;
 import scala.Some;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.HashMap;
@@ -25,9 +26,10 @@ import java.util.ArrayList;
 @Data
 public class AtomFeedTo<T> {
 
+    private String id;
     private String base; // base URL
     private String title;
-    private String updated;
+    private DateTime updated;
     private FeedLinkTo[] links;
     private AtomEntryTo<T>[] entries;
 
@@ -40,7 +42,9 @@ public class AtomFeedTo<T> {
 
         return new Feed<T>(
                 new Url(base),
+                id,
                 new Some(title),
+                new Some(null),
                 updated,
                 toFeedLinks(links),
                 toFeedEntries(entries),

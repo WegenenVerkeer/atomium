@@ -2,11 +2,13 @@ import be.vlaanderen.awv.atom._
 import be.vlaanderen.awv.atom.format._
 import controllers.{MemoryFeedStore, MyFeedController}
 import play.api.GlobalSettings
+import play.api.mvc.WithFilters
+import play.filters.gzip.GzipFilter
 
-object Global extends GlobalSettings {
+object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
 
   val id = "my_feed"
-  val feedStore: FeedStore[String] = new MemoryFeedStore[String](id, Url("http://localhost:9000/feeds"), Some("strings of life"))
+  val feedStore: FeedStore[String] = new MemoryFeedStore[String](id, Url("http://localhost:9000/feeds/"), Some("strings of life"))
   val feedService = new FeedService[String, Context](id, 2, { (s, c) => feedStore })
   val feedController = new MyFeedController(feedService)
 

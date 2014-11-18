@@ -19,7 +19,7 @@ import java.util.Arrays;
 @Data
 public class AtomEntryContentTo<T> {
 
-    private T[] value;
+    private T value;
     private String rawType;
 
     /**
@@ -28,7 +28,7 @@ public class AtomEntryContentTo<T> {
      * @return atomium feed
      */
     public Content<T> toAtomium() {
-        return new Content<T>(JavaConverters.asScalaBufferConverter(Arrays.asList(value)).asScala().toList(), rawType);
+        return new Content<T>(value, rawType);
 
     }
 

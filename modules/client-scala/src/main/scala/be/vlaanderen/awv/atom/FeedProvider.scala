@@ -1,12 +1,12 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Feed
+import be.vlaanderen.awv.atom.format._
 import com.typesafe.scalalogging.slf4j.Logging
 import resource.Resource
 import scala.language.implicitConversions
 import scala.util.Try
 
-trait FeedProvider[T]  {
+trait FeedProvider[T <: FeedContent]  {
   def initialPosition: Option[FeedPosition]
   def fetchFeed() : Try[Feed[T]]
   def fetchFeed(page:String) : Try[Feed[T]]
@@ -16,7 +16,7 @@ trait FeedProvider[T]  {
 
 
 object FeedProvider extends Logging {
-  implicit def managedFeedProvider[T](provider : FeedProvider[T]) : Resource[FeedProvider[T]] = new Resource[FeedProvider[T]] {
+  implicit def managedFeedProvider[T <: FeedContent](provider : FeedProvider[T]) : Resource[FeedProvider[T]] = new Resource[FeedProvider[T]] {
     override def open(r: FeedProvider[T]): Unit = {
       logger.debug(s"Opening ${r.getClass.getSimpleName} ... ")
       provider.start()

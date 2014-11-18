@@ -34,11 +34,11 @@ public class JacksonParseAtomFeedToScalaObjectTest {
         Feed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<Feed<EventFeedEntryTo>>() {
         });
 
-        System.out.println(feed.entries().head().content().rawType());
-        System.out.println(feed.entries().head().content().value().head().getClass());
-        System.out.println(feed.entries().head().content().value().head());
+        System.out.println(feed.entries().head().content().type());
+        System.out.println(feed.entries().head().content().value().getClass());
+        System.out.println(feed.entries().head().content().value());
         assertThat(feed).isNotNull();
-        Assertions.assertThat(feed.entries().head().content().value().head()).isInstanceOf(EventFeedEntryTo.class);
+        Assertions.assertThat(feed.entries().head().content().value()).isInstanceOf(EventFeedEntryTo.class);
     }
 
 }

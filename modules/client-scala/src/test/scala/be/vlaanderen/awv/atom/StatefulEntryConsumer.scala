@@ -11,9 +11,7 @@ class StatefulEntryConsumer extends EntryConsumer[String] {
 
   override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
     finalPosition = Option(position)
-    eventEntry.content.value.foreach { e =>
-      consumedEvents += e
-    }
+    consumedEvents += eventEntry.content.value
     Success()
   }
 }

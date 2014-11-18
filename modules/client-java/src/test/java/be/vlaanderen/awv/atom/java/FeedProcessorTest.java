@@ -2,6 +2,7 @@ package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
 import be.vlaanderen.awv.atom.format.*;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import scala.Some;
 import scala.collection.immutable.HashMap;
@@ -52,7 +53,7 @@ public class FeedProcessorTest {
         public void accept(FeedPosition position, Entry<ExampleFeedEntry> entry) {
             System.out.println("Consuming position " + position.index() + " entry " + entry.content());
             try {
-                handleEvent(entry.content().value().head(), position);
+                handleEvent(entry.content().value(), position);
             } catch (Exception e) {
                 throw new FeedProcessingException(new Some(position), e.getMessage());
             }
@@ -90,21 +91,12 @@ public class FeedProcessorTest {
             if (page.endsWith("/3")) intPage=3;
 
             List<Entry<ExampleFeedEntry>> entries = new ArrayList<Entry<ExampleFeedEntry>>();
-            List<ExampleFeedEntry> values1 = new ArrayList<ExampleFeedEntry>();
-            values1.add(new ExampleFeedEntry());
-            List<ExampleFeedEntry> values2 = new ArrayList<ExampleFeedEntry>();
-            values2.add(new ExampleFeedEntry());
-            List<ExampleFeedEntry> values3 = new ArrayList<ExampleFeedEntry>();
-            values3.add(new ExampleFeedEntry());
             List<Link> links = new ArrayList<Link>();
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values1).asScala().toList(), ""),
+            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
                     scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values2).asScala().toList(), ""),
+            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
                     scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values3).asScala().toList(), ""),
+            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
                     scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
 
             List<Link> feedLinks = new ArrayList<Link>();
@@ -119,8 +111,10 @@ public class FeedProcessorTest {
 
             Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
                     new Url(FEED_URL),
+                    "",
                     new Some("Blabla"),
-                    "2014-08-08T18:04:14.385+02:00",
+                    null,
+                    new DateTime(),
                     scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
                     scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList(),
                     new HashMap<String, String>()
