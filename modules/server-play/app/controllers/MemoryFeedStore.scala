@@ -1,7 +1,6 @@
 package controllers
 
-import be.vlaanderen.awv.atom.{UrlBuilder, Context, FeedStore}
-import be.vlaanderen.awv.atom.format._
+import be.vlaanderen.awv.atom._
 import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer
@@ -24,8 +23,8 @@ class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String])
     entries.drop(start).take(pageSize).reverse.toList match {
       case Nil => None
       case l => Some(Feed[T](
-        base = baseUrl,
-        id = (baseUrl / feedName).path,
+        id = baseUrl / feedName path,
+        base = baseUrl / feedName,
         title = title,
         updated = l.head._2.toDateTime(),
         links = List(link(Link.selfLink, start, pageSize),
@@ -42,10 +41,7 @@ class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String])
   }
 
   override def push(it: Iterable[T]) = {
-    val dateTime = new LocalDateTime()
-    it foreach { t =>
-      entries append ((t, dateTime))
-    }
+    entries append ((it.toList, new LocalDateTime()))
   }
 
 }

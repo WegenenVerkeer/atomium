@@ -1,7 +1,6 @@
 import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format._
+import be.vlaanderen.awv.atom.Formats._
 import be.vlaanderen.awv.atom.providers.PlayWsBlockingFeedProvider
-import play.api.libs.json.Reads._
 import play.api.libs.json._
 
 import scala.util.{Failure, Success}

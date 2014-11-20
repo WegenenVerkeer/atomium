@@ -1,7 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{Link, Feed}
-
 /**
  * A feed store is responsible for the persistence of feeds.
  *

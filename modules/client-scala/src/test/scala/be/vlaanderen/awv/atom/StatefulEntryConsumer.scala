@@ -1,7 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Entry
-
 import scala.collection.mutable
 import scala.util.Success
 

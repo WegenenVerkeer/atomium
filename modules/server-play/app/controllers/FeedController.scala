@@ -1,7 +1,6 @@
 package controllers
 
-import be.vlaanderen.awv.atom.format._
-import be.vlaanderen.awv.atom.{Context, FeedService}
+import be.vlaanderen.awv.atom.{Feed, Context, FeedService}
 import org.joda.time.LocalDateTime
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, Controller, Headers, Result}

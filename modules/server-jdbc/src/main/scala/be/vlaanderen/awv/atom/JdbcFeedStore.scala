@@ -2,8 +2,8 @@ package be.vlaanderen.awv.atom
 
 import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.models._
+import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.LocalDateTime
-import slick.SlickPostgresDriver.simple._
 
 /**             
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a Postgres database.

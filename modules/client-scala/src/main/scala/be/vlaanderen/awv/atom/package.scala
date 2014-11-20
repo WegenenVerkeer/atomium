@@ -1,6 +1,6 @@
 package be.vlaanderen.awv
 
-import be.vlaanderen.awv.atom.format.Feed
+import be.vlaanderen.awv.atom.Feed
 
 import scala.util.Try
 
