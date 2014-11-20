@@ -5,22 +5,17 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.FeedPosition;
-import be.vlaanderen.awv.atom.FeedProcessingException;
-import be.vlaanderen.awv.atom.format.Entry;
-import be.vlaanderen.awv.atom.format.Feed;
-import be.vlaanderen.awv.atom.format.Url;
+import be.vlaanderen.awv.atom.*;
+import be.vlaanderen.awv.atom.Url;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 import scala.Some;
 import scala.collection.immutable.HashMap;
-import scala.collection.immutable.Map;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
 public class FeedProcessorWithParsingTest {
 
@@ -31,7 +26,6 @@ public class FeedProcessorWithParsingTest {
         System.out.println("Start processing");
 
         // create the feed position from where you want to start processing
-        // position (-1) is meest recent verwerkte
         FeedPosition position = new FeedPosition(new Url(FEED_URL), -1, new HashMap());
 
         // create the feed provider

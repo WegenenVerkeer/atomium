@@ -1,6 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Url
 import be.vlaanderen.awv.atom.models._
 import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.{DateTime, DateTimeUtils, LocalDateTime}

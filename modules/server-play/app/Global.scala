@@ -1,5 +1,4 @@
 import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format._
 import controllers.{MemoryFeedStore, MyFeedController}
 import play.api.GlobalSettings
 import play.api.mvc.WithFilters

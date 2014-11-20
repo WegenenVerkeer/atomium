@@ -1,10 +1,8 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format._
 import be.vlaanderen.awv.atom.models._
+import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.LocalDateTime
-import slick.SlickPostgresDriver.simple._
-import scala.collection.JavaConversions._
 
 /**
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a Postgres database.
@@ -16,7 +14,7 @@ import scala.collection.JavaConversions._
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class JdbcFeedStore[E <: FeedContent](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlBuilder: UrlBuilder) extends FeedStore[E] {
+class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlBuilder: UrlBuilder) extends FeedStore[E] {
 
   lazy val context = c
   val urlProvider = urlBuilder
@@ -42,8 +40,8 @@ class JdbcFeedStore[E <: FeedContent](c: JdbcContext, feedName: String, title: O
     for {
       entries <- Some(feedModel.entriesTableQuery.sortBy(_.id).drop(start).take(pageSize).list().reverse); if entries.size > 0
     } yield Feed[E](
-      base = urlBuilder.base,
       id = (urlBuilder.base / feedName).path,
+      base = urlBuilder.base,
       title = feedModel.title,
       updated = entries.head.timestamp.toDateTime,
       links = List(Link(Link.selfLink, urlProvider.feedLink(start, pageSize)),

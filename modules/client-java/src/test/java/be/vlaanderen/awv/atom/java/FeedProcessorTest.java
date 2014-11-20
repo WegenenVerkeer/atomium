@@ -1,9 +1,9 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
-import be.vlaanderen.awv.atom.format.*;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import play.libs.Scala;
 import scala.Some;
 import scala.collection.immutable.HashMap;
 
@@ -110,10 +110,10 @@ public class FeedProcessorTest {
             }
 
             Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
+                    "id",
                     new Url(FEED_URL),
-                    "",
                     new Some("Blabla"),
-                    null,
+                    Scala.<Generator>Option(null),
                     new DateTime(),
                     scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
                     scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList(),

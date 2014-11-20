@@ -5,8 +5,8 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Link;
-import be.vlaanderen.awv.atom.format.Url;
+import be.vlaanderen.awv.atom.Link;
+import be.vlaanderen.awv.atom.Url;
 import lombok.Data;
 
 /**
@@ -19,7 +19,7 @@ public class FeedLinkTo {
     private String href; // link URL
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */

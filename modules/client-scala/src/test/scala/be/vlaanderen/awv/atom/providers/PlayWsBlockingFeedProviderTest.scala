@@ -1,23 +1,30 @@
 package be.vlaanderen.awv.atom.providers
 
+import javax.xml.bind.JAXBContext
+
+import be.vlaanderen.awv.atom.Marshallers._
 import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format._
-import com.sun.jersey.api.json.{JSONConfiguration, JSONJAXBContext}
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.{SerializationFeature, ObjectMapper}
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import mockws._
 import org.joda.time.DateTime
 import org.scalatest.{FunSuite, Matchers}
 import play.api.mvc.Action
 import play.api.mvc.Results._
 import play.api.test.Helpers._
+import support.{JacksonSupport, JaxbSupport}
 
-import scala.collection.JavaConversions._
+class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
 
-class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
+  implicit val jaxbContext = JAXBContext.newInstance("be.vlaanderen.awv.atom")
+  val xmlUnmarshaller : XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
 
-  val config: JSONConfiguration = JSONConfiguration.mapped.rootUnwrapping(true).
-    xml2JsonNs(Map("http://www.w3.org/2005/Atom" -> "", "http://www.w3.org/XML/1998/namespace" -> "")).
-    arrays("link", "entry").build
-  implicit val jsonJaxbContext = new JSONJAXBContext(config, "be.vlaanderen.awv.atom.jformat")
+  private val objectMapper = new ObjectMapper()
+  objectMapper.registerModule(new JodaModule)
+  objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false)
+  implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
+  val jsonUnmarshaller : JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
 
   test("Feed not found") {
     val notFoundRoute = Route {
@@ -26,7 +33,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
       }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None,
+      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this,
         wsClient = Some(MockWS(notFoundRoute))),
       consumedEvents = List(),
       finalPosition = None
@@ -42,7 +49,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
       }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None,
+      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this,
         wsClient = Some(MockWS(emptyRoute))),
       consumedEvents = List(),
       finalPosition = None
@@ -51,79 +58,51 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
     }
   }
 
-  val updated = outputFormatterWithSecondsAndOptionalTZ.print(new DateTime())
+  val updated = Adapters.outputFormatterWithSecondsAndOptionalTZ.print(new DateTime())
 
   val page1: String = """{
                         |  "base" : "http://example.com",
-                        |  "id" : "http://example.com",
-                        |  "title" : "title",
+                        |  "id" : "http://example.com/page1",
+                        |  "title" : "title1",
                         |  "updated" : "2014-01-01",
-                        |  "links" : [ {
-                        |    "rel" : "self",
-                        |    "href" : "http://example.com/feed/1"
-                        |  }, {
-                        |    "rel" : "last",
-                        |    "href" : "/feed/1"
-                        |  }, {
-                        |    "rel" : "previous",
-                        |    "href" : "/feed/2"
-                        |  } ],
-                        |  "entries" : [ {
-                        |    "content" : {
-                        |      "value" : "a1",
-                        |      "rawType" : "text/plain"
-                        |    },
-                        |    "links" : [ ]
-                        |  }, {
-                        |    "content" : {
-                        |      "value" : "b1",
-                        |      "rawType" : "text/plain"
-                        |    },
-                        |    "links" : [ ]
-                        |  }]
+                        |  "links" : [
+                        |     { "rel" : "self", "href" : "http://example.com/feed/1" },
+                        |     { "rel" : "last", "href" : "/feed/1" },
+                        |     { "rel" : "previous", "href" : "/feed/2"}
+                        |  ],
+                        |  "entries" : [
+                        |     { "content" : { "value" : "a1", "type" : "text/plain" }},
+                        |     { "content" : { "value" : "b1", "type" : "text/plain" }}
+                        |  ]
                         |}
                         | """.stripMargin
 
   val page2: String = """{
                         |  "base" : "http://example.com",
-                        |  "id" : "http://example.com",
-                        |  "title" : "title",
+                        |  "id" : "http://example.com/page2",
+                        |  "title" : "title2",
                         |  "updated" : "2014-01-01",
-                        |  "links" : [ {
-                        |    "rel" : "self",
-                        |    "href" : "http://example.com/feed/2"
-                        |  }, {
-                        |    "rel" : "last",
-                        |    "href" : "/feed/1"
-                        |  }, {
-                        |    "rel" : "next",
-                        |    "href" : "/feed/1"
-                        |  } ],
-                        |  "entries" : [ {
-                        |    "content" : {
-                        |      "value" : "a2",
-                        |      "rawType" : "text/plain"
-                        |    },
-                        |    "links" : [ ]
-                        |  }, {
-                        |    "content" : {
-                        |      "value" : "b2",
-                        |      "rawType" : "text/plain"
-                        |    },
-                        |    "links" : [ ]
-                        |  } ]
+                        |  "links" : [
+                        |     { "rel" : "self", "href" : "http://example.com/feed/2" },
+                        |     { "rel" : "last", "href" : "/feed/1" },
+                        |     { "rel" : "next", "href" : "/feed/1" }
+                        |  ],
+                        |  "entries" : [
+                        |     { "content" : { "value" : "a2", "type" : "text/plain" }},
+                        |     { "content" : { "value" : "b2", "type" : "text/plain" }}
+                        |  ]
                         |}
                         | """.stripMargin
 
   test("feed is consumed from begin to end") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(ETAG -> "foo") }
-      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(ETAG -> "bar") }
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(ETAG -> "foo") }
+      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
+      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(CONTENT_TYPE -> "application/json") }
+      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
       case (GET, u) => Action { NotFound(s"$u not found") }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, wsClient = Some(MockWS(route))),
+      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this, wsClient = Some(MockWS(route))),
       consumedEvents = List("a1", "b1", "a2", "b2"),
       //finalPosition is on second element (index=1) of second feed page
       finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
@@ -132,14 +111,14 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
 
   test("feed is consumed from initialPosition to end") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(ETAG -> "foo") }
-      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(ETAG -> "bar") }
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(ETAG -> "foo") }
+      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
+      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(CONTENT_TYPE -> "application/json") }
+      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
       case (GET, u) => Action { NotFound(s"$u not found") }
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
-        Some(FeedPosition(Url("http://example.com/feed/1"), 0)), wsClient = Some(MockWS(route))),
+        Some(FeedPosition(Url("http://example.com/feed/1"), 0)), this, wsClient = Some(MockWS(route))),
       consumedEvents = List("b1", "a2", "b2"),
       //finalPosition is on second element (index=1) of second feed page
       finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
@@ -148,12 +127,12 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
 
   test("initialPosition is start of feed (all entries consumed) so no new entries need to be processed") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(ETAG -> "foo") }
+      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
       case (GET, u) => Action { NotFound(s"$u not found") }
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
-        Some(FeedPosition(Url("http://example.com/feed/2"), 1)), wsClient = Some(MockWS(route))),
+        Some(FeedPosition(Url("http://example.com/feed/2"), 1)), this, wsClient = Some(MockWS(route))),
       consumedEvents = List(),
       finalPosition = None
     ) assertResult { result =>
@@ -167,7 +146,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
       case (GET, u) => Action { NotFound(s"$u not found") }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, wsClient = Some(MockWS(route))),
+      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this, wsClient = Some(MockWS(route))),
       consumedEvents = List(),
       finalPosition = None
     ) assertResult { result =>
@@ -182,7 +161,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
-        Some(FeedPosition(Url("http://example.com/feed/1"), 0)), wsClient = Some(MockWS(route))),
+        Some(FeedPosition(Url("http://example.com/feed/1"), 0)), this, wsClient = Some(MockWS(route))),
       consumedEvents = List(),
       finalPosition = None //since there never was any entry consumed, this is None
     ) assertResult { result =>

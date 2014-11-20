@@ -99,8 +99,7 @@ object AtomiumBuild extends Build
         "org.mockito" % "mockito-core" % "1.9.5" % "test",
         "org.assertj" % "assertj-core" % "1.5.0" % "test",
         "be.eliwan" % "jfaker-mockito" % "0.1" % "test",
-        "commons-io" % "commons-io" % "2.4" % "test",
-        "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.3" % "test"
+        "commons-io" % "commons-io" % "2.4" % "test"
       )
     )
   ).dependsOn(clientScalaModule)

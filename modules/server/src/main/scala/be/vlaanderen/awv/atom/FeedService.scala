@@ -1,27 +1,40 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{FeedContent, Feed}
-
-class FeedService[E <: FeedContent, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
+/**
+ * A feed service provides the following functionality:
+ *  - push new entries to the feed
+ *  - get a page from the feed
+ *
+ * @param feedName the name of this feed, which can be used as an identifier for the feed
+ * @param entriesPerPage the number of entries per page
+ * @param feedStoreFactory a factory for creating feed stores
+ * @tparam E the type of the feed entries
+ * @tparam C the type of the context, which is required for feed stores
+ */
+class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
 
   /**
-   * @param elements elements to push onto the feed
-   * @param context to store the entries
+   * Adds elements to the feed.
+   *
+   * @param elements the elements to add
+   * @param context the context, which is required for feed stores
    */
   def push(elements: Iterable[E])(implicit context: C): Unit = {
     feedStoreFactory(feedName, context).push(elements)
   }
 
   /**
-   * @param element element to push onto the feed
-   * @param context to store the entry
-   * @return
+   * Adds an element to the feed.
+   *
+   * @param element the element to add
+   * @param context the context, which is required for feed stores
    */
   def push(element: E)(implicit context: C): Unit = {
     push(List(element))(context)
   }
 
   /**
+   * Retrieves a feed page
    * @param start start feed from entry
    * @param pageSize number of entries to return in feed page
    * @param context to retrieve the feed page

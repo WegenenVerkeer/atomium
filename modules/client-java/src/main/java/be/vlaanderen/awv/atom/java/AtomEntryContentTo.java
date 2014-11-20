@@ -5,7 +5,7 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Content;
+import be.vlaanderen.awv.atom.Content;
 import lombok.Data;
 import scala.collection.JavaConverters;
 
@@ -23,7 +23,7 @@ public class AtomEntryContentTo<T> {
     private String rawType;
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */

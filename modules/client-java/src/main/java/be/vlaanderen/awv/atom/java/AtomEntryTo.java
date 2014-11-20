@@ -5,8 +5,8 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Entry;
-import be.vlaanderen.awv.atom.format.Link;
+import be.vlaanderen.awv.atom.Entry;
+import be.vlaanderen.awv.atom.Link;
 import lombok.Data;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.List;
@@ -25,7 +25,7 @@ public class AtomEntryTo<T> {
     private FeedLinkTo[] links;
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */

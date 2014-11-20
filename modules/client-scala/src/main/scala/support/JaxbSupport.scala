@@ -3,15 +3,8 @@ package support
 import java.io._
 import javax.xml.bind._
 
-import com.sun.jersey.api.json.JSONJAXBContext
-import play.api.http._
+import be.vlaanderen.awv.atom.Marshallers._
 import play.api.mvc._
-
-case class JaxbXml(obj: AnyRef)
-case class JaxbJson(obj: AnyRef)
-case class Jaxb(obj: AnyRef)
-
-trait JaxbSupport extends JaxbWriteables
 
 object JaxbSupport {
 
@@ -25,15 +18,14 @@ object JaxbSupport {
     stream.toByteArray
   }
 
-  def toJsonBytes(obj: AnyRef)(implicit codec: Codec, context: JSONJAXBContext): Array[Byte] = {
-    val marshaller = context.createJSONMarshaller()
-    val stream = new ByteArrayOutputStream
-    val writer = new OutputStreamWriter(stream, codec.charset)
+  def jaxbMarshaller[T <:AnyRef](implicit jaxbContext: JAXBContext): XmlMarshaller[T] = {
+    t:T => toXmlBytes(t)
+  }
 
-    marshaller.marshallToJSON(obj, writer)
-
-    writer.flush()
-    stream.toByteArray
+  def fromXmlString[A](xml: String, expectedType: Class[A])(implicit context: JAXBContext): A = {
+    val result = context.createUnmarshaller().unmarshal(new StringReader(xml))
+//    expectedType.cast(result)
+    result.asInstanceOf[A]
   }
 
   def fromXmlBytes[A](bytes: Array[Byte], charset: String, expectedType: Class[A])(implicit context: JAXBContext): A = {
@@ -43,47 +35,10 @@ object JaxbSupport {
     expectedType.cast(result)
   }
 
-  def fromJsonBytes[A](bytes: Array[Byte], charset: String, expectedType: Class[A])(implicit context: JSONJAXBContext): A = {
-    val stream = new ByteArrayInputStream(bytes)
-    val reader = new InputStreamReader(stream, charset)
-    val result = context.createJSONUnmarshaller().unmarshalFromJSON(reader, expectedType)
-    expectedType.cast(result)
+  def jaxbUnmarshaller[T](implicit jaxbContext: JAXBContext, manifest: Manifest[T]): XmlUnmarshaller[T] = {
+        //TODO check manifest !!!
+    xml => fromXmlString(xml, manifest.runtimeClass).asInstanceOf[T]
   }
+
 }
-
-trait JaxbWriteables {
-
-  implicit def contentTypeOf_JaxbXml(implicit codec: Codec): ContentTypeOf[JaxbXml] = {
-    ContentTypeOf[JaxbXml](Some(ContentTypes.XML))
-  }
-
-  implicit def contentTypeOf_JaxbJson(implicit codec: Codec): ContentTypeOf[JaxbJson] = {
-    ContentTypeOf[JaxbJson](Some(ContentTypes.JSON))
-  }
-
-  implicit def contentTypeOf_Jaxb(implicit codec: Codec, header: RequestHeader): ContentTypeOf[Jaxb] = ContentTypeOf[Jaxb] {
-    header.headers.get(HeaderNames.ACCEPT) match {
-      case Some("application/json") => Some(ContentTypes.JSON)
-      case _                        => Some(ContentTypes.XML)
-    }
-  }
-
-  implicit def writeableOf_JaxbXml(implicit codec: Codec, context: JAXBContext): Writeable[JaxbXml] = {
-    Writeable[JaxbXml]((xml: JaxbXml) => JaxbSupport.toXmlBytes(xml.obj))
-  }
-
-  implicit def writeableOf_JaxbJson(implicit codec: Codec, context: JSONJAXBContext): Writeable[JaxbJson] = {
-    Writeable[JaxbJson]((json: JaxbJson) => JaxbSupport.toJsonBytes(json.obj))
-  }
-
-  implicit def writeableOf_JaxbNeg(implicit codec: Codec, context: JSONJAXBContext, header: RequestHeader): Writeable[Jaxb] = {
-    Writeable[Jaxb] {
-      (jaxb: Jaxb) => header.headers.get(HeaderNames.ACCEPT) match {
-        case Some("application/json") => JaxbSupport.toJsonBytes(jaxb.obj)
-        case _                        => JaxbSupport.toXmlBytes(jaxb.obj)
-      }
-    }
-  }
-}
-
 

@@ -10,7 +10,7 @@ trait BuildSettings {
   import Dependencies._
   val Organization = "be.vlaanderen.awv"
   
-  val Version = "0.1.1-SNAPSHOT"
+  val Version = "0.2.0-SNAPSHOT"
   val ScalaVersion = "2.10.3"
   val ScalaBuildOptions = Seq("-unchecked", "-deprecation", "-feature",
     "-language:reflectiveCalls",

@@ -1,12 +1,11 @@
 package controllers
 
-import be.vlaanderen.awv.atom.format._
-import be.vlaanderen.awv.atom.{Context, FeedStore, UrlBuilder}
+import be.vlaanderen.awv.atom._
 import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer
 
-class MemoryFeedStore[T <: FeedContent](feedName: String, baseUrl: Url, title : Option[String], contentType: String = "text/plain") extends FeedStore[T] {
+class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String], contentType: String = "text/plain") extends FeedStore[T] {
   val entries: ListBuffer[(T, LocalDateTime)] = new ListBuffer[(T, LocalDateTime)]
 
   val urlProvider : UrlBuilder = new UrlBuilder {
@@ -42,9 +41,9 @@ class MemoryFeedStore[T <: FeedContent](feedName: String, baseUrl: Url, title : 
   }
 
   override def push(it: Iterable[T]) = {
-    val dateTime = new LocalDateTime()
+    val localDateTime: LocalDateTime = new LocalDateTime()
     it foreach { t =>
-      entries append ((t, dateTime))
+      entries append((t, localDateTime))
     }
   }
 

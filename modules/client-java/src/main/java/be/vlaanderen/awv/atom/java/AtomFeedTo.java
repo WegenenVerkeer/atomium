@@ -5,18 +5,18 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Entry;
-import be.vlaanderen.awv.atom.format.Feed;
-import be.vlaanderen.awv.atom.format.Link;
-import be.vlaanderen.awv.atom.format.Url;
+import be.vlaanderen.awv.atom.*;
 import lombok.Data;
 import org.joda.time.DateTime;
+import play.libs.Scala;
 import scala.Some;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.HashMap;
 import scala.collection.immutable.List;
 
 import java.util.ArrayList;
+
+import static play.libs.Scala.Option;
 
 /**
  * Representation of an atom feed.
@@ -34,17 +34,17 @@ public class AtomFeedTo<T> {
     private AtomEntryTo<T>[] entries;
 
     /**
-     * Converteer naar object dat bruikbaar is voor Atomium.
+     * Converts to an object usable by Atomium.
      *
      * @return atomium feed
      */
     public Feed<T> toAtomium() {
 
         return new Feed<T>(
-                new Url(base),
                 id,
-                new Some(title),
-                new Some(null),
+                new Url(base),
+                Option(title),
+                Scala.<Generator>Option(null),
                 updated,
                 toFeedLinks(links),
                 toFeedEntries(entries),

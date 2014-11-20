@@ -1,7 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{FeedContent, Link, Feed}
-
 /**
  * A feed store is responsible for the persistence of feeds.
  *
@@ -9,7 +7,7 @@ import be.vlaanderen.awv.atom.format.{FeedContent, Link, Feed}
  * 
  * @tparam E type of the elements in the feed
  */
-trait FeedStore[E <: FeedContent] {
+trait FeedStore[E] {
 
   def context: Context
   def urlProvider: UrlBuilder
@@ -48,7 +46,7 @@ trait FeedStore[E <: FeedContent] {
    * push a single entry to the feed
    * @param entry the entry to push to the feed
    */
-  def push(entry: E): Unit  = {
+  def push(entry: E): Unit = {
     push(List(entry))
   }
 

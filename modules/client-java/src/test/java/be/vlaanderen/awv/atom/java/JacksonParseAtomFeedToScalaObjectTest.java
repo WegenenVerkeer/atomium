@@ -5,11 +5,11 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Feed;
+import be.vlaanderen.awv.atom.Feed;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ import java.io.File;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test JSON parsing van de Atom feed (met generisch entry type).
+ * Tests JSON parsing of Atom feed (with generic entry type).
  */
 public class JacksonParseAtomFeedToScalaObjectTest {
 

@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom
 
 
-import be.vlaanderen.awv.atom.format._
 import org.joda.time.DateTime
 import org.scalatest.{FunSuite, Matchers}
 
@@ -160,7 +159,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     }
 
     val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
-    Feed(Url("http://www.example.org/feeds"), randomUuidUri, Option("title"), None, new DateTime(), links, entries.toList)
+    Feed("id", Url("http://www.example.org/feeds"), Option("title"), None, new DateTime(), links, entries.toList)
   }
 
   def feedProvider(initialPosition:Option[FeedPosition],
