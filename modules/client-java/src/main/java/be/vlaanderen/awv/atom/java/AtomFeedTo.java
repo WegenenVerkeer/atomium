@@ -5,10 +5,10 @@
 
 package be.vlaanderen.awv.atom.java;
 
-import be.vlaanderen.awv.atom.format.Entry;
-import be.vlaanderen.awv.atom.format.Feed;
-import be.vlaanderen.awv.atom.format.Link;
-import be.vlaanderen.awv.atom.format.Url;
+import be.vlaanderen.awv.atom.Entry;
+import be.vlaanderen.awv.atom.Feed;
+import be.vlaanderen.awv.atom.Link;
+import be.vlaanderen.awv.atom.Url;
 import lombok.Data;
 import scala.Some;
 import scala.collection.JavaConverters;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 @Data
 public class AtomFeedTo<T> {
 
+    private String id;
     private String base; // base URL
     private String title;
     private String updated;
@@ -39,6 +40,7 @@ public class AtomFeedTo<T> {
     public Feed<T> toAtomium() {
 
         return new Feed<T>(
+                id,
                 new Url(base),
                 new Some(title),
                 updated,

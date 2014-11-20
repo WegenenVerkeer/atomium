@@ -6,18 +6,16 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
-import be.vlaanderen.awv.atom.format.Url;
+import be.vlaanderen.awv.atom.Url;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 import scala.Some;
 import scala.collection.immutable.HashMap;
-import scala.collection.immutable.Map;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
 public class FeedProcessorWithParsingTest {
 

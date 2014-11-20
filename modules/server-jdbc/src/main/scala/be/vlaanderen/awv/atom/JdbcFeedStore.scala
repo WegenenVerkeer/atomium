@@ -1,9 +1,8 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{Link, Feed, Entry, Content}
 import be.vlaanderen.awv.atom.models._
+import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.LocalDateTime
-import slick.SlickPostgresDriver.simple._
 
 /**
  * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a Postgres database.
@@ -41,6 +40,7 @@ class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], 
     for {
       entries <- Some(feedModel.entriesTableQuery.sortBy(_.id).drop(start).take(pageSize).list().reverse); if entries.size > 0
     } yield Feed(
+      id = (urlProvider.base / feedName).path,
       base = urlProvider.base / feedName,
       title = feedModel.title,
       updated = entries.head.timestamp.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"),

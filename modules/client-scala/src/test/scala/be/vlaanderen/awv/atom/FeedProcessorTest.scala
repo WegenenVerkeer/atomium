@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom
 
 
-import be.vlaanderen.awv.atom.format._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.annotation.tailrec
@@ -159,7 +158,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     }
 
     val links = List(Link(Link.selfLink, Url(url)))
-    Feed(Url("http://www.example.org/feeds/"), Option("title"), "update", links, entries.toList)
+    Feed("id", Url("http://www.example.org/feeds/"), Option("title"), "update", links, entries.toList)
   }
 
   def feedProvider(initialPosition:Option[FeedPosition],

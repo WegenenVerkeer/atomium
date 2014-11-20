@@ -1,7 +1,7 @@
 package be.vlaanderen.awv.atom.providers
 
 import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format._
+import be.vlaanderen.awv.atom.Formats._
 import mockws._
 import org.scalatest.{FunSuite, Matchers}
 import play.api.libs.json.Json
@@ -50,6 +50,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
   }
 
   val page1: String = """{
+                        |  "id" : "page1",
                         |  "base" : "http://example.com/",
                         |  "title" : "title",
                         |  "updated" : "update",
@@ -80,6 +81,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers {
                         | """.stripMargin
 
   val page2: String = """{
+                        |  "id" : "page2",
                         |  "base" : "http://example.com/",
                         |  "title" : "title",
                         |  "updated" : "update",

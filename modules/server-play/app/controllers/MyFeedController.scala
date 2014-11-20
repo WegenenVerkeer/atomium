@@ -1,7 +1,7 @@
 package controllers
 
-import be.vlaanderen.awv.atom.format._
-import be.vlaanderen.awv.atom.{Context, FeedService}
+import be.vlaanderen.awv.atom.{Feed, Context, FeedService}
+import be.vlaanderen.awv.atom.Formats._
 import play.api.libs.json.{JsValue, Json}
 
 class MyFeedController(feedService: FeedService[String, Context]) extends FeedController[String](feedService) {

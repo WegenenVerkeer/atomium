@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.format.Feed
-import be.vlaanderen.awv.atom.{UrlBuilder, Context}
+import be.vlaanderen.awv.atom.{Feed, UrlBuilder, Context}
 
 /**
  * Wrapper wround the [[be.vlaanderen.awv.atom.FeedStore]] that offers a Java-like interface.

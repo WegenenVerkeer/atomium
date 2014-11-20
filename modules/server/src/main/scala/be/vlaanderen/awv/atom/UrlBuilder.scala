@@ -3,8 +3,6 @@ package be.vlaanderen.awv.atom
 /**
  * Responsible for creating URL's in an Atom feed.
  */
-import be.vlaanderen.awv.atom.format.Url
-
 trait UrlBuilder {
   /**
    * Creates a link to a feed page.

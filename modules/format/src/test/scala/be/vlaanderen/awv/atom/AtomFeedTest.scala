@@ -1,6 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format._
 import org.scalatest.{Matchers, FunSuite}
 import play.api.libs.json.{Format, Json}
 import com.typesafe.scalalogging.slf4j.Logging
@@ -18,7 +17,7 @@ class AtomFeedTest extends FunSuite with Matchers with Logging {
   val entry = Entry(content, List(link))
   val entry2 = Entry(content, List.empty)
 
-  val feed = Feed(url, Some("title"), "update", List(link), List(entry))
+  val feed = Feed("id", url, Some("title"), "update", List(link), List(entry))
 
   test("must ser/deser a URL") {
     serializeAndDeserialize(url)

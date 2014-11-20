@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom.providers
 
 import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format.{Link, Feed, Url}
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
 import play.api.libs.ws.{WS, WSClient}
@@ -57,7 +56,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
   override def fetchFeed(): FeedResult = {
     initialPosition match {
       case None => awaitResult(fetchFeedAsync)
-      case Some(position) => awaitResult(fetchFeedAsync(position.link.href.path))
+      case Some(position) => awaitResult(fetchFeedAsync(position.url.path))
     }
 
   }
@@ -115,7 +114,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
       val unmarshaller = implicitly[FeedEntryUnmarshaller[T]]
       res.status match {
         case 200 => unmarshaller(res.body) map ( _.copy(headers = transformHeaders(res.allHeaders)) )
-        case 304 => Success(new Feed(Url(url), None, "", List(Link(Link.selfLink, Url(url))), List.empty))
+        case 304 => Success(new Feed("id", Url(url), None, "", List(Link(Link.selfLink, Url(url))), List.empty))
         case _   => Failure(new FeedProcessingException(None, s"${res.status}: ${res.statusText}"))
       }
     }

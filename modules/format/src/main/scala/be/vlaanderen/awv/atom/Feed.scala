@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom.format
+package be.vlaanderen.awv.atom
 
 import java.net.URI
 
@@ -14,10 +14,10 @@ import java.net.URI
  * @tparam T the type of entry
  */
 case class Feed[T](id: String,
-                   base: Url, 
-                   title: Option[String], 
-                   updated: String, 
-                   links: List[Link], 
+                   base: Url,
+                   title: Option[String],
+                   updated: String,
+                   links: List[Link],
                    entries: List[Entry[T]],
                    headers: Map[String, String] = Map.empty) {
 
@@ -43,7 +43,7 @@ case class Feed[T](id: String,
     new Url(baseUri.resolve(url.path).toString)
   }
 
-  def calcETag() = {
+  def calcETag(): String = {
     val m = java.security.MessageDigest.getInstance("MD5")
     m.update(updated.getBytes("UTF-8"))
     entries foreach { entry =>

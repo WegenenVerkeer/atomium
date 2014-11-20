@@ -8,14 +8,13 @@ import scala.collection.JavaConverters._
  *
  * @param feedName the name of this feed, which can be used as an identifier for the feed
  * @param entriesPerPage the number of entries per page
- * @param title the feed title
  * @param feedStoreFactory a factory for creating feed stores*
  * @param context the context, which is required for feed stores
  *
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage: Integer, title: String, feedStoreFactory: FeedStoreFactory[E, C]) {
+class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage: Integer, feedStoreFactory: FeedStoreFactory[E, C]) {
   private val underlying: be.vlaanderen.awv.atom.FeedService[E, C] =
     new be.vlaanderen.awv.atom.FeedService[E, C](feedName, entriesPerPage, (name, context) => feedStoreFactory.create(name, context))
 
