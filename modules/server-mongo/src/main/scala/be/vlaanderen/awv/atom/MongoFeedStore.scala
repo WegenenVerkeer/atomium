@@ -1,6 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.{Link, Feed, Entry, Content}
 import com.mongodb.MongoClient
 import com.mongodb.casbah.Imports._
 import org.joda.time.DateTime
