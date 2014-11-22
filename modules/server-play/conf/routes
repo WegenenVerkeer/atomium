@@ -2,6 +2,8 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET        /feeds/my_feed                         @controllers.MyFeedController.getHeadOfFeed()
-GET        /feeds/my_feed/:start/:pageSize        @controllers.MyFeedController.getFeedPage(start : Int, pageSize: Int)
+GET        /feeds/my_feed                         @controllers.StringController.getHeadOfFeed()
+GET        /feeds/my_feed/:start/:pageSize        @controllers.StringController.getFeedPage(start : Int, pageSize: Int)
 
+GET        /feeds/events                          @controllers.EventController.getHeadOfFeed()
+GET        /feeds/events/:start/:pageSize         @controllers.EventController.getFeedPage(start : Int, pageSize: Int)
