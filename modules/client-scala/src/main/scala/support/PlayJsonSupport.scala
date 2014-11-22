@@ -3,7 +3,7 @@ package support
 import be.vlaanderen.awv.atom.Marshallers._
 import play.api.libs.json.{Writes, Json, Reads}
 
-class PlayJsonSupport {
+object PlayJsonSupport {
 
   def jsonUnmarshaller[T <:AnyRef](implicit fmt: Reads[T]): JsonUnmarshaller[T] = {
     json => Json.parse(json).as[T]

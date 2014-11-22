@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import play.api.mvc.Controller
 import support.{JaxbSupport, JacksonSupport}
 
-class MyFeedController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
+class StringController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
 
   implicit val c: Context = new Context {} //dummy context for MemoryFeedStore
 
