@@ -1,0 +1,17 @@
+language: scala
+scala:
+  - 2.10.3
+script: sbt clean test
+jdk:
+  - oraclejdk8
+notifications:
+  email:
+    recipients:
+      - karel@geovise.com
+      # - peter.rigole@atomicbits.io
+      # - renato@xavena.eu
+      # - peter.mortier@gmail.com
+      # - stefan@ellefant.be
+
+
+      
