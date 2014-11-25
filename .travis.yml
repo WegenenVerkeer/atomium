@@ -4,6 +4,8 @@ scala:
 script: sbt clean test
 jdk:
   - oraclejdk8
+services:
+  - mongodb
 notifications:
   email:
     recipients:
@@ -13,5 +15,3 @@ notifications:
       # - peter.mortier@gmail.com
       # - stefan@ellefant.be
 
-
-      
