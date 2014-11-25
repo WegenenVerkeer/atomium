@@ -43,7 +43,6 @@ trait BuildSettings {
   def buildSettings(projectName:String, extraDependencies:Seq[ModuleID] = Seq()) = {
     Defaults.defaultSettings ++
       projectSettings(projectName, extraDependencies) ++
-      awvsbtplugin.Plugin.defaultLibrarySettings ++
       testSettings ++
       jacoco.settings
   }
