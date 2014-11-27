@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom.jformat;
+package be.vlaanderen.awv.atom;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -58,4 +58,5 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
     feedStoreFactory(feedName, context).getHeadOfFeed(entriesPerPage)
   }
 
+
 }

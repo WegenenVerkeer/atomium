@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
-import be.vlaanderen.awv.atom.jformat.*;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import play.libs.Scala;

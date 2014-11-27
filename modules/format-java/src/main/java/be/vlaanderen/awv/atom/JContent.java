@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom.jformat;
+package be.vlaanderen.awv.atom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.w3c.dom.Element;
@@ -101,6 +101,7 @@ public final class JContent<T> {
         }
         return (T) buffer.toString();
     }
+
 
     public String toString() {
         return String.format("JContent(type=%s, value=%s)", type, getValue());

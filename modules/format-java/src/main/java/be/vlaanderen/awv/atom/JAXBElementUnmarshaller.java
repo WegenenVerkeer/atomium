@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom.jformat;
+package be.vlaanderen.awv.atom;
 
 import org.w3c.dom.Node;
 

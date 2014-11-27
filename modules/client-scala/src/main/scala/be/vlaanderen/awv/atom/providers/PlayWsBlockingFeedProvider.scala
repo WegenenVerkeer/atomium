@@ -11,6 +11,7 @@ import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
 
+
 /**
  * An implementation of [[be.vlaanderen.awv.atom.FeedProvider]] that uses the Play WS API for fetching feed pages via
  * HTTP.
@@ -60,7 +61,7 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
   override def fetchFeed(): FeedResult = {
     initialPosition match {
       case None => awaitResult(fetchFeedAsync)
-      case Some(position) => awaitResult(fetchFeedAsync(position.url.path, position.headers))
+      case Some(position) => awaitResult(fetchFeedAsync(position.url.path))
     }
 
   }

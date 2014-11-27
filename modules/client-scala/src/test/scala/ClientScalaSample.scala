@@ -43,5 +43,7 @@ object ClientScalaSample extends FeedUnmarshaller[String] {
     println(s"received no extra entries => position has not changed = ${lastPos.map(_.toString).getOrElse("no position")}")
 
     provider.stop()
+
+
   }
 }

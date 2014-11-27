@@ -2,19 +2,10 @@ package be.vlaanderen.awv.atom
 
 import com.typesafe.scalalogging.slf4j.Logging
 import resource.Resource
+
 import scala.language.implicitConversions
 import scala.util.Try
 
-/**
- * A feed provider is responsible for providing the feed pages.
- *
- * Currently, Atomium comes with 1 implementation out-of-the-box, a provider that uses the Play WS API for fetching feed
- * pages via HTTP, [[be.vlaanderen.awv.atom.providers.PlayWsBlockingFeedProvider]].
- *
- * When fetching the feed pages, a feed provider should return a [[scala.util.Try]] instead of throwing an exception.
- *
- * @tparam T the type of the entries in the feed
- */
 trait FeedProvider[T]  {
   def initialPosition: Option[FeedPosition]
 

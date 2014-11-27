@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom.jformat;
+package be.vlaanderen.awv.atom;
 
 import be.vlaanderen.awv.atom.Adapters.AtomDateTimeAdapter;
 import org.joda.time.LocalDateTime;

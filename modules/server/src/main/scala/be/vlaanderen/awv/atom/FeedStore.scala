@@ -35,6 +35,14 @@ trait FeedStore[E] {
   def push(entries: Iterable[E])
 
   /**
+   * push a single entry to the feed
+   * @param entry the entry to push to the feed
+   */
+  def push(entry: E): Unit = {
+    push(List(entry))
+  }
+
+  /**
    * This method is called when the [[be.vlaanderen.awv.atom.FeedService]] is started.
    * This can be used as a hook (to check consistency, for example)
    */

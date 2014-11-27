@@ -5,9 +5,10 @@
 
 package be.vlaanderen.awv.atom.java;
 
+import be.vlaanderen.awv.atom.JFeed;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
 import java.io.File;
@@ -20,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JacksonParseAtomFeedTest {
 
     private ObjectMapper mapper = new ObjectMapper();
-    private static final AtomFeedTo<EventFeedEntryTo> MAPPED_TYPE = new AtomFeedTo<EventFeedEntryTo>();
 
     @Test
     public void testParseAtomJson() throws Exception {
@@ -28,13 +28,13 @@ public class JacksonParseAtomFeedTest {
                 new File(this.getClass().getClassLoader().getResource(
                         "be/vlaanderen/awv/atom/java/atom-feed-sample.txt").getFile()));
 
-        AtomFeedTo feed = mapper.readValue(json, new TypeReference<AtomFeedTo<EventFeedEntryTo>>() { });
+        JFeed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<JFeed<EventFeedEntryTo>>() { });
 
-        System.out.println(feed.getEntries()[0].getContent().getRawType());
-        System.out.println(feed.getEntries()[0].getContent().getValue().getClass());
-        System.out.println(feed.getEntries()[0].getContent().getValue());
         assertThat(feed).isNotNull();
-        assertThat(feed.getEntries()[0].getContent().getValue()).isInstanceOf(EventFeedEntryTo.class);
+        System.out.println(feed.getEntries().get(0).getContent().getType());
+        System.out.println(feed.getEntries().get(0).getContent().getValue().getClass());
+        System.out.println(feed.getEntries().get(0).getContent().getValue());
+        assertThat(feed.getEntries().get(0).getContent().getValue()).isInstanceOf(EventFeedEntryTo.class);
     }
 
 }
