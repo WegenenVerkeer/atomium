@@ -1,23 +1,31 @@
-import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.format.Entry
-import be.vlaanderen.awv.atom.providers.PlayWsBlockingFeedProvider
-import com.sun.jersey.api.json.{JSONConfiguration, JSONJAXBContext}
+import javax.xml.bind.JAXBContext
 
-import scala.collection.JavaConversions._
+import be.vlaanderen.awv.atom.Marshallers.{XmlUnmarshaller, JsonUnmarshaller}
+import be.vlaanderen.awv.atom._
+import be.vlaanderen.awv.atom.providers.PlayWsBlockingFeedProvider
+import com.fasterxml.jackson.core.`type`.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.joda.JodaModule
+import support.{JaxbSupport, JacksonSupport}
+
 import scala.util.Success
 
 /**
  * This is a scala atomium client example, which use the PlayWsBlockingFeedProvider to process a feed
  * You MUST first start the atomium server play app
  */
-object ClientScalaSample {
+object ClientScalaSample extends FeedUnmarshaller[String] {
 
-  val config: JSONConfiguration = JSONConfiguration.mapped.rootUnwrapping(true).
-    xml2JsonNs(Map("http://www.w3.org/2005/Atom" -> "", "http://www.w3.org/XML/1998/namespace" -> "")).arrays("link", "entry").build
-  implicit val jsonJaxbContext = new JSONJAXBContext(config, "be.vlaanderen.awv.atom.jformat")
+  implicit val jaxbContext = JAXBContext.newInstance("be.vlaanderen.awv.atom")
+  val xmlUnmarshaller : XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
+
+  private val objectMapper: ObjectMapper = new ObjectMapper()
+  objectMapper.registerModule(new JodaModule)
+  implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
+  val jsonUnmarshaller : JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
 
   def main(args: Array[String]) {
-    val provider: PlayWsBlockingFeedProvider[String] = new PlayWsBlockingFeedProvider[String]("http://localhost:9000/feeds/my_feed", None)
+    val provider: PlayWsBlockingFeedProvider[String] = new PlayWsBlockingFeedProvider[String]("http://localhost:9000/feeds/my_feed", None, this, "application/xml")
     var lastPos: Option[FeedPosition] = None
     val processor = new FeedProcessor(provider, new EntryConsumer[String] {
       override def apply(pos: FeedPosition, entry: Entry[String]): FeedProcessingResult = {

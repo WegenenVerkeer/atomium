@@ -8,7 +8,7 @@ class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: String, mapper: 
     case _ => Some(title)
   }, urlProvider) {
 
-  override def underlying: be.vlaanderen.awv.atom.FeedStore[E] = new be.vlaanderen.awv.atom.JdbcFeedStore[E](
+  override def underlying: be.vlaanderen.awv.atom.AbstractFeedStore[E] = new be.vlaanderen.awv.atom.JdbcFeedStore[E](
     c = c,
     feedName = feedName,
     title = title match {

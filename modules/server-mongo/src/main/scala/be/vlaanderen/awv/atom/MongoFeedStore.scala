@@ -5,10 +5,10 @@ import _root_.java.util.UUID
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.{DBObject, casbah}
-import org.joda.time.LocalDateTime
+import org.joda.time.{DateTime, LocalDateTime}
 
 /**
- * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
+ * [[be.vlaanderen.awv.atom.AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
  *
  * @param c the context implementation
  * @param feedEntriesCollectionName name of the entriesCollection that contains the feed entries
@@ -23,7 +23,7 @@ class MongoFeedStore[E](c: MongoContext,
                         title: Option[String] = None,
                         feedEntriesCollectionName: Option[String] = None,
                         feedInfoCollectionName: String,
-                        ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E](feedName, title, urlProvider) {
+                        ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlProvider) {
   import be.vlaanderen.awv.atom.MongoFeedStore._
 
   lazy val context = c
@@ -40,9 +40,8 @@ class MongoFeedStore[E](c: MongoContext,
     query = MongoDBObject(Keys._Id -> feedName), //where _id = feedName
     fields = MongoDBObject(), //return all elements
     sort = MongoDBObject(), //no sorting
-    update = $setOnInsert(Keys.Sequence -> 1, Keys._Id -> feedName), //dbo to create if not exists
+    update = $setOnInsert(Keys.Sequence -> 0), //create with seq -> 1 if not exists
     remove = false, returnNew = true, upsert = true)
-
 
   protected def feedEntry2DbObject(e: E) = MongoDBObject(
     Keys.Uuid -> UUID.randomUUID().toString,
@@ -52,19 +51,18 @@ class MongoFeedStore[E](c: MongoContext,
 
   protected def dbObject2FeedEntry(dbo: DBObject): Entry[E]  = {
     val entryDbo = dbo.as[DBObject](Keys.Content)
-    Entry(dbo.as[String](Keys.Uuid), dbo.as[LocalDateTime](Keys.Timestamp), Content(deser(entryDbo), ""), Nil)
+    Entry(dbo.as[String](Keys.Uuid), dbo.as[DateTime](Keys.Timestamp).toLocalDateTime, Content(deser(entryDbo), ""), Nil)
   }
 
   /**
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  override def push(entries: Iterable[E]): Unit =
-    entries foreach { entry =>
-      entriesCollection.update(MongoDBObject(Keys._Id -> getNextSequence),
-        feedEntry2DbObject(entry),
-        upsert = false, multi = false, WriteConcern.Safe)
+  override def push(entries: Iterable[E]): Unit = {
+    entries foreach {entry =>
+      entriesCollection.insert(feedEntry2DbObject(entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
     }
+  }
 
   /**
    * return pageSize entries starting from start
@@ -72,8 +70,8 @@ class MongoFeedStore[E](c: MongoContext,
    * @param pageSize the number of entries to return
    * @return
    */
-  override def getFeedEntries(start: Int, pageSize: Int): List[Entry[E]] = {
-    entriesCollection.find().sort(MongoDBObject(Keys.Sequence -> -1)).drop(start).take(pageSize).toList.reverse.map(dbObject2FeedEntry)
+  override def getFeedEntries(start: Long, pageSize: Int): List[Entry[E]] = {
+    entriesCollection.find(Keys._Id $gte start $lt start+pageSize).sort(MongoDBObject(Keys._Id -> 1)).take(pageSize).toList.reverse.map(dbObject2FeedEntry)
   }
 
   @annotation.tailrec
@@ -90,16 +88,16 @@ class MongoFeedStore[E](c: MongoContext,
       query = MongoDBObject(Keys._Id -> feedName), //where _id = feedName
       fields = MongoDBObject(Keys.Sequence -> 1), //only return seq
       sort = MongoDBObject(), //no sorting
-      update = $inc("seq" -> 1), //increment seq by 1
+      update = $inc(Keys.Sequence -> 1), //increment seq by 1
       remove = false, returnNew = true, upsert = false)
 
-    retry(5)(_getNextSequence).get(Keys.Sequence).asInstanceOf[Long]
+    retry(5)(_getNextSequence).as[Int](Keys.Sequence).toLong
   }
 
   def maxId: Long = {
-    entriesCollection.find().sort(MongoDBObject(Keys.Sequence -> -1)).limit(1).toList match {
-      case h :: Nil => h.get(Keys.Sequence).asInstanceOf[Long]
-      case _ => 0
+    entriesCollection.find().sort(MongoDBObject(Keys._Id -> -1)).limit(1).toList match {
+      case h :: Nil => h.as[Long](Keys._Id)
+      case _ => 0L
     }
   }
 
@@ -112,9 +110,5 @@ object MongoFeedStore {
     lazy val Uuid = "uuid"
     lazy val Timestamp = "timestamp"
     lazy val Content = "content"
-
-    lazy val Feed = "feed"
-    lazy val Count = "count"
-    lazy val LastPage = "last_page"
   }
 }
