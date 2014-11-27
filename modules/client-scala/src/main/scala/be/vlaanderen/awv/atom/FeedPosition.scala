@@ -1,6 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Url
 import java.net.URI
 
 /**

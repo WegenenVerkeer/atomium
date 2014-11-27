@@ -1,4 +1,4 @@
-package be.vlaanderen.awv.atom;
+package be.vlaanderen.awv.atom.jformat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.w3c.dom.Element;

@@ -1,6 +1,8 @@
 package be.vlaanderen.awv.atom
 
 import java.net.URI
+
+import java.net.URI
 import org.joda.time.LocalDateTime
 
 /**

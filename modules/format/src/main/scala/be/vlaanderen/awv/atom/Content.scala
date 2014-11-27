@@ -1,3 +1,3 @@
-package be.vlaanderen.awv.atom.format
+package be.vlaanderen.awv.atom
 
 case class Content[T](value: T, `type`: String)

@@ -1,5 +1,7 @@
 package be.vlaanderen.awv.atom
 
+import be.vlaanderen.awv.atom.jformat._
+
 import scala.collection.JavaConverters._
 
 object JFeedConverters {

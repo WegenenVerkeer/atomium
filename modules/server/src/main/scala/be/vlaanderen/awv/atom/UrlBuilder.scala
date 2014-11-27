@@ -1,7 +1,5 @@
 package be.vlaanderen.awv.atom
 
-import be.vlaanderen.awv.atom.format.Url
-
 /**
  * Responsible for creating URL's in an Atom feed.
  */
