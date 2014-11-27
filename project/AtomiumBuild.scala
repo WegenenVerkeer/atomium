@@ -48,17 +48,17 @@ object AtomiumBuild extends Build
 
 
   //----------------------------------------------------------------
-//  val serverMongoModuleName = Name + "-server-mongo"
-//  lazy val serverMongoModule = Project(
-//    serverMongoModuleName ,
-//    file("modules/server-mongo"),
-//    settings = buildSettings(serverMongoModuleName) ++ Seq(
-//      libraryDependencies ++= Seq(
-//        "org.mongodb" % "mongo-java-driver" % "2.0",
-//        "org.mongodb" %% "casbah" % "2.6.2"
-//      )
-//    )
-//  ).dependsOn(serverModule)
+  val serverMongoModuleName = Name + "-server-mongo"
+  lazy val serverMongoModule = Project(
+    serverMongoModuleName ,
+    file("modules/server-mongo"),
+    settings = buildSettings(serverMongoModuleName) ++ Seq(
+      libraryDependencies ++= Seq(
+        "org.mongodb" % "mongo-java-driver" % "2.0",
+        "org.mongodb" %% "casbah" % "2.6.2"
+      )
+    )
+  ).dependsOn(serverModule)
 
 
 
@@ -94,8 +94,6 @@ object AtomiumBuild extends Build
       libraryDependencies ++= Seq(
         "org.slf4j" % "slf4j-api" % "1.7.6", // to be able to exclude logback from runtime dependencies
         "ch.qos.logback" % "logback-classic" % "1.1.1" % "test", // should  be slf4j only
-        "com.typesafe.play" %%  "play-json" % "2.3.0" % "provided", // not needed here
-        "org.projectlombok" % "lombok" % "1.14.4" % "provided",
         "org.mockito" % "mockito-core" % "1.9.5" % "test",
         "org.assertj" % "assertj-core" % "1.5.0" % "test",
         "be.eliwan" % "jfaker-mockito" % "0.1" % "test",
@@ -112,6 +110,7 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, /*serverMongoModuleName, */serverJdbcModule,
-    serverPlayModule)
+  ).aggregate(javaFormatModuleName, formatModule,
+      clientScalaModule, clientJavaModule,
+      serverModule, serverMongoModuleName, serverJdbcModule, serverPlayModule)
 }

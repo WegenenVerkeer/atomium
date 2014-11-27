@@ -1,18 +1,26 @@
 package be.vlaanderen.awv.atom.java
 
-import be.vlaanderen.awv.atom.{Feed, UrlBuilder, Context}
+import be.vlaanderen.awv.atom.{Entry, Feed, UrlBuilder, Context}
 
 /**
  * Wrapper wround the [[be.vlaanderen.awv.atom.FeedStore]] that offers a Java-like interface.
  *
  * @tparam E type of the elements in the feed
  */
-abstract class FeedStore[E] extends be.vlaanderen.awv.atom.FeedStore[E] {
+abstract class FeedStore[E](feedName: String, title: Option[String], urlProvider: UrlBuilder)
+  extends be.vlaanderen.awv.atom.FeedStore[E](feedName, title, urlProvider) {
+
   def underlying: be.vlaanderen.awv.atom.FeedStore[E]
 
   override def context: Context = underlying.context
 
-  override def urlProvider: UrlBuilder = underlying.urlProvider
+  /**
+   * return pageSize entries starting from start
+   * @param start the start entry
+   * @param pageSize the number of entries to return
+   * @return
+   */
+  override def getFeedEntries(start:Int, pageSize: Int): List[Entry[E]] = underlying.getFeedEntries(start, pageSize)
 
   /**
    * Retrieves a page of the feed.
@@ -35,5 +43,7 @@ abstract class FeedStore[E] extends be.vlaanderen.awv.atom.FeedStore[E] {
    * @param entries the entries to push to the feed
    */
   override def push(entries: Iterable[E]) = underlying.push(entries)
+
+  override def maxId: Long = underlying.maxId
 
 }

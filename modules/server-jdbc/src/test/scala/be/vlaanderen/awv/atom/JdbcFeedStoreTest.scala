@@ -2,7 +2,7 @@ package be.vlaanderen.awv.atom
 
 import be.vlaanderen.awv.atom.models._
 import be.vlaanderen.awv.atom.slick.SlickPostgresDriver.simple._
-import org.joda.time.{DateTime, DateTimeUtils, LocalDateTime}
+import org.joda.time.{LocalDateTime, DateTimeUtils}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -70,7 +70,7 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     //validate last feed page = oldest page
     val lastPage = feedStore.getFeed(0, 2).get
     lastPage.title should be (Some("Test"))
-    lastPage.updated should be (new DateTime())
+    lastPage.updated should be (new LocalDateTime())
     lastPage.selfLink.href should be (Url("/0/2"))
     lastPage.lastLink.map(_.href) should be (Some(Url("/0/2")))
     lastPage.previousLink.map(_.href) should be (Some(Url("/2/2")))
@@ -105,4 +105,5 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     newHeadPage should be(newFirstPage)
 
   }
+
 }

@@ -1,7 +1,7 @@
 package be.vlaanderen.awv.atom
 
 import java.net.URI
-import org.joda.time.DateTime
+import org.joda.time.LocalDateTime
 
 /**
  * Representation of a (page in an) Atom feed.
@@ -19,7 +19,7 @@ case class Feed[T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,
-                   updated: DateTime,
+                   updated: LocalDateTime,
                    links: List[Link],
                    entries: List[Entry[T]],
                    headers: Map[String, String] = Map.empty) {

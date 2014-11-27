@@ -2,14 +2,13 @@ package be.vlaanderen.awv.atom;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import lombok.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,9 +18,9 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -57,36 +56,34 @@ public class JFeedSerializationTest {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         jaxbContext = JAXBContext.newInstance(JFeed.class, JLink.class, Customer.class);
 
-        DateTime dateTime = new DateTime(DateTimeZone.forTimeZone(TimeZone.getDefault())).withMillisOfSecond(0);
+        LocalDateTime LocalDateTime = new LocalDateTime().withMillisOfSecond(0);
 
-        stringsFeed = new JFeed();
-        stringsFeed.setBase("http://www.example.org");
-        stringsFeed.setId("urn:id:"+ UUID.randomUUID().toString());
-        stringsFeed.setTitle("strings of life");
-        stringsFeed.setUpdated(dateTime.withMillisOfSecond(0));
-        JLink selfLink = new JLink("self", "foo");
-        stringsFeed.getLinks().add(selfLink);
-        stringsFeed.getEntries().add(new JEntry(new JContent<>("foo", "text/plain")));
-        stringsFeed.getEntries().add(new JEntry(new JContent<>("<html><p>bla</p></html>", "text/html"))); //this will be escaped in xml but not in json
-        stringsFeed.getEntries().add(new JEntry(new JContent<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"))); // \n will be escaped in json not in xml
-        stringsFeed.getEntries().add(new JEntry(new JContent<>("{'foo': 'bar'}", "application/json"))); // json text will be quoted in json not in xml
+        stringsFeed = new JFeed("urn:id:"+ UUID.randomUUID().toString(),
+                "http://www.example.org",
+                "strings of life",
+                null,
+                LocalDateTime);
+        stringsFeed.getLinks().add(new JLink("self", "foo"));
+        stringsFeed.getEntries().add(new JEntry("id1", new JContent<>("foo", "text/plain")));
+        stringsFeed.getEntries().add(new JEntry("id2", new JContent<>("<html><p>bla</p></html>", "text/html"))); //this will be escaped in xml but not in json
+        stringsFeed.getEntries().add(new JEntry("id3", new JContent<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"))); // \n will be escaped in json not in xml
+        stringsFeed.getEntries().add(new JEntry("id4", new JContent<>("{'foo': 'bar'}", "application/json"))); // json text will be quoted in json not in xml
 
-        customersFeed = new JFeed();
-        customersFeed.setBase("http://www.example.org");
-        customersFeed.setGenerator(new JGenerator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"));
-        customersFeed.setId("urn:id:" + UUID.randomUUID().toString());
-        customersFeed.setTitle("customers");
-        customersFeed.setUpdated(dateTime);
-        customersFeed.getLinks().add(selfLink);
-        customersFeed.getEntries().add(new JEntry(new JContent<>(customer, "application/xml")));
+        customersFeed = new JFeed("urn:id:" + UUID.randomUUID().toString(),
+                "http://www.example.org",
+                "customers",
+                new JGenerator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
+                LocalDateTime);
+        customersFeed.getLinks().add(new JLink("self", "foo"));
+        customersFeed.getEntries().add(new JEntry("id", new JContent<>(customer, "application/xml")));
 
         jaxbElementFeed = new JFeed();
         jaxbElementFeed.setId("urn:id:" + UUID.randomUUID().toString());
-        jaxbElementFeed.setUpdated(dateTime);
+        jaxbElementFeed.setUpdated(LocalDateTime);
         JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
-        jaxbElementFeed.getEntries().add(new JEntry(new JContent(jaxbElement, "application/xml")));
+        jaxbElementFeed.getEntries().add(new JEntry("id1", new JContent(jaxbElement, "application/xml")));
         JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
-        jaxbElementFeed.getEntries().add(new JEntry(new JContent(jaxbElement2, "application/xml")));
+        jaxbElementFeed.getEntries().add(new JEntry("id2", new JContent(jaxbElement2, "application/xml")));
 
     }
 
@@ -112,8 +109,8 @@ public class JFeedSerializationTest {
         String xml = marshalToXml(feed);
         System.out.println(xml);
         JFeed feedFromXml = unmarshalFromXml(xml);
-        JContent.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller(jaxbContext, Integer.class));
-        assertEquals(feed.getUpdated().getMillis(), feedFromXml.getUpdated().getMillis());
+        JContent.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<Integer>(jaxbContext, Integer.class));
+        assertEquals(feed.getUpdated(), feedFromXml.getUpdated());
         feedFromXml.setUpdated(feed.getUpdated());
         assertEquals(feed, feedFromXml);
     }
@@ -122,7 +119,7 @@ public class JFeedSerializationTest {
         String json = marshalToJson(feed);
         System.out.println(json);
         JFeed feedFromJson = unmarshalFromJson(json, typeReference);
-        assertEquals(feed.getUpdated().getMillis(), feedFromJson.getUpdated().getMillis());
+        assertEquals(feed.getUpdated(), feedFromJson.getUpdated());
         feedFromJson.setUpdated(feed.getUpdated());
         assertEquals(feed, feedFromJson);
     }

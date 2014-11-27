@@ -4,19 +4,17 @@ import scala.collection.JavaConverters._
 
 object JFeedConverters {
 
-  implicit def feed2JFeed[T](feed: Feed[T]): JFeed[T] = {
-    val jfeed = new JFeed[T]
-    jfeed.setBase(feed.base.path)
-    jfeed.setId(feed.id)
-    jfeed.setTitle(feed.title.orNull)
-    jfeed.setGenerator(feed.generator match {
-      case Some(generator) => generator2JGenerator(generator)
-      case None => null
-    })
-    jfeed.setUpdated(feed.updated)
-    jfeed.setLinks(feed.links.map(l => new JLink(l.rel, l.href.path)).asJava)
-    jfeed.setEntries(feed.entries.map(e => entry2JEntry(e)).asJava)
-    jfeed
+  def feed2JFeed[T](feed: Feed[T]): JFeed[T] = {
+    new JFeed[T](feed.id,
+      feed.base.path,
+      feed.title.orNull,
+      feed.generator match {
+        case Some(generator) => generator2JGenerator(generator)
+        case None => null
+      },
+      feed.updated,
+      feed.links.map(l => new JLink(l.rel, l.href.path)).asJava,
+      feed.entries.map(e => entry2JEntry(e)).asJava)
   }
 
   implicit def generator2JGenerator(generator: Generator): JGenerator = {
@@ -25,7 +23,7 @@ object JFeedConverters {
   }
 
   implicit def entry2JEntry[T](entry: Entry[T]): JEntry[T] = {
-    new JEntry[T](new JContent[T](entry.content.value, entry.content.`type`),
+    new JEntry[T](entry.id, entry.updated, new JContent[T](entry.content.value, entry.content.`type`),
       entry.links.map(l => new JLink(l.rel, l.href.path)).asJava)
   }
 
@@ -43,8 +41,8 @@ object JFeedConverters {
     }
   }
 
-  implicit def jEntry2Entry[T](jEntry: JEntry[T]): Entry[T] = {
-    Entry[T](Content[T](jEntry.getContent.getValue, jEntry.getContent.getType),
+  def jEntry2Entry[T](jEntry: JEntry[T]): Entry[T] = {
+    Entry[T](jEntry.getId, jEntry.getUpdated, Content[T](jEntry.getContent.getValue, jEntry.getContent.getType),
     jEntry.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList)
   }
 }

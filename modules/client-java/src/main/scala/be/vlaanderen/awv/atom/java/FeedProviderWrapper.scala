@@ -1,7 +1,7 @@
 package be.vlaanderen.awv.atom.java
 
 import be.vlaanderen.awv.atom.java.{FeedProvider => JFeedProvider}
-import be.vlaanderen.awv.atom.{Feed, FeedPosition}
+import be.vlaanderen.awv.atom.{JFeedConverters, Feed, FeedPosition}
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.util.{Failure, Success, Try}
@@ -17,7 +17,7 @@ class FeedProviderWrapper[E](underlying: JFeedProvider[E])
 
   override def fetchFeed(): Try[Feed[E]] = {
     try {
-      Success(underlying.fetchFeed)
+      Success(JFeedConverters.jFeed2Feed(underlying.fetchFeed))
     } catch {
       case ex:Exception => Failure(ex)
     }
@@ -25,7 +25,7 @@ class FeedProviderWrapper[E](underlying: JFeedProvider[E])
 
   def fetchFeed(page: String): Try[Feed[E]] = {
     try {
-      Success(underlying.fetchFeed(page))
+      Success(JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
     } catch {
       case ex:Exception =>
         Failure(ex)

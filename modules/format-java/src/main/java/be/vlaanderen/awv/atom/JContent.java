@@ -1,7 +1,6 @@
 package be.vlaanderen.awv.atom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBElement;

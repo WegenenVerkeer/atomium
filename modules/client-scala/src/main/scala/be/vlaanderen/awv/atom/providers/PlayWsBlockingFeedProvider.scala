@@ -3,7 +3,7 @@ package be.vlaanderen.awv.atom.providers
 import be.vlaanderen.awv.atom._
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
-import org.joda.time.DateTime
+import org.joda.time.LocalDateTime
 import play.api.http.HeaderNames
 import play.api.libs.ws.{WS, WSClient}
 
@@ -121,7 +121,7 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
       res.status match {
         case 200 =>
           feedUnmarshaller.unmarshal(res.header(HeaderNames.CONTENT_TYPE), res.body).map(_.copy(headers = transformHeaders(res.allHeaders)))
-        case 304 => Success(new Feed[T]("id", Url(url), None, None, new DateTime(),
+        case 304 => Success(new Feed[T]("id", Url(url), None, None, new LocalDateTime(),
           List(Link(Link.selfLink, Url(url))), Nil))
         case _   => Failure(new FeedProcessingException(None, s"${res.status}: ${res.statusText}"))
       }

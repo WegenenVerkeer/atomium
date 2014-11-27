@@ -67,7 +67,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Logging {
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
     (headers get IF_NONE_MATCH exists { _ == f.calcETag }) ||
     (headers get IF_MODIFIED_SINCE exists { dateStr => try {
-        f.updated.isBefore(rfcFormat.parseDateTime(dateStr))
+        f.updated.toDateTime.isBefore(rfcFormat.parseDateTime(dateStr))
       } catch {
         case e: IllegalArgumentException =>
           logger.error(e.getMessage, e)

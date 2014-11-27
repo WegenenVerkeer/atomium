@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{SerializationFeature, ObjectMapper}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import mockws._
-import org.joda.time.DateTime
+import org.joda.time.LocalDateTime
 import org.scalatest.{FunSuite, Matchers}
 import play.api.mvc.Action
 import play.api.mvc.Results._
@@ -58,7 +58,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
     }
   }
 
-  val updated = Adapters.outputFormatterWithSecondsAndOptionalTZ.print(new DateTime())
+  val updated = Adapters.outputFormatterWithSecondsAndOptionalTZ.print(new LocalDateTime())
 
   val page1: String = """{
                         |  "base" : "http://example.com",
