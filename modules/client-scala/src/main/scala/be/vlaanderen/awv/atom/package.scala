@@ -18,7 +18,7 @@ package object atom {
     def unmarshal(contentType: Option[String], body: String): Try[Feed[T]] = {
       try {
         contentType match {
-          case Some("application/json") => Success(jsonUnmarshaller(body))
+          case Some(contentType) if contentType.startsWith("application/json") => Success(jsonUnmarshaller(body))
           case _ => Success(xmlUnmarshaller(body))
         }
       } catch {

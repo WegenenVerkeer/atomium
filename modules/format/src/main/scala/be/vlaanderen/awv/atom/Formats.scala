@@ -30,7 +30,8 @@ object Formats {
   }
 
   implicit val jodaDateWrites: Writes[LocalDateTime] = new Writes[LocalDateTime] {
-    override def writes(d: LocalDateTime): JsValue = JsString(df.print(d))
+    override def writes(d: LocalDateTime): JsValue =
+      JsNumber(d.toDate.getTime)
   }
 
   implicit val urlFormat = new Format[Url] {

@@ -11,7 +11,7 @@ package be.vlaanderen.awv.atom
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
+class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => AbstractFeedStore[E]) {
 
   /**
    * Adds elements to the feed.
@@ -42,7 +42,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
    *         because this defeats the caching heuristics. Clients should navigate using the links in the atom feed
    */
   def getFeedPage(start: Int, pageSize:Int)(implicit context: C):Option[Feed[E]] = {
-    if (pageSize == entriesPerPage && start % pageSize == 0) {
+    if (pageSize == entriesPerPage && start % pageSize == 1) {
       feedStoreFactory(feedName, context).getFeed(start, pageSize)
     } else {
       None

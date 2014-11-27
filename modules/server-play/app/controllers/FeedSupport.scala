@@ -43,7 +43,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Logging {
           logger.info("sending response: 304 Not-Modified")
           NotModified
         } else {
-          val result: Result = Ok(f).
+          val result: Result = Ok(f.copy(generator = Some(generator))).
             withHeaders(LAST_MODIFIED -> rfcFormat.print(f.updated), ETAG -> f.calcETag)
           logger.info("sending response: 200 Found")
           //add extra cache headers or forbid caching
