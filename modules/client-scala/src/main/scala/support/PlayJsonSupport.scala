@@ -5,7 +5,7 @@ import play.api.libs.json.{Writes, Json, Reads}
 
 object PlayJsonSupport {
 
-  def jsonUnmarshaller[T <:AnyRef](implicit fmt: Reads[T]): JsonUnmarshaller[T] = {
+  def jsonUnmarshaller[T <:AnyRef](implicit reads: Reads[T]): JsonUnmarshaller[T] = {
     json => Json.parse(json).as[T]
   }
 

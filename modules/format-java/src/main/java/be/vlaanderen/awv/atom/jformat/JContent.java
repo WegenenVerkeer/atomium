@@ -1,10 +1,8 @@
-package be.vlaanderen.awv.atom.jformat;
+package be.vlaanderen.awv.atom;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.w3c.dom.Element;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.*;
@@ -25,18 +23,27 @@ public final class JContent<T> {
     }
 
     @XmlAttribute(name="type")
-    @Getter
     private String type;
 
-    @XmlAnyElement(lax = true) @XmlMixed
+    public String getType() {
+        return this.type;
+    }
+
+    @XmlAnyElement(lax = true) @XmlMixed @JsonIgnore
     private List objects = new ArrayList();
+
+    @XmlTransient
+    private T value;
 
     public JContent() {}
 
     public JContent(T value, String type) {
         this.type = type;
-        if (value.getClass().isAnnotationPresent(XmlRootElement.class) || value instanceof String || value instanceof JAXBElement) {
-            objects.add(value);
+        objects.add(value);
+        if (value.getClass().isAnnotationPresent(XmlRootElement.class) || value instanceof String) {
+            this.value = value;
+        } else if (value instanceof JAXBElement) {
+            this.value = ((JAXBElement<T>) value).getValue();
         } else {
             throw new IllegalArgumentException("type not supported "+value.getClass());
         }
@@ -53,7 +60,6 @@ public final class JContent<T> {
         T value = getValue();
         Object otherValue = jContent.getValue();
         if (value != null ? !value.equals(otherValue) : otherValue != null) return false;
-
         return true;
     }
 
@@ -66,13 +72,21 @@ public final class JContent<T> {
     }
 
     public T getValue() {
+        if (value == null) {
+            value = getValueFromObjects();
+        }
+        return value;
+    }
+
+    private T getValueFromObjects() {
         StringBuffer buffer = new StringBuffer();
         for (Object o : objects) {
             buffer.append(o.toString());
             if (o.getClass().isAnnotationPresent(XmlRootElement.class)) {
-                //this is already unmarshalled correctly
+                //xmlRootElements are already unmarshaled correctly
                 return (T) o;
             } else if (o instanceof JAXBElement) {
+                //get the value out of the JAXBElement wrapper
                 return (T) ((JAXBElement) o).getValue();
             } else if (o instanceof Element) {
                 if (jaxbElementUnmarshallerThreadLocal.get() != null) {
@@ -85,7 +99,7 @@ public final class JContent<T> {
                 return (T) o;
             }
         }
-        return  (T) buffer.toString();
+        return (T) buffer.toString();
     }
 
     public String toString() {

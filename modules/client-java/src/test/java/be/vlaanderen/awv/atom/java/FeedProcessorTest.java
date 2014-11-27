@@ -1,9 +1,10 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
-import be.vlaanderen.awv.atom.format.*;
-import org.joda.time.DateTime;
+import be.vlaanderen.awv.atom.jformat.*;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
+import play.libs.Scala;
 import scala.Some;
 import scala.collection.immutable.HashMap;
 
@@ -77,12 +78,12 @@ public class FeedProcessorTest {
         }
 
         @Override
-        public Feed<ExampleFeedEntry> fetchFeed() {
+        public JFeed<ExampleFeedEntry> fetchFeed() {
             return fetchFeed(getInitialPosition().url().path());
         }
 
         @Override
-        public Feed<ExampleFeedEntry> fetchFeed(String page) {
+        public JFeed<ExampleFeedEntry> fetchFeed(String page) {
             System.out.println("Fetching page " + page);
             int intPage = 0;
             //intPage = Integer.parseInt(page);  // @todo make it fail --- with message "null"
@@ -90,34 +91,30 @@ public class FeedProcessorTest {
             if (page.endsWith("/2")) intPage=2;
             if (page.endsWith("/3")) intPage=3;
 
-            List<Entry<ExampleFeedEntry>> entries = new ArrayList<Entry<ExampleFeedEntry>>();
-            List<Link> links = new ArrayList<Link>();
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(new ExampleFeedEntry(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
+            List<JEntry<ExampleFeedEntry>> entries = new ArrayList<JEntry<ExampleFeedEntry>>();
+            List<JLink> links = new ArrayList<JLink>();
+            entries.add(new JEntry<ExampleFeedEntry>("id1", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
+            entries.add(new JEntry<ExampleFeedEntry>("id2", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
+            entries.add(new JEntry<ExampleFeedEntry>("id3", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
 
-            List<Link> feedLinks = new ArrayList<Link>();
-            feedLinks.add(new Link("last", new Url(FEED_URL_PAGE1)));
-            feedLinks.add(new Link("self", new Url(FEED_URL + intPage)));
+            List<JLink> feedLinks = new ArrayList<JLink>();
+            feedLinks.add(new JLink("last", FEED_URL_PAGE1));
+            feedLinks.add(new JLink("self", FEED_URL + intPage));
             if (intPage < 3) {
-                feedLinks.add(new Link("previous", new Url(FEED_URL + (intPage + 1))));
+                feedLinks.add(new JLink("previous", FEED_URL + (intPage + 1)));
             }
             if (intPage > 0) {
-                feedLinks.add(new Link("next", new Url(FEED_URL + (intPage - 1))));
+                feedLinks.add(new JLink("next", FEED_URL + (intPage - 1)));
             }
 
-            Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
-                    new Url(FEED_URL),
-                    "",
-                    new Some("Blabla"),
+            JFeed<ExampleFeedEntry> feed = new JFeed<ExampleFeedEntry>(
+                    "id",
+                    FEED_URL,
+                    "Blabla",
                     null,
-                    new DateTime(),
-                    scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
-                    scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList(),
-                    new HashMap<String, String>()
+                    new LocalDateTime(),
+                feedLinks,
+                    entries
             );
             return feed;
         }

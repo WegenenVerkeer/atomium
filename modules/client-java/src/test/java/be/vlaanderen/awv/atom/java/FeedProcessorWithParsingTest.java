@@ -76,13 +76,13 @@ public class FeedProcessorWithParsingTest {
         }
 
         @Override
-        public Feed<EventFeedEntryTo> fetchFeed() {
+        public JFeed<EventFeedEntryTo> fetchFeed() {
             System.out.println("fetchFeed");
             return fetchFeed(FEED_URL);
         }
 
         @Override
-        public Feed<EventFeedEntryTo> fetchFeed(String page) {
+        public JFeed<EventFeedEntryTo> fetchFeed(String page) {
             System.out.println("Fetching page " + page);
 
             if (!FEED_URL.equals(page)) {
@@ -93,10 +93,8 @@ public class FeedProcessorWithParsingTest {
                 String json = FileUtils.readFileToString(
                         new File(this.getClass().getClassLoader().getResource(
                                 "be/vlaanderen/awv/atom/java/atom-feed-sample.txt").getFile()));
-                AtomFeedTo<EventFeedEntryTo> feed =
-                        mapper.readValue(json, new TypeReference<AtomFeedTo<EventFeedEntryTo>>() {});
-
-                return feed.toAtomium();
+                JFeed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<JFeed<EventFeedEntryTo>>() {});
+                return feed;
             } catch (IOException ioe) {
                 throw new FeedProcessingException(Some.<FeedPosition>empty(), "Cannot open template " + ioe.getMessage());
             }

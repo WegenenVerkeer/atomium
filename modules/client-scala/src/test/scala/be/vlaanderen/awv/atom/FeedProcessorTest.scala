@@ -1,8 +1,7 @@
 package be.vlaanderen.awv.atom
 
 
-import be.vlaanderen.awv.atom.format._
-import org.joda.time.DateTime
+import org.joda.time.LocalDateTime
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.annotation.tailrec
@@ -156,11 +155,11 @@ class FeedProcessorTest extends FunSuite with Matchers {
   def feed(url:String)(events:String*) : Feed[String] = {
     val entries = events.map { e =>
       val content = Content[String](e, "")
-      Entry[String](content, Nil)
+      Entry[String]("id", new LocalDateTime(), content, Nil)
     }
 
     val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
-    Feed(Url("http://www.example.org/feeds"), randomUuidUri, Option("title"), None, new DateTime(), links, entries.toList)
+    Feed("id", Url("http://www.example.org/feeds"), Option("title"), None, new LocalDateTime(), links, entries.toList)
   }
 
   def feedProvider(initialPosition:Option[FeedPosition],
