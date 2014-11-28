@@ -76,7 +76,7 @@ class MongoFeedStore[E](c: MongoContext,
 
   @annotation.tailrec
   private def retry[T](n: Int)(fn: => Option[T]): T = {
-    if (n == 0) throw new Exception("")
+    if (n == 0) throw new Exception("could not reetieve sequence number after retrying")
     fn match {
       case Some(x) => x
       case None => retry(n - 1)(fn)
