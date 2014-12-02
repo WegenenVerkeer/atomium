@@ -7,14 +7,12 @@ import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer
 
-class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String], contentType: String = "text/plain") extends AbstractFeedStore[T](feedName, title, new UrlBuilder {
+class MemoryFeedStore[T](feedName: String, urlBuilder: UrlBuilder, title : Option[String], contentType: String)
+  extends AbstractFeedStore[T](feedName, title, urlBuilder) {
 
-  override def base: Url = baseUrl
 
-  override def feedLink(start: Long, count: Int): Url = Url(feedName) / start.toString / count.toString
-
-  override def collectionLink: Url = ???
-}) {
+  def this(feedName: String, baseUrl: Url, title : Option[String], contentType: String = "text/plain") =
+    this(feedName, MemoryFeedStore.newUrlBuilder(baseUrl, feedName), title, contentType)
 
   val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
 
@@ -40,3 +38,13 @@ class MemoryFeedStore[T](feedName: String, baseUrl: Url, title : Option[String],
 
 }
 
+object MemoryFeedStore {
+  private def newUrlBuilder(baseUrl:Url, feedName:String) = new UrlBuilder {
+
+    override def base: Url = baseUrl
+
+    override def feedLink(start: Long, count: Int): Url = Url(feedName) / start.toString / count.toString
+
+    override def collectionLink: Url = ???
+  }
+}
