@@ -18,13 +18,19 @@ import support.{JacksonSupport, JaxbSupport}
 class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
 
   implicit val jaxbContext = JAXBContext.newInstance("be.vlaanderen.awv.atom")
-  val xmlUnmarshaller : XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
+  val xmlUnmarshaller: XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller
+                                                       .andThen(JFeedConverters.jFeed2Feed)
 
   private val objectMapper = new ObjectMapper()
+
   objectMapper.registerModule(new JodaModule)
+
   objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, false)
+
   implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
-  val jsonUnmarshaller : JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller.andThen(JFeedConverters.jFeed2Feed)
+
+  val jsonUnmarshaller: JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller
+                                                         .andThen(JFeedConverters.jFeed2Feed)
 
   test("Feed not found") {
     val notFoundRoute = Route {
@@ -33,8 +39,12 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
       }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this,
-        wsClient = Some(MockWS(notFoundRoute))),
+      provider = new PlayWsBlockingFeedProvider[String](
+        feedUrl = "http://example.com/feed",
+        feedPosition = None,
+        feedUnmarshaller = this,
+        wsClient = Some(MockWS(notFoundRoute))
+      ),
       consumedEvents = List(),
       finalPosition = None
     ) assertResult { result =>
@@ -49,8 +59,12 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
       }
     }
     Scenario(
-      provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this,
-        wsClient = Some(MockWS(emptyRoute))),
+      provider = new PlayWsBlockingFeedProvider[String](
+        feedUrl = "http://example.com/feed",
+        feedPosition = None,
+        feedUnmarshaller = this,
+        wsClient = Some(MockWS(emptyRoute))
+      ),
       consumedEvents = List(),
       finalPosition = None
     ) assertResult { result =>
@@ -96,10 +110,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   test("feed is consumed from begin to end") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) => Action { NotFound(s"$u not found") }
+      case (GET, u) if u === "http://example.com/feed" => Action {
+        Ok(page2).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) if u === "http://example.com/feed/1" => Action {
+        Ok(page1).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) if u === "http://example.com/feed/2" => Action {
+        Ok(page2).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) => Action {NotFound(s"$u not found")}
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this, wsClient = Some(MockWS(route))),
@@ -111,10 +131,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   test("feed is consumed from initialPosition to end") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed" => Action  { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) if u === "http://example.com/feed/1" => Action  { Ok(page1).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) => Action { NotFound(s"$u not found") }
+      case (GET, u) if u === "http://example.com/feed" => Action {
+        Ok(page2).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) if u === "http://example.com/feed/1" => Action {
+        Ok(page1).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) if u === "http://example.com/feed/2" => Action {
+        Ok(page2).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) => Action {NotFound(s"$u not found")}
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
@@ -127,8 +153,10 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   test("initialPosition is start of feed (all entries consumed) so no new entries need to be processed") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed/2" => Action { Ok(page2).withHeaders(CONTENT_TYPE -> "application/json") }
-      case (GET, u) => Action { NotFound(s"$u not found") }
+      case (GET, u) if u === "http://example.com/feed/2" => Action {
+        Ok(page2).withHeaders(CONTENT_TYPE -> "application/json")
+      }
+      case (GET, u) => Action {NotFound(s"$u not found")}
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
@@ -142,8 +170,8 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   test("feed head has not changed") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed" => Action  { NotModified }
-      case (GET, u) => Action { NotFound(s"$u not found") }
+      case (GET, u) if u === "http://example.com/feed" => Action {NotModified}
+      case (GET, u) => Action {NotFound(s"$u not found")}
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed", None, this, wsClient = Some(MockWS(route))),
@@ -156,8 +184,8 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   test("feed page has not changed") {
     val route = Route {
-      case (GET, u) if u === "http://example.com/feed/1" => Action  { NotModified }
-      case (GET, u) => Action { NotFound(s"$u not found") }
+      case (GET, u) if u === "http://example.com/feed/1" => Action {NotModified}
+      case (GET, u) => Action {NotFound(s"$u not found")}
     }
     Scenario(
       provider = new PlayWsBlockingFeedProvider[String]("http://example.com/feed",
@@ -169,12 +197,12 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
     }
   }
 
-  case class Scenario(provider:PlayWsBlockingFeedProvider[String],
-                      consumedEvents:List[String],
-                      finalPosition:Option[FeedPosition]) {
+  case class Scenario(provider: PlayWsBlockingFeedProvider[String],
+                      consumedEvents: List[String],
+                      finalPosition: Option[FeedPosition]) {
 
     val consumer = new StatefulEntryConsumer
-    val process = new FeedProcessor[String](provider, consumer)
+    val process  = new FeedProcessor[String](provider, consumer)
 
     val result = process.start()
 
