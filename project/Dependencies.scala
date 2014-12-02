@@ -12,7 +12,11 @@ object Dependencies {
   )
 
   val mainTestDependencies = Seq (
-    "org.scalatest"           %% "scalatest"              % "2.2.0"    % "test"  
+    "org.scalatest"            %% "scalatest"              % "2.2.0"    % "test",
+    "com.github.simplyscala"   %% "scalatest-embedmongo"   % "0.2.2"    % "test",
+    "com.h2database"           %  "h2"                     % "1.0.60"   % "test",
+    "de.leanovate.play-mockws" %% "play-mockws"            % "0.12"     % "test",
+    "com.typesafe.play"        %% "play-test"              % "2.3.0"    % "test"
   )
 
   val clientScalaDependencies = Seq (
@@ -20,6 +24,9 @@ object Dependencies {
   )
 
   val javaDependencies = Seq (
-    "junit" % "junit" % "4.11" % "test"
+    "junit" % "junit" % "4.11" % "test",
+    "org.projectlombok" % "lombok" % "1.14.4" % "test",
+    "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.3",
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % "2.4.3"
   )
 }

@@ -7,10 +7,11 @@ trait UrlBuilder {
   /**
    * Creates a link to a feed page.
    *
-   * @param id the page ID
+   * @param start the starting entry
+   * @param count the number of entries in the page             
    * @return the URL
    */
-  def feedLink(id: Long): Url
+  def feedLink(start:Long, count: Int): Url
 
   /**
    * Creates a link to a feed.

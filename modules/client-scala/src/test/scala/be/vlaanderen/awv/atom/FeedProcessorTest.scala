@@ -1,31 +1,16 @@
 package be.vlaanderen.awv.atom
 
 
-import org.scalatest.{Matchers, FunSuite}
+import org.joda.time.LocalDateTime
+import org.scalatest.{FunSuite, Matchers}
+
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 class FeedProcessorTest extends FunSuite with Matchers {
 
   type StringFeed = Feed[String]
   type Feeds = List[StringFeed]
-
-
-
-  class StatefulEntryConsumer extends EntryConsumer[String] {
-    var finalPosition:Option[FeedPosition] = None
-    var consumedEvents = new mutable.ListBuffer[String]
-
-    override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-      finalPosition = Option(position)
-      eventEntry.content.value.foreach { e =>
-        consumedEvents += e
-      }
-      Success()
-    }
-  }
-
 
   case class Scenario(provider:TestFeedProvider,
                       consumedEvents:List[String],
@@ -58,66 +43,66 @@ class FeedProcessorTest extends FunSuite with Matchers {
   test("Feed is consumed from begin to end") {
     Scenario(
       provider = feedProvider(initialPosition = None,
-        feed("/feed/1")("a1", "b1", "c1"),
-        feed("/feed/2")("a2", "b2", "c2"),
-        feed("/feed/3")("a3", "b3", "c3")
+        feed("feed/0/3")("a1", "b1", "c1"),
+        feed("feed/3/3")("a2", "b2", "c2"),
+        feed("feed/6/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
+      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
     )
   }
 
-  test("Feed is consumed from position [/feed/2,1] until end") {
+  test("Feed is consumed from position [/feed/3/3,1] until end") {
     Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 1)),
-        feed("/feed/1")("a1", "b1", "c1"),
-        feed("/feed/2")("a2", "b2", "c2"),
-        feed("/feed/3")("a3", "b3", "c3")
+      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 1)),
+        feed("feed/0/3")("a1", "b1", "c1"),
+        feed("feed/3/3")("a2", "b2", "c2"),
+        feed("feed/6/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("c2", "a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
+      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
     )
   }
 
-  test("Feed is consumed from position [/feed/2,2] until end") {
+  test("Feed is consumed from position [/feed/3/3,2] until end") {
     Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 2)),
-        feed("/feed/1")("a1", "b1", "c1"),
-        feed("/feed/2")("a2", "b2", "c2"),
-        feed("/feed/3")("a3", "b3", "c3")
+      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 2)),
+        feed("feed/0/3")("a1", "b1", "c1"),
+        feed("feed/3/3")("a2", "b2", "c2"),
+        feed("feed/6/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
+      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
     )
   }
 
 
-  test("Feed is consumed from position [/feed/2,10] until end. Latest successful position is wrong, it's outside feed") {
+  test("Feed is consumed from position [/feed/3/3,10] until end. Latest successful position is wrong, it's outside feed") {
     Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(link("/feed/2"), 10)),
-        feed("/feed/1")("a1", "b1", "c1"),
-        feed("/feed/2")("a2", "b2", "c2"),
-        feed("/feed/3")("a3", "b3", "c3")
+      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 10)),
+        feed("feed/0/3")("a1", "b1", "c1"),
+        feed("feed/3/3")("a2", "b2", "c2"),
+        feed("feed/6/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(link("/feed/3"), 2))
+      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
     )
   }
 
   test("Error while fetching next Feed") {
     Scenario(
       provider = feedProviderBogus(
-        feed("/feed/1")("a1", "b1", "c1"),
-        feed("/feed/2")("a2", "b2", "c2"),
-        feed("/feed/3")("a3", "b3", "c3")
+        feed("feed/0/3")("a1", "b1", "c1"),
+        feed("feed/3/3")("a2", "b2", "c2"),
+        feed("feed/6/3")("a3", "b3", "c3")
       ),
 
       consumedEvents = List("a1", "b1", "c1"),
-      finalPosition = Some(FeedPosition(link("/feed/1"), 2))
+      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/0/3"), 2))
     ) assertResult { result =>
       result.isFailure shouldBe true
     }
@@ -125,9 +110,9 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   test("Error when consuming Entry") {
     val provider = feedProvider(initialPosition = None,
-      feed("/feed/1")("a1", "b1", "c1"),
-      feed("/feed/2")("a2", "b2", "c2"),
-      feed("/feed/3")("a3", "b3", "c3")
+      feed("/feed/0/3")("a1", "b1", "c1"),
+      feed("/feed/3/3")("a2", "b2", "c2"),
+      feed("/feed/6/3")("a3", "b3", "c3")
     )
 
     val errorMessage = "Error when consuming Entry"
@@ -147,9 +132,9 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   test("Exception when consuming Entry is wrapped on a Failure") {
     val provider = feedProvider(initialPosition = None,
-      feed("/feed/1")("a1", "b1", "c1"),
-      feed("/feed/2")("a2", "b2", "c2"),
-      feed("/feed/3")("a3", "b3", "c3")
+      feed("/feed/0/3")("a1", "b1", "c1"),
+      feed("/feed/3/3")("a2", "b2", "c2"),
+      feed("/feed/6/3")("a3", "b3", "c3")
     )
 
     val errorMessage = "Exception when consuming Entry"
@@ -169,15 +154,22 @@ class FeedProcessorTest extends FunSuite with Matchers {
 
   def feed(url:String)(events:String*) : Feed[String] = {
     val entries = events.map { e =>
-      val content = Content[String](List(e), e)
-      Entry[String](content, List())
+      val content = Content[String](e, "")
+      Entry[String]("id", new LocalDateTime(), content, Nil)
     }
 
-    val links = List(Link(Link.selfLink, Url(url)))
-    Feed("id", Url("base"), Option("title"), "update", links, entries.toList)
-  }
+    val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
 
-  def link(url:String) : Link = Link(Link.selfLink, Url(url))
+    Feed(
+      id = "id",
+      base = Url("http://www.example.org/feeds"),
+      title = Option("title"),
+      generator = None,
+      updated = new LocalDateTime(),
+      links = links,
+      entries = entries.toList
+    )
+  }
 
   def feedProvider(initialPosition:Option[FeedPosition],
                    feeds:Feed[String]*) = new TestFeedProvider(initialPosition, feeds.toList)
@@ -209,10 +201,10 @@ class FeedProcessorTest extends FunSuite with Matchers {
     def isStopped = !isStarted
 
     /**
-     * add 'first' and 'next' link to list of Feeds
+     * add 'last' and 'previous' link to list of Feeds
      */
     @tailrec
-    private def linkFeeds(firstLink:Link, current:StringFeed, others: Feeds, acc:Feeds = List()) : Feeds = {
+    private def linkFeeds(lastLink:Link, current:StringFeed, others: Feeds, acc:Feeds = List()) : Feeds = {
 
       def addLink(feed:StringFeed, linkLabel:String, link:Link) : StringFeed = {
         feed.copy (
@@ -220,14 +212,14 @@ class FeedProcessorTest extends FunSuite with Matchers {
         )
       }
 
-      // first link must always be present
-      val currentWithFirstLink = addLink(current, Link.firstLink, firstLink)
+      // last link must always be present
+      val currentWithLastLink = addLink(current, Link.lastLink, lastLink)
 
       others match {
-        case Nil => acc :+ currentWithFirstLink
+        case Nil => acc :+ currentWithLastLink
         case x :: xs =>
-          val currentWithNextLink = addLink(currentWithFirstLink, Link.nextLink, x.selfLink)
-          linkFeeds(firstLink, x, xs, acc :+ currentWithNextLink)
+          val currentWithPreviousLink = addLink(currentWithLastLink, Link.previousLink, x.selfLink)
+          linkFeeds(lastLink, x, xs, acc :+ currentWithPreviousLink)
       }
 
     }
@@ -239,7 +231,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
       assert(isStarted, "Provider must be managed")
       initialPosition match {
         case None => optToTry(linkedFeeds.headOption)
-        case Some(position) => fetchFeed(position.link.href.path)
+        case Some(position) => fetchFeed(position.url.path)
       }
 
     }
@@ -250,7 +242,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
     override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       val feedOpt =  linkedFeeds.find {
-        feed => feed.selfLink.href.path == page
+        feed => feed.resolveUrl(feed.selfLink.href).path == page
       }
       optToTry(feedOpt)
     }

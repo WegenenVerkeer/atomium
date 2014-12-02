@@ -1,5 +1,6 @@
+import play.PlayScala
+import sbt.Keys._
 import sbt._
-import Keys._
 
 
 
@@ -8,7 +9,16 @@ object AtomiumBuild extends Build
   import Dependencies._
 
   val Name = "atomium"
+  val playVersion = "2.3.6"
 
+
+  //----------------------------------------------------------------
+  val javaFormatModuleName = Name + "-format-java"
+  lazy val javaFormatModule = Project(
+    javaFormatModuleName,
+    file("modules/format-java"),
+    settings = buildSettings(javaFormatModuleName, javaDependencies)
+  )
 
   //----------------------------------------------------------------
   val formatModuleName = Name + "-format"
@@ -16,9 +26,7 @@ object AtomiumBuild extends Build
     formatModuleName,
     file("modules/format"),
     settings = buildSettings(formatModuleName)
-  )
-
-
+  ).dependsOn(javaFormatModule)
 
   //----------------------------------------------------------------
   val clientScalaModuleName = Name + "-client-scala"
@@ -28,8 +36,6 @@ object AtomiumBuild extends Build
     settings = buildSettings(clientScalaModuleName, clientScalaDependencies)
   ).dependsOn(formatModule)
    .aggregate(formatModule)
-
-
 
   //----------------------------------------------------------------
   val serverModuleName = Name + "-server"
@@ -68,8 +74,16 @@ object AtomiumBuild extends Build
       )
     )
   ).dependsOn(serverModule)
-   
 
+  import play.Play.autoImport._
+
+  val serverPlayModuleName = Name + "-server-play"
+  lazy val serverPlayModule = Project(
+    serverPlayModuleName,
+    file("modules/server-play")
+  ).enablePlugins(PlayScala).settings(
+      libraryDependencies += filters
+    ).dependsOn(clientScalaModule, serverModule)
 
   //----------------------------------------------------------------
   val clientJavaModuleName = Name + "-client-java"
@@ -80,13 +94,10 @@ object AtomiumBuild extends Build
       libraryDependencies ++= Seq(
         "org.slf4j" % "slf4j-api" % "1.7.6", // to be able to exclude logback from runtime dependencies
         "ch.qos.logback" % "logback-classic" % "1.1.1" % "test", // should  be slf4j only
-        "com.typesafe.play" %%  "play-json" % "2.3.0" % "provided", // not needed here
-        "org.projectlombok" % "lombok" % "1.14.4" % "provided",
         "org.mockito" % "mockito-core" % "1.9.5" % "test",
         "org.assertj" % "assertj-core" % "1.5.0" % "test",
         "be.eliwan" % "jfaker-mockito" % "0.1" % "test",
-        "commons-io" % "commons-io" % "2.4" % "test",
-        "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.3" % "test"
+        "commons-io" % "commons-io" % "2.4" % "test"
       )
     )
   ).dependsOn(clientScalaModule)
@@ -99,5 +110,7 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(formatModule, clientScalaModule, clientJavaModule, serverModule, serverMongoModuleName, serverJdbcModule)
+  ).aggregate(javaFormatModuleName, formatModule,
+      clientScalaModule, clientJavaModule,
+      serverModule, serverMongoModuleName, serverJdbcModule, serverPlayModule)
 }

@@ -2,7 +2,7 @@ package be.vlaanderen.awv.atom
 
 /**
  * A wrapper for an URL that adds a path constructor.
- * @param path
+ * @param path url path
  */
 case class Url(path: String) {
 

@@ -1,5 +1,9 @@
 package be.vlaanderen.awv.atom
 
+import java.net.URI
+import org.joda.time.LocalDateTime
+import java.security.MessageDigest
+
 /**
  * Representation of a (page in an) Atom feed.
  *
@@ -7,16 +11,19 @@ package be.vlaanderen.awv.atom
  * @param base the base URI
  * @param title the feed title
  * @param updated indicates when the feed was last updated
+ * @param generator the feed generator
  * @param links the links associated with this feed
  * @param entries the entries in the feed page
  * @tparam T the type of entry
  */
 case class Feed[T](id: String,
-                   base: Url, 
-                   title: Option[String], 
-                   updated: String, 
-                   links: List[Link], 
-                   entries: List[Entry[T]]) {
+                   base: Url,
+                   title: Option[String],
+                   generator: Option[Generator] = None,
+                   updated: LocalDateTime,
+                   links: List[Link],
+                   entries: List[Entry[T]],
+                   headers: Map[String, String] = Map.empty) {
 
   assert(links.exists(_.rel == Link.selfLink), "Link to self is mandatory")
 
@@ -24,12 +31,50 @@ case class Feed[T](id: String,
   val nextLink : Option[Link] = findLinkByName(Link.nextLink)
   val firstLink : Option[Link] = findLinkByName(Link.firstLink)
   val previousLink : Option[Link] = findLinkByName(Link.previousLink)
+  val lastLink : Option[Link] = findLinkByName(Link.lastLink)
   val collectionLink : Option[Link] = findLinkByName(Link.collectionLink)
-
 
   def findLinkByName(linkName:String) : Option[Link] = {
     links.collectFirst {
       case link @ Link(`linkName`, _) => link
     }
   }
+
+  val baseUri = new URI(base.path)
+  require(baseUri.isAbsolute)
+
+  def resolveUrl(url : Url) = {
+    new Url(baseUri.resolve(url.path).toString)
+  }
+
+  def calcETag: String = {
+
+    val message = MessageDigest.getInstance("MD5")
+    val utf8 = "UTF-8"
+
+    message.update(baseUri.toString.getBytes(utf8))
+    message.update(id.getBytes(utf8))
+
+    links foreach { link =>
+      message.update(link.toString.getBytes(utf8))
+    }
+
+    entries foreach { entry =>
+      message.update(entry.content.value.toString.getBytes(utf8))
+      entry.links foreach { link =>
+        message.update(link.toString.getBytes(utf8))
+      }
+    }
+
+    new java.math.BigInteger(1, message.digest()).toString(16)
+  }
+
+  /**
+   * @return true if this Feed page is complete, i.e. no more entries will ever be added to it.
+   *         This can be used to set appropriate HTTP caching headers
+   */
+  def complete() = {
+    links.exists(_.rel == Link.previousLink)
+  }
+
 }

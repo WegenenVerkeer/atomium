@@ -1,6 +1,9 @@
 package be.vlaanderen.awv.atom.models
 
+import org.joda.time.LocalDateTime
+
 case class EntryModel(
-  feedName: String,
+  id: Option[Long],
+  uuid: String,
   value: String,
-  feedId: Long)
+  timestamp: LocalDateTime)

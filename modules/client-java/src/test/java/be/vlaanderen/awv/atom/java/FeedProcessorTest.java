@@ -1,8 +1,11 @@
 package be.vlaanderen.awv.atom.java;
 
 import be.vlaanderen.awv.atom.*;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
+import play.libs.Scala;
 import scala.Some;
+import scala.collection.immutable.HashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +18,6 @@ public class FeedProcessorTest {
     @Test
     public void test() {
         System.out.println("Start processing");
-
-        // create the feed position from where you want to start processing
-        // index -1 to assure all items are processed, index is position of last read entry in page
-        FeedPosition position = new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider();
@@ -54,7 +53,7 @@ public class FeedProcessorTest {
         public void accept(FeedPosition position, Entry<ExampleFeedEntry> entry) {
             System.out.println("Consuming position " + position.index() + " entry " + entry.content());
             try {
-                handleEvent(entry.content().value().head(), position);
+                handleEvent(entry.content().value(), position);
             } catch (Exception e) {
                 throw new FeedProcessingException(new Some(position), e.getMessage());
             }
@@ -74,16 +73,16 @@ public class FeedProcessorTest {
          */
         @Override
         public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Link("self", new Url(FEED_URL_PAGE1)), -1);
+            return new FeedPosition(new Url(FEED_URL_PAGE1), -1, new HashMap<String, String>());
         }
 
         @Override
-        public Feed<ExampleFeedEntry> fetchFeed() {
-            throw new UnsupportedOperationException("Should be called with a feed URL.");
+        public JFeed<ExampleFeedEntry> fetchFeed() {
+            return fetchFeed(getInitialPosition().url().path());
         }
 
         @Override
-        public Feed<ExampleFeedEntry> fetchFeed(String page) {
+        public JFeed<ExampleFeedEntry> fetchFeed(String page) {
             System.out.println("Fetching page " + page);
             int intPage = 0;
             //intPage = Integer.parseInt(page);  // @todo make it fail --- with message "null"
@@ -91,41 +90,30 @@ public class FeedProcessorTest {
             if (page.endsWith("/2")) intPage=2;
             if (page.endsWith("/3")) intPage=3;
 
-            List<Entry<ExampleFeedEntry>> entries = new ArrayList<Entry<ExampleFeedEntry>>();
-            List<ExampleFeedEntry> values1 = new ArrayList<ExampleFeedEntry>();
-            values1.add(new ExampleFeedEntry());
-            List<ExampleFeedEntry> values2 = new ArrayList<ExampleFeedEntry>();
-            values2.add(new ExampleFeedEntry());
-            List<ExampleFeedEntry> values3 = new ArrayList<ExampleFeedEntry>();
-            values3.add(new ExampleFeedEntry());
-            List<Link> links = new ArrayList<Link>();
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values1).asScala().toList(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values2).asScala().toList(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
-            entries.add(new Entry<ExampleFeedEntry>(new Content<ExampleFeedEntry>(
-                    scala.collection.JavaConverters.asScalaBufferConverter(values3).asScala().toList(), ""),
-                    scala.collection.JavaConverters.asScalaBufferConverter(links).asScala().toList()));
+            List<JEntry<ExampleFeedEntry>> entries = new ArrayList<JEntry<ExampleFeedEntry>>();
+            List<JLink> links = new ArrayList<JLink>();
+            entries.add(new JEntry<ExampleFeedEntry>("id1", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
+            entries.add(new JEntry<ExampleFeedEntry>("id2", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
+            entries.add(new JEntry<ExampleFeedEntry>("id3", new JContent<ExampleFeedEntry>(new ExampleFeedEntry(), ""), links));
 
-            List<Link> feedLinks = new ArrayList<Link>();
-            feedLinks.add(new Link("first", new Url(FEED_URL_PAGE1)));
-            feedLinks.add(new Link("self", new Url(FEED_URL + intPage)));
+            List<JLink> feedLinks = new ArrayList<JLink>();
+            feedLinks.add(new JLink("last", FEED_URL_PAGE1));
+            feedLinks.add(new JLink("self", FEED_URL + intPage));
             if (intPage < 3) {
-                feedLinks.add(new Link("next", new Url(FEED_URL + (intPage + 1))));
+                feedLinks.add(new JLink("previous", FEED_URL + (intPage + 1)));
             }
             if (intPage > 0) {
-                feedLinks.add(new Link("previous", new Url(FEED_URL + (intPage - 1))));
+                feedLinks.add(new JLink("next", FEED_URL + (intPage - 1)));
             }
 
-            Feed<ExampleFeedEntry> feed = new Feed<ExampleFeedEntry>(
-                    "1",
-                    new Url(FEED_URL),
-                    new Some("Blabla"),
-                    "2014-08-08T18:04:14.385+02:00",
-                    scala.collection.JavaConverters.asScalaBufferConverter(feedLinks).asScala().toList(),
-                    scala.collection.JavaConverters.asScalaBufferConverter(entries).asScala().toList()
+            JFeed<ExampleFeedEntry> feed = new JFeed<ExampleFeedEntry>(
+                    "id",
+                    FEED_URL,
+                    "Blabla",
+                    null,
+                    new LocalDateTime(),
+                feedLinks,
+                    entries
             );
             return feed;
         }

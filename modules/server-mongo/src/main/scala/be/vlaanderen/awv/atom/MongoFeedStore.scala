@@ -1,134 +1,114 @@
 package be.vlaanderen.awv.atom
 
-import com.mongodb.MongoClient
+import _root_.java.util.UUID
+
 import com.mongodb.casbah.Imports._
-import org.joda.time.DateTime
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.{DBObject, casbah}
+import org.joda.time.{DateTime, LocalDateTime}
 
 /**
- * [[be.vlaanderen.awv.atom.FeedStore]] implementation that stores feeds and pages in a MongoDB collection.
+ * [[be.vlaanderen.awv.atom.AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
  *
  * @param c the context implementation
- * @param collectionName name of the collection that contains the feed pages
- * @param feedInfoCollectionName name of the collection that contains the feed info
+ * @param feedEntriesCollectionName name of the entriesCollection that contains the feed entries
+ * @param feedInfoCollectionName name of the entriesCollection that contains the feed info of all the feeds
  * @param ser function to serialize an element to a DBObject
  * @param deser function to deserialize a DBObject to an element
  * @param urlProvider
  * @tparam E type of the elements in the feed
  */
-class MongoFeedStore[E](c: MongoContext, collectionName: String, feedInfoCollectionName: String, ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends FeedStore[E] {
-  import MongoFeedStore._
+class MongoFeedStore[E](c: MongoContext,
+                        feedName: String,
+                        title: Option[String] = None,
+                        feedEntriesCollectionName: Option[String] = None,
+                        feedInfoCollectionName: String,
+                        ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlProvider) {
+  import be.vlaanderen.awv.atom.MongoFeedStore._
 
   lazy val context = c
 
   private lazy val db = c.db.asScala
-  private lazy val collection = db(collectionName)
+  private lazy val entriesCollection = db(feedEntriesCollectionName match {
+    case Some(name) => name
+    case None => feedName
+  })
   private lazy val feedInfoCollection = db(feedInfoCollectionName)
 
-  protected def feedUpdate2DbObject(updateInfo: FeedUpdateInfo[E]) = MongoDBObject(
-    Keys.Page -> updateInfo.page,
-    Keys.FirstPage -> updateInfo.first,
-    Keys.Title -> updateInfo.title,
-    Keys.Updated -> updateInfo.updated,
-    Keys.Elements -> MongoDBList((updateInfo.newElements map ser):_*),
-    Keys.PreviousPage -> (updateInfo.previous getOrElse null),
-    Keys.NextPage -> (updateInfo.next getOrElse null)
+  //insert feed into to feedInfoCollection if it does not exist yet
+  feedInfoCollection.findAndModify(
+    query = MongoDBObject(Keys._Id -> feedName), //where _id = feedName
+    fields = MongoDBObject(), //return all elements
+    sort = MongoDBObject(), //no sorting
+    update = $setOnInsert(Keys.Sequence -> 0), //create with seq -> 1 if not exists
+    remove = false, returnNew = true, upsert = true)
+
+  protected def feedEntry2DbObject(e: E) = MongoDBObject(
+    Keys.Uuid -> UUID.randomUUID().toString,
+    Keys.Timestamp -> new LocalDateTime(),
+    Keys.Content -> ser(e)
   )
 
-    protected def feedLink(value: Option[Long], linkType: String) = {
-    value map { v =>
-      Link(linkType, urlProvider.feedLink(v))
-    } toList
+  protected def dbObject2FeedEntry(dbo: DBObject): Entry[E]  = {
+    val entryDbo = dbo.as[DBObject](Keys.Content)
+    Entry(dbo.as[String](Keys.Uuid), dbo.as[DateTime](Keys.Timestamp).toLocalDateTime, Content(deser(entryDbo), ""), Nil)
   }
-
-  protected def dbObject2Feed(dbo: DBObject) = Feed[E](
-    id = dbo.as[Long](Keys.Page).toString,
-    base = urlProvider.base,
-    title = dbo.getAs[String](Keys.Title),
-    updated = dbo.as[DateTime](Keys.Updated).toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ"),
-    links =
-      feedLink(Some(dbo.as[Long](Keys.Page)), Link.selfLink) ++
-      feedLink(dbo.getAs[Long](Keys.FirstPage), Link.firstLink) ++
-      feedLink(dbo.getAs[Long](Keys.NextPage), Link.nextLink) ++
-      feedLink(dbo.getAs[Long](Keys.PreviousPage), Link.previousLink),
-    entries = dbo.getAsOrElse[MongoDBList](Keys.Elements, MongoDBList()) map { entry =>
-      val entryDbo = entry.asInstanceOf[DBObject]
-      Entry(Content(List(deser(entryDbo)), ""), Nil)
-    } toList
-  )
-
-  protected def feedInfo2DbObject(updateInfo: FeedInfo) = MongoDBObject(
-    Keys.Feed -> collectionName,
-    Keys.Count -> updateInfo.count,
-    Keys.LastPage -> updateInfo.lastPage
-  )
-
-  protected def dbObject2FeedInfo(dbo: DBObject) = FeedInfo(
-    count =  dbo.as[Int](Keys.Count),
-    lastPage = dbo.as[Long](Keys.LastPage)
-  )
-
 
   /**
-   * TODO
-   *
-   * @param feedUpdates
-   * @param feedInfo
+   * push a list of entries to the feed
+   * @param entries the entries to push to the feed
    */
-  override def update(feedUpdates: List[FeedUpdateInfo[E]], feedInfo: FeedInfo): Unit = {
-    feedUpdates foreach { feedUpdate =>
-      if (feedUpdate.isNew) {
-        val dbo = feedUpdate2DbObject(feedUpdate)
-        collection.update(
-          MongoDBObject(Keys.Page -> feedUpdate.page),
-          dbo,
-          upsert = true,
-          multi = false,
-          concern = WriteConcern.Safe)
-      } else {
-        val dbo =
-          $set(Keys.NextPage -> (feedUpdate.next getOrElse null)) ++
-          $pushAll(Keys.Elements -> MongoDBList((feedUpdate.newElements map ser):_*))
-        collection.update(
-          MongoDBObject(Keys.Page -> feedUpdate.page),
-          dbo,
-          upsert = false,
-          multi = false,
-          concern = WriteConcern.Safe)
-      }
+  override def push(entries: Iterable[E]): Unit = {
+    entries foreach {entry =>
+      entriesCollection.insert(feedEntry2DbObject(entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
     }
-
-    feedInfoCollection.update(
-      MongoDBObject(Keys.Feed -> collectionName),
-      feedInfo2DbObject(feedInfo),
-      upsert = true,
-      multi = false,
-      concern = WriteConcern.Safe
-    )
   }
 
-  override def getFeedInfo: Option[FeedInfo] = {
-    feedInfoCollection.findOne(MongoDBObject(Keys.Feed -> collectionName)) map dbObject2FeedInfo
+  /**
+   * return pageSize entries starting from start
+   * @param start the start entry
+   * @param pageSize the number of entries to return
+   * @return
+   */
+  override def getFeedEntries(start: Long, pageSize: Int): List[Entry[E]] = {
+    entriesCollection.find(Keys._Id $gte start $lt start+pageSize).sort(MongoDBObject(Keys._Id -> 1)).take(pageSize).toList.reverse.map(dbObject2FeedEntry)
   }
 
-  override def getFeed(page: Long): Option[Feed[E]] = {
-    val feedInfo = getFeedInfo
-    val feedOpt: Option[Feed[E]] = collection findOne(MongoDBObject(Keys.Page -> page)) map dbObject2Feed
-    feedOpt
+  @annotation.tailrec
+  private def retry[T](n: Int)(fn: => Option[T]): T = {
+    if (n == 0) throw new Exception("")
+    fn match {
+      case Some(x) => x
+      case None => retry(n - 1)(fn)
+    }
   }
+
+  protected def getNextSequence: Long = {
+    def _getNextSequence: Option[casbah.MongoCollection#T] = feedInfoCollection.findAndModify(
+      query = MongoDBObject(Keys._Id -> feedName), //where _id = feedName
+      fields = MongoDBObject(Keys.Sequence -> 1), //only return seq
+      sort = MongoDBObject(), //no sorting
+      update = $inc(Keys.Sequence -> 1), //increment seq by 1
+      remove = false, returnNew = true, upsert = false)
+
+    retry(5)(_getNextSequence).as[Int](Keys.Sequence).toLong
+  }
+
+  def maxId: Long = {
+    entriesCollection.find().sort(MongoDBObject(Keys._Id -> -1)).limit(1).toList match {
+      case h :: Nil => h.as[Long](Keys._Id)
+      case _ => 0L
+    }
+  }
+
 }
 
 object MongoFeedStore {
   object Keys {
-    lazy val Page = "page"
-    lazy val FirstPage = "first"
-    lazy val PreviousPage = "previous"
-    lazy val NextPage = "next"
-    lazy val Title = "title"
-    lazy val Updated = "updated"
-    lazy val Elements = "elements"
-
-    lazy val Feed = "feed"
-    lazy val Count = "count"
-    lazy val LastPage = "last_page"
+    lazy val _Id = "_id"
+    lazy val Sequence = "seq"
+    lazy val Uuid = "uuid"
+    lazy val Timestamp = "timestamp"
+    lazy val Content = "content"
   }
 }

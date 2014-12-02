@@ -1,13 +1,18 @@
 package be.vlaanderen.awv.atom.models
 
-import org.joda.time.LocalDateTime
+import scala.slick.lifted.{TableQuery, Tag}
 
 case class FeedModel(
-  id: Long,
+  id: Option[Long],
   name: String,
-  title: Option[String],
-  timestamp: LocalDateTime,
-  first: Long,
-  previous: Option[Long],
-  next: Option[Long]
-)
+  title: Option[String]) {
+
+  def entriesTableName = {
+    s"FEED_ENTRIES_${id.get}"
+  }
+
+  def entriesTableQuery = {
+    TableQuery[EntryTable]((tag:Tag) => new EntryTable(tag, entriesTableName))
+  }
+
+}

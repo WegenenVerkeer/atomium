@@ -3,11 +3,15 @@ package be.vlaanderen.awv.atom.providers
 import be.vlaanderen.awv.atom._
 import be.vlaanderen.awv.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
-import play.api.libs.ws.WS
+import org.joda.time.LocalDateTime
+import play.api.http.HeaderNames
+import play.api.libs.ws.{WS, WSClient}
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
+
 
 /**
  * An implementation of [[be.vlaanderen.awv.atom.FeedProvider]] that uses the Play WS API for fetching feed pages via
@@ -18,14 +22,20 @@ import scala.util.{Failure, Success, Try}
  *
  * If you want to use this implementation you will need to add a dependency on the Play WS API library.
  *
+ * TODO add long polling support: see https://github.com/EventStore/EventStore/wiki/HTTP-LongPoll-Header
+ *
  * @param feedUrl the url of the feed that will be fetched
  * @param timeout the HTTP connection timeout
  *
  * @tparam T the type of the entries in the feed
  */
-class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
-                                                          feedPosition: Option[FeedPosition],
-                                                          timeout:Duration)
+class PlayWsBlockingFeedProvider[T](feedUrl:String,
+                                    feedPosition: Option[FeedPosition],
+                                    feedUnmarshaller: FeedUnmarshaller[T],
+                                    contentType: String = "application/xml",
+                                    timeout:Duration = 30.seconds,
+                                    wsClient:Option[WSClient] = None)
+
   extends FeedProvider[T] with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,7 +62,7 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
   override def fetchFeed(): FeedResult = {
     initialPosition match {
       case None => awaitResult(fetchFeedAsync)
-      case Some(position) => awaitResult(fetchFeedAsync(position.link.href.path))
+      case Some(position) => awaitResult(fetchFeedAsync(position.url.path))
     }
 
   }
@@ -65,47 +75,87 @@ class PlayWsBlockingFeedProvider[T:FeedEntryUnmarshaller](feedUrl:String,
   /**
    * Fetch the Feed for the given page
    */
-  def fetchFeedAsync(page:String) : FutureResult = fetch(page)
+  def fetchFeedAsync(page:String, headers: Map[String, String] = Map.empty): FutureResult = fetch(page, headers)
 
   /**
    * Fetch the first Feed page
    */
-  def fetchFeedAsync : FutureResult = {
+  def fetchFeedAsync: FutureResult = {
 
-    def fetchFirstFeed(feedResult:FeedResult) : FutureResult = {
+    def fetchLastFeed(feedResult:FeedResult) : FutureResult = {
       feedResult match {
-        // Validation success? we must have a Feed with a firstLink
-        case Success(feed) => feed.firstLink match {
-          case Some(link) => fetch(link.href.path)
-          // !!! can't proceed without a first link - game over !!!
-          case None => sys.error("First feed url is empty!!!")
+        // Success? we must have a Feed with a lastLink
+        case s @ Success(feed) => feed.lastLink match {
+
+          case Some(link) => fetch(feed.resolveUrl(link.href).path)
+
+          // this can happen in case of 304 not modified, returns an empty feed !!!
+          case None => Future.successful(s)
+
         }
-        // Validation failure? wrap it in a new Future
-        // NOTE: although the Validation is a Failure, we should return a Success.
-        // The call to the service succeeded, is the content that is wrong
+        // fetch failure? wrap it in a new Future
+        // NOTE: although the fetch is a Failure, we should return a Success.
+        // The call to the service succeeded, it is the content that is wrong
+
         case failure @ Failure(_) => Future.successful(failure)
       }
     }
 
-    fetch(feedUrl).flatMap(fetchFirstFeed)
+    fetch(feedUrl).flatMap(fetchLastFeed)
   }
 
   private def awaitResult(futureResult: FutureResult) : FeedResult = {
     try {
       Await.result(futureResult, timeout)
     } catch {
-      case e:Exception =>
+      case NonFatal(e) =>
         logger.error(s"Error while fetching feed", e)
         Failure(FeedProcessingException(None, e.getMessage))
     }
   }
 
+  private def fetch(url:String, headers: Map[String, String] = Map.empty) : FutureResult = {
 
-  private def fetch(url:String) : FutureResult = {
-    val wsResponse = WS.url(feedUrl).get()
+    logger.info(s"fetching $url")
+
+    val wsResponse = wsClient
+                     .getOrElse(WS.client)
+                     .url(url)
+                     .withHeaders("Accept" -> contentType)
+                     .withHeaders(headers.toSeq: _*).get()
+
     wsResponse.map { res =>
-      val unmarshaller = implicitly[FeedEntryUnmarshaller[T]]
-      unmarshaller(res.body)
+      logger.info(s"response status: %{res.statusText}")
+
+      res.status match {
+        case 200 =>
+          feedUnmarshaller
+          .unmarshal(res.header(HeaderNames.CONTENT_TYPE), res.body)
+          .map(_.copy(headers = transformHeaders(res.allHeaders)))
+
+        case 304 => Success(
+          new Feed[T](
+            id = "id",
+            base = Url(url),
+            title = None,
+            generator = None,
+            updated = new LocalDateTime(),
+            links = List(Link(Link.selfLink, Url(url))),
+            entries = Nil
+          )
+        )
+
+        case _   => Failure(new FeedProcessingException(None, s"${res.status}: ${res.statusText}"))
+      }
+    }
+  }
+
+  private def transformHeaders(allHeaders : Map[String, Seq[String]]): Map[String, String] = {
+    //null check is needed for MockWS bug, which does not set allHeaders on mocked WSResponse
+    val headers = if (allHeaders == null) Map.empty else allHeaders
+    headers collect {
+      case ("ETag", s) => ("If-None-Match", s(0))
+      case ("Last-Modified", s) => ("If-Modified-Since", s(0))
     }
   }
 

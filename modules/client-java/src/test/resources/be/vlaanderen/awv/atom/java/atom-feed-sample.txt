@@ -1,6 +1,4 @@
 {
-
-    "id": "1",
     "base": "http://sample.com/feeds/registraties",
     "title": "Registraties",
     "updated": "2014-08-12T13:22:30.498+02:00",
@@ -10,7 +8,7 @@
             "href": "http://sample.com/feeds/registraties/feed/1"
         },
         {
-            "rel": "first",
+            "rel": "last",
             "href": "http://sample.com/feeds/registraties/feed/1"
         }
     ],
@@ -38,7 +36,7 @@
                         "dossier": "53d661cbd7bd52571b61b783"
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -64,7 +62,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -90,7 +88,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -116,7 +114,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -142,7 +140,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -168,7 +166,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -194,7 +192,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -220,7 +218,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -246,7 +244,7 @@
                         ]
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         },
@@ -273,7 +271,7 @@
                         "dossier": "dc://sdd-schadedossier/S/14/212/10316"
                     }
                 ],
-                "rawType": ""
+                "type": ""
             },
             "links": [ ]
         }

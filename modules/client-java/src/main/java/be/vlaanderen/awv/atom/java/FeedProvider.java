@@ -3,6 +3,7 @@ package be.vlaanderen.awv.atom.java;
 import be.vlaanderen.awv.atom.Feed;
 import be.vlaanderen.awv.atom.FeedPosition;
 import be.vlaanderen.awv.atom.FeedProcessingException;
+import be.vlaanderen.awv.atom.JFeed;
 
 /**
  * A feed provider is responsible for providing the feed pages.
@@ -22,7 +23,7 @@ public interface FeedProvider<T> {
      * @return the first page of the feed.
      * @throws FeedProcessingException
      */
-    Feed<T> fetchFeed() throws FeedProcessingException;
+    JFeed<T> fetchFeed() throws FeedProcessingException;
 
     /**
      * Fetch a specific page of the feed.
@@ -31,7 +32,8 @@ public interface FeedProvider<T> {
      * @return a page of the feed
      * @throws FeedProcessingException
      */
-    Feed<T> fetchFeed(String page) throws FeedProcessingException;
+    JFeed<T> fetchFeed(String page) throws FeedProcessingException;
+
     FeedPosition getInitialPosition();
 
     /**
