@@ -9,6 +9,7 @@ import play.api.libs.ws.{WS, WSClient}
 
 import scala.concurrent.duration.{Duration, _}
 import scala.concurrent.{Await, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 
@@ -85,9 +86,12 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
       feedResult match {
         // Success? we must have a Feed with a lastLink
         case s @ Success(feed) => feed.lastLink match {
+
           case Some(link) => fetch(feed.resolveUrl(link.href).path)
+
           // this can happen in case of 304 not modified, returns an empty feed !!!
           case None => Future.successful(s)
+
         }
         // fetch failure? wrap it in a new Future
         // NOTE: although the fetch is a Failure, we should return a Success.
@@ -104,23 +108,43 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
     try {
       Await.result(futureResult, timeout)
     } catch {
-      case e:Exception =>
+      case NonFatal(e) =>
         logger.error(s"Error while fetching feed", e)
         Failure(FeedProcessingException(None, e.getMessage))
     }
   }
 
   private def fetch(url:String, headers: Map[String, String] = Map.empty) : FutureResult = {
+
     logger.info(s"fetching $url")
-    val wsResponse = wsClient.getOrElse(WS.client).url(url).withHeaders("Accept" -> contentType).
-      withHeaders(headers.toSeq: _*).get()
+
+    val wsResponse = wsClient
+                     .getOrElse(WS.client)
+                     .url(url)
+                     .withHeaders("Accept" -> contentType)
+                     .withHeaders(headers.toSeq: _*).get()
+
     wsResponse.map { res =>
       logger.info(s"response status: %{res.statusText}")
+
       res.status match {
         case 200 =>
-          feedUnmarshaller.unmarshal(res.header(HeaderNames.CONTENT_TYPE), res.body).map(_.copy(headers = transformHeaders(res.allHeaders)))
-        case 304 => Success(new Feed[T]("id", Url(url), None, None, new LocalDateTime(),
-          List(Link(Link.selfLink, Url(url))), Nil))
+          feedUnmarshaller
+          .unmarshal(res.header(HeaderNames.CONTENT_TYPE), res.body)
+          .map(_.copy(headers = transformHeaders(res.allHeaders)))
+
+        case 304 => Success(
+          new Feed[T](
+            "id",
+            Url(url),
+            None,
+            None,
+            new LocalDateTime(),
+            List(Link(Link.selfLink, Url(url))),
+            Nil
+          )
+        )
+
         case _   => Failure(new FeedProcessingException(None, s"${res.status}: ${res.statusText}"))
       }
     }
