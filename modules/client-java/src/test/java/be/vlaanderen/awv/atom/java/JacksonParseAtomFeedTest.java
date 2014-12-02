@@ -31,9 +31,6 @@ public class JacksonParseAtomFeedTest {
         JFeed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<JFeed<EventFeedEntryTo>>() { });
 
         assertThat(feed).isNotNull();
-        System.out.println(feed.getEntries().get(0).getContent().getType());
-        System.out.println(feed.getEntries().get(0).getContent().getValue().getClass());
-        System.out.println(feed.getEntries().get(0).getContent().getValue());
         assertThat(feed.getEntries().get(0).getContent().getValue()).isInstanceOf(EventFeedEntryTo.class);
     }
 
