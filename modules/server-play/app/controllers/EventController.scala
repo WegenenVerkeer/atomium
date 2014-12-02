@@ -24,14 +24,14 @@ class EventController(feedService: FeedService[Event, Context]) extends Controll
   /**
    * @return the head of the page
    */
-  def getHeadOfFeed() = {
+  def headOfFeed() = {
     processFeedPage(feedService.getHeadOfFeed())
   }
 
   /**
    *
-   * @param start
-   * @param pageSize
+   * @param start - start of feed
+   * @param pageSize - page size
    * @return a page of the feed
    */
   def getFeedPage(start: Int, pageSize: Int) = {
