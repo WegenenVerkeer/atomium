@@ -3,7 +3,7 @@ package be.vlaanderen.awv.atom.java
 import be.vlaanderen.awv.atom.{Entry, Feed, UrlBuilder, Context}
 
 /**
- * Wrapper wround the [[be.vlaanderen.awv.atom.AbstractFeedStore]] that offers a Java-like interface.
+ * Wrapper around the [[be.vlaanderen.awv.atom.AbstractFeedStore]] that offers a Java-like interface.
  *
  * @tparam E type of the elements in the feed
  */

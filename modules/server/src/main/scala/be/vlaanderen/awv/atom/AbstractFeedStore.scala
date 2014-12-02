@@ -39,7 +39,6 @@ abstract class AbstractFeedStore[E](feedName: String, title: Option[String], url
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
-   * @param pageSize
    * @return the head of the feed
    */
   def getHeadOfFeed(pageSize: Int): Option[Feed[E]] = {
@@ -94,14 +93,14 @@ abstract class AbstractFeedStore[E](feedName: String, title: Option[String], url
 
   protected def getNextLink(start: Long, count: Int) : Option[Link] = {
     if (start - count >= 0)
-      Some(link(Link.nextLink, start-count, count))
+      Some(link(Link.nextLink, start - count, count))
     else
       None
   }
 
   protected def getPreviousLink(start: Long, count: Int, max: Int): Option[Link] = {
     if (start + count < max)
-      Some(link(Link.previousLink, start+count, count))
+      Some(link(Link.previousLink, start + count, count))
     else
       None
   }

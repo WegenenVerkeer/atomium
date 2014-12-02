@@ -4,7 +4,7 @@ import be.vlaanderen.awv.atom.Context
 import scala.collection.JavaConverters._
 
 /**
- * Wrapper wround the [[be.vlaanderen.awv.atom.FeedService]] that offers a Java-like interface.
+ * Wrapper around the [[be.vlaanderen.awv.atom.FeedService]] that offers a Java-like interface.
  *
  * @param feedName the name of this feed, which can be used as an identifier for the feed
  * @param entriesPerPage the number of entries per page
@@ -15,6 +15,7 @@ import scala.collection.JavaConverters._
  * @tparam C the type of the context, which is required for feed stores
  */
 class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage: Integer, feedStoreFactory: FeedStoreFactory[E, C]) {
+
   private val underlying: be.vlaanderen.awv.atom.FeedService[E, C] =
     new be.vlaanderen.awv.atom.FeedService[E, C](feedName, entriesPerPage, (name, context) => feedStoreFactory.create(name, context))
 
