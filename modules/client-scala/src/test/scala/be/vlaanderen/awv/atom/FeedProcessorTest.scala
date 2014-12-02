@@ -159,7 +159,16 @@ class FeedProcessorTest extends FunSuite with Matchers {
     }
 
     val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
-    Feed("id", Url("http://www.example.org/feeds"), Option("title"), None, new LocalDateTime(), links, entries.toList)
+
+    Feed(
+      id = "id",
+      base = Url("http://www.example.org/feeds"),
+      title = Option("title"),
+      generator = None,
+      updated = new LocalDateTime(),
+      links = links,
+      entries = entries.toList
+    )
   }
 
   def feedProvider(initialPosition:Option[FeedPosition],

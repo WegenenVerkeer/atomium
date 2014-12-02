@@ -135,13 +135,13 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
 
         case 304 => Success(
           new Feed[T](
-            "id",
-            Url(url),
-            None,
-            None,
-            new LocalDateTime(),
-            List(Link(Link.selfLink, Url(url))),
-            Nil
+            id = "id",
+            base = Url(url),
+            title = None,
+            generator = None,
+            updated = new LocalDateTime(),
+            links = List(Link(Link.selfLink, Url(url))),
+            entries = Nil
           )
         )
 
