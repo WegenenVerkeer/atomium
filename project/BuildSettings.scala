@@ -39,6 +39,18 @@ trait BuildSettings {
     libraryDependencies ++= mainDependencies ++ extraDependencies
   )
 
+  val publishingCredentials = (for {
+    username <- Option(System.getenv().get("SONATYPE_USERNAME"))
+    password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
+  } yield
+    Seq(Credentials(
+      "Sonatype Nexus Repository Manager",
+      "oss.sonatype.org",
+      username,
+      password)
+    )).getOrElse(Seq())
+
+
   val publishSettings = Seq(
     publishMavenStyle := true,
     pomIncludeRepository := { _ => false},
@@ -49,7 +61,8 @@ trait BuildSettings {
       else
         Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
-    pomExtra := pomInfo
+    pomExtra := pomInfo,
+    credentials ++= publishingCredentials
   )
 
   def buildSettings(projectName:String, extraDependencies:Seq[ModuleID] = Seq()) = {
