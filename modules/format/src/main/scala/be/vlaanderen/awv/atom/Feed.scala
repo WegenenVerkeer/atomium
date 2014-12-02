@@ -2,6 +2,7 @@ package be.vlaanderen.awv.atom
 
 import java.net.URI
 import org.joda.time.LocalDateTime
+import java.security.MessageDigest
 
 /**
  * Representation of a (page in an) Atom feed.
@@ -47,20 +48,25 @@ case class Feed[T](id: String,
   }
 
   def calcETag: String = {
-    val m = java.security.MessageDigest.getInstance("MD5")
+
+    val message = MessageDigest.getInstance("MD5")
     val utf8 = "UTF-8"
-    m.update(baseUri.toString.getBytes(utf8))
-    m.update(id.getBytes(utf8))
+
+    message.update(baseUri.toString.getBytes(utf8))
+    message.update(id.getBytes(utf8))
+
     links foreach { link =>
-      m.update(link.toString().getBytes(utf8))
+      message.update(link.toString.getBytes(utf8))
     }
+
     entries foreach { entry =>
-      m.update(entry.content.value.toString().getBytes(utf8))
+      message.update(entry.content.value.toString.getBytes(utf8))
       entry.links foreach { link =>
-        m.update(link.toString().getBytes(utf8))
+        message.update(link.toString.getBytes(utf8))
       }
     }
-    new java.math.BigInteger(1, m.digest()).toString(16)
+
+    new java.math.BigInteger(1, message.digest()).toString(16)
   }
 
   /**
@@ -68,7 +74,7 @@ case class Feed[T](id: String,
    *         This can be used to set appropriate HTTP caching headers
    */
   def complete() = {
-    links.count(_.rel == Link.previousLink) == 1
+    links.exists(_.rel == Link.previousLink)
   }
 
 }
