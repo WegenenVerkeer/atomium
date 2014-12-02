@@ -106,4 +106,30 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
 
   }
 
+  test("failed transaction should not push entry onto feed") {
+    try {
+      session.withTransaction {
+        feedStore.push("1")
+        feedStore.push("2")
+        throw new Exception("tx failure")
+      }
+    } catch {
+      case e: Exception =>
+    }
+
+    FeedTable.length.run should be(1)
+    val feedModel = FeedTable.findByName("int_feed").get
+    feedModel.entriesTableQuery.length.run should be(0) //entry is not stored
+
+    feedStore.push("3")
+
+    //sequence number 1 and 2 are not used,
+    // retrieving 2 entries starting from entry 1 => no entries found
+    feedStore.getFeedEntries(1, 2).size should be (0)
+    feedStore.getFeed(1, 2).get.entries.size should be (0)
+    feedStore.getFeedEntries(3, 2).size should be (1)
+    feedStore.getFeed(3, 2).get.entries.size should be (1)
+
+  }
+
 }
