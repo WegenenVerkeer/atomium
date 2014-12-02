@@ -1,10 +1,9 @@
 package be.vlaanderen.awv.atom.java
 
 import be.vlaanderen.awv.atom.java.{FeedProvider => JFeedProvider}
-import be.vlaanderen.awv.atom.{JFeedConverters, Feed, FeedPosition}
+import be.vlaanderen.awv.atom.{Feed, FeedPosition, JFeedConverters}
 import com.typesafe.scalalogging.slf4j.Logging
-
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 /**
  * Wrapper around the [[be.vlaanderen.awv.atom.FeedProvider]] that offers a Java-like interface.
@@ -15,22 +14,11 @@ import scala.util.{Failure, Success, Try}
 class FeedProviderWrapper[E](underlying: JFeedProvider[E])
   extends be.vlaanderen.awv.atom.FeedProvider[E] with Logging {
 
-  override def fetchFeed(): Try[Feed[E]] = {
-    try {
-      Success(JFeedConverters.jFeed2Feed(underlying.fetchFeed))
-    } catch {
-      case ex:Exception => Failure(ex)
-    }
-  }
+  override def fetchFeed(): Try[Feed[E]] =
+    Try(JFeedConverters.jFeed2Feed(underlying.fetchFeed))
 
-  def fetchFeed(page: String): Try[Feed[E]] = {
-    try {
-      Success(JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
-    } catch {
-      case ex:Exception =>
-        Failure(ex)
-    }
-  }
+  def fetchFeed(page: String): Try[Feed[E]] =
+    Try (JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
 
   override def start(): Unit = underlying.start()
 
