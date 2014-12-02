@@ -8,11 +8,13 @@ import scala.collection.immutable.TreeMap
 
 class AbstractFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  class MyFeedStore extends AbstractFeedStore[Int]("test_store", None, new UrlBuilder {
+  val urlBuilder = new UrlBuilder {
     override def base: Url = Url("http://www.example.org")
     override def feedLink(start: Long, count: Int): Url = base / start.toString / count.toString
     override def collectionLink: Url = ???
-  }) {
+  }
+
+  class MyFeedStore extends AbstractFeedStore[Int]("test_store", None, urlBuilder) {
 
     var skip = 1
     var nextSequenceNum = 0L
@@ -50,12 +52,12 @@ class AbstractFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAl
 
     val lastPageOfFeed = feedStore.getFeed(1, 2).get
     //feed contains only single item
-    lastPageOfFeed.complete should be(true)
+    lastPageOfFeed.complete shouldBe true
     lastPageOfFeed.entries.size should be(1)
     lastPageOfFeed.entries.head.content.value should be(1)
 
     val nextPageOfFeed = feedStore.getFeed(3, 2).get
-    nextPageOfFeed.complete should be(false)
+    nextPageOfFeed.complete shouldBe false
     nextPageOfFeed.entries.size should be(1)
     nextPageOfFeed.entries.head.content.value should be(2)
 
@@ -66,11 +68,11 @@ class AbstractFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAl
     feedStore.push(3)
 
     val emptyFeedPage = feedStore.getFeed(5, 2).get
-    emptyFeedPage.complete should be(true)
+    emptyFeedPage.complete shouldBe true
     emptyFeedPage.entries.size should be(0)
 
     headOfFeed = feedStore.getHeadOfFeed(2).get
-    headOfFeed.complete should be(false)
+    headOfFeed.complete shouldBe false
     headOfFeed.entries.size should be(1)
     headOfFeed.entries.head.content.value should be(3)
 
