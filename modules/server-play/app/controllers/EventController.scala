@@ -14,7 +14,7 @@ class EventController(feedService: FeedService[Event, Context]) extends Controll
   implicit val c: Context = new Context {} //dummy context for MemoryFeedStore
 
   //play json marshaller
-  import controllers.EventFormat.eventWrites
+  import controllers.EventFormat._
   val jsonMarshaller: JsonMarshaller[Feed[Event]] = PlayJsonSupport.jsonMarshaller[Feed[Event]]
 
   //jaxb marshaller

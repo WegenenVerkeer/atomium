@@ -7,19 +7,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 object EventFormat {
-
-  implicit def eventWrites: Writes[Event] = (
-    (__ \ "value").write[Double] and
-      (__ \ "description").writeNullable[String] and
-      (__ \ "version").write[Int]
-    )(in => (in.value, in.description, in.version))
-
-  implicit def eventReads: Reads[Event] = (
-    (__ \ "value").read[Double] and
-      (__ \ "description").readNullable[String] and
-      (__ \ "version").read[Int]
-    )((value, description, version) => Event(value, description, version))
-
+  implicit val eventFormat = Json.format[Event]
 }
 
 @XmlRootElement
