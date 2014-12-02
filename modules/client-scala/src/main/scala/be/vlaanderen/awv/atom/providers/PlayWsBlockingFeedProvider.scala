@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
  * @tparam T the type of the entries in the feed
  */
 class PlayWsBlockingFeedProvider[T](feedUrl:String,
-                                    var feedPosition: Option[FeedPosition],
+                                    feedPosition: Option[FeedPosition],
                                     feedUnmarshaller: FeedUnmarshaller[T],
                                     contentType: String = "application/xml",
                                     timeout:Duration = 30.seconds,
