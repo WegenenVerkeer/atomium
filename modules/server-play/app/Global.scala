@@ -31,12 +31,12 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   val eventController = new EventController(eventService)
 
   1 to 25 foreach {
-    i => eventService.push(Event(Random.nextDouble, Some(s"populated at start $i")))
+    i => eventService.push(Event(Random.nextDouble(), Some(s"populated at start $i")))
   }
 
   val timer = new Timer()
   timer.scheduleAtFixedRate(new TimerTask {
-    override def run() = { eventService.push(Event(Random.nextDouble, None)) }
+    override def run() = { eventService.push(Event(Random.nextDouble(), None)) }
   }, 1000L, 1000L)
 
 
