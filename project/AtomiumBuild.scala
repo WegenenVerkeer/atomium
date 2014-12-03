@@ -1,7 +1,7 @@
 import play.PlayScala
 import sbt.Keys._
 import sbt._
-
+import play.Play.autoImport._
 
 
 object AtomiumBuild extends Build
@@ -20,6 +20,8 @@ object AtomiumBuild extends Build
     settings = buildSettings(javaFormatModuleName, javaDependencies)
   )
 
+
+
   //----------------------------------------------------------------
   val formatModuleName = Name + "-format"
   lazy val formatModule = Project(
@@ -27,6 +29,8 @@ object AtomiumBuild extends Build
     file("modules/format"),
     settings = buildSettings(formatModuleName)
   ).dependsOn(javaFormatModule)
+
+
 
   //----------------------------------------------------------------
   val clientScalaModuleName = Name + "-client-scala"
@@ -36,6 +40,8 @@ object AtomiumBuild extends Build
     settings = buildSettings(clientScalaModuleName, clientScalaDependencies)
   ).dependsOn(formatModule)
    .aggregate(formatModule)
+
+
 
   //----------------------------------------------------------------
   val serverModuleName = Name + "-server"
@@ -69,8 +75,9 @@ object AtomiumBuild extends Build
     )
   ).dependsOn(serverModule)
 
-  import play.Play.autoImport._
 
+
+  //----------------------------------------------------------------
   val serverPlayModuleName = Name + "-server-play"
   lazy val serverPlayModule = Project(
     serverPlayModuleName,
@@ -78,6 +85,8 @@ object AtomiumBuild extends Build
   ).enablePlugins(PlayScala).settings(
       libraryDependencies += filters
     ).dependsOn(clientScalaModule, serverModule)
+
+
 
   //----------------------------------------------------------------
   val clientJavaModuleName = Name + "-client-java"
