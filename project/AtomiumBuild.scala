@@ -53,10 +53,7 @@ object AtomiumBuild extends Build
     serverMongoModuleName ,
     file("modules/server-mongo"),
     settings = buildSettings(serverMongoModuleName) ++ Seq(
-      libraryDependencies ++= Seq(
-        "org.mongodb" % "mongo-java-driver" % "2.0",
-        "org.mongodb" %% "casbah" % "2.6.2"
-      )
+      libraryDependencies ++= Seq(mongoJavaDriver, casbah)
     )
   ).dependsOn(serverModule)
 
@@ -68,10 +65,7 @@ object AtomiumBuild extends Build
     serverJdbcModuleName,
     file("modules/server-jdbc"),
     settings = buildSettings(serverJdbcModuleName) ++ Seq(
-      libraryDependencies ++= Seq(
-        "com.typesafe.slick" %% "slick" % "2.0.0",
-        "com.github.tminglei" % "slick-pg_2.10.3" % "0.5.0-RC1"
-      )
+      libraryDependencies ++= Seq(slick, slickPostgres)
     )
   ).dependsOn(serverModule)
 
@@ -92,12 +86,12 @@ object AtomiumBuild extends Build
     file("modules/client-java"),
     settings = buildSettings(clientJavaModuleName, javaDependencies) ++ Seq(
       libraryDependencies ++= Seq(
-        "org.slf4j" % "slf4j-api" % "1.7.6", // to be able to exclude logback from runtime dependencies
-        "ch.qos.logback" % "logback-classic" % "1.1.1" % "test", // should  be slf4j only
-        "org.mockito" % "mockito-core" % "1.9.5" % "test",
-        "org.assertj" % "assertj-core" % "1.5.0" % "test",
-        "be.eliwan" % "jfaker-mockito" % "0.1" % "test",
-        "commons-io" % "commons-io" % "2.4" % "test"
+        slf4j, // to be able to exclude logback from runtime dependencies
+        logback, // should  be slf4j only
+        mockitoCore,
+        assertJ,
+        jfakerMockito,
+        commonsIo
       )
     )
   ).dependsOn(clientScalaModule)
