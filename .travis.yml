@@ -10,6 +10,8 @@ notifications:
   email:
     recipients:
     - karel@geovise.com
+    - stefan@ellefant.be
+    
 env:
   global:
   - secure: G+8McDItAJInDRe28m4TVT78LuwzW7WUA/f4ZJUqf5yYdx6pcO20if+l4yQT8ufdE7vpyGO/T4w3iu8RL0Ln0Sl7TlVTBiWW6A5LnJ1/fl8P1/PSpBdgozxxezwPIlFP5UQzL9/hZPUGB2/fD3vLR3NvMJZJ6TIzl8uouGDW8EM=
