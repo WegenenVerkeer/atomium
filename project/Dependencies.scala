@@ -30,7 +30,7 @@ object Dependencies {
   val jacksonDatabind = "com.fasterxml.jackson.core"      %   "jackson-databind"        % "2.4.3"
   val jacksonJoda     = "com.fasterxml.jackson.datatype"  %   "jackson-datatype-joda"   % "2.4.3"
 
- // to be able to exclude logback from runtime dependencies
+
   val slf4j           = "org.slf4j"                       %   "slf4j-api"               % "1.7.6"
   val mockitoCore     = "org.mockito"                     %   "mockito-core"            % "1.9.5"   % "test"
   val assertJ         = "org.assertj"                     %   "assertj-core"            % "1.5.0"   % "test"
