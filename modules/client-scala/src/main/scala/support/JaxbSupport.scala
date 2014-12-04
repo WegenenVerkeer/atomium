@@ -3,7 +3,8 @@ package support
 import java.io._
 import javax.xml.bind._
 
-import be.vlaanderen.awv.atom.Marshallers._
+import be.wegenenverkeer.atom.Marshallers
+import Marshallers._
 import play.api.mvc._
 
 object JaxbSupport {

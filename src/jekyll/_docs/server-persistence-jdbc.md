@@ -15,7 +15,7 @@ The `atomium-server-jdbc` module provides a feed store implementation that store
 
 {% highlight xml %}
 <dependency>
-    <groupId>be.vlaanderen.awv</groupId>
+    <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-jdbc</artifactId>
     <version>{{site.version}}</version>
 </dependency>
@@ -24,7 +24,7 @@ The `atomium-server-jdbc` module provides a feed store implementation that store
 ### SBT
 
 {% highlight scala %}
-libraryDependencies += "be.vlaanderen.awv" % "atomium-server-jdbc" % "{{site.version}}"
+libraryDependencies += "be.wegenenverkeer" % "atomium-server-jdbc" % "{{site.version}}"
 {% endhighlight %}
 
 ## TODO

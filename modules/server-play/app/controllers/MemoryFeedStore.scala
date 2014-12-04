@@ -2,7 +2,7 @@ package controllers
 
 import _root_.java.util.UUID
 
-import be.vlaanderen.awv.atom._
+import be.wegenenverkeer.atom._
 import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer

@@ -2,10 +2,10 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.Marshallers._
-import be.vlaanderen.awv.atom.Formats._
-
+import be.wegenenverkeer.atom.Formats._
+import be.wegenenverkeer.atom.Marshallers._
+import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atom.java.{Feed => JFeed}
 import play.api.mvc.Controller
 import support.{JaxbSupport, PlayJsonSupport}
 

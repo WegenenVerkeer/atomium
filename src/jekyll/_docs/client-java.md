@@ -17,7 +17,7 @@ See tests for use.
 
 {% highlight xml %}
 <dependency>
-    <groupId>be.vlaanderen.awv</groupId>
+    <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-client-java</artifactId>
     <version>{{site.version}}</version>
 </dependency>
@@ -26,7 +26,7 @@ See tests for use.
 ### SBT
 
 {% highlight scala %}
-libraryDependencies += "be.vlaanderen.awv" % "atomium-client-java" % "{{site.version}}"
+libraryDependencies += "be.wegenenverkeer" % "atomium-client-java" % "{{site.version}}"
 {% endhighlight %}
 
 

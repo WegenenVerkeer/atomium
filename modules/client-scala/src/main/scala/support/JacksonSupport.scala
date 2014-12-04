@@ -1,6 +1,7 @@
 package support
 
-import be.vlaanderen.awv.atom.Marshallers.{JsonMarshaller, JsonUnmarshaller}
+import be.wegenenverkeer.atom.Marshallers
+import Marshallers.{JsonMarshaller, JsonUnmarshaller}
 import com.fasterxml.jackson.databind.{ObjectReader, ObjectWriter}
 import play.api.mvc.Codec
 

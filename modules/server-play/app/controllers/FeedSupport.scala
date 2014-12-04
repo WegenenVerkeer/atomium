@@ -1,7 +1,7 @@
 package controllers
 
-import be.vlaanderen.awv.atom.Marshallers._
-import be.vlaanderen.awv.atom._
+import be.wegenenverkeer.atom.{Generator, Url, Feed, Marshallers}
+import Marshallers._
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.LocalDateTime
 import org.joda.time.format.DateTimeFormat

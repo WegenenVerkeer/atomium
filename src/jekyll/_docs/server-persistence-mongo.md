@@ -15,7 +15,7 @@ The `atomium-server-mongo` module provides a feed store implementation that stor
 
 {% highlight xml %}
 <dependency>
-    <groupId>be.vlaanderen.awv</groupId>
+    <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-mongo</artifactId>
     <version>{{site.version}}</version>
 </dependency>
@@ -24,5 +24,5 @@ The `atomium-server-mongo` module provides a feed store implementation that stor
 ### SBT
 
 {% highlight scala %}
-libraryDependencies += "be.vlaanderen.awv" % "atomium-server-mongo" % "{{site.version}}"
+libraryDependencies += "be.wegenenverkeer" % "atomium-server-mongo" % "{{site.version}}"
 {% endhighlight %}

@@ -1,6 +1,7 @@
 package support
 
-import be.vlaanderen.awv.atom.Marshallers._
+import be.wegenenverkeer.atom.Marshallers
+import Marshallers._
 import play.api.libs.json.{Writes, Json, Reads}
 
 object PlayJsonSupport {
