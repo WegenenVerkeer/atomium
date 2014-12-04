@@ -13,7 +13,7 @@ permalink: /docs/server-java/
 
 {% highlight xml %}
 <dependency>
-    <groupId>be.vlaanderen.awv</groupId>
+    <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server</artifactId>
     <version>{{site.version}}</version>
 </dependency>
@@ -22,5 +22,5 @@ permalink: /docs/server-java/
 ### SBT
 
 {% highlight scala %}
-libraryDependencies += "be.vlaanderen.awv" % "atomium-server" % "{{site.version}}"
+libraryDependencies += "be.wegenenverkeer" % "atomium-server" % "{{site.version}}"
 {% endhighlight %}

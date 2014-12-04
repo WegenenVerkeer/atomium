@@ -1,10 +1,11 @@
+import _root_.java.util.{Timer, TimerTask}
+
 import akka.japi.Option.Some
-import be.vlaanderen.awv.atom._
+import be.wegenenverkeer.atom.{AbstractFeedStore, Context, FeedService, Url}
 import controllers.{Event, EventController, MemoryFeedStore, StringController}
 import play.api.GlobalSettings
 import play.api.mvc.WithFilters
 import play.filters.gzip.GzipFilter
-import _root_.java.util.{TimerTask, Timer}
 
 import scala.util.Random
 

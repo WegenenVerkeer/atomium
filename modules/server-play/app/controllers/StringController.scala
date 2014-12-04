@@ -2,13 +2,13 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.vlaanderen.awv.atom.Marshallers._
-import be.vlaanderen.awv.atom._
+import be.wegenenverkeer.atom.Marshallers._
+import be.wegenenverkeer.atom._
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.{SerializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import play.api.mvc.Controller
-import support.{JaxbSupport, JacksonSupport}
+import support.{JacksonSupport, JaxbSupport}
 
 class StringController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
 
@@ -21,7 +21,7 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
   implicit val objectWriter = objectMapper.writer()
   val jsonMarshaller: JsonMarshaller[Feed[String]] = JFeedConverters.feed2JFeed[String] _ andThen JacksonSupport.jacksonMarshaller
 
-  implicit val jaxbContext = JAXBContext.newInstance("be.vlaanderen.awv.atom")
+  implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
   val xmlMarshaller: XmlMarshaller[Feed[String]] = JFeedConverters.feed2JFeed[String] _ andThen JaxbSupport.jaxbMarshaller
 
   /**

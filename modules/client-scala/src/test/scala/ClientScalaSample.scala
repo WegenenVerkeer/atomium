@@ -1,12 +1,12 @@
 import javax.xml.bind.JAXBContext
 
-import be.vlaanderen.awv.atom.Marshallers.{XmlUnmarshaller, JsonUnmarshaller}
-import be.vlaanderen.awv.atom._
-import be.vlaanderen.awv.atom.providers.PlayWsBlockingFeedProvider
+import be.wegenenverkeer.atom.Marshallers.{JsonUnmarshaller, XmlUnmarshaller}
+import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atom.providers.PlayWsBlockingFeedProvider
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
-import support.{JaxbSupport, JacksonSupport}
+import support.{JacksonSupport, JaxbSupport}
 
 import scala.util.Success
 
@@ -17,7 +17,7 @@ import scala.util.Success
  */
 object ClientScalaSample extends FeedUnmarshaller[String] {
 
-  implicit val jaxbContext = JAXBContext.newInstance("be.vlaanderen.awv.atom")
+  implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
 
   val xmlUnmarshaller: XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller
                                                        .andThen(JFeedConverters.jFeed2Feed)
@@ -25,7 +25,7 @@ object ClientScalaSample extends FeedUnmarshaller[String] {
   private val objectMapper: ObjectMapper = new ObjectMapper()
   objectMapper.registerModule(new JodaModule)
 
-  implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
+  implicit val objectReader = objectMapper.reader(new TypeReference[Feed[String]]() {})
   val jsonUnmarshaller: JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller
                                                          .andThen(JFeedConverters.jFeed2Feed)
 

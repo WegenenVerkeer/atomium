@@ -15,7 +15,7 @@ Client library for handling atomium feeds (which are atom-like feeds in JSON).
 
 {% highlight xml %}
 <dependency>
-    <groupId>be.vlaanderen.awv</groupId>
+    <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-client-scala</artifactId>
     <version>{{site.version}}</version>
 </dependency>
@@ -24,7 +24,7 @@ Client library for handling atomium feeds (which are atom-like feeds in JSON).
 ### SBT
 
 {% highlight scala %}
-libraryDependencies += "be.vlaanderen.awv" % "atomium-client-scala" % "{{site.version}}"
+libraryDependencies += "be.wegenenverkeer" % "atomium-client-scala" % "{{site.version}}"
 {% endhighlight %}
 
 ## Play WS API feed provider

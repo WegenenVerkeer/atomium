@@ -2,8 +2,7 @@ package controllers
 
 import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlRootElement}
 
-import be.vlaanderen.awv.jaxb.{xmlElement, xmlAttribute, StringOptionAdapter, xmlTypeAdapter}
-import play.api.libs.functional.syntax._
+import be.wegenenverkeer.jaxb.{xmlElement, xmlAttribute, StringOptionAdapter, xmlTypeAdapter}
 import play.api.libs.json._
 
 object EventFormat {
