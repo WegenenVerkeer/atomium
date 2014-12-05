@@ -1,4 +1,4 @@
-package be.be.wegenenverkeer.ws
+package be.wegenenverkeer.ws
 
 import java.io.File
 

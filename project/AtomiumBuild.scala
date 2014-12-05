@@ -37,9 +37,31 @@ object AtomiumBuild extends Build
   lazy val clientScalaModule = Project(
     clientScalaModuleName,
     file("modules/client-scala"),
-    settings = buildSettings(clientScalaModuleName, clientScalaDependencies)
+    settings = buildSettings(clientScalaModuleName)
   ).dependsOn(formatModule)
    .aggregate(formatModule)
+
+
+  //----------------------------------------------------------------
+  val commonPlayModuleName = Name + "-common-play"
+  lazy val commonPlayModule = Project(
+    commonPlayModuleName,
+    file("modules/common-play"),
+    settings = buildSettings(commonPlayModuleName, commonPlayDependencies)
+  ).dependsOn(formatModule)
+    .aggregate(formatModule)
+
+
+
+  //----------------------------------------------------------------
+  val clientplayModuleName = Name + "-client-play"
+  lazy val clientPlayModule = Project(
+    clientplayModuleName,
+    file("modules/client-play"),
+    settings = buildSettings(clientplayModuleName, clientPlayDependencies)
+  ).dependsOn(clientScalaModule, commonPlayModule)
+    .aggregate(clientScalaModule, commonPlayModule)
+
 
 
 
@@ -84,7 +106,7 @@ object AtomiumBuild extends Build
     file("modules/server-play")
   ).enablePlugins(PlayScala).settings(
       libraryDependencies += filters
-    ).dependsOn(clientScalaModule, serverModule)
+    ).dependsOn(clientScalaModule, serverModule, commonPlayModule)
 
 
 
