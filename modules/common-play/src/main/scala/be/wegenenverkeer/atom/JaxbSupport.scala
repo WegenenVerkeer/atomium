@@ -1,11 +1,10 @@
-package support
+package be.wegenenverkeer.atom
 
-import java.io._
+import _root_.java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStreamReader, StringReader}
 import javax.xml.bind._
+import play.api.mvc.Codec
 
-import be.wegenenverkeer.atom.Marshallers
-import Marshallers._
-import play.api.mvc._
+import be.wegenenverkeer.atom.Marshallers._
 
 object JaxbSupport {
 
@@ -25,7 +24,6 @@ object JaxbSupport {
 
   def fromXmlString[A](xml: String, expectedType: Class[A])(implicit context: JAXBContext): A = {
     val result = context.createUnmarshaller().unmarshal(new StringReader(xml))
-//    expectedType.cast(result)
     result.asInstanceOf[A]
   }
 

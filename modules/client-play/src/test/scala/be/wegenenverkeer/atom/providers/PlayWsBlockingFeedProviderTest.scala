@@ -2,10 +2,9 @@ package be.wegenenverkeer.atom.providers
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atom.java.{Feed => JFeed}
+import be.wegenenverkeer.atom.Marshallers._
 import be.wegenenverkeer.atom._
-import Marshallers._
-import be.wegenenverkeer.atom.java.Adapters
+import be.wegenenverkeer.atom.java.{Adapters, Feed => JFeed}
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
@@ -15,7 +14,7 @@ import org.scalatest.{FunSuite, Matchers}
 import play.api.mvc.Action
 import play.api.mvc.Results._
 import play.api.test.Helpers._
-import support.{JacksonSupport, JaxbSupport}
+import support.JaxbSupport
 
 class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
 

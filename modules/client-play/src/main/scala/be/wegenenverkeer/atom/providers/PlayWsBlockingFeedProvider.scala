@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom.providers
 
-import be.be.wegenenverkeer.ws.ManagedPlayApp
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.ws.ManagedPlayApp
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.LocalDateTime
 import play.api.http.HeaderNames

@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import play.api.mvc.Controller
-import support.{JacksonSupport, JaxbSupport}
 
 class StringController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
 

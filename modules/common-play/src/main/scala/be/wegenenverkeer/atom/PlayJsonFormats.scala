@@ -11,7 +11,7 @@ import play.api.libs.json._
  *
  * If you want to use this implementation you will need to add a dependency on the Play Json API library.
  */
-object Formats {
+object PlayJsonFormats {
 
   val df = ISODateTimeFormat.dateTime()
 
