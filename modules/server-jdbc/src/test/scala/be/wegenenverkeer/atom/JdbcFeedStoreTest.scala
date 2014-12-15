@@ -5,7 +5,11 @@ import be.wegenenverkeer.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.{DateTimeUtils, LocalDateTime}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
-class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class JdbcFeedStoreTest extends FunSuite
+  with FeedStoreTestSupport
+  with Matchers
+  with BeforeAndAfterAll
+  with BeforeAndAfterEach {
 
   val timeMillis = System.currentTimeMillis()
   DateTimeUtils.setCurrentMillisFixed(timeMillis)
@@ -31,7 +35,6 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
 
   def createUrlBuilder = new UrlBuilder {
     override def base: Url = Url("http://www.example.org/feeds")
-    override def feedLink(start: Long, count: Int): Url = Url(s"/$start/$count")
     override def collectionLink: Url = ???
   }
 
@@ -62,59 +65,16 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
   }
 
   test("getFeed returns correct page of the feed") {
-    feedStore.push(1.toString)
-    feedStore.push(2.toString)
-    feedStore.push(3.toString)
-    feedStore.push(4.toString)
-
-    //validate last feed page = oldest page
-    val lastPage = feedStore.getFeed(1, 2).get
-    lastPage.title should be (Some("Test"))
-    lastPage.updated should be (new LocalDateTime())
-    lastPage.selfLink.href should be (Url("/1/2"))
-    lastPage.lastLink.map(_.href) should be (Some(Url("/1/2")))
-    lastPage.previousLink.map(_.href) should be (Some(Url("/3/2")))
-    lastPage.nextLink.map(_.href) should be (None)
-    lastPage.entries.size should be (2)
-    //check reverse chronological order
-    lastPage.entries(0).content.value should be (2.toString)
-    lastPage.entries(1).content.value should be (1.toString)
-
-    //validate first feed page = newest page
-    val firstPage = feedStore.getFeed(3, 2).get
-    firstPage.selfLink.href should be (Url("/3/2"))
-    firstPage.lastLink.map(_.href) should be (Some(Url("/1/2")))
-    firstPage.previousLink.map(_.href) should be (None)
-    firstPage.nextLink.map(_.href) should be (Some(Url("/1/2")))
-    firstPage.entries.size should be (2)
-    firstPage.entries(0).content.value should be (4.toString)
-    firstPage.entries(1).content.value should be (3.toString)
-
-    //head of feed = first page containing newest entries
-    val headOfFeed = feedStore.getHeadOfFeed(2).get
-    headOfFeed should be (firstPage)
-
-    //non existing page
-    val emptyPage = feedStore.getFeed(5, 2) should be (None)
-
-    //push extra element
-    feedStore.push(List(5.toString))
-    val newFirstPage = feedStore.getFeed(5, 2).get
-    newFirstPage.entries.size should be (1)
-    val newHeadPage = feedStore.getHeadOfFeed(2).get
-    newHeadPage should be(newFirstPage)
-
+    testFeedStorePaging(feedStore = feedStore, pageSize = 3)
   }
 
   test("failed transaction should not push entry onto feed") {
-    try {
+    intercept[Exception] {
       session.withTransaction {
         feedStore.push("1")
         feedStore.push("2")
         throw new Exception("tx failure")
       }
-    } catch {
-      case e: Exception =>
     }
 
     FeedTable.length.run should be(1)
@@ -124,12 +84,10 @@ class JdbcFeedStoreTest extends FunSuite with Matchers with BeforeAndAfterAll wi
     feedStore.push("3")
 
     //sequence number 1 and 2 are not used,
-    // retrieving 2 entries starting from entry 1 => no entries found
-    feedStore.getFeedEntries(1, 2).size should be (0)
-    feedStore.getFeed(1, 2).get.entries.size should be (0)
-    feedStore.getFeedEntries(3, 2).size should be (1)
-    feedStore.getFeed(3, 2).get.entries.size should be (1)
-
+    val entries: List[(Long, Entry[String])] = feedStore.getFeedEntries(0, 2, ascending = true)
+    entries.size should be (1)
+    entries(0)._1 should be (3)
+    feedStore.getFeed(0, 2, forward = true).get.entries.size should be (1)
   }
 
 }

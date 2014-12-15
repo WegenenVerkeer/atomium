@@ -33,8 +33,8 @@ class EventController(feedService: FeedService[Event, Context]) extends Controll
    * @param pageSize - page size
    * @return a page of the feed
    */
-  def getFeedPage(start: Int, pageSize: Int) = {
-    processFeedPage(feedService.getFeedPage(start, pageSize))
+  def getFeedPage(start: Int, pageSize: Int, forward: Boolean) = {
+    processFeedPage(feedService.getFeedPage(start, pageSize, forward))
   }
 
 }

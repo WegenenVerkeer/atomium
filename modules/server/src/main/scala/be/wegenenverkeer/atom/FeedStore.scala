@@ -14,16 +14,17 @@ trait FeedStore[E] {
   /**
    * Retrieves a page of the feed.
    *
-   * @param start the starting entry
-   * @param pageSize the number of entries
+   * @param startSequenceNr the starting entry's sequence number (exclusive), should not be returned in the feed page
+   * @param count the number of entries to return in the feed page, can be less if page is incomplete
+   * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
+   *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(start:Int, pageSize: Int): Option[Feed[E]]
-
+  def getFeed(startSequenceNr:Long, count: Int, forward: Boolean): Option[Feed[E]]
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
-   * @param pageSize
+   * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
   def getHeadOfFeed(pageSize: Int): Option[Feed[E]]

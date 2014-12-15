@@ -8,32 +8,26 @@ import be.wegenenverkeer.atom.{Context, UrlBuilder}
  * @tparam E type of the elements in the feed
  */
 abstract class FeedStore[E](feedName: String, title: Option[String], urlProvider: UrlBuilder)
-  extends be.wegenenverkeer.atom.AbstractFeedStore[E](feedName, title, urlProvider) {
+  extends be.wegenenverkeer.atom.FeedStore[E] {
 
-  def underlying: be.wegenenverkeer.atom.AbstractFeedStore[E]
+  def underlying: be.wegenenverkeer.atom.FeedStore[E]
 
   override def context: Context = underlying.context
 
   /**
-   * return pageSize entries starting from start
-   * @param start the start entry
-   * @param pageSize the number of entries to return
-   * @return
-   */
-  override def getFeedEntries(start:Long, pageSize: Int): List[be.wegenenverkeer.atom.Entry[E]] = underlying.getFeedEntries(start, pageSize)
-
-  /**
    * Retrieves a page of the feed.
    *
-   * @param start the starting entry
-   * @param pageSize the number of entries in the feed page            
+   * @param startSequenceNr the starting entry's sequence number (exclusive), should not be returned in the feed page
+   * @param pageSize the number of entries
+   * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
+   *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(start: Long, pageSize: Int): Option[be.wegenenverkeer.atom.Feed[E]] = underlying.getFeed(start, pageSize)
+  override def getFeed(startSequenceNr:Long, pageSize: Int, forward: Boolean): Option[be.wegenenverkeer.atom.Feed[E]] = underlying.getFeed(startSequenceNr, pageSize, forward)
 
   /**
-   * retrieve the head of the feed, i.e. the feed page containing the most recent entries
-   * @param pageSize the number of entries to return
+   * Retrieves the head of the feed. This is the first page containing the most recent entries
+   * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
   override def getHeadOfFeed(pageSize: Int): Option[be.wegenenverkeer.atom.Feed[E]] = underlying.getHeadOfFeed(pageSize)
@@ -43,7 +37,5 @@ abstract class FeedStore[E](feedName: String, title: Option[String], urlProvider
    * @param entries the entries to push to the feed
    */
   override def push(entries: Iterable[E]) = underlying.push(entries)
-
-  override def maxId: Long = underlying.maxId
 
 }

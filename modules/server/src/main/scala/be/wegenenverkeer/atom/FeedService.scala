@@ -11,7 +11,7 @@ package be.wegenenverkeer.atom
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => AbstractFeedStore[E]) {
+class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
 
   /**
    * Adds elements to the feed.
@@ -35,15 +35,17 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
 
   /**
    * Retrieves a feed page
-   * @param start start feed from entry
+   * @param startSequenceNr start feed from entry with this sequence number
    * @param pageSize number of entries to return in feed page
    * @param context to retrieve the feed page
-   * @return a feed page or None if the start and pageSize are incorrect, for example arbitrary chosen by atom client,
-   *         because this defeats the caching heuristics. Clients should navigate using the links in the atom feed
+   * @return a feed page or None if the startSequenceNr and pageSize are incorrect,
+   *         for example when these are arbitrarily chosen by atom client,
+   *         because this defeats the caching heuristics.
+   *         atom clients should navigate using the links in the atom feed
    */
-  def getFeedPage(start: Int, pageSize:Int)(implicit context: C):Option[Feed[E]] = {
-    if (pageSize == entriesPerPage && start % pageSize == 1) {
-      feedStoreFactory(feedName, context).getFeed(start, pageSize)
+  def getFeedPage(startSequenceNr: Long, pageSize:Int, forward: Boolean)(implicit context: C):Option[Feed[E]] = {
+    if (pageSize == entriesPerPage) {
+      feedStoreFactory(feedName, context).getFeed(startSequenceNr, pageSize, forward)
     } else {
       None
     }
