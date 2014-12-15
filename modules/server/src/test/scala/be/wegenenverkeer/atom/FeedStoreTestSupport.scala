@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atom
 
-import org.joda.time.LocalDateTime
 import org.scalatest.Matchers
 
 /**
@@ -18,7 +17,6 @@ trait FeedStoreTestSupport extends Matchers {
 
     //validate last feed page = oldest page
     val lastPage = feedStore.getFeed(minId, pageSize, forward = true).get
-    lastPage.updated should be (new LocalDateTime())
     lastPage.complete shouldBe true
     lastPage.selfLink.href should be (Url(s"$minId/forward/$pageSize"))
     lastPage.lastLink.map(_.href) should be (Some(Url(s"$minId/forward/$pageSize")))
