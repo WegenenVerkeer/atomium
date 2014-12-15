@@ -17,7 +17,7 @@ object Dependencies {
   val mongoJavaDriver   = "org.mongodb"             %     "mongo-java-driver"       % "2.0"
   val casbah            = "org.mongodb"             %%    "casbah"                  % "2.6.2"
   val slick             = "com.typesafe.slick"      %%    "slick"                   % "2.0.0"
-  val slickPostgres     = "com.github.tminglei"     %     "slick-pg_2.10.3"         % "0.5.0-RC1"
+  val slickPostgres     = "com.github.tminglei"     %%    "slick-pg"                % "0.7.0"
 
   // test deps
   val scalaTest     = "org.scalatest"               %%    "scalatest"               % "2.2.0"        % "test"

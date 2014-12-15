@@ -2,41 +2,46 @@ package be.wegenenverkeer.atom
 
 import _root_.java.util.UUID
 
-import be.wegenenverkeer.atom.models.{EntryModel, EntryTable, FeedModel, FeedTable}
-import be.wegenenverkeer.atom.slick.SlickPostgresDriver
-import be.wegenenverkeer.atom.slick.SlickPostgresDriver.simple._
+import scala.collection.mutable.Map
+import be.wegenenverkeer.atom.models.{EntryModel, FeedModel}
+import be.wegenenverkeer.atom.slick.FeedComponent
 import org.joda.time.LocalDateTime
 
 /**
  * [[AbstractFeedStore]] implementation that stores feeds and pages in a Postgres database.
  *
- * @param c the context implementation
+ * @param feedComponent the feedComponent trait to access the driver
+ * @param context: the context implementation (wraps a session)
  * @param feedName the name of the feed
  * @param ser function to serialize an element to a String
  * @param deser function to deserialize a String to an element
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class JdbcFeedStore[E](c: JdbcContext, 
-                       feedName: String, 
-                       title: Option[String], 
-                       ser: E => String, 
-                       deser: String => E, 
+class JdbcFeedStore[E](feedComponent: FeedComponent,
+                       context: JdbcContext,
+                       feedName: String,
+                       title: Option[String],
+                       ser: E => String,
+                       deser: String => E,
                        urlBuilder: UrlBuilder)
   extends AbstractFeedStore[E](feedName, title, urlBuilder) {
 
-  override lazy val context = c
+  import feedComponent.driver.simple._
 
-  lazy val feedModel : FeedModel = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
-    FeedTable.findByName(feedName).getOrElse {
-      val id = FeedTable returning FeedTable.map(_.id) += new FeedModel(None, feedName, title)
-      val f = new FeedModel(id, feedName, title)
-      f.entriesTableQuery.ddl.create
-      f
-    }
+  def feedModel: FeedModel = {
+    FeedModelRegistry.map.getOrElseUpdate(feedName, {
+      implicit val session = context.session
+      feedComponent.Feeds.findByName(feedName).getOrElse {
+        val id = feedComponent.Feeds returning feedComponent.Feeds.map(_.id) += new FeedModel(None, feedName, title)
+        val f = new FeedModel(id, feedName, title)
+        feedComponent.entriesTableQuery(f).ddl.create
+        f
+      }
+    })
   }
+
+
 
   /**
    * Retrieves entries with their sequence numbers from the feed
@@ -48,33 +53,30 @@ class JdbcFeedStore[E](c: JdbcContext,
    * @return the corresponding entries sorted accordingly
    */
   override def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[(Long, Entry[E])] = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+    implicit val session = context.session
 
     val query = if (ascending)
-      feedModel.entriesTableQuery.filter(e => e.id >= start).sortBy(_.id)
+      feedComponent.entriesTableQuery(feedModel).filter(e => e.id >= start).sortBy(_.id)
     else
-      feedModel.entriesTableQuery.filter(e => e.id <= start).sortBy(_.id.desc)
+      feedComponent.entriesTableQuery(feedModel).filter(e => e.id <= start).sortBy(_.id.desc)
 
     query.take(count).list.map(entryWithSequenceNumber)
   }
 
   override def push(entries: Iterable[E]): Unit = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+    implicit val session = context.session
     val timestamp: LocalDateTime = new LocalDateTime()
     entries foreach { entry =>
-      feedModel.entriesTableQuery += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
+      feedComponent.entriesTableQuery(feedModel) += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
     }
   }
 
   override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+    implicit val session = context.session
     if (inclusive)
-      feedModel.entriesTableQuery.filter(_.id <= sequenceNr).length.run
+      feedComponent.entriesTableQuery(feedModel).filter(_.id <= sequenceNr).length.run
     else
-      feedModel.entriesTableQuery.filter(_.id < sequenceNr).length.run
+      feedComponent.entriesTableQuery(feedModel).filter(_.id < sequenceNr).length.run
   }
 
   /**
@@ -84,20 +86,19 @@ class JdbcFeedStore[E](c: JdbcContext,
    *         and sorted by descending sequence number
    */
   override def getMostRecentFeedEntries(count: Int): List[(Long, Entry[E])] = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+    implicit val session = context.session
 
-    feedModel.entriesTableQuery
+    feedComponent.entriesTableQuery(feedModel)
       .sortBy(_.id.desc)
       .take(count)
-      .list().map(entryWithSequenceNumber)
+      .list(session).map(entryWithSequenceNumber)
   }
 
   /**
    * convert a database row (dbEntry) to a tuple containing sequence number and Entry
    * @return the corresponding tuple
    */
-  private[this] def entryWithSequenceNumber: (EntryTable#TableElementType) => (Long, Entry[E]) = { dbEntry =>
+  private[this] def entryWithSequenceNumber: (feedComponent.EntryTable#TableElementType) => (Long, Entry[E]) = { dbEntry =>
     (dbEntry.id.get, Entry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
   }
 
@@ -110,8 +111,17 @@ class JdbcFeedStore[E](c: JdbcContext,
 
 
   override def maxId: Long = {
-    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
-    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
-    Query(feedModel.entriesTableQuery.map(_.id).max).first().getOrElse(minId)
+    implicit val session = context.session
+    Query(feedComponent.entriesTableQuery(feedModel).map(_.id).max).first(session).getOrElse(minId)
   }
+}
+
+/**
+ * FeedModelRegistry that keeps a maps of feedName to its corresponding FeedModel
+ * in order to avoid redundant queries to the DB to retrieve the FeedModel
+ */
+object FeedModelRegistry {
+  
+  val map: Map[String, FeedModel] = Map.empty[String, FeedModel]
+  
 }

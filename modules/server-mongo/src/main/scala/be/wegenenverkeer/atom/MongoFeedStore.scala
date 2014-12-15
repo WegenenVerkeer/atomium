@@ -26,8 +26,6 @@ class MongoFeedStore[E](c: MongoContext,
                         feedInfoCollectionName: String,
                         ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlProvider) {
 
-  lazy val context = c
-
   private lazy val db = c.db.asScala
   private lazy val entriesCollection = db(feedEntriesCollectionName match {
     case Some(name) => name

@@ -16,8 +16,6 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
   var nextSequenceNum = 0L
   var entriesMap : TreeMap[Long, Entry[T]] = TreeMap.empty[Long, Entry[T]]
 
-  override def context: Context = ???
-
   def sequenceNumbersToSkipForPush(skip: Int): Unit = {
     require(skip >= 0)
     this.skip = skip

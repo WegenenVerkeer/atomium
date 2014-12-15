@@ -16,8 +16,6 @@ class MemoryFeedStore[T](feedName: String, urlBuilder: UrlBuilder, title : Optio
 
   val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
 
-  override def context: Context = ???
-
   override val minId = 0L
 
   override def maxId = entries.size+1

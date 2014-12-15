@@ -3,13 +3,9 @@ package be.wegenenverkeer.atom
 /**
  * A feed store is responsible for the persistence of feeds.
  *
- * TODO: support to undo new additions (transactional)
- * 
  * @tparam E type of the elements in the feed
  */
 trait FeedStore[E] {
-
-  def context: Context
 
   /**
    * Retrieves a page of the feed.
