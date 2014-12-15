@@ -1,16 +1,22 @@
 package be.wegenenverkeer.atom.java
 
-import be.wegenenverkeer.atom.{AbstractFeedStore, JdbcContext, UrlBuilder}
+import be.wegenenverkeer.atom.slick.FeedComponent
+import be.wegenenverkeer.atom.{JdbcContext, AbstractFeedStore, UrlBuilder}
 
-class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: String, mapper: ElementMapper[E], urlProvider: UrlBuilder)
+class JdbcFeedStore[E](feedComponent: FeedComponent,
+                       context: JdbcContext,
+                       feedName: String,
+                       title: String,
+                       mapper: ElementMapper[E],
+                       urlProvider: UrlBuilder)
   extends FeedStore[E](feedName, Option(title), urlProvider) {
 
   override def underlying: AbstractFeedStore[E] = new be.wegenenverkeer.atom.JdbcFeedStore[E](
-    c = c,
+    feedComponent = feedComponent,
+    context = context,
     feedName = feedName,
     title = Option(title),
     ser = (e) => mapper.serialize(e),
     deser = (v) => mapper.deserialize(v),
-    urlBuilder = urlProvider
-  )
+    urlBuilder = urlProvider)
 }

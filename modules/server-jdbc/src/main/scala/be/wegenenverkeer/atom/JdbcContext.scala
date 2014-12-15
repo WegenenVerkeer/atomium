@@ -1,13 +1,7 @@
 package be.wegenenverkeer.atom
 
-import _root_.java.sql.Connection
+trait JdbcContext extends Context {
 
-import scala.slick.backend.DatabaseComponent
-import scala.slick.jdbc.UnmanagedSession
+  def session: scala.slick.jdbc.JdbcBackend#SessionDef
 
-case class JdbcContext(session: DatabaseComponent#SessionDef) extends Context
-
-object JdbcContext {
-  implicit def session2Context(session: DatabaseComponent#SessionDef) = JdbcContext(session)
-  implicit def connection2Context(connection: Connection) = JdbcContext(new UnmanagedSession(connection))
 }
