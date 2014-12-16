@@ -2,9 +2,9 @@ package be.wegenenverkeer.atom
 
 import _root_.java.util.UUID
 
-import be.wegenenverkeer.atom.models.{FeedTable, FeedModel, EntryModel}
+import be.wegenenverkeer.atom.models.{EntryModel, EntryTable, FeedModel, FeedTable}
 import be.wegenenverkeer.atom.slick.SlickPostgresDriver
-import SlickPostgresDriver.simple._
+import be.wegenenverkeer.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.LocalDateTime
 
 /**
@@ -17,7 +17,12 @@ import org.joda.time.LocalDateTime
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], ser: E => String, deser: String => E, urlBuilder: UrlBuilder)
+class JdbcFeedStore[E](c: JdbcContext, 
+                       feedName: String, 
+                       title: Option[String], 
+                       ser: E => String, 
+                       deser: String => E, 
+                       urlBuilder: UrlBuilder)
   extends AbstractFeedStore[E](feedName, title, urlBuilder) {
 
   override lazy val context = c
@@ -33,13 +38,25 @@ class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], 
     }
   }
 
-  override def getFeedEntries(start:Long, pageSize: Int): List[Entry[E]] = {
+  /**
+   * Retrieves entries with their sequence numbers from the feed
+   *
+   * @param start the starting entry (inclusive), MUST be returned in the entries
+   * @param count the number of entries to return
+   * @param ascending if true return entries with sequence numbers >= start in ascending order
+   *                  else return entries with sequence numbers <= start in descending order
+   * @return the corresponding entries sorted accordingly
+   */
+  override def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry] = {
     // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
     implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
-    feedModel.entriesTableQuery.filter(e => e.id >= start && e.id < start+pageSize).sortBy(_.id).take(pageSize).list().reverse.map {
-      entry =>
-        Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
-    }
+
+    val query = if (ascending)
+      feedModel.entriesTableQuery.filter(e => e.id >= start).sortBy(_.id)
+    else
+      feedModel.entriesTableQuery.filter(e => e.id <= start).sortBy(_.id.desc)
+
+    query.take(count).list.map(toFeedEntry)
   }
 
   override def push(entries: Iterable[E]): Unit = {
@@ -51,10 +68,51 @@ class JdbcFeedStore[E](c: JdbcContext, feedName: String, title: Option[String], 
     }
   }
 
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
+    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+    if (inclusive)
+      feedModel.entriesTableQuery.filter(_.id <= sequenceNr).length.run
+    else
+      feedModel.entriesTableQuery.filter(_.id < sequenceNr).length.run
+  }
+
+  /**
+   * retrieves the most recent entries from the feedstore sorted in descending order
+   * @param count the amount of recent entries to return
+   * @return a list containing tuples of a sequence number and its corresponding entry
+   *         and sorted by descending sequence number
+   */
+  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+    // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
+    implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
+
+    feedModel.entriesTableQuery
+      .sortBy(_.id.desc)
+      .take(count)
+      .list().map(toFeedEntry)
+  }
+
+  /**
+   * convert a database row (dbEntry) to a tuple containing sequence number and Entry
+   * @return the corresponding tuple
+   */
+  private[this] def toFeedEntry: (EntryTable#TableElementType) => FeedEntry = { dbEntry =>
+    FeedEntry(dbEntry.id.get,
+      Entry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
+  }
+
+  /**
+   * @return one less than the minimum sequence number used in this feed
+   *         since SQL sequences start at 1 this is 0. If your DB sequences start with another number override this
+   *         class and modify accordingly
+   */
+  override val minId: Long = 0L
+
+
   override def maxId: Long = {
     // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
     implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
-    Query(feedModel.entriesTableQuery.map(_.id).max).first().getOrElse(0)
+    Query(feedModel.entriesTableQuery.map(_.id).max).first().getOrElse(minId)
   }
-
 }

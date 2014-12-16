@@ -83,7 +83,7 @@ object AtomiumBuild extends Build
     settings = buildSettings(serverMongoModuleName) ++ Seq(
       libraryDependencies ++= Seq(mongoJavaDriver, casbah)
     )
-  ).dependsOn(serverModule)
+  ).dependsOn(serverModule % "test->test;compile->compile")
 
 
 
@@ -95,7 +95,7 @@ object AtomiumBuild extends Build
     settings = buildSettings(serverJdbcModuleName) ++ Seq(
       libraryDependencies ++= Seq(slick, slickPostgres)
     )
-  ).dependsOn(serverModule)
+  ).dependsOn(serverModule % "test->test;compile->compile")
 
 
 
@@ -104,9 +104,9 @@ object AtomiumBuild extends Build
   lazy val serverPlayModule = Project(
     serverPlayModuleName,
     file("modules/server-play")
-  ).enablePlugins(PlayScala).settings(
-      libraryDependencies += filters
-    ).dependsOn(clientScalaModule, serverModule, commonPlayModule)
+  ).enablePlugins(PlayScala)
+	.settings(libraryDependencies ++= Seq(filters, scalaTestPlay))
+    .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
 
 
 
@@ -137,5 +137,5 @@ object AtomiumBuild extends Build
     settings = buildSettings(Name)
   ).aggregate(javaFormatModuleName, formatModule,
       clientScalaModule, clientJavaModule,
-      serverModule, serverMongoModuleName, serverJdbcModule, serverPlayModule)
+      serverModule, serverMongoModule, serverJdbcModule, serverPlayModule)
 }

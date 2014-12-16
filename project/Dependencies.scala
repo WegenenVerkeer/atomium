@@ -21,6 +21,8 @@ object Dependencies {
 
   // test deps
   val scalaTest     = "org.scalatest"               %%    "scalatest"               % "2.2.0"        % "test"
+  val scalaTestPlay = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
+  val scalaCheck    = "org.scalacheck"              %%    "scalacheck"              % "1.12.1"       % "test"
   val embededMongo  = "com.github.simplyscala"      %%    "scalatest-embedmongo"    % "0.2.2"        % "test"
   val h2database    = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs    = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
@@ -50,6 +52,7 @@ object Dependencies {
 
   val mainTestDependencies = Seq (
     scalaTest,
+    scalaCheck,
     embededMongo,
     h2database,
     playMockWs,

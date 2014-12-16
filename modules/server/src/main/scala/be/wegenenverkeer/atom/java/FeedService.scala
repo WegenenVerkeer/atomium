@@ -40,5 +40,5 @@ class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage:
    * @param count the number of entries
    * @return the feed page
    */
-  def getFeed(start:Int, count:Int) = underlying.getFeedPage(start, count)(context)
+  def getFeed(start:Int, count:Int, forward: Boolean) = underlying.getFeedPage(start, count, forward)(context)
 }

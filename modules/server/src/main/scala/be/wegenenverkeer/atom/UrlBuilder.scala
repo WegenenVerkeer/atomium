@@ -7,11 +7,17 @@ trait UrlBuilder {
   /**
    * Creates a link to a feed page.
    *
-   * @param start the starting entry
-   * @param count the number of entries in the page             
+   * @param startId the starting entry's id (non inclusive)
+   * @param count the number of entries in the page
+   * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
+   *                else navigate to 'next' elements in feed (towards last page of feed)
    * @return the URL
    */
-  def feedLink(start:Long, count: Int): Url
+  def feedLink(startId:Long, count: Int, forward: Boolean): Url = {
+    val direction = if (forward) "forward" else "backward"
+    Url(startId.toString) / direction / count.toString
+  }
+
 
   /**
    * Creates a link to a feed.

@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atom.models
 
-import be.wegenenverkeer.atom.slick.SlickPostgresDriver
 import be.wegenenverkeer.atom.slick.SlickPostgresDriver.simple._
 import org.joda.time.LocalDateTime
 
