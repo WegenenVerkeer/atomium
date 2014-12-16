@@ -8,7 +8,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 import scala.slick.driver.H2Driver
 import scala.slick.driver.H2Driver.simple._
 
-class JdbcFeedStoreTest extends FunSuite
+class AutoJdbcFeedStoreTest extends FunSuite
   with FeedStoreTestSupport
   with Matchers
   with BeforeAndAfterAll
@@ -18,7 +18,7 @@ class JdbcFeedStoreTest extends FunSuite
   DateTimeUtils.setCurrentMillisFixed(timeMillis)
 
   implicit var session: Session = _
-  var feedStore: JdbcFeedStore[String] = _
+  var feedStore: AutoJdbcFeedStore[String] = _
   var feedModel: FeedModel = _
 
   val db = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver")
@@ -28,14 +28,13 @@ class JdbcFeedStoreTest extends FunSuite
 
   override protected def beforeEach() = {
     session = db.createSession()
-    dal.Feeds.ddl.create
     feedStore = createFeedStore
   }
 
   override protected def afterEach(): Unit = {
     dal.Feeds.ddl.drop
-    dal.entriesTableQuery(feedModel).ddl.drop
-    FeedModelRegistry.map.clear()
+    dal.entriesTableQuery(feedModel.entriesTableName).ddl.drop
+    FeedModelRegistry.clear()
   }
 
   override protected def afterAll() = {
@@ -47,7 +46,13 @@ class JdbcFeedStoreTest extends FunSuite
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = new JdbcFeedStore[String](dal, dal.createJdbcContext, feedName = "int_feed", title = Some("Test"), ser = s => s, deser = s => s, urlBuilder = createUrlBuilder)
+  def createFeedStore = new AutoJdbcFeedStore[String](dal,
+    dal.createJdbcContext,
+    feedName = "int_feed",
+    title = Some("Test"),
+    ser = s => s,
+    deser = s => s,
+    urlBuilder = createUrlBuilder)
 
   test("push should store entry") {
     feedStore.push(List("1"))
@@ -57,8 +62,8 @@ class JdbcFeedStoreTest extends FunSuite
     feedModel.name should be ("int_feed")
     feedModel.title should be (Some("Test"))
 
-    dal.entriesTableQuery(feedModel).length.run should be(1)
-    val entry: EntryModel = dal.entriesTableQuery(feedModel).first(session)
+    dal.entriesTableQuery(feedModel.entriesTableName).length.run should be(1)
+    val entry: EntryModel = dal.entriesTableQuery(feedModel.entriesTableName).first(session)
     entry.value should be("1")
 
     //does not work on H2 :-(
@@ -80,7 +85,7 @@ class JdbcFeedStoreTest extends FunSuite
 
     dal.Feeds.length.run should be(1)
     val feedModel = dal.Feeds.findByName("int_feed").get
-    dal.entriesTableQuery(feedModel).length.run should be(0) //entry is not stored
+    dal.entriesTableQuery(feedModel.entriesTableName).length.run should be(0) //entry is not stored
 
     feedStore.push("3")
 

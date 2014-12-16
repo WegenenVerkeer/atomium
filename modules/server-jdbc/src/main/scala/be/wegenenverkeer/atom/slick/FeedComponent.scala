@@ -10,8 +10,8 @@ trait FeedComponent extends DriverComponent {
 
   import driver.simple._
 
-  def entriesTableQuery(feedModel: FeedModel) = {
-    TableQuery[EntryTable]((tag:Tag) => new EntryTable(tag, feedModel.entriesTableName))
+  def entriesTableQuery(entriesTableName: String) = {
+    TableQuery[EntryTable]((tag:Tag) => new EntryTable(tag, entriesTableName))
   }
 
   implicit val jodaLocalDateTimeColumnType = MappedColumnType.base[LocalDateTime, Date](

@@ -11,7 +11,7 @@ object SlickSample {
   val feedDAL: FeedDAL = new FeedDAL(H2Driver)
 
   def feedStoreFactory: (String, JdbcContext) => AbstractFeedStore[String] = (feedName, context) =>
-    new JdbcFeedStore[String](feedDAL, context, "int_feed", None, null, null, null)
+    new AutoJdbcFeedStore[String](feedDAL, context, "int_feed", None, null, null, null)
 
   val feedService = new FeedService[String, JdbcContext]("int_feed", 100, feedStoreFactory)
 
