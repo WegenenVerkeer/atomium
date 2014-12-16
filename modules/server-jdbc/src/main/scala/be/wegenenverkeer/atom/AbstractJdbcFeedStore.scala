@@ -24,8 +24,7 @@ abstract class AbstractJdbcFeedStore[E](
                        title: Option[String],
                        ser: E => String,
                        deser: String => E,
-                       urlBuilder: UrlBuilder)
-  extends AbstractFeedStore[E](feedName, title, urlBuilder) {
+                       urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
 
   val feedComponent: FeedComponent
 

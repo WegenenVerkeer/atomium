@@ -25,16 +25,13 @@ import scala.slick.jdbc.meta.MTable
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class AutoJdbcFeedStore[E](fc: FeedComponent,
+case class AutoJdbcFeedStore[E](feedComponent: FeedComponent,
                        context: JdbcContext,
                        feedName: String,
                        title: Option[String],
                        ser: E => String,
                        deser: String => E,
-                       urlBuilder: UrlBuilder)
-  extends AbstractJdbcFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
-
-  override val feedComponent: FeedComponent = fc
+                       urlBuilder: UrlBuilder) extends AbstractJdbcFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
 
   import feedComponent.driver.simple._
 

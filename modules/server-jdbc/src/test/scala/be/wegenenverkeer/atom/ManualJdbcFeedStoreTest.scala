@@ -46,7 +46,8 @@ class ManualJdbcFeedStoreTest extends FunSuite
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = new ManualJdbcFeedStore[String](dal,
+  def createFeedStore = ManualJdbcFeedStore[String](
+    dal,
     dal.createJdbcContext,
     feedName = "int_feed",
     title = Some("Test"),

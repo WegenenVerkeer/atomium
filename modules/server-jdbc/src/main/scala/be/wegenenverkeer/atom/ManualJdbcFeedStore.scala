@@ -6,7 +6,7 @@ import be.wegenenverkeer.atom.slick.FeedComponent
  * [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
  * This implementation requires that the entries table for each feed is explicitly created upfront.
  *
- * @param fc the feedComponent trait to access the driver
+ * @param feedComponent the feedComponent trait to access the driver
  * @param context: the context implementation (wraps a session)
  * @param feedName the name of the feed
  * @param title the optional title of the feed
@@ -16,17 +16,15 @@ import be.wegenenverkeer.atom.slick.FeedComponent
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-class ManualJdbcFeedStore[E](fc: FeedComponent,
+case class ManualJdbcFeedStore[E](feedComponent: FeedComponent,
                        context: JdbcContext,
                        feedName: String,
                        title: Option[String],
                        entriesTableName: String,
                        ser: E => String,
                        deser: String => E,
-                       urlBuilder: UrlBuilder)
-  extends AbstractJdbcFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
+                       urlBuilder: UrlBuilder) extends AbstractJdbcFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
 
-  override val feedComponent: FeedComponent = fc
 
   import feedComponent.driver.simple._
 
