@@ -41,8 +41,6 @@ class JdbcFeedStore[E](feedComponent: FeedComponent,
     })
   }
 
-
-
   /**
    * Retrieves entries with their sequence numbers from the feed
    *
@@ -122,7 +120,8 @@ class JdbcFeedStore[E](feedComponent: FeedComponent,
  * in order to avoid redundant queries to the DB to retrieve the FeedModel
  */
 object FeedModelRegistry {
-  
+
   val map: mutable.Map[String, FeedModel] = mutable.Map.empty[String, FeedModel]
-  
+
 }
+
