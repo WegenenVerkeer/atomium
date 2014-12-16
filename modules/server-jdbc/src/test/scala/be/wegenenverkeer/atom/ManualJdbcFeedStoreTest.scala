@@ -1,11 +1,14 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.models.{EntryModel, FeedTable}
-import be.wegenenverkeer.atom.slick.SlickPostgresDriver.simple._
-import org.joda.time.{DateTimeUtils, LocalDateTime}
+import be.wegenenverkeer.atom.models.EntryModel
+import be.wegenenverkeer.atom.slick.FeedDAL
+import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
-class JdbcFeedStoreTest extends FunSuite
+import scala.slick.driver.H2Driver
+import scala.slick.driver.H2Driver.simple._
+
+class ManualJdbcFeedStoreTest extends FunSuite
   with FeedStoreTestSupport
   with Matchers
   with BeforeAndAfterAll
@@ -16,17 +19,22 @@ class JdbcFeedStoreTest extends FunSuite
 
   implicit var session: Session = _
 
-  var feedStore: JdbcFeedStore[String] = _
+  var feedStore: ManualJdbcFeedStore[String] = _
+  val ENTRIES_TABLE_NAME = "my_feed_entries"
+
+  val db = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver")
+  val dal: FeedDAL = new FeedDAL(H2Driver)
+  import dal.driver.simple._
 
   override protected def beforeEach() = {
-    session = Database.forURL("jdbc:h2:mem:test", driver="org.h2.Driver").createSession()
-    FeedTable.ddl.create
+    session = db.createSession()
+    dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.create
     feedStore = createFeedStore
   }
 
   override protected def afterEach(): Unit = {
-    FeedTable.ddl.drop
-    feedStore.feedModel.entriesTableQuery.ddl.drop
+    dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.drop
+    FeedModelRegistry.clear()
   }
 
   override protected def afterAll() = {
@@ -38,30 +46,23 @@ class JdbcFeedStoreTest extends FunSuite
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = new JdbcFeedStore[String](
-    JdbcContext(session),
+  def createFeedStore = ManualJdbcFeedStore[String](
+    dal,
+    dal.createJdbcContext,
     feedName = "int_feed",
     title = Some("Test"),
+    ENTRIES_TABLE_NAME,
     ser = s => s,
     deser = s => s,
-    urlBuilder = createUrlBuilder
-  )
+    urlBuilder = createUrlBuilder)
 
   test("push should store entry") {
     feedStore.push(List("1"))
 
-    FeedTable.length.run should be(1)
-    val feedModel = FeedTable.findByName("int_feed").get
-    feedModel.name should be ("int_feed")
-    feedModel.title should be (Some("Test"))
-
-    feedModel.entriesTableQuery.length.run should be(1)
-    val entry: EntryModel = feedModel.entriesTableQuery.first()
-    entry.timestamp should be(new LocalDateTime())
+    dal.entriesTableQuery(ENTRIES_TABLE_NAME).length.run should be(1)
+    val entry: EntryModel = dal.entriesTableQuery(ENTRIES_TABLE_NAME).first(session)
     entry.value should be("1")
 
-    //does not work on H2 :-(
-    //MTable.getTables("FEED_ENTRIES_1").list().size should be (1)
   }
 
   test("getFeed returns correct page of the feed") {
@@ -77,9 +78,7 @@ class JdbcFeedStoreTest extends FunSuite
       }
     }
 
-    FeedTable.length.run should be(1)
-    val feedModel = FeedTable.findByName("int_feed").get
-    feedModel.entriesTableQuery.length.run should be(0) //entry is not stored
+    dal.entriesTableQuery(ENTRIES_TABLE_NAME).length.run should be(0) //entry is not stored
 
     feedStore.push("3")
 

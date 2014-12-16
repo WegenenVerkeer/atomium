@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java
 
-import be.wegenenverkeer.atom.{Context, UrlBuilder}
+import be.wegenenverkeer.atom.UrlBuilder
 
 /**
  * Wrapper around the [[be.wegenenverkeer.atom.FeedStore]] that offers a Java-like interface.
@@ -11,8 +11,6 @@ abstract class FeedStore[E](feedName: String, title: Option[String], urlProvider
   extends be.wegenenverkeer.atom.FeedStore[E] {
 
   def underlying: be.wegenenverkeer.atom.FeedStore[E]
-
-  override def context: Context = underlying.context
 
   /**
    * Retrieves a page of the feed.
