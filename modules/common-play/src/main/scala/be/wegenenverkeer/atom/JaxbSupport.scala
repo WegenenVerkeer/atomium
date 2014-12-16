@@ -2,11 +2,13 @@ package be.wegenenverkeer.atom
 
 import _root_.java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStreamReader, StringReader}
 import javax.xml.bind._
+
 import play.api.mvc.Codec
 
-import be.wegenenverkeer.atom.Marshallers._
-
 object JaxbSupport {
+
+  type XmlMarshaller[T] = T => Array[Byte]
+  type XmlUnmarshaller[T] = String => T
 
   def toXmlBytes(obj: AnyRef)(implicit codec: Codec, context: JAXBContext): Array[Byte] = {
     val marshaller = context.createMarshaller()

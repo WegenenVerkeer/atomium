@@ -3,22 +3,28 @@ package controllers
 import javax.xml.bind.JAXBContext
 
 import be.wegenenverkeer.atom.PlayJsonFormats._
-import be.wegenenverkeer.atom.Marshallers._
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.java.{Feed => JFeed}
+import play.api.http.MimeTypes
 import play.api.mvc.Controller
 
+/**
+ * This controller serves pages of a feed containing {{Event}}.
+ * It registers both a Play json marshaller and a Jaxb xml marshaller
+ * and thus supports content negotiation and can support both xml or json responses
+ * @param feedService the feedService used for retrieving feed pages
+ */
 class EventController(feedService: FeedService[Event, Context]) extends Controller with FeedSupport[Event] {
 
   implicit val c: Context = new Context {} //dummy context for MemoryFeedStore
 
   //play json marshaller
   import controllers.EventFormat._
-  val jsonMarshaller: JsonMarshaller[Feed[Event]] = PlayJsonSupport.jsonMarshaller[Feed[Event]]
+  registerMarshaller(MimeTypes.JSON, PlayJsonSupport.jsonMarshaller[Feed[Event]])
 
   //jaxb marshaller
   implicit val jaxbContext = JAXBContext.newInstance(classOf[JFeed[Event]], classOf[Event])
-  val xmlMarshaller: XmlMarshaller[Feed[Event]] = JFeedConverters.feed2JFeed[Event] _ andThen JaxbSupport.jaxbMarshaller
+  registerMarshaller(MimeTypes.XML, JFeedConverters.feed2JFeed[Event] _ andThen JaxbSupport.jaxbMarshaller)
 
   /**
    * @return the head of the page

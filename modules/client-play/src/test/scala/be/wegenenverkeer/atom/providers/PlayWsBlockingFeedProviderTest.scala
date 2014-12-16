@@ -1,8 +1,6 @@
 package be.wegenenverkeer.atom.providers
 
 import javax.xml.bind.JAXBContext
-
-import be.wegenenverkeer.atom.Marshallers._
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.java.{Adapters, Feed => JFeed}
 import com.fasterxml.jackson.core.`type`.TypeReference
@@ -11,6 +9,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import mockws._
 import org.joda.time.LocalDateTime
 import org.scalatest.{FunSuite, Matchers}
+import play.api.http.MimeTypes
 import play.api.mvc.Action
 import play.api.mvc.Results._
 import play.api.test.Helpers._
@@ -19,8 +18,9 @@ import support.JaxbSupport
 class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
 
   implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
-  val xmlUnmarshaller: XmlUnmarshaller[Feed[String]] = JaxbSupport.jaxbUnmarshaller
-                                                       .andThen(JFeedConverters.jFeed2Feed)
+
+  registerUnmarshaller(MimeTypes.XML,
+    JaxbSupport.jaxbUnmarshaller.andThen(JFeedConverters.jFeed2Feed))
 
   private val objectMapper = new ObjectMapper()
 
@@ -30,8 +30,8 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
 
-  val jsonUnmarshaller: JsonUnmarshaller[Feed[String]] = JacksonSupport.jacksonUnmarshaller
-                                                         .andThen(JFeedConverters.jFeed2Feed)
+  registerUnmarshaller(MimeTypes.JSON,
+    JacksonSupport.jacksonUnmarshaller.andThen(JFeedConverters.jFeed2Feed))
 
   test("Feed not found") {
 

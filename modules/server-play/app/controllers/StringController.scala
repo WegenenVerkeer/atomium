@@ -1,14 +1,18 @@
 package controllers
 
-import javax.xml.bind.JAXBContext
-
-import be.wegenenverkeer.atom.Marshallers._
 import be.wegenenverkeer.atom._
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
+import play.api.http.MimeTypes
 import play.api.mvc.Controller
 
+/**
+ * This controller serves pages of a feed containing Strings.
+ * It only registers a Jackson json marshaller and thus only supports JSON responses
+
+ * @param feedService the feedService used for retrieving feed pages
+ */
 class StringController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
 
   implicit val c: Context = new Context {} //dummy context for MemoryFeedStore
@@ -18,13 +22,10 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
   objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
   objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
   implicit val objectWriter = objectMapper.writer()
-  val jsonMarshaller: JsonMarshaller[Feed[String]] = JFeedConverters.feed2JFeed[String] _ andThen JacksonSupport.jacksonMarshaller
-
-  implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
-  val xmlMarshaller: XmlMarshaller[Feed[String]] = JFeedConverters.feed2JFeed[String] _ andThen JaxbSupport.jaxbMarshaller
+  registerMarshaller(MimeTypes.JSON, JFeedConverters.feed2JFeed[String] _ andThen JacksonSupport.jacksonMarshaller)
 
   /**
-   * @return the head of the page
+   * @return the head of the feed
    */
   def headOfFeed() = {
     processFeedPage(feedService.getHeadOfFeed())
@@ -32,8 +33,9 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
 
   /**
    *
-   * @param start - start of feed
+   * @param start - start of feed (exclusive)
    * @param pageSize - page size
+   * @param forward - if true navigates forward else backward
    * @return a page of the feed
    */
   def getFeedPage(start: Int, pageSize: Int, forward: Boolean) = {
