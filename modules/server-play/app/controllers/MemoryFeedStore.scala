@@ -7,11 +7,24 @@ import org.joda.time.LocalDateTime
 
 import scala.collection.mutable.ListBuffer
 
-class MemoryFeedStore[T](feedName: String, urlBuilder: UrlBuilder, title : Option[String], contentType: String)
+/**
+ * an in memory feedstore. This implementation is very inefficient and should only be used for demo purposes
+ * @param feedName the name of the feed
+ * @param urlBuilder
+ * @param title the optional title of the feed
+ * @param contentType the content type of the entries in the feed
+ * @tparam T
+ */
+class MemoryFeedStore[T](feedName: String,
+                         urlBuilder: UrlBuilder,
+                         title : Option[String],
+                         contentType: String)
   extends AbstractFeedStore[T](feedName, title, urlBuilder) {
 
-
-  def this(feedName: String, baseUrl: Url, title: Option[String], contentType: String = "text/plain") =
+  def this(feedName: String,
+           baseUrl: Url,
+           title: Option[String],
+           contentType: String = "text/plain") =
     this(feedName, MemoryFeedStore.newUrlBuilder(baseUrl, feedName), title, contentType)
 
   val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
@@ -34,16 +47,16 @@ class MemoryFeedStore[T](feedName: String, urlBuilder: UrlBuilder, title : Optio
    * @param pageSize the number of entries to return
    * @return pageSize entries starting from start
    */
-  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[(Long, Entry[T])] = {
+  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[FeedEntry] = {
     if (forward)
-      entriesWithIndex.dropWhile(_._1 < start).take(pageSize).toList
+      entriesWithIndex.dropWhile(_.sequenceNr < start).take(pageSize).toList
     else
-      entriesWithIndex.takeWhile(_._1 <= start).toList.reverse.take(pageSize)
+      entriesWithIndex.takeWhile(_.sequenceNr <= start).toList.reverse.take(pageSize)
   }
 
-  def entriesWithIndex: ListBuffer[(Long, Entry[T])] = {
+  def entriesWithIndex: ListBuffer[FeedEntry] = {
     entries.zipWithIndex.map { f: (Entry[T], Int) =>
-      (f._2 + 1.toLong, f._1)
+      FeedEntry(f._2 + 1.toLong, f._1)
     }
   }
 
@@ -52,13 +65,13 @@ class MemoryFeedStore[T](feedName: String, urlBuilder: UrlBuilder, title : Optio
    */
   override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
     if (inclusive)
-      entriesWithIndex.count(_._1 <= sequenceNr)
+      entriesWithIndex.count(_.sequenceNr <= sequenceNr)
     else
-      entriesWithIndex.count(_._1 < sequenceNr)
+      entriesWithIndex.count(_.sequenceNr < sequenceNr)
   }
 
   //select * from entries order by id desc limit L
-  override def getMostRecentFeedEntries(count: Int): List[(Long, Entry[T])] = {
+  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
     entriesWithIndex.toList.reverse.take(count)
   }
 }

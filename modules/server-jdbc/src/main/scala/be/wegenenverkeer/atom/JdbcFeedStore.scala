@@ -47,7 +47,7 @@ class JdbcFeedStore[E](c: JdbcContext,
    *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[(Long, Entry[E])] = {
+  override def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry] = {
     // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
     implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
 
@@ -56,7 +56,7 @@ class JdbcFeedStore[E](c: JdbcContext,
     else
       feedModel.entriesTableQuery.filter(e => e.id <= start).sortBy(_.id.desc)
 
-    query.take(count).list.map(entryWithSequenceNumber)
+    query.take(count).list.map(toFeedEntry)
   }
 
   override def push(entries: Iterable[E]): Unit = {
@@ -83,22 +83,23 @@ class JdbcFeedStore[E](c: JdbcContext,
    * @return a list containing tuples of a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[(Long, Entry[E])] = {
+  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
     // TODO hack, moet opgelost worden wanneer we een generieke oplossing hebben voor slick profiles
     implicit val session = c.session.asInstanceOf[SlickPostgresDriver.simple.Session]
 
     feedModel.entriesTableQuery
       .sortBy(_.id.desc)
       .take(count)
-      .list().map(entryWithSequenceNumber)
+      .list().map(toFeedEntry)
   }
 
   /**
    * convert a database row (dbEntry) to a tuple containing sequence number and Entry
    * @return the corresponding tuple
    */
-  private[this] def entryWithSequenceNumber: (EntryTable#TableElementType) => (Long, Entry[E]) = { dbEntry =>
-    (dbEntry.id.get, Entry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
+  private[this] def toFeedEntry: (EntryTable#TableElementType) => FeedEntry = { dbEntry =>
+    FeedEntry(dbEntry.id.get,
+      Entry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
   }
 
   /**

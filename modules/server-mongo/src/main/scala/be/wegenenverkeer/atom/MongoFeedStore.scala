@@ -49,9 +49,12 @@ class MongoFeedStore[E](c: MongoContext,
     Keys.Content -> ser(e)
   )
 
-  protected def dbObject2FeedEntry(dbo: DBObject): (Long, Entry[E])  = {
+  protected def dbObject2FeedEntry(dbo: DBObject): FeedEntry  = {
     val entryDbo = dbo.as[DBObject](Keys.Content)
-    (dbo.as[Long](Keys._Id), Entry(dbo.as[String](Keys.Uuid), dbo.as[DateTime](Keys.Timestamp).toLocalDateTime, Content(deser(entryDbo), ""), Nil))
+    FeedEntry(dbo.as[Long](Keys._Id),
+          Entry(id = dbo.as[String](Keys.Uuid),
+            updated = dbo.as[DateTime](Keys.Timestamp).toLocalDateTime,
+            content = Content(deser(entryDbo), ""), Nil))
   }
 
   /**
@@ -73,7 +76,7 @@ class MongoFeedStore[E](c: MongoContext,
    *                else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[(Long, Entry[E])] = {
+  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
     val query = if (ascending)
       entriesCollection.find(Keys._Id $gte start).sort(MongoDBObject(Keys._Id -> 1))
     else
@@ -88,7 +91,7 @@ class MongoFeedStore[E](c: MongoContext,
    * @return a list containing tuples of a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[(Long, Entry[E])] = {
+  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
     entriesCollection.find().sort(MongoDBObject(Keys._Id -> -1)).take(count).toList.map(dbObject2FeedEntry)
   }
 

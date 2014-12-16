@@ -4,13 +4,19 @@ import org.joda.time.LocalDateTime
 
 import scala.collection.immutable.TreeMap
 
+object TestFeedStore {
+
+  val urlBuilder: UrlBuilder = new UrlBuilder {
+    override def base: Url = Url("http://www.example.org/testfeed")
+    override def collectionLink: Url = ???
+  }
+
+}
+
 class TestFeedStore[T] extends AbstractFeedStore[T](
   "test_store",
   None,
-  new UrlBuilder {
-    override def base: Url = Url("http://www.example.org/testfeed")
-    override def collectionLink: Url = ???
-  }) {
+  TestFeedStore.urlBuilder) {
 
   var skip = 0
   var nextSequenceNum = 0L
@@ -45,19 +51,23 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
     else
       entriesMap.count(_._1 < sequenceNr)
 
-  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[(Long, Entry[T])] = {
+  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[FeedEntry] = {
     if (forward)
-      entriesMap.dropWhile(_._1 < start).take(pageSize).toList
+      entriesMap.dropWhile(_._1 < start).take(pageSize).toList.map(toFeedEntry)
     else
-      entriesMap.takeWhile(_._1 <= start).toList.reverse.take(pageSize)
+      entriesMap.takeWhile(_._1 <= start).toList.reverse.take(pageSize).map(toFeedEntry)
   }
 
   override def getMostRecentFeedEntries(count: Int) = {
-    entriesMap.toList.reverse.take(count)
+    entriesMap.toList.reverse.take(count).map(toFeedEntry)
   }
 
   override def toString: String = {
     entriesMap.toString()
+  }
+
+  private def toFeedEntry(t: (Long, Entry[T])): FeedEntry = {
+    FeedEntry(t._1, t._2)
   }
 }
 

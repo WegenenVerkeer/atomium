@@ -13,13 +13,10 @@ trait UrlBuilder {
    *                else navigate to 'next' elements in feed (towards last page of feed)
    * @return the URL
    */
-  def feedLink(startId:Long, count: Int, forward: Boolean): Url =
-      Url(startId.toString) /
-      (forward match {
-        case true => "forward"
-        case false => "backward"
-      }) /
-      count.toString
+  def feedLink(startId:Long, count: Int, forward: Boolean): Url = {
+    val direction = if (forward) "forward" else "backward"
+    Url(startId.toString) / direction / count.toString
+  }
 
 
   /**

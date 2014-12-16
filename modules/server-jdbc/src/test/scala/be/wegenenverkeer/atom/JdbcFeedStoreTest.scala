@@ -84,9 +84,9 @@ class JdbcFeedStoreTest extends FunSuite
     feedStore.push("3")
 
     //sequence number 1 and 2 are not used,
-    val entries: List[(Long, Entry[String])] = feedStore.getFeedEntries(0, 2, ascending = true)
+    val entries = feedStore.getFeedEntries(0, 2, ascending = true)
     entries.size should be (1)
-    entries(0)._1 should be (3)
+    entries(0).sequenceNr should be (3)
     feedStore.getFeed(0, 2, forward = true).get.entries.size should be (1)
   }
 
