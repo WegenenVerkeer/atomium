@@ -49,13 +49,18 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           logger.info("sending response: 304 Not-Modified")
           NotModified
         } else {
+          //add generator
           val feed: Feed[T] = f.copy(generator = Some(generator))
           render {
             case Accepts.Json() if marshallerRegistry.contains(MimeTypes.JSON) =>
-              marshall(marshallerRegistry.get(MimeTypes.JSON).get, feed)
+              marshall(marshallerRegistry.get(MimeTypes.JSON), feed)
+
             case Accepts.Xml()  if marshallerRegistry.contains(MimeTypes.XML)  =>
-              marshall(marshallerRegistry.get(MimeTypes.XML).get, feed)
-            case _ => NotAcceptable
+              marshall(marshallerRegistry.get(MimeTypes.XML), feed)
+
+            case _ => logger.warn(s"no marshaller registered for requested content-type " +
+                s"=> Accept: ${request.headers.get(ACCEPT).getOrElse("<missing>")}")
+              NotAcceptable
           }
         }
       case None =>
@@ -64,21 +69,23 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     }
   }
 
-  private[this] def marshall(marshaller: Feed[T] => Array[Byte], feed: Feed[T]): Result = {
-    logger.info("sending response: 200 Found")
+  private[this] def marshall(marshaller: Option[FeedMarshaller], feed: Feed[T]) = {
+    marshaller.fold(NotAcceptable: Result){ (m: FeedMarshaller) =>
+      //marshall feed and add Last-Modified header
+      logger.info("sending response: 200 Found")
+      val result = Ok(m(feed))
+        .withHeaders(LAST_MODIFIED -> rfcFormat.print(feed.updated), ETAG -> feed.calcETag)
 
-    val result = Ok(marshaller(feed))
-      .withHeaders(LAST_MODIFIED -> rfcFormat.print(feed.updated), ETAG -> feed.calcETag)
-
-    //add extra cache headers or forbid caching
-    if (feed.complete()) {
-      val expires = new LocalDateTime(System.currentTimeMillis() + (cacheTime * 1000L))
-      result.withHeaders(CACHE_CONTROL -> { "public, max-age=" + cacheTime },
-        EXPIRES -> expires.toString("EEE, dd MMM yyyy HH:mm:ss z"))
-    } else {
-      result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
+      //add extra cache headers or forbid caching
+      if (feed.complete()) {
+        val expires = new LocalDateTime(System.currentTimeMillis() + (cacheTime * 1000L))
+        result.withHeaders(CACHE_CONTROL -> {
+          "public, max-age=" + cacheTime
+        }, EXPIRES -> expires.toString("EEE, dd MMM yyyy HH:mm:ss z"))
+      } else {
+        result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
+      }
     }
-
   }
 
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 15:00:00 => modified
