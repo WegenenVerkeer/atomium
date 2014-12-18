@@ -1,9 +1,11 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.Marshallers._
 import play.api.libs.json.{Json, Reads, Writes}
 
 object PlayJsonSupport {
+
+  type JsonMarshaller[T] = T => Array[Byte]
+  type JsonUnmarshaller[T] = String => T
 
   def jsonUnmarshaller[T <:AnyRef](implicit reads: Reads[T]): JsonUnmarshaller[T] = {
     json => Json.parse(json).as[T]

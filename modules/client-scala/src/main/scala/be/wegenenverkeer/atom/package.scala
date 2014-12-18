@@ -1,7 +1,5 @@
 package be.wegenenverkeer
 
-import be.wegenenverkeer.atom.Marshallers.{JsonUnmarshaller, XmlUnmarshaller}
-
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
@@ -13,16 +11,19 @@ package object atom {
 
   trait FeedUnmarshaller[T] {
 
-    def jsonUnmarshaller: JsonUnmarshaller[Feed[T]]
-    def xmlUnmarshaller: XmlUnmarshaller[Feed[T]]
+    private var unmarshallerRegistry: Map[String, String => Feed[T]] = Map.empty
 
-
+    def registerUnmarshaller(mimeType: String, unmarshaller: String => Feed[T]): Unit = {
+      unmarshallerRegistry += mimeType -> unmarshaller
+    }
 
     def unmarshal(contentType: Option[String], body: String): Try[Feed[T]] = {
       try {
         contentType match {
-          case AnyJson(_) => Success(jsonUnmarshaller(body))
-          case _ => Success(xmlUnmarshaller(body))
+          case AnyJson(_) if unmarshallerRegistry.contains("application/json")
+            => Success(unmarshallerRegistry.get("application/json").get(body))
+          case AnyXml(_)  if unmarshallerRegistry.contains("application/xml")
+            => Success(unmarshallerRegistry.get("application/json").get(body))
         }
       } catch {
         case NonFatal(e) =>
@@ -38,6 +39,13 @@ package object atom {
           None
     }
 
+    object AnyXml {
+      def unapply(contentTypeOpt: Some[String]): Option[String] =
+        if (contentTypeOpt.get.startsWith("application/xml"))
+          contentTypeOpt
+        else
+          None
+    }
   }
 
 }

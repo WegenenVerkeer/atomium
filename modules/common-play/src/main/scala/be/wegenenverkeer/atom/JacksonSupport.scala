@@ -1,10 +1,12 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.Marshallers.{JsonMarshaller, JsonUnmarshaller}
 import com.fasterxml.jackson.databind.{ObjectReader, ObjectWriter}
 import play.api.mvc.Codec
 
 object JacksonSupport {
+
+  type JsonMarshaller[T] = T => Array[Byte]
+  type JsonUnmarshaller[T] = String => T
 
   def toJsonBytes(obj: AnyRef)(implicit codec: Codec, writer: ObjectWriter): Array[Byte] =
     writer.writeValueAsString(obj).getBytes(codec.charset)
