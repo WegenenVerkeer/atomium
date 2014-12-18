@@ -1,11 +1,9 @@
 package be.wegenenverkeer.atom
 
-import _root_.java.util.UUID
-
 import be.wegenenverkeer.atom.MongoFeedStore.Keys
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.{casbah, DBObject}
+import com.mongodb.{DBObject, casbah}
 import org.joda.time.{DateTime, LocalDateTime}
 
 /**
@@ -42,7 +40,7 @@ class MongoFeedStore[E](c: MongoContext,
     remove = false, returnNew = true, upsert = true)
 
   protected def feedEntry2DbObject(e: E) = MongoDBObject(
-    Keys.Uuid -> UUID.randomUUID().toString,
+    Keys.Uuid -> generateEntryID(),
     Keys.Timestamp -> new LocalDateTime(),
     Keys.Content -> ser(e)
   )
@@ -141,10 +139,10 @@ class MongoFeedStore[E](c: MongoContext,
 
 object MongoFeedStore {
   object Keys {
-    lazy val _Id = "_id"
-    lazy val Sequence = "seq"
-    lazy val Uuid = "uuid"
-    lazy val Timestamp = "timestamp"
-    lazy val Content = "content"
+    val _Id = "_id"
+    val Sequence = "seq"
+    val Uuid = "uuid"
+    val Timestamp = "timestamp"
+    val Content = "content"
   }
 }

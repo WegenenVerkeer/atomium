@@ -1,7 +1,5 @@
 package be.wegenenverkeer.atom
 
-import _root_.java.util.UUID
-
 import be.wegenenverkeer.atom.models.EntryModel
 import be.wegenenverkeer.atom.slick.FeedComponent
 import org.joda.time.LocalDateTime
@@ -56,7 +54,7 @@ abstract class AbstractJdbcFeedStore[E](
     implicit val session = context.session
     val timestamp: LocalDateTime = new LocalDateTime()
     entries foreach { entry =>
-      getEntryTableQuery += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
+      getEntryTableQuery += EntryModel(None, generateEntryID(), ser(entry), timestamp)
     }
   }
 

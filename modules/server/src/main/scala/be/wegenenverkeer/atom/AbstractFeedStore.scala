@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import _root_.java.util.UUID
+
 /**
  * A feed store is responsible for the persistence of feeds.
  * This abstract class serves as a base class for more specific FeedStore implementations.
@@ -199,6 +201,10 @@ abstract class AbstractFeedStore[E](feedName: String,
 
   protected def link(l: String, start: Long, pageSize: Int, forward: Boolean): Link = {
     Link(l, urlProvider.feedLink(start, pageSize, forward))
+  }
+
+  protected def generateEntryID(): String = {
+    s"urn:uuid:${UUID.randomUUID().toString}"
   }
 
   protected case class FeedEntry(sequenceNr: Long, entry: Entry[E])

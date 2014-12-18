@@ -5,6 +5,7 @@ import org.joda.time.LocalDateTime;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public final class Entry<T> {
     @XmlElement
     private String id;
 
-    @XmlElement
+    @XmlElement @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
     LocalDateTime updated;
 
     @XmlElement
