@@ -18,8 +18,8 @@ import org.joda.time.LocalDateTime
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-abstract class AbstractJdbcFeedStore[E](
-                       context: JdbcContext,
+abstract class AbstractSlickFeedStore[E](
+                       context: SlickJdbcContext,
                        feedName: String,
                        title: Option[String],
                        ser: E => String,

@@ -7,7 +7,7 @@ next_section: server-persistence-mongo
 permalink: /docs/server-persistence-jdbc/
 ---
 
-The `atomium-server-jdbc` module provides a feed store implementation that stores the feeds in a relational database, using the the [Slick](http://slick.typesafe.com/) library.
+The `atomium-server-jdbc` module provides a feed store implementation that stores the feeds in a relational database.
 
 ## Add dependency
 

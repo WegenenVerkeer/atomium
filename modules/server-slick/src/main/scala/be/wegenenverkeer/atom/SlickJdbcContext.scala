@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-trait JdbcContext extends Context {
+trait SlickJdbcContext extends Context {
 
   def session: scala.slick.jdbc.JdbcBackend#SessionDef
 

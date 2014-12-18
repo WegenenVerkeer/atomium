@@ -16,14 +16,14 @@ import be.wegenenverkeer.atom.slick.FeedComponent
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-case class ManualJdbcFeedStore[E](feedComponent: FeedComponent,
-                       context: JdbcContext,
+case class ManualSlickFeedStore[E](feedComponent: FeedComponent,
+                       context: SlickJdbcContext,
                        feedName: String,
                        title: Option[String],
                        entriesTableName: String,
                        ser: E => String,
                        deser: String => E,
-                       urlBuilder: UrlBuilder) extends AbstractJdbcFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
+                       urlBuilder: UrlBuilder) extends AbstractSlickFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
 
 
   import feedComponent.driver.simple._
