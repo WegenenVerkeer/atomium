@@ -91,7 +91,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
     (headers get IF_NONE_MATCH exists { _ == f.calcETag }) ||
     (headers get IF_MODIFIED_SINCE exists { dateStr => try {
-        rfcFormat.parseDateTime(dateStr).toDate.getTime >= f.updated.toDate.getTime
+        rfcFormat.parseDateTime(dateStr).toDate.getTime >= f.updated.withMillisOfSecond(0).toDate.getTime
       } catch {
         case e: IllegalArgumentException =>
           logger.error(e.getMessage, e)
