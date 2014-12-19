@@ -9,8 +9,6 @@ object AtomiumBuild extends Build
   import Dependencies._
 
   val Name = "atomium"
-  val playVersion = "2.3.6"
-
 
   //----------------------------------------------------------------
   val javaFormatModuleName = Name + "-format-java"

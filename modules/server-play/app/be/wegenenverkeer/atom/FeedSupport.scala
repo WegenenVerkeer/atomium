@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import _root_.java.util.Locale
+
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Duration}
@@ -22,7 +24,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
   private val generator = Generator("atomium", Some(Url("http://github.com/WegenenVerkeer/atomium")), Some("0.0.1"))
 
-  val rfcFormat = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss z")
+  val rfcFormat = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss z").withLocale(Locale.ENGLISH)
   val rfcUTCFormat = rfcFormat.withZoneUTC()
 
   private var marshallerRegistry: Map[String, FeedMarshaller] = Map.empty
