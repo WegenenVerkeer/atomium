@@ -1,6 +1,9 @@
 package be.wegenenverkeer.atom
 
+import _root_.java.util.UUID
+
 import be.wegenenverkeer.atom.jdbc.{EntryData, Dialect}
+import org.joda.time.LocalDateTime
 
 abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
                                         feedName: String,
@@ -9,13 +12,19 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
                                         deser: String => E,
                                         urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
 
-  // The concrete implementation of the feedstore must extend a specific SQL dialect.
-  self: Dialect =>
+  /**
+   * The concrete implementation of the JDBC feed store must extend a specific SQL dialect.
+   */
+  dialect: Dialect =>
 
-  // The JDBC context is made implicit.
+  /**
+   * The JDBC context is made implicit.
+   */
   implicit val ctx: JdbcContext = context
 
-  // The table name for the feed entries, which has to be specified by subclasses.
+  /**
+   * The table name for the feed entries, which has to be specified by subclasses.
+   */
   def entryTableName: String
 
   /**
@@ -28,48 +37,70 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * @return the corresponding entries sorted accordingly
    */
   override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
-    val entries: List[EntryData] = feedEntries(entryTableName, start, count, ascending)
+    val entries: List[EntryData] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
     entries.map(toFeedEntry)
   }
 
   /**
-   * retrieves the most recent entries from the feedstore sorted in descending order
+   * Retrieves the most recent entries from the feedstore sorted in descending order
+   *
    * @param count the amount of recent entries to return
    * @return a list of FeedEntries. a FeedEntry is a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = ???
+  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+    val entries: List[EntryData] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
+    entries.map(toFeedEntry)
+  }
 
   /**
-   * @return the maximum sequence number used in this feed or minId if feed is empty
+   * @return The maximum sequence number used in this feed or minId if feed is empty.
    */
-  override def maxId: Long = ???
+  override def maxId: Long = {
+    dialect.fetchMaxEntryId(entryTableName)
+  }
 
-  /**
-   * @return one less than the minimum sequence number used in this feed
-   */
-  override def minId: Long = ???
+  override def minId: Long = 0L
 
   /**
    * @param sequenceNr sequence number to match
    * @param inclusive if true include the specified sequence number
    * @return the number of entries in the feed with sequence number lower than specified
    */
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean): Long = ???
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean): Long = {
+    dialect.fetchEntryCountLowerThan(entryTableName, sequenceNr, inclusive)
+  }
 
   /**
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  override def push(entries: Iterable[E]): Unit = ???
+  override def push(entries: Iterable[E]): Unit = {
+    val timestamp: LocalDateTime = new LocalDateTime()
+    entries foreach { entry =>
+      dialect.addFeedEntry(entryTableName, EntryData(id = None, uuid = UUID.randomUUID().toString, value = ser(entry), timestamp = timestamp))
+    }
+  }
+
+  def createTables() = {
+    createFeedTable
+    createEntryTable(entryTableName = entryTableName)
+  }
+
+  def dropTables() = {
+    dropFeedTable
+    dropEntryTable(entryTableName = entryTableName)
+  }
 
   /**
    * convert a database row (dbEntry) to a FeedEntry containing sequence number and Entry
    * @return the corresponding FeedEntry
    */
-  private[this] def toFeedEntry: (EntryData) => FeedEntry = { entry =>
-    FeedEntry(entry.id,
-      Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil))
+  private[this] def toFeedEntry(entry: EntryData): FeedEntry = {
+    FeedEntry(
+      entry.id.get,
+      Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
+    )
   }
 
 }
