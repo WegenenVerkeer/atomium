@@ -1,7 +1,5 @@
 package be.wegenenverkeer.atom
 
-trait JdbcContext extends Context {
+import _root_.java.sql.Connection
 
-  def session: scala.slick.jdbc.JdbcBackend#SessionDef
-
-}
+case class JdbcContext(connection: Connection) extends Context

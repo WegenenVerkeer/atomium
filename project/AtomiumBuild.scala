@@ -88,13 +88,23 @@ object AtomiumBuild extends Build
 
 
   //----------------------------------------------------------------
+  val serverSlickModuleName = Name + "-server-slick"
+  lazy val serverSlickModule = Project(
+    serverSlickModuleName,
+    file("modules/server-slick"),
+    settings = buildSettings(serverSlickModuleName) ++ Seq(
+      libraryDependencies ++= Seq(slick, slickPostgres)
+    )
+  ).dependsOn(serverModule % "test->test;compile->compile")
+
+
+
+  //----------------------------------------------------------------
   val serverJdbcModuleName = Name + "-server-jdbc"
   lazy val serverJdbcModule = Project(
     serverJdbcModuleName,
     file("modules/server-jdbc"),
-    settings = buildSettings(serverJdbcModuleName) ++ Seq(
-      libraryDependencies ++= Seq(slick, slickPostgres)
-    )
+    settings = buildSettings(serverJdbcModuleName)
   ).dependsOn(serverModule % "test->test;compile->compile")
 
 
@@ -137,5 +147,5 @@ object AtomiumBuild extends Build
     settings = buildSettings(Name)
   ).aggregate(javaFormatModuleName, formatModule,
       clientScalaModule, clientJavaModule,
-      serverModule, serverMongoModule, serverJdbcModule, serverPlayModule)
+      serverModule, serverMongoModule, serverSlickModule, serverJdbcModule, serverPlayModule)
 }

@@ -10,10 +10,10 @@ object SlickSample {
   val db = Database.forURL("jdbc:h2:mem:test1", driver = "org.h2.Driver")
   val feedDAL: FeedDAL = new FeedDAL(H2Driver)
 
-  def feedStoreFactory: (String, JdbcContext) => AbstractFeedStore[String] = (feedName, context) =>
-    new AutoJdbcFeedStore[String](feedDAL, context, "int_feed", None, null, null, null)
+  def feedStoreFactory: (String, SlickJdbcContext) => AbstractFeedStore[String] = (feedName, context) =>
+    new AutoSlickFeedStore[String](feedDAL, context, "int_feed", None, null, null, null)
 
-  val feedService = new FeedService[String, JdbcContext]("int_feed", 100, feedStoreFactory)
+  val feedService = new FeedService[String, SlickJdbcContext]("int_feed", 100, feedStoreFactory)
 
   case class Element(i: Int)
 

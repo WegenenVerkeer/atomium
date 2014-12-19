@@ -13,6 +13,7 @@ The server part consists of three modules:
 
 - server
 - server-jdbc
+- server-slick
 - server-mongo
 
 The server library provides a feed service. A feed service can be used to
