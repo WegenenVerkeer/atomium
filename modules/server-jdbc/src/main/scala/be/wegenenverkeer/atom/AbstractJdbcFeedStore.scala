@@ -1,7 +1,5 @@
 package be.wegenenverkeer.atom
 
-import _root_.java.util.UUID
-
 import be.wegenenverkeer.atom.jdbc.{EntryData, Dialect}
 import org.joda.time.LocalDateTime
 
@@ -78,7 +76,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
   override def push(entries: Iterable[E]): Unit = {
     val timestamp: LocalDateTime = new LocalDateTime()
     entries foreach { entry =>
-      dialect.addFeedEntry(entryTableName, EntryData(id = None, uuid = UUID.randomUUID().toString, value = ser(entry), timestamp = timestamp))
+      dialect.addFeedEntry(entryTableName, EntryData(id = None, generateEntryID, value = ser(entry), timestamp = timestamp))
     }
   }
 

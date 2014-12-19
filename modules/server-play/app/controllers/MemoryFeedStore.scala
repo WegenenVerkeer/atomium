@@ -1,7 +1,5 @@
 package controllers
 
-import _root_.java.util.UUID
-
 import be.wegenenverkeer.atom._
 import org.joda.time.LocalDateTime
 
@@ -36,7 +34,7 @@ class MemoryFeedStore[T](feedName: String,
   override def push(it: Iterable[T]) = {
     val timestamp: LocalDateTime = new LocalDateTime()
     it foreach { t =>
-      entries append Entry(UUID.randomUUID().toString, timestamp, Content(t, ""), Nil)
+      entries append Entry(generateEntryID, timestamp, Content(t, ""), Nil)
     }
   }
 
