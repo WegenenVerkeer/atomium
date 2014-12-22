@@ -3,7 +3,7 @@ scala:
 - 2.10.3
 script: sbt clean test
 jdk:
-- oraclejdk8
+- oraclejdk6
 services:
 - mongodb
 notifications:
@@ -11,7 +11,7 @@ notifications:
     recipients:
     - karel@geovise.com
     - stefan@ellefant.be
-    - renato@xavena.eu
+    - renato@strongtyped.io
     - peter.rigole@atomicbits.io
     - peter.mortier@gmail.com
 env:
