@@ -10,6 +10,8 @@ object AtomiumBuild extends Build
 
   val Name = "atomium"
 
+  javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint")
+
   //----------------------------------------------------------------
   val javaFormatModuleName = Name + "-format-java"
   lazy val javaFormatModule = Project(

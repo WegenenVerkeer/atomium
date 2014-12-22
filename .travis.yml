@@ -3,7 +3,7 @@ scala:
 - 2.10.3
 script: sbt clean test
 jdk:
-- oraclejdk6
+- oraclejdk7
 services:
 - mongodb
 notifications:
