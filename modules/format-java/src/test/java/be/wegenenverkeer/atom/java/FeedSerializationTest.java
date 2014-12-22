@@ -5,9 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +22,6 @@ import static org.junit.Assert.assertEquals;
 public class FeedSerializationTest {
 
     @XmlRootElement
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
     @XmlAccessorType(XmlAccessType.NONE)
     public static class Customer {
         @XmlElement
@@ -35,6 +29,13 @@ public class FeedSerializationTest {
         @XmlAttribute
         private int id;
 
+        public Customer() {
+        }
+
+        public Customer(String cname, int i) {
+            this.name = cname;
+            this.id = i;
+        }
     }
 
     private JAXBContext jaxbContext;
@@ -61,10 +62,10 @@ public class FeedSerializationTest {
                 null,
                 LocalDateTime);
         stringsFeed.getLinks().add(new Link("self", "foo"));
-        stringsFeed.getEntries().add(new Entry("id1", new Content<>("foo", "text/plain")));
-        stringsFeed.getEntries().add(new Entry("id2", new Content<>("<html><p>bla</p></html>", "text/html"))); //this will be escaped in xml but not in json
-        stringsFeed.getEntries().add(new Entry("id3", new Content<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"))); // \n will be escaped in json not in xml
-        stringsFeed.getEntries().add(new Entry("id4", new Content<>("{'foo': 'bar'}", "application/json"))); // json text will be quoted in json not in xml
+        stringsFeed.getEntries().add(new Entry("id1", new Content<String>("foo", "text/plain")));
+        stringsFeed.getEntries().add(new Entry("id2", new Content<String>("<html><p>bla</p></html>", "text/html"))); //this will be escaped in xml but not in json
+        stringsFeed.getEntries().add(new Entry("id3", new Content<String>("\n   ---foo---   \n   ---bar---   \n", "text/plain"))); // \n will be escaped in json not in xml
+        stringsFeed.getEntries().add(new Entry("id4", new Content<String>("{'foo': 'bar'}", "application/json"))); // json text will be quoted in json not in xml
 
         customersFeed = new Feed("urn:id:" + UUID.randomUUID().toString(),
                 "http://www.example.org",
@@ -72,14 +73,14 @@ public class FeedSerializationTest {
                 new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
                 LocalDateTime);
         customersFeed.getLinks().add(new Link("self", "foo"));
-        customersFeed.getEntries().add(new Entry("id", new Content<>(customer, "application/xml")));
+        customersFeed.getEntries().add(new Entry("id", new Content(customer, "application/xml")));
 
         jaxbElementFeed = new Feed();
         jaxbElementFeed.setId("urn:id:" + UUID.randomUUID().toString());
         jaxbElementFeed.setUpdated(LocalDateTime);
-        JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
+        JAXBElement<Integer> jaxbElement = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
         jaxbElementFeed.getEntries().add(new Entry("id1", new Content(jaxbElement, "application/xml")));
-        JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
+        JAXBElement<Integer> jaxbElement2 = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
         jaxbElementFeed.getEntries().add(new Entry("id2", new Content(jaxbElement2, "application/xml")));
 
     }

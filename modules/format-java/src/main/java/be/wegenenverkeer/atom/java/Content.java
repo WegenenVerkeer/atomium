@@ -12,7 +12,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class Content<T> {
 
-    private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<JAXBElementUnmarshaller>();
 
     public static void setJAXBElementUnmarshaller(JAXBElementUnmarshaller jaxbElementUnmarshaller) {
         Content.jaxbElementUnmarshallerThreadLocal.set(jaxbElementUnmarshaller);

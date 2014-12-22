@@ -51,10 +51,10 @@ public final class Feed<T> {
     private LocalDateTime updated;
 
     @XmlElement(name = "link")
-    private List<Link> links = new ArrayList<>();
+    private List<Link> links = new ArrayList<Link>();
 
     @XmlElement(name = "entry")
-    private List<Entry<T>> entries = new ArrayList<>();
+    private List<Entry<T>> entries = new ArrayList<Entry<T>>();
 
     public String getId() {
         return id;

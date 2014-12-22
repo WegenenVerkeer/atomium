@@ -22,7 +22,7 @@ public final class Entry<T> {
     private Content<T> content;
 
     @XmlElement(name="link")
-    private List<Link> links = new ArrayList<>();
+    private List<Link> links = new ArrayList<Link>();
 
     /**
      * no arg constructor, needed for JAXB and/or Jackson POJO support
