@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.jdbc.{EntryData, Dialect}
+import be.wegenenverkeer.atom.jdbc.{EntryModel, Dialect}
 import org.joda.time.LocalDateTime
 
 abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
@@ -35,7 +35,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * @return the corresponding entries sorted accordingly
    */
   override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
-    val entries: List[EntryData] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
+    val entries: List[EntryModel] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
     entries.map(toFeedEntry)
   }
 
@@ -47,7 +47,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    *         and sorted by descending sequence number
    */
   override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
-    val entries: List[EntryData] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
+    val entries: List[EntryModel] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
     entries.map(toFeedEntry)
   }
 
@@ -76,13 +76,13 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
   override def push(entries: Iterable[E]): Unit = {
     val timestamp: LocalDateTime = new LocalDateTime()
     entries foreach { entry =>
-      dialect.addFeedEntry(entryTableName, EntryData(id = None, generateEntryID, value = ser(entry), timestamp = timestamp))
+      dialect.addFeedEntry(entryTableName, EntryModel(id = None, generateEntryID, value = ser(entry), timestamp = timestamp))
     }
   }
 
   def createTables() = {
-    createFeedTable
-    createEntryTable(entryTableName = entryTableName)
+    createFeedTableIfNotExists
+    createEntryTableIfNotExists(entryTableName = entryTableName)
   }
 
   def dropTables() = {
@@ -94,7 +94,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * convert a database row (dbEntry) to a FeedEntry containing sequence number and Entry
    * @return the corresponding FeedEntry
    */
-  private[this] def toFeedEntry(entry: EntryData): FeedEntry = {
+  private[this] def toFeedEntry(entry: EntryModel): FeedEntry = {
     FeedEntry(
       entry.id.get,
       Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)

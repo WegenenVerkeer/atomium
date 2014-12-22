@@ -69,6 +69,10 @@ with BeforeAndAfterEach {
     testFeedStorePaging(feedStore = feedStore, pageSize = 3)
   }
 
+  /**
+   * The Postgres JDBC feed store is currently compatible with H2, so we know we
+   * can use it here to run tests on H2.
+   */
   def createFeedStore =
     PgManualJdbcFeedStore[String](JdbcContext(connection), "test_feed", Some("title"), ENTRIES_TABLE_NAME, s => s, d => d, createUrlBuilder)
 
