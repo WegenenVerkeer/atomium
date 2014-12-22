@@ -28,14 +28,15 @@ class AutoJdbcFeedStore [E](context: JdbcContext,
 
       //create table FEEDS if it does not exist
       dialect.createFeedTableIfNotExists
-      dialect.fetchFeed(feedName) match {
+      val feedModel = dialect.fetchFeed(feedName) match {
         case Some(feed) => feed
         case None =>
           val feed = FeedModel(id = None, name = feedName, title = title)
           dialect.addFeed(feed)
-          dialect.createEntryTableIfNotExists(entryTableName)
           feed
       }
+      dialect.createEntryTableIfNotExists(feedModel.autoEntryTableName)
+      feedModel
     })
   }
 

@@ -143,7 +143,15 @@ object AtomiumBuild extends Build
     Name,
     file("."),
     settings = buildSettings(Name)
-  ).aggregate(javaFormatModuleName, formatModule,
-      clientScalaModule, clientJavaModule,
-      serverModule, serverMongoModule, serverSlickModule, serverJdbcModule, serverPlayModule)
+  ).aggregate(
+      javaFormatModuleName,
+      formatModule,
+      clientScalaModule,
+      clientJavaModule,
+      serverModule,
+      serverMongoModule,
+      serverSlickModule,
+      serverJdbcModule,
+      serverPlayModule
+    )
 }
