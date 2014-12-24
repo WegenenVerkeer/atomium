@@ -25,7 +25,7 @@ trait Dialect {
    * @param jdbcContext The JDBC context to use.
    * @return A feed model wrapped in an option (None if there is no feed model with the given name).
    */
-  def fetchFeed(feedName: String)(implicit jdbcContext: JdbcContext): Option[FeedModel]
+  def fetchFeed(feedName: String)(implicit jdbcContext: JdbcContext): Option[FeedDbModel]
 
   /**
    * Add a feed definition to the feed table.
@@ -34,7 +34,7 @@ trait Dialect {
    * @param jdbcContext The JDBC context to use.
    * @return The id for the newly added feed.
    */
-  def addFeed(feed: FeedModel)(implicit jdbcContext: JdbcContext): Unit
+  def addFeed(feed: FeedDbModel)(implicit jdbcContext: JdbcContext): Unit
 
   /**
    * Create an empty feed entry table with a given name.
@@ -59,7 +59,7 @@ trait Dialect {
    * @param jdbcContext The JDBC context to use.
    * @return An entry list.
    */
-  def fetchFeedEntries(entryTableName: String, start: Long, count: Int, ascending: Boolean)(implicit jdbcContext: JdbcContext): List[EntryModel]
+  def fetchFeedEntries(entryTableName: String, start: Long, count: Int, ascending: Boolean)(implicit jdbcContext: JdbcContext): List[EntryDbModel]
 
   /**
    * Fetch the most recent feed entries from an entry table.
@@ -69,7 +69,7 @@ trait Dialect {
    * @param jdbcContext The JDBC context to use.
    * @return An entry list.
    */
-  def fetchMostRecentFeedEntries(entryTableName: String, count: Int)(implicit jdbcContext: JdbcContext): List[EntryModel]
+  def fetchMostRecentFeedEntries(entryTableName: String, count: Int)(implicit jdbcContext: JdbcContext): List[EntryDbModel]
 
   /**
    * Add an entry to an entry table.
@@ -78,7 +78,7 @@ trait Dialect {
    * @param entryData The entry to add.
    * @param jdbcContext The JDBC context to use.
    */
-  def addFeedEntry(entryTableName: String, entryData: EntryModel)(implicit jdbcContext: JdbcContext): Unit
+  def addFeedEntry(entryTableName: String, entryData: EntryDbModel)(implicit jdbcContext: JdbcContext): Unit
 
   /**
    * Fetch te largest entry id from an entry table.

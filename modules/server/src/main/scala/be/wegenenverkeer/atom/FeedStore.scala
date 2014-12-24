@@ -16,7 +16,7 @@ trait FeedStore[E] {
    *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(startSequenceNr:Long, count: Int, forward: Boolean): Option[Feed[E]]
+  def getFeed(startSequenceNr: Long, count: Int, forward: Boolean): Option[Feed[E]]
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
@@ -39,15 +39,17 @@ trait FeedStore[E] {
     push(List(entry))
   }
 
+  def push(uuid: String, entry: E): Unit
+
   /**
    * This method is called when the [[be.wegenenverkeer.atom.FeedService]] is started.
    * This can be used as a hook (to check consistency, for example)
    */
-  def open()  : Unit = {}
+  def open(): Unit = {}
 
   /**
    * This method is called when the [[be.wegenenverkeer.atom.FeedService]] is stopped.
    */
-  def close() : Unit = {}
+  def close(): Unit = {}
 
 }

@@ -18,13 +18,13 @@ import org.joda.time.LocalDateTime
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-abstract class AbstractSlickFeedStore[E](
-                       context: SlickJdbcContext,
-                       feedName: String,
-                       title: Option[String],
-                       ser: E => String,
-                       deser: String => E,
-                       urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
+ abstract class AbstractSlickFeedStore[E](
+                                          context: SlickJdbcContext,
+                                          feedName: String,
+                                          title: Option[String],
+                                          ser: E => String,
+                                          deser: String => E,
+                                          urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
 
   val feedComponent: FeedComponent
 
@@ -41,7 +41,7 @@ abstract class AbstractSlickFeedStore[E](
    *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry] = {
+  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
     implicit val session = context.session
 
     val query = if (ascending)
@@ -58,6 +58,12 @@ abstract class AbstractSlickFeedStore[E](
     entries foreach { entry =>
       getEntryTableQuery += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
     }
+  }
+
+  override def push(uuid: String, entry: E): Unit = {
+    implicit val session = context.session
+    val timestamp: LocalDateTime = new LocalDateTime()
+    getEntryTableQuery += EntryModel(None, uuid, ser(entry), timestamp)
   }
 
   override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {

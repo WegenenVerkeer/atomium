@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.jdbc.{FeedModel, Dialect}
+import be.wegenenverkeer.atom.jdbc.{FeedDbModel, Dialect}
 
 class AutoJdbcFeedStore [E](context: JdbcContext,
                             feedName: String,
@@ -23,7 +23,7 @@ class AutoJdbcFeedStore [E](context: JdbcContext,
    * The FeedModel is also cached, so that recreating the AutoJdbcFeedStore does not have to lookup the FeedModel from
    * the database each time.
    */
-  lazy val feedModel: FeedModel = {
+  lazy val feedModel: FeedDbModel = {
     FeedModelRegistry.getOrElseUpdate(feedName, {
 
       //create table FEEDS if it does not exist
@@ -31,7 +31,7 @@ class AutoJdbcFeedStore [E](context: JdbcContext,
       val feedModel = dialect.fetchFeed(feedName) match {
         case Some(feed) => feed
         case None =>
-          val feed = FeedModel(id = None, name = feedName, title = title)
+          val feed = FeedDbModel(id = None, name = feedName, title = title)
           dialect.addFeed(feed)
           feed
       }
@@ -49,9 +49,9 @@ class AutoJdbcFeedStore [E](context: JdbcContext,
 object FeedModelRegistry {
 
   import scala.collection.immutable.Map
-  private var feedModelCache: Map[String, FeedModel] = Map.empty[String, FeedModel]
+  private var feedModelCache: Map[String, FeedDbModel] = Map.empty[String, FeedDbModel]
 
-  def getOrElseUpdate(key: String, op: => FeedModel): FeedModel = {
+  def getOrElseUpdate(key: String, op: => FeedDbModel): FeedDbModel = {
     if (feedModelCache.contains(key)) {
       feedModelCache(key)
     } else {

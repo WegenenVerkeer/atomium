@@ -36,4 +36,6 @@ abstract class FeedStore[E](feedName: String, title: Option[String], urlProvider
    */
   override def push(entries: Iterable[E]) = underlying.push(entries)
 
+  override def push(uuid: String, entry: E): Unit = underlying.push(uuid, entry)
+
 }

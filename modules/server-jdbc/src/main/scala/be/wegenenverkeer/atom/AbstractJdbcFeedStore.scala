@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.jdbc.{EntryModel, Dialect}
+import be.wegenenverkeer.atom.jdbc.{EntryDbModel, Dialect}
 import org.joda.time.LocalDateTime
 
 abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
@@ -35,7 +35,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * @return the corresponding entries sorted accordingly
    */
   override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
-    val entries: List[EntryModel] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
+    val entries: List[EntryDbModel] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
     entries.map(toFeedEntry)
   }
 
@@ -47,7 +47,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    *         and sorted by descending sequence number
    */
   override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
-    val entries: List[EntryModel] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
+    val entries: List[EntryDbModel] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
     entries.map(toFeedEntry)
   }
 
@@ -61,12 +61,12 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
   override def minId: Long = 0L
 
   /**
-   * @param sequenceNr sequence number to match
+   * @param sequenceNo sequence number to match
    * @param inclusive if true include the specified sequence number
    * @return the number of entries in the feed with sequence number lower than specified
    */
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean): Long = {
-    dialect.fetchEntryCountLowerThan(entryTableName, sequenceNr, inclusive)
+  override def getNumberOfEntriesLowerThan(sequenceNo: Long, inclusive: Boolean): Long = {
+    dialect.fetchEntryCountLowerThan(entryTableName, sequenceNo, inclusive)
   }
 
   /**
@@ -76,8 +76,13 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
   override def push(entries: Iterable[E]): Unit = {
     val timestamp: LocalDateTime = new LocalDateTime()
     entries foreach { entry =>
-      dialect.addFeedEntry(entryTableName, EntryModel(id = None, generateEntryID, value = ser(entry), timestamp = timestamp))
+      dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, generateEntryID, value = ser(entry), timestamp = timestamp))
     }
+  }
+
+  override def push(uuid: String, entry: E): Unit = {
+    val timestamp: LocalDateTime = new LocalDateTime()
+    dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }
 
   def createTables() = {
@@ -94,9 +99,9 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * convert a database row (dbEntry) to a FeedEntry containing sequence number and Entry
    * @return the corresponding FeedEntry
    */
-  private[this] def toFeedEntry(entry: EntryModel): FeedEntry = {
+  private[this] def toFeedEntry(entry: EntryDbModel): FeedEntry = {
     FeedEntry(
-      entry.id.get,
+      entry.sequenceNo.get,
       Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
     )
   }

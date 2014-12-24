@@ -70,6 +70,9 @@ class MemoryFeedStore[T](feedName: String,
   override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
     entriesWithIndex.toList.reverse.take(count)
   }
+
+  override def push(uuid: String, entry: T): Unit = ???
+
 }
 
 object MemoryFeedStore {

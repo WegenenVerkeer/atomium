@@ -35,6 +35,8 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
     sequenceNumbersToSkipForPush(0)
   }
 
+  override def push(uuid: String, entry: T): Unit = ???
+
   override val minId: Long = 0
 
   override def maxId: Long =
@@ -67,5 +69,6 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
   private def toFeedEntry(t: (Long, Entry[T])): FeedEntry = {
     FeedEntry(t._1, t._2)
   }
+
 }
 

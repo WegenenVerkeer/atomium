@@ -39,8 +39,10 @@ class MongoFeedStore[E](c: MongoContext,
     update = $setOnInsert(Keys.Sequence -> 0), //create with seq -> 1 if not exists
     remove = false, returnNew = true, upsert = true)
 
-  protected def feedEntry2DbObject(e: E) = MongoDBObject(
-    Keys.Uuid -> generateEntryID(),
+  protected def feedEntry2DbObject(e: E): MongoDBObject = feedEntry2DbObject(generateEntryID(), e)
+
+  protected def feedEntry2DbObject(uuid: String, e: E): MongoDBObject = MongoDBObject(
+    Keys.Uuid -> uuid,
     Keys.Timestamp -> new LocalDateTime(),
     Keys.Content -> ser(e)
   )
@@ -61,6 +63,10 @@ class MongoFeedStore[E](c: MongoContext,
     entries foreach {entry =>
       entriesCollection.insert(feedEntry2DbObject(entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
     }
+  }
+
+  override def push(uuid: String, entry: E): Unit = {
+    entriesCollection.insert(feedEntry2DbObject(uuid, entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
   }
 
   /**
@@ -135,6 +141,7 @@ class MongoFeedStore[E](c: MongoContext,
       case _ => 0L
     }
   }
+
 }
 
 object MongoFeedStore {
