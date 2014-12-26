@@ -1,8 +1,10 @@
 package be.wegenenverkeer.atom.java
 
 import be.wegenenverkeer.atom.Context
+import java.lang.{Boolean => JBoolean, Long => JLong}
 
 import scala.collection.JavaConverters._
+import be.wegenenverkeer.atom.JFeedConverters._
 
 /**
  * Wrapper around the [[be.wegenenverkeer.atom.FeedService]] that offers a Java-like interface.
@@ -40,5 +42,7 @@ class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage:
    * @param count the number of entries
    * @return the feed page
    */
-  def getFeed(start:Int, count:Int, forward: Boolean) = underlying.getFeedPage(start, count, forward)(context)
+  def getFeed(start: JLong, count: Integer, forward: JBoolean): Option[Feed[E]] =
+    underlying.getFeedPage(start, count, forward)(context).map(feed2JFeed)
+
 }

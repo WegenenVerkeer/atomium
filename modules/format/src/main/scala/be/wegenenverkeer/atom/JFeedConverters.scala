@@ -5,7 +5,7 @@ import scala.collection.JavaConverters._
 
 object JFeedConverters {
 
-  def feed2JFeed[T](feed: Feed[T]): JFeed[T] = {
+  implicit def feed2JFeed[T](feed: Feed[T]): JFeed[T] = {
     new JFeed[T](
       feed.id,
       feed.base.path,
@@ -54,7 +54,7 @@ object JFeedConverters {
     }
   }
 
-  def jEntry2Entry[T](jEntry: JEntry[T]): Entry[T] = {
+  implicit def jEntry2Entry[T](jEntry: JEntry[T]): Entry[T] = {
     Entry[T](
       jEntry.getId,
       jEntry.getUpdated,
