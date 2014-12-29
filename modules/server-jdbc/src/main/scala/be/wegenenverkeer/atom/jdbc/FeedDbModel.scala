@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.jdbc
 import java.sql.ResultSet
 
 case class FeedDbModel(id: Option[Long], name: String, title: Option[String]) {
-  def autoEntryTableName = s"FEED_ENTRIES_${id.get}"
+  def autoEntryTableName = s"FEED_ENTRIES_$name"
 }
 
 object FeedDbModel {

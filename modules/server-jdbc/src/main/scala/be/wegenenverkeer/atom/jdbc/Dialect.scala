@@ -164,7 +164,7 @@ trait Dialect {
     val statement = jdbcContext.connection.createStatement()
     maxRows match {
       case Some(rows) => statement.setMaxRows(rows);
-      case _ =>
+      case None =>
     }
     statement.executeQuery(sql)
     processResultSet[T](statement.getResultSet, factory)

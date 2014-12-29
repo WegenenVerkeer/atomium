@@ -82,6 +82,13 @@ trait PostgresDialect extends Dialect {
     sqlUpdatePepared(preparedSql, entryData.uuid, entryData.value, entryData.timestamp)
   }
 
+  /**
+   * Fetch the largest entry ID from the database.
+   *
+   * @param entryTableName The name of the entry table.
+   * @param jdbcContext The JDBC context to use.
+   * @return The largest entry id for a given entry table, or -1 if the entry table is empty.
+   */
   override def fetchMaxEntryId(entryTableName: String)(implicit jdbcContext: JdbcContext): Long = {
     val maxList: List[Long] = sqlQuery[Long](
       s"SELECT max(${EntryDbModel.Table.idColumn}) as max FROM $entryTableName;",
@@ -89,8 +96,8 @@ trait PostgresDialect extends Dialect {
       _.getLong("max")
     )
     maxList match {
-      case m :: ms => m
-      case Nil => 0
+      case m :: ms => Option(m).getOrElse(-1) // m is null in an empty table
+      case Nil => -1
     }
   }
 
