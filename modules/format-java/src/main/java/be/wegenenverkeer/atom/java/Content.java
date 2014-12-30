@@ -45,7 +45,7 @@ public final class Content<T> {
         } else if (value instanceof JAXBElement) {
             this.value = ((JAXBElement<T>) value).getValue();
         } else {
-            throw new IllegalArgumentException("type not supported "+value.getClass());
+            this.value = value;
         }
     }
 
