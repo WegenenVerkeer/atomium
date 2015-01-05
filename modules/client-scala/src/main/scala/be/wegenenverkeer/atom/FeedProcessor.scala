@@ -18,21 +18,23 @@ import scala.util.{Failure, Success, Try}
  *
  * @tparam E the type of the entries in the feed
  */
-class FeedProcessor[E](feedProvider: FeedProvider[E],
+class FeedProcessor[E](feedProvider: FeedPageProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
-  trait EventCursor
+  /** Internal pointer to the current entry. */
+  trait EntryCursor
+
   case class EntryPointer(entryToProcess: Entry[EntryType],
                           stillToProcessEntries: Entries,
-                          feedPosition:FeedPosition,
-                          feed:Feed[EntryType]) extends EventCursor
+                          feedPosition: FeedPosition,
+                          feed: Feed[EntryType]) extends EntryCursor
 
-  case class EntryOnPreviousFeedPage(previousFeedUrl:Url) extends EventCursor
-  case class EndOfEntries(lastFeedPosition:FeedPosition) extends EventCursor
+  case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends EntryCursor
 
+  case class EndOfEntries(lastFeedPosition: FeedPosition) extends EntryCursor
 
   /**
    * Start the consuming of Feeds. Returns a {{{Try[Unit]}}}.
@@ -43,14 +45,15 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    * @return Try[Unit].
    *
    */
-  def start() : Try[Unit] = {
+  def start(): Try[Unit] = {
+    // MOET WEG
 
     // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
     // but we don't want to pollute the interface if it, because we intend to use it from Java as well
-    implicit val manif  = new Manifest[FeedProvider[E]] {
-      override def runtimeClass: Class[_] = classOf[FeedProvider[E]]
+    implicit val manif = new Manifest[FeedPageProvider[E]] {
+      override def runtimeClass: Class[_] = classOf[FeedPageProvider[E]]
     }
-    implicit val feedProvResource = FeedProvider.managedFeedProvider(feedProvider)
+    implicit val feedProvResource = FeedPageProvider.managedFeedProvider(feedProvider)
 
     val extResult = managed(feedProvider).map { provider =>
       // FeedProvider must be managed
@@ -67,7 +70,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
     }
   }
 
-  private def initEventCursor : Try[EventCursor] = {
+  private def initEventCursor: Try[EntryCursor] = {
     feedProvider.fetchFeed().map {
       feed => buildCursor(feed, feedProvider.initialPosition)
     }
@@ -75,13 +78,13 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
 
 
   @tailrec
-  private def process(cursor:EventCursor) : FeedProcessingResult = {
+  private def process(cursor: EntryCursor): FeedProcessingResult = {
 
     //!!! NOTE !!!
     // we perform two times the same pattern matching on a Try[EventCursor]
     // we need to do this otherwise we can't have tail call optimization and we absolutely need tailrec here
     cursor match {
-      case currentEvent:EntryPointer =>
+      case currentEvent: EntryPointer =>
 
         val nextEventOrFailure = for {
           _ <- consumeEvent(currentEvent)
@@ -110,11 +113,11 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
 
   }
 
-  private def consumeEvent(currentEvent:EntryPointer) : FeedProcessingResult = {
+  private def consumeEvent(currentEvent: EntryPointer): FeedProcessingResult = {
     try {
       entryConsumer.apply(currentEvent.feedPosition, currentEvent.entryToProcess)
     } catch {
-      case ex:Exception =>
+      case ex: Exception =>
         Failure(ex)
     }
   }
@@ -123,20 +126,20 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
    * Build an EventCursor according to the following rules:
    *
    * <ul>
-   *  <li>If there is no FeedPosition => create a new cursor on a full Feed with index 0</li>
-   *  <li>If there is a valid FeedPosition => increase index and drop entries preceding new index and create new cursor.</li>
-   *  <li>If the last element of this page is already consumed
-   *    <ul>
-   *      <li>If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor on the next page of the feed</li>
-   *      <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
-   *    </ul>
-   *  </li>
+   * <li>If there is no FeedPosition => create a new cursor on a full Feed with index 0</li>
+   * <li>If there is a valid FeedPosition => increase index and drop entries preceding new index and create new cursor.</li>
+   * <li>If the last element of this page is already consumed
+   * <ul>
+   * <li>If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor on the next page of the feed</li>
+   * <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
+   * </ul>
+   * </li>
    * </ul>
    *
    */
-  private def buildCursor(feed:Feed[EntryType], feedPosition:Option[FeedPosition] = None) : EventCursor = {
+  private def buildCursor(feed: Feed[EntryType], feedPosition: Option[FeedPosition] = None): EntryCursor = {
 
-    def buildCursorWithPositionOn(feed:Feed[EntryType], index:Int) = {
+    def buildCursorWithPositionOn(feed: Feed[EntryType], index: Int) = {
       EntryPointer(
         feed.entries.head,
         feed.entries.tail,
@@ -145,7 +148,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       )
     }
 
-    def previousFeedOrEnd(feed:Feed[EntryType]) = {
+    def previousFeedOrEnd(feed: Feed[EntryType]) = {
       // we go to previous feed page or we reached the EndOfEntries
       def endOfEntries = {
         feedPosition match {
@@ -183,12 +186,12 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
     }
   }
 
-  private def cursorOnPreviousFeedPage(url:Url) : Try[EventCursor] = {
-    feedProvider.fetchFeed(url.path).map { feed => buildCursor(feed) }
+  private def cursorOnPreviousFeedPage(url: Url): Try[EntryCursor] = {
+    feedProvider.fetchFeed(url.path).map { feed => buildCursor(feed)}
   }
 
 
-  private def buildNextEntryCursor(entryPointer:EntryPointer) : Try[EventCursor] = {
+  private def buildNextEntryCursor(entryPointer: EntryPointer): Try[EntryCursor] = {
     val nextCursor =
       if (entryPointer.stillToProcessEntries.nonEmpty) {
         entryPointer.copy(
@@ -207,7 +210,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       // still a page to go? go fetch it
       case EntryOnPreviousFeedPage(previousFeedUrl) => cursorOnPreviousFeedPage(previousFeedUrl)
       // no next feed link? stop processing, all entries were consumed
-      case end @ EndOfEntries(_) => Success(end)
+      case end@EndOfEntries(_) => Success(end)
       // wrap nextCursor in Success
       case _ => Success(nextCursor)
 

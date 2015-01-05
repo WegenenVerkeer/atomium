@@ -15,7 +15,7 @@ import play.api.mvc.Results._
 import play.api.test.Helpers._
 import support.JaxbSupport
 
-class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
+class PlayWsBlockingFeedPageProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
 
   implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
 
@@ -43,7 +43,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = None,
         feedUnmarshaller = this,
@@ -69,7 +69,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = None,
         feedUnmarshaller = this,
@@ -138,7 +138,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = None,
         feedUnmarshaller = this,
@@ -169,7 +169,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
         feedUnmarshaller = this,
@@ -194,7 +194,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1)),
         feedUnmarshaller = this,
@@ -219,7 +219,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = None,
         feedUnmarshaller = this,
@@ -244,7 +244,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsBlockingFeedPageProvider[String](
         feedUrl = "http://example.com/feed",
         feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
         feedUnmarshaller = this,
@@ -260,7 +260,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
     }
   }
 
-  case class Scenario(provider: PlayWsBlockingFeedProvider[String],
+  case class Scenario(provider: PlayWsBlockingFeedPageProvider[String],
                       consumedEvents: List[String],
                       finalPosition: Option[FeedPosition]) {
 

@@ -11,7 +11,7 @@ class FeedProcessorTest extends FunSuite with Matchers {
   type StringFeed = Feed[String]
   type Feeds = List[StringFeed]
 
-  case class Scenario(provider:TestFeedProvider,
+  case class Scenario(provider:TestFeedPageProvider,
                       consumedEvents:List[String],
                       finalPosition:Option[FeedPosition]) {
 
@@ -171,20 +171,20 @@ class FeedProcessorTest extends FunSuite with Matchers {
   }
 
   def feedProvider(initialPosition:Option[FeedPosition],
-                   feeds:Feed[String]*) = new TestFeedProvider(initialPosition, feeds.toList)
+                   feeds:Feed[String]*) = new TestFeedPageProvider(initialPosition, feeds.toList)
 
   /**
    * Bogus provider. Never returns the next Feed
    */
-  def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(None, feeds.toList) {
+  def feedProviderBogus(feeds:Feed[String]*) = new TestFeedPageProvider(None, feeds.toList) {
     override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       Failure(FeedProcessingException(None, "Can't fetch feed"))
     }
   }
 
-  class TestFeedProvider(initialPos:Option[FeedPosition],
-                         feeds: Feeds) extends FeedProvider[String] {
+  class TestFeedPageProvider(initialPos:Option[FeedPosition],
+                         feeds: Feeds) extends FeedPageProvider[String] {
 
     val linkedFeeds = {
       // build links between feeds

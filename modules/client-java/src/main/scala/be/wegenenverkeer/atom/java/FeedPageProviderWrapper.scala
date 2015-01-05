@@ -11,8 +11,8 @@ import scala.util.Try
  * @param underlying the underlying [[be.wegenenverkeer.atom.java.FeedProvider]]
  * @tparam E the type of the entries in the feed
  */
-class FeedProviderWrapper[E](underlying: be.wegenenverkeer.atom.java.FeedProvider[E])
-  extends be.wegenenverkeer.atom.FeedProvider[E] with Logging {
+class FeedPageProviderWrapper[E](underlying: be.wegenenverkeer.atom.java.FeedProvider[E])
+  extends be.wegenenverkeer.atom.FeedPageProvider[E] with Logging {
 
   override def fetchFeed(): Try[be.wegenenverkeer.atom.Feed[E]] =
     Try(JFeedConverters.jFeed2Feed(underlying.fetchFeed()))

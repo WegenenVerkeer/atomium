@@ -23,7 +23,7 @@ public class FeedProcessor<E> {
      */
     public FeedProcessor(FeedProvider<E> feedProvider, EntryConsumer<E> entryConsumer) {
         underlying = new be.wegenenverkeer.atom.FeedProcessor<E>(
-            new FeedProviderWrapper<E>(feedProvider),
+            new FeedPageProviderWrapper<E>(feedProvider),
             new EntryConsumerWrapper<E>(entryConsumer)
         );
     }

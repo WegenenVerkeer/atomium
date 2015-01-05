@@ -14,10 +14,10 @@ import scala.util.{Failure, Success, Try}
 
 
 /**
- * An implementation of [[be.wegenenverkeer.atom.FeedProvider]] that uses the Play WS API for fetching feed pages via
+ * An implementation of [[be.wegenenverkeer.atom.FeedPageProvider]] that uses the Play WS API for fetching feed pages via
  * HTTP.
  *
- * Although the Play WS API offers an async interface, this class blocks on request since the [[be.wegenenverkeer.atom.FeedProvider]]
+ * Although the Play WS API offers an async interface, this class blocks on request since the [[be.wegenenverkeer.atom.FeedPageProvider]]
  * doesn't offer an async interface yet.
  *
  * If you want to use this implementation you will need to add a dependency on the Play WS API library.
@@ -29,14 +29,14 @@ import scala.util.{Failure, Success, Try}
  *
  * @tparam T the type of the entries in the feed
  */
-class PlayWsBlockingFeedProvider[T](feedUrl:String,
+class PlayWsBlockingFeedPageProvider[T](feedUrl:String,
                                     feedPosition: Option[FeedPosition],
                                     feedUnmarshaller: FeedUnmarshaller[T],
                                     contentType: String = "application/xml",
                                     timeout:Duration = 30.seconds,
                                     wsClient:Option[WSClient] = None)
 
-  extends FeedProvider[T] with Logging {
+  extends FeedPageProvider[T] with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
