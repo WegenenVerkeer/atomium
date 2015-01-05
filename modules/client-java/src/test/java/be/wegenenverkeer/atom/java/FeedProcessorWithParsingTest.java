@@ -28,7 +28,7 @@ public class FeedProcessorWithParsingTest {
 
         // create the feed position from where you want to start processing
         // position (-1) is meest recent verwerkte
-        FeedPosition position = new FeedPosition(new Url(FEED_URL), -1, new HashMap());
+        FeedPosition position = new FeedPosition(new Url(FEED_URL), -1);
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider(position);

@@ -8,6 +8,6 @@ import _root_.java.net.URI
  * @param url the url of the last retrieved page
  * @param index the index of the last item consumed on the last retrieved page
  */
-case class FeedPosition(url: Url, index: Int, headers: Map[String, String] = Map.empty) {
+case class FeedPosition(url: Url, index: Int) {
   require(new URI(url.path).isAbsolute)
 }

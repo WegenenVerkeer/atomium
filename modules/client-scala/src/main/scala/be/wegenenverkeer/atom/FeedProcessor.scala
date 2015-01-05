@@ -140,7 +140,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
       EntryPointer(
         feed.entries.head,
         feed.entries.tail,
-        FeedPosition(feed.resolveUrl(feed.selfLink.href), index, feed.headers),
+        FeedPosition(feed.resolveUrl(feed.selfLink.href), index),
         feed
       )
     }
@@ -152,7 +152,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
           case Some(feedPos) => EndOfEntries(feedPos)
           case None =>
             // rather exceptional situation, can only occurs if a feed is completely empty
-            EndOfEntries(FeedPosition(feed.resolveUrl(feed.selfLink.href), 0, feed.headers))
+            EndOfEntries(FeedPosition(feed.resolveUrl(feed.selfLink.href), 0))
         }
       }
 

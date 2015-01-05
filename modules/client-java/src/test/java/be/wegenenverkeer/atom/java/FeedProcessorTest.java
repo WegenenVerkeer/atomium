@@ -74,7 +74,7 @@ public class FeedProcessorTest {
          */
         @Override
         public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Url(FEED_URL_PAGE1), -1, new HashMap<String, String>());
+            return new FeedPosition(new Url(FEED_URL_PAGE1), -1);
         }
 
         @Override
