@@ -5,6 +5,8 @@ import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
+import scala.None;
+import scala.Option;
 import scala.Some;
 import scala.collection.immutable.HashMap;
 
@@ -51,18 +53,19 @@ public class FeedProcessorTest {
 
     static class ExampleEntryConsumer implements be.wegenenverkeer.atom.java.EntryConsumer<ExampleFeedEntry> {
         @Override
-        public void accept(FeedPosition position, Entry<ExampleFeedEntry> entry) {
-            System.out.println("Consuming position " + position.index() + " entry " + entry.getContent());
+        public Entry<ExampleFeedEntry> accept(Entry<ExampleFeedEntry> entry) {
+            System.out.println("Consuming entry " + entry.getContent());
             try {
-                handleEvent(entry.getContent().getValue(), position);
+                handleEvent(entry.getContent().getValue());
+                return entry;
             } catch (Exception e) {
-                throw new FeedProcessingException(new Some(position), e.getMessage());
+                throw new FeedProcessingException(Option.apply(entry.getId()), e.getMessage());
             }
         }
 
-        public void handleEvent(ExampleFeedEntry event, FeedPosition position) throws Exception {
+        public void handleEvent(ExampleFeedEntry event) throws Exception {
             // handle the new event here and persist the current feed position here (possibly in 1 database transaction)
-            System.out.println("process feed entry and persist feed position " + event + " " + position);
+            System.out.println("process feed entry and persist feed position " + event);
         }
     }
 
@@ -74,7 +77,7 @@ public class FeedProcessorTest {
          */
         @Override
         public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Url(FEED_URL_PAGE1), -1);
+            return new FeedPosition(new Url(FEED_URL_PAGE1), Option.<String>empty());
         }
 
         @Override

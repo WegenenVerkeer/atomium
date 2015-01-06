@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import scala.Option;
 import scala.Some;
 import scala.collection.immutable.HashMap;
 
@@ -28,7 +29,7 @@ public class FeedProcessorWithParsingTest {
 
         // create the feed position from where you want to start processing
         // position (-1) is meest recent verwerkte
-        FeedPosition position = new FeedPosition(new Url(FEED_URL), -1);
+        FeedPosition position = new FeedPosition(new Url(FEED_URL), Option.<String>empty());
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider(position);
@@ -47,18 +48,19 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleEntryConsumer implements EntryConsumer<EventFeedEntryTo> {
         @Override
-        public void accept(FeedPosition position, Entry<EventFeedEntryTo> entry) {
-            System.out.println("Consuming position " + position.index() + " entry " + entry.getContent());
+        public Entry<EventFeedEntryTo> accept(Entry<EventFeedEntryTo> entry) {
+            System.out.println("Consuming position entry " + entry.getContent());
             try {
-                handleEvent(entry.getContent().getValue(), position);
+                handleEvent(entry.getContent().getValue());
+                return entry;
             } catch (Exception e) {
-                throw new FeedProcessingException(new Some(position), e.getMessage());
+                throw new FeedProcessingException(Option.apply(entry.getId()), e.getMessage());
             }
         }
 
-        public void handleEvent(EventFeedEntryTo event, FeedPosition position) throws Exception {
+        public void handleEvent(EventFeedEntryTo event) throws Exception {
             // handle the new event here and persist the current feed position here (possibly in 1 database transaction)
-            System.out.println("process feed entry and persist feed position " + event + " " + position);
+            System.out.println("process feed entry and persist feed position " + event);
         }
     }
 
@@ -82,7 +84,7 @@ public class FeedProcessorWithParsingTest {
             System.out.println("Fetching page " + page);
 
             if (!FEED_URL.equals(page)) {
-                throw new FeedProcessingException(Some.<FeedPosition>empty(), "not found");
+                throw new FeedProcessingException(Option.<String>empty(), "not found");
             }
 
             try {
@@ -92,7 +94,7 @@ public class FeedProcessorWithParsingTest {
                 Feed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<Feed<EventFeedEntryTo>>() {});
                 return feed;
             } catch (IOException ioe) {
-                throw new FeedProcessingException(Some.<FeedPosition>empty(), "Cannot open template " + ioe.getMessage());
+                throw new FeedProcessingException(Option.<String>empty(), "Cannot open template " + ioe.getMessage());
             }
         }
 

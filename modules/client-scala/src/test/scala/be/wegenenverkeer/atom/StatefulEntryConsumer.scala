@@ -4,13 +4,13 @@ import scala.collection.mutable
 import scala.util.Success
 
 class StatefulEntryConsumer extends EntryConsumer[String] {
-  var finalPosition:Option[FeedPosition] = None
+  var lastConsumedEntryId:Option[String] = None
   var consumedEvents = new mutable.ListBuffer[String]
 
-  override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-    finalPosition = Option(position)
+  override def apply(eventEntry: Entry[String]): FeedProcessingResult[String] = {
+    lastConsumedEntryId = Option(eventEntry.id)
     consumedEvents += eventEntry.content.value
-    Success()
+    Success(eventEntry)
   }
 }
 

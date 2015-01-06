@@ -21,6 +21,7 @@ object FeedPageProvider extends Logging {
 }
 
 trait FeedPageProvider[T] {
+
   def initialPosition: Option[FeedPosition]
 
   /**

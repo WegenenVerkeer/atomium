@@ -7,4 +7,4 @@ package be.wegenenverkeer.atom
  * @param `type` the content type
  * @tparam T the type of entry
  */
-case class Content[T](value: T, `type`: String)
+case class Content[+T](value: T, `type`: String)

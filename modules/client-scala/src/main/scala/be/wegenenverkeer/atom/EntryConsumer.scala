@@ -8,4 +8,4 @@ package be.wegenenverkeer.atom
  *
  * @tparam E the type of the entries in the feed
  */
-trait EntryConsumer[E] extends ((FeedPosition, Entry[E]) => FeedProcessingResult)
+trait EntryConsumer[E] extends ((Entry[E]) => FeedProcessingResult[E])
