@@ -42,51 +42,62 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
     implicit val feedProvResource = FeedPageProvider.managedFeedProvider(feedProvider)
 
 
-
-
     // FeedProvider must be managed
     val extResult = managed(feedProvider).map { provider =>
 
-      val feedIterator = new FeedEntryIterator(feedProvider)
+        val feedIterator = new FeedEntryIterator(feedProvider)
 
-      @tailrec
-      def consume(atomResult:AtomResult[E]) : AtomResult[E] = {
+        @tailrec
+        def consume(atomResult:AtomResult[E]) : AtomResult[E] = {
 
-        def processNextEntry: AtomResult[E] = {
+          def processNextEntry: AtomResult[E] = {
 
-          // pick next entry
-          val nextEntry = feedIterator.next()
+            // pick next entry
+            val nextEntry = Try(feedIterator.next())
 
-          // consume it
-          val result = nextEntry.flatMap(entryConsumer)
+            // consume it
+            val result: Try[Option[Entry[E]]] = nextEntry.flatMap {
+              // consume entry if exist
+              case Some(entry) =>
+                // NOTE: entryConsumer returns a Try[Entry[E]]
+                // but we need Try[Option[Entry[E]]. Hence the extra mapping.
+                entryConsumer(entry).map(Option(_))
 
-          result match {
-            case Success(consumedEntry) => AtomSuccess(consumedEntry)
-            // on failure, we keep the last successful entry
-            // can be a empty if fails when consuming first entry
-            case Failure(ex) => AtomFailure(atomResult.lastSuccessfulEntry, ex)
+              // no entry produced? we just return a Success with a None inside
+              case None => Success(None)
+            }
+
+            // transform the final result to a AtomResult
+            result match {
+              // entity effectively consumed
+              case Success(Some(consumedEntry)) => AtomSuccess(consumedEntry)
+
+              // no entity consumed, we keep the last successful entry we know
+              case Success(None) => AtomSuccess(atomResult.lastSuccessfulEntry)
+
+              // on failure, we keep the last successful entry
+              // can be a empty if fails when consuming first entry
+              case Failure(ex) => AtomFailure(atomResult.lastSuccessfulEntry, ex)
+            }
+          }
+
+
+          atomResult match {
+            // fail-fast on failure
+            // can fail when fetching an entry or when consuming it
+            // in any case we stop processing
+            case failure: AtomFailure[_] => failure
+
+            // keep consuming if still entries
+            case any if feedIterator.hasNext => consume(processNextEntry)
+
+            // no entries? return whatever result we have
+            case any if !feedIterator.hasNext => atomResult
+
           }
         }
 
-
-        atomResult match {
-
-          // fail-fast on failure
-          // can fail when fetching an entry or when consuming it
-          // in any case we stop processing
-          case failure: AtomFailure[_] => failure
-
-          // keep consuming if still entries
-          case any if feedIterator.hasNext => consume(processNextEntry)
-
-          // no entries? return whatever result we have
-          case any if !feedIterator.hasNext => atomResult
-
-        }
-
-      }
-
-      consume(AtomNothing)
+        consume(AtomNothing)
 
     }
 
@@ -97,7 +108,6 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
         throw FeedProcessingException(None, messages)
     }
   }
-
 
 
 }

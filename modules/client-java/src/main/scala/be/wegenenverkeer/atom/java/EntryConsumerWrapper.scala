@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java
 
-import be.wegenenverkeer.atom.{JFeedConverters, FeedPosition, FeedProcessingResult}
+import be.wegenenverkeer.atom.{JFeedConverters, FeedEntryRef, FeedProcessingResult}
 
 import scala.util.Try
 

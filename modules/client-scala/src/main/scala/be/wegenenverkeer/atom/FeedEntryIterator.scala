@@ -1,63 +1,115 @@
 package be.wegenenverkeer.atom
 
-import scala.util.{Failure, Success, Try}
-
-class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[Try[Entry[E]]] {
+class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[Option[Entry[E]]] {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
   /** Internal pointer to the current entry. */
-  trait EntryCursor
+  private trait EntryCursor {
+    def nextCursor : EntryCursor
+  }
 
-  case class EntryPointer(entryToProcess: Entry[EntryType],
+  private case class InitCursor(feedEntryRef: Option[FeedEntryRef] = None) extends EntryCursor {
+
+    /** Builds the initial EntryCursor
+     * This method will search from the start of the feed for the given entry
+     */
+    def nextCursor : EntryCursor = {
+      feedProvider.fetchFeed().map {
+        feed => buildCursor(feed, feedEntryRef)
+      }.get
+    }
+
+  }
+  private case class EntryPointer(currentEntry: Entry[EntryType],
                           stillToProcessEntries: Entries,
-                          feedPosition: FeedPosition,
-                          feed: Feed[EntryType]) extends EntryCursor
+                          entryRef: FeedEntryRef,
+                          feed: Feed[EntryType]) extends EntryCursor {
 
-  case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends EntryCursor
+    /** The next [[EntryCursor]]
+      *   - The next [[EntryPointer]] on current page if still entries to be consumed.
+      *   - An [[EntryOnPreviousFeedPage]] in case current page is exhausted and a new page is available.
+      *   - An [[EndOfEntries]] in case current page is exhausted and no new page is available.
+      */
+    def nextCursor : EntryCursor = {
 
-  case class EndOfEntries(lastFeedPosition: FeedPosition) extends EntryCursor
+      if (stillToProcessEntries.nonEmpty) {
+        val nextEntryId = stillToProcessEntries.head.id
+        copy(
+          currentEntry = stillToProcessEntries.head,
+          stillToProcessEntries = stillToProcessEntries.tail, // moving forward, dropping head
+          entryRef = entryRef.copy(entryId = nextEntryId) // moving position forward
+        )
 
-  private var cursor: Try[EntryCursor] = initEventCursor
+      } else {
+        feed.previousLink match {
+          case None => EndOfEntries(Some(entryRef))
+          case Some(link) => EntryOnPreviousFeedPage(feed.resolveUrl(link.href))
+        }
+      }
+    }
+  }
 
+  private case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends EntryCursor {
 
+    /** The next [[EntryCursor]].
+      *
+      * This method will load the previous page an return an [[EntryCursor]].
+      */
+    def nextCursor : EntryCursor = {
+      feedProvider.fetchFeed(previousFeedUrl.path).map {
+        feed => buildCursor(feed)
+      }.get
+    }
+  }
 
-  override def hasNext: Boolean = {
+  private case class EndOfEntries(lastEntryRef: Option[FeedEntryRef]) extends EntryCursor {
+    /** Throws a NonSuchElementException since there is no nextCursor for a [[EndOfEntries]] */
+    def nextCursor : EntryCursor = throw new NoSuchElementException("No new entries available!")
+  }
+
+  private var cursor: EntryCursor = InitCursor(feedProvider.initialEntryRef)
+
+  private var onGoing = true
+
+  override def hasNext: Boolean = onGoing
+
+  override def next(): Option[Entry[E]] = {
+
     cursor match {
-      case Success(_: EntryPointer) => true
-      case _ => false
+
+      case init:InitCursor =>
+        updateCursor(init.nextCursor)
+        this.next()
+
+      case entryPointer:EntryPointer =>
+        updateCursor(entryPointer.nextCursor)
+        Some(entryPointer.currentEntry)
+
+      case onPreviousPage: EntryOnPreviousFeedPage =>
+        updateCursor(onPreviousPage.nextCursor)
+        this.next()
+
+      case end:EndOfEntries => None
+
     }
   }
 
-  override def next(): Try[Entry[E]] = {
-
+  private def updateCursor(cursor:EntryCursor) : Unit = {
     cursor match {
-      case Success(entryPointer:EntryPointer) =>
-        cursor = buildNextEntryCursor(entryPointer)
-        Try(entryPointer.entryToProcess)
-
-      case Success(_) => Failure(new NoSuchElementException("No new entries available!"))
-
-      case Failure(e) => Failure(e)
+      case end:EndOfEntries => onGoing = false
+      case _ => onGoing = true
     }
+    this.cursor = cursor
   }
-
-
-
-  private def initEventCursor: Try[EntryCursor] = {
-    feedProvider.fetchFeed().map {
-      feed => buildCursor(feed, feedProvider.initialPosition)
-    }
-  }
-
 
   /**
    * Build an EventCursor according to the following rules:
    *
    * <ul>
-   * <li>If there is no FeedPosition => create a new cursor on a full Feed with index 0</li>
-   * <li>If there is a valid FeedPosition => increase index and drop entries preceding new index and create new cursor.</li>
+   * <li>If there is no FeedEntryRef => create a new cursor on a full Feed with index 0</li>
+   * <li>If there is a valid FeedEntryRef => increase index and drop entries preceding new index and create new cursor.</li>
    * <li>If the last element of this page is already consumed
    * <ul>
    * <li>If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor on the next page of the feed</li>
@@ -67,14 +119,14 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
    * </ul>
    *
    */
-  private def buildCursor(feed: Feed[EntryType], feedPosition: Option[FeedPosition] = None): EntryCursor = {
+  private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[FeedEntryRef] = None): EntryCursor = {
 
     def buildEntryPointer(feed: Feed[EntryType]) : EntryPointer = {
-      val entryId = feed.entries.headOption.map(_.id)
+      val entryId = feed.entries.head.id
       EntryPointer(
         feed.entries.head,
         feed.entries.tail,
-        FeedPosition(feed.resolveUrl(feed.selfLink.href), entryId),
+        FeedEntryRef(feed.resolveUrl(feed.selfLink.href), entryId),
         feed
       )
     }
@@ -82,11 +134,12 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
     def previousFeedOrEnd(feed: Feed[EntryType]): EntryCursor = {
       // we go to previous feed page or we reached the EndOfEntries
       def endOfEntries = {
-        feedPosition match {
-          case Some(feedPos) => EndOfEntries(feedPos)
-          case None =>
-            // rather exceptional situation, can only occurs if a feed is completely empty
-            EndOfEntries(FeedPosition(feed.resolveUrl(feed.selfLink.href), None))
+        entryRefOpt match {
+          // rather exceptional situation, can only occurs if a feed is completely empty
+          case None => EndOfEntries(None)
+
+          case _ => EndOfEntries(entryRefOpt)
+
         }
       }
 
@@ -99,27 +152,20 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
 
 
       /** Drop entries from feed page up to the current entry id */
-    def dropEntriesUpToFeedPos(entries: List[Entry[E]] ) : Feed[EntryType] = {
-      val entryId = feedPosition.flatMap(_.entryId)
+    def dropEntriesUpToEntryRef(entries: List[Entry[E]] ) : Feed[EntryType] = {
+
+      val entryId = entryRefOpt.map(_.entryId)
 
       val remainingEntries =
         entryId match {
-          case Some(id) =>
-            val entriesUpToPos = entries.dropWhile(_.id == id)
-            // if non-empty list we want the tail only
-            // the head is last successful consumed entry
-            entriesUpToPos match {
-              case x :: xs => xs
-              case _ => Nil
-            }
-
+          case Some(id) => entries.filter(_.id != id)
           // no entryId means start of new page
           case None => entries
         }
-      feed.copy(entries = remainingEntries)
+        feed.copy(entries = remainingEntries)
     }
 
-    val reducedFeedPage = dropEntriesUpToFeedPos(feed.entries)
+    val reducedFeedPage = dropEntriesUpToEntryRef(feed.entries)
 
 
     if (reducedFeedPage.entries.nonEmpty)
@@ -130,38 +176,5 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
   }
 
 
-  private def cursorOnPreviousFeedPage(url: Url): Try[EntryCursor] = {
-    feedProvider.fetchFeed(url.path).map { feed => buildCursor(feed)}
-  }
 
-
-  private def buildNextEntryCursor(entryPointer: EntryPointer): Try[EntryCursor] = {
-
-    val nextCursor = if (entryPointer.stillToProcessEntries.nonEmpty) {
-
-        val nextEntryId = entryPointer.stillToProcessEntries.headOption.map(_.id)
-
-        entryPointer.copy(
-          entryToProcess = entryPointer.stillToProcessEntries.head,
-          stillToProcessEntries = entryPointer.stillToProcessEntries.tail, // moving forward, dropping head
-          feedPosition = entryPointer.feedPosition.copy(entryId = nextEntryId) // moving position forward
-        )
-
-      } else {
-        entryPointer.feed.previousLink match {
-          case None => EndOfEntries(entryPointer.feedPosition)
-          case Some(link) => EntryOnPreviousFeedPage(entryPointer.feed.resolveUrl(link.href))
-        }
-      }
-
-    nextCursor match {
-      // still a page to go? go fetch it
-      case EntryOnPreviousFeedPage(previousFeedUrl) => cursorOnPreviousFeedPage(previousFeedUrl)
-      // no next feed link? stop processing, all entries were consumed
-      case end : EndOfEntries => Success(end)
-      // wrap nextCursor in Success
-      case _ => Success(nextCursor)
-
-    }
-  }
 }

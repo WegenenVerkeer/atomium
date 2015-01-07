@@ -5,7 +5,7 @@
 
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedPosition;
+import be.wegenenverkeer.atom.FeedEntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,8 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import scala.Option;
-import scala.Some;
-import scala.collection.immutable.HashMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +27,7 @@ public class FeedProcessorWithParsingTest {
 
         // create the feed position from where you want to start processing
         // position (-1) is meest recent verwerkte
-        FeedPosition position = new FeedPosition(new Url(FEED_URL), Option.<String>empty());
+        FeedEntryRef position = new FeedEntryRef(new Url(FEED_URL), null);
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider(position);
@@ -66,10 +64,10 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleFeedProvider implements FeedProvider<EventFeedEntryTo> {
 
-        private final FeedPosition initialPostion;
+        private final FeedEntryRef initialPostion;
         private ObjectMapper mapper = new ObjectMapper();
 
-        public ExampleFeedProvider(FeedPosition initialPostion) {
+        public ExampleFeedProvider(FeedEntryRef initialPostion) {
             this.initialPostion = initialPostion;
         }
 
@@ -105,7 +103,7 @@ public class FeedProcessorWithParsingTest {
         public void stop() {}
 
         @Override
-        public FeedPosition getInitialPosition() {
+        public FeedEntryRef getInitialPosition() {
             return initialPostion;
         }
     }

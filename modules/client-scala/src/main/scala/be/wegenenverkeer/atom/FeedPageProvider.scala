@@ -22,7 +22,7 @@ object FeedPageProvider extends Logging {
 
 trait FeedPageProvider[T] {
 
-  def initialPosition: Option[FeedPosition]
+  def initialEntryRef: Option[FeedEntryRef]
 
   /**
    * Fetch the first page of the feed.

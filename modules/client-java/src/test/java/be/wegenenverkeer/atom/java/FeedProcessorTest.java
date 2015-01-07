@@ -1,14 +1,11 @@
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedPosition;
+import be.wegenenverkeer.atom.FeedEntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
-import scala.None;
 import scala.Option;
-import scala.Some;
-import scala.collection.immutable.HashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +73,8 @@ public class FeedProcessorTest {
          * index -1 to assure all items are processed, index is position of last read entry in page
          */
         @Override
-        public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Url(FEED_URL_PAGE1), Option.<String>empty());
+        public FeedEntryRef getInitialPosition() {
+            return new FeedEntryRef(new Url(FEED_URL_PAGE1), null);
         }
 
         @Override
