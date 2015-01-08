@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+
 class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[Option[Entry[E]]] {
 
   type EntryType = E
@@ -10,22 +11,82 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
     def nextCursor : EntryCursor
   }
 
+  private object EntryCursor {
+
+    /** Builds an [[EntryCursor]] for a [[Feed]].
+      *
+      * @return an [[EntryPointer]] pointing to the head of the [[Feed]] is non-empty,
+      * otherwise returns an [[EndOfEntries]]
+      */
+    def fromHeadOfFeed(feed: Feed[EntryType]): EntryCursor = {
+
+      feed.entries match {
+        case head :: tail =>
+          val entryId = feed.entries.head.id
+          EntryPointer(
+            currentEntry = feed.entries.head,
+            stillToProcessEntries = feed.entries.tail,
+            entryRef = FeedEntryRef(feed.resolveUrl(feed.selfLink.href), entryId),
+            feed = feed
+          )
+
+        case Nil => EndOfEntries(None)
+      }
+
+    }
+  }
+
   private case class InitCursor(feedEntryRef: Option[FeedEntryRef] = None) extends EntryCursor {
 
     /** Builds the initial EntryCursor
-     * This method will search from the start of the feed for the given entry
-     */
+      * This method will search from the start of the feed for the given entry
+      */
     def nextCursor : EntryCursor = {
       feedProvider.fetchFeed().map {
         feed => buildCursor(feed, feedEntryRef)
       }.get
     }
 
+    /** Build an EventCursor according to the following rules:
+      *
+      *  - If there is no FeedEntryRef => create a new cursor starting from the head of the Feed.
+      *  - If there is a valid FeedEntryRef => drop the corresponding entry and create new cursor starting
+      *  from the head of the Feed.
+      *  - If the last element of this page is already consumed
+      *    - If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor for the next page of the feed
+      *    - If there is no 'previous' Link then create an EndOfEntries cursor.
+      */
+    private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[FeedEntryRef] = None): EntryCursor = {
+
+      val transformedFeed =
+        entryRefOpt match {
+          case Some(ref) =>
+            // drop entry corresponding to this FeedEntryRef
+            val remainingEntries = feed.entries.filter(_.id != ref.entryId)
+            feed.copy(entries = remainingEntries)
+
+          case None => feed
+        }
+
+      if (transformedFeed.entries.nonEmpty) {
+        // go for a new EntryPointer if it still have entries
+        EntryCursor.fromHeadOfFeed(transformedFeed)
+      } else {
+        // it's the end of this Feed?
+        // decide where to go: EndOfEntries or EntryOnPreviousFeedPage?
+        feed.previousLink match {
+          case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href))
+          case None => EndOfEntries(entryRefOpt)
+        }
+      }
+
+    }
+
   }
   private case class EntryPointer(currentEntry: Entry[EntryType],
-                          stillToProcessEntries: Entries,
-                          entryRef: FeedEntryRef,
-                          feed: Feed[EntryType]) extends EntryCursor {
+                                  stillToProcessEntries: Entries,
+                                  entryRef: FeedEntryRef,
+                                  feed: Feed[EntryType]) extends EntryCursor {
 
     /** The next [[EntryCursor]]
       *   - The next [[EntryPointer]] on current page if still entries to be consumed.
@@ -51,6 +112,9 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
     }
   }
 
+
+
+
   private case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends EntryCursor {
 
     /** The next [[EntryCursor]].
@@ -59,10 +123,12 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
       */
     def nextCursor : EntryCursor = {
       feedProvider.fetchFeed(previousFeedUrl.path).map {
-        feed => buildCursor(feed)
+        feed => EntryCursor.fromHeadOfFeed(feed)
       }.get
     }
   }
+
+
 
   private case class EndOfEntries(lastEntryRef: Option[FeedEntryRef]) extends EntryCursor {
     /** Throws a NonSuchElementException since there is no nextCursor for a [[EndOfEntries]] */
@@ -104,76 +170,8 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
     this.cursor = cursor
   }
 
-  /**
-   * Build an EventCursor according to the following rules:
-   *
-   * <ul>
-   * <li>If there is no FeedEntryRef => create a new cursor on a full Feed with index 0</li>
-   * <li>If there is a valid FeedEntryRef => increase index and drop entries preceding new index and create new cursor.</li>
-   * <li>If the last element of this page is already consumed
-   * <ul>
-   * <li>If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor on the next page of the feed</li>
-   * <li>If there is no 'previous' Link then create and EndOfEntries cursor.</li>
-   * </ul>
-   * </li>
-   * </ul>
-   *
-   */
-  private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[FeedEntryRef] = None): EntryCursor = {
-
-    def buildEntryPointer(feed: Feed[EntryType]) : EntryPointer = {
-      val entryId = feed.entries.head.id
-      EntryPointer(
-        feed.entries.head,
-        feed.entries.tail,
-        FeedEntryRef(feed.resolveUrl(feed.selfLink.href), entryId),
-        feed
-      )
-    }
-
-    def previousFeedOrEnd(feed: Feed[EntryType]): EntryCursor = {
-      // we go to previous feed page or we reached the EndOfEntries
-      def endOfEntries = {
-        entryRefOpt match {
-          // rather exceptional situation, can only occurs if a feed is completely empty
-          case None => EndOfEntries(None)
-
-          case _ => EndOfEntries(entryRefOpt)
-
-        }
-      }
-
-      feed.previousLink match {
-        case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href))
-        case None => endOfEntries
-      }
-
-    }
 
 
-      /** Drop entries from feed page up to the current entry id */
-    def dropEntriesUpToEntryRef(entries: List[Entry[E]] ) : Feed[EntryType] = {
-
-      val entryId = entryRefOpt.map(_.entryId)
-
-      val remainingEntries =
-        entryId match {
-          case Some(id) => entries.filter(_.id != id)
-          // no entryId means start of new page
-          case None => entries
-        }
-        feed.copy(entries = remainingEntries)
-    }
-
-    val reducedFeedPage = dropEntriesUpToEntryRef(feed.entries)
-
-
-    if (reducedFeedPage.entries.nonEmpty)
-      buildEntryPointer(reducedFeedPage)
-    else
-      previousFeedOrEnd(reducedFeedPage)
-
-  }
 
 
 

@@ -56,7 +56,7 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
             val nextEntry = Try(feedIterator.next())
 
             // consume it
-            val result: Try[Option[Entry[E]]] = nextEntry.flatMap {
+            val result = nextEntry.flatMap {
               // consume entry if exist
               case Some(entry) =>
                 // NOTE: entryConsumer returns a Try[Entry[E]]
@@ -76,7 +76,7 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
               case Success(None) => AtomSuccess(atomResult.lastSuccessfulEntry)
 
               // on failure, we keep the last successful entry
-              // can be a empty if fails when consuming first entry
+              // can be empty if it fails when consuming first entry
               case Failure(ex) => AtomFailure(atomResult.lastSuccessfulEntry, ex)
             }
           }
@@ -88,7 +88,7 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
             // in any case we stop processing
             case failure: AtomFailure[_] => failure
 
-            // keep consuming if still entries
+            // keep consuming if it still have entries
             case any if feedIterator.hasNext => consume(processNextEntry)
 
             // no entries? return whatever result we have
