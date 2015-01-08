@@ -17,7 +17,7 @@ import scala.util.{Failure, Success, Try}
   *
   * @tparam E the type of the entries in the feed
   */
-class FeedProcessor[E](feedProvider: FeedPageProvider[E],
+class FeedProcessor[E](feedProvider: FeedProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 
 
@@ -32,11 +32,11 @@ class FeedProcessor[E](feedProvider: FeedPageProvider[E],
 
     // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
     // but we don't want to pollute the interface if it, because we intend to use it from Java as well
-    implicit val manif = new Manifest[FeedPageProvider[E]] {
-      override def runtimeClass: Class[_] = classOf[FeedPageProvider[E]]
+    implicit val manif = new Manifest[FeedProvider[E]] {
+      override def runtimeClass: Class[_] = classOf[FeedProvider[E]]
     }
 
-    implicit val feedProvResource = FeedPageProvider.managedFeedProvider(feedProvider)
+    implicit val feedProvResource = FeedProvider.managedFeedProvider(feedProvider)
 
 
     // FeedProvider must be managed

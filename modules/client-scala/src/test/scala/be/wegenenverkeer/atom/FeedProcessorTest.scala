@@ -12,7 +12,7 @@ class FeedProcessorTest extends FlatSpec with Matchers {
   type StringFeed = Feed[String]
   type Feeds = List[StringFeed]
 
-  case class Scenario(provider:TestFeedPageProvider,
+  case class Scenario(provider:TestFeedProvider,
                       consumedEvents:List[String]) {
 
     val consumer = new StatefulEntryConsumer
@@ -147,26 +147,26 @@ class FeedProcessorTest extends FlatSpec with Matchers {
 
 
 
-  def pos(url:String, entryId: String) : Option[FeedEntryRef] = {
-    Some(FeedEntryRef(Url(url), entryId))
+  def pos(url:String, entryId: String) : Option[EntryRef] = {
+    Some(EntryRef(Url(url), entryId))
   }
 
 
-  def feedProvider(startingFrom:Option[FeedEntryRef],
-                   entries:String*) = new TestFeedPageProvider(startingFrom, entries.toList)
+  def feedProvider(startingFrom:Option[EntryRef],
+                   entries:String*) = new TestFeedProvider(startingFrom, entries.toList)
 
   /**
    * Bogus provider. Never returns the next Feed
    */
-  def feedProviderBogus(entries:String*) = new TestFeedPageProvider(None, entries.toList) {
+  def feedProviderBogus(entries:String*) = new TestFeedProvider(None, entries.toList) {
     override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       Failure(FeedProcessingException(None, "Can't fetch feed"))
     }
   }
 
-  class TestFeedPageProvider(val initialEntryRef:Option[FeedEntryRef],
-                             entries: List[String]) extends FeedPageProvider[String] {
+  class TestFeedProvider(val initialEntryRef:Option[EntryRef],
+                             entries: List[String]) extends FeedProvider[String] {
 
     private val pageSize = 3
 

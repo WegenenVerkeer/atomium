@@ -5,7 +5,7 @@
 
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedEntryRef;
+import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -27,7 +27,7 @@ public class FeedProcessorWithParsingTest {
 
         // create the feed position from where you want to start processing
         // position (-1) is meest recent verwerkte
-        FeedEntryRef position = new FeedEntryRef(new Url(FEED_URL), null);
+        EntryRef position = new EntryRef(new Url(FEED_URL), null);
 
         // create the feed provider
         ExampleFeedProvider provider = new ExampleFeedProvider(position);
@@ -64,10 +64,10 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleFeedProvider implements FeedProvider<EventFeedEntryTo> {
 
-        private final FeedEntryRef initialPostion;
+        private final EntryRef initialPostion;
         private ObjectMapper mapper = new ObjectMapper();
 
-        public ExampleFeedProvider(FeedEntryRef initialPostion) {
+        public ExampleFeedProvider(EntryRef initialPostion) {
             this.initialPostion = initialPostion;
         }
 
@@ -103,7 +103,7 @@ public class FeedProcessorWithParsingTest {
         public void stop() {}
 
         @Override
-        public FeedEntryRef getInitialPosition() {
+        public EntryRef getInitialPosition() {
             return initialPostion;
         }
     }

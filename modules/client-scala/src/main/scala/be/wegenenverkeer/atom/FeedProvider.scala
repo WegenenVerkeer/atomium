@@ -6,23 +6,23 @@ import resource.Resource
 import scala.util.Try
 
 /** Fetches a feed page and provides its to the requester. */
-object FeedPageProvider extends Logging {
-  implicit def managedFeedProvider[T](provider: FeedPageProvider[T]): Resource[FeedPageProvider[T]] = new Resource[FeedPageProvider[T]] {
-    override def open(r: FeedPageProvider[T]): Unit = {
+object FeedProvider extends Logging {
+  implicit def managedFeedProvider[T](provider: FeedProvider[T]): Resource[FeedProvider[T]] = new Resource[FeedProvider[T]] {
+    override def open(r: FeedProvider[T]): Unit = {
       logger.debug(s"Opening ${r.getClass.getSimpleName} ... ")
       provider.start()
     }
 
-    override def close(r: FeedPageProvider[T]): Unit = {
+    override def close(r: FeedProvider[T]): Unit = {
       logger.debug(s"Closing ${r.getClass.getSimpleName} ...")
       provider.stop()
     }
   }
 }
 
-trait FeedPageProvider[T] {
+trait FeedProvider[T] {
 
-  def initialEntryRef: Option[FeedEntryRef]
+  def initialEntryRef: Option[EntryRef]
 
   /**
    * Fetch the first page of the feed.

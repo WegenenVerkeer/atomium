@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom
 
 
-class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[Option[Entry[E]]] {
+class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Option[Entry[E]]] {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
@@ -26,7 +26,7 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
           EntryPointer(
             currentEntry = feed.entries.head,
             stillToProcessEntries = feed.entries.tail,
-            entryRef = FeedEntryRef(feed.resolveUrl(feed.selfLink.href), entryId),
+            entryRef = EntryRef(feed.resolveUrl(feed.selfLink.href), entryId),
             feed = feed
           )
 
@@ -36,7 +36,7 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
     }
   }
 
-  private case class InitCursor(feedEntryRef: Option[FeedEntryRef] = None) extends EntryCursor {
+  private case class InitCursor(feedEntryRef: Option[EntryRef] = None) extends EntryCursor {
 
     /** Builds the initial EntryCursor
       * This method will search from the start of the feed for the given entry
@@ -56,7 +56,7 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
       *    - If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor for the next page of the feed
       *    - If there is no 'previous' Link then create an EndOfEntries cursor.
       */
-    private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[FeedEntryRef] = None): EntryCursor = {
+    private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[EntryRef] = None): EntryCursor = {
 
       val transformedFeed =
         entryRefOpt match {
@@ -85,7 +85,7 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
   }
   private case class EntryPointer(currentEntry: Entry[EntryType],
                                   stillToProcessEntries: Entries,
-                                  entryRef: FeedEntryRef,
+                                  entryRef: EntryRef,
                                   feed: Feed[EntryType]) extends EntryCursor {
 
     /** The next [[EntryCursor]]
@@ -130,7 +130,7 @@ class FeedEntryIterator[E] (feedProvider: FeedPageProvider[E]) extends Iterator[
 
 
 
-  private case class EndOfEntries(lastEntryRef: Option[FeedEntryRef]) extends EntryCursor {
+  private case class EndOfEntries(lastEntryRef: Option[EntryRef]) extends EntryCursor {
     /** Throws a NonSuchElementException since there is no nextCursor for a [[EndOfEntries]] */
     def nextCursor : EntryCursor = throw new NoSuchElementException("No new entries available!")
   }

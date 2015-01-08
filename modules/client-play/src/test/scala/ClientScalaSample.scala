@@ -1,7 +1,7 @@
 import javax.xml.bind.JAXBContext
 
 import be.wegenenverkeer.atom._
-import be.wegenenverkeer.atom.providers.PlayWsBlockingFeedPageProvider
+import be.wegenenverkeer.atom.providers.PlayWsBlockingFeedProvider
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
@@ -47,7 +47,7 @@ object ClientScalaSample extends FeedUnmarshaller[String] {
   }
 
   private def runProcessor(feedPosition:Option[FeedEntryRef]) : Option[FeedEntryRef] = {
-    val provider = new PlayWsBlockingFeedPageProvider[String](
+    val provider = new PlayWsBlockingFeedProvider[String](
       feedUrl =  "http://localhost:9000/feeds/my_feed",
       feedPosition = feedPosition,
       feedUnmarshaller = this

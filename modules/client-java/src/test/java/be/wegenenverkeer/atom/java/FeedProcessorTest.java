@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedEntryRef;
+import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import org.joda.time.LocalDateTime;
@@ -73,8 +73,8 @@ public class FeedProcessorTest {
          * index -1 to assure all items are processed, index is position of last read entry in page
          */
         @Override
-        public FeedEntryRef getInitialPosition() {
-            return new FeedEntryRef(new Url(FEED_URL_PAGE1), null);
+        public EntryRef getInitialPosition() {
+            return new EntryRef(new Url(FEED_URL_PAGE1), null);
         }
 
         @Override
