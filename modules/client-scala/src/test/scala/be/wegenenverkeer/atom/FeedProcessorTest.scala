@@ -13,8 +13,7 @@ class FeedProcessorTest extends FlatSpec with Matchers {
   type Feeds = List[StringFeed]
 
   case class Scenario(provider:TestFeedPageProvider,
-                      consumedEvents:List[String],
-                      lastConsumedEntryId:Option[String]) {
+                      consumedEvents:List[String]) {
 
     val consumer = new StatefulEntryConsumer
     val process = new FeedProcessor[String](provider, consumer)
@@ -26,16 +25,19 @@ class FeedProcessorTest extends FlatSpec with Matchers {
     consumedEvents shouldBe consumer.consumedEvents.toList
     lastConsumedEntryId shouldBe consumer.lastConsumedEntryId
 
+    def lastConsumedEntryId:Option[String] = {
+      consumedEvents.reverse.headOption
+    }
     def assertResult(block:  AtomResult[String] => Unit) = block(result)
 
-    def processingSucceeds() : this.type = {
+    def shouldSucceed : this.type = {
       assertResult { result =>
         result.asTry.isSuccess shouldBe true
       }
       this
     }
 
-    def processingFails() : this.type = {
+    def shouldFail : this.type = {
       assertResult { result =>
         result.asTry.isFailure shouldBe true
       }
@@ -47,80 +49,64 @@ class FeedProcessorTest extends FlatSpec with Matchers {
   "FeedProcessor" should "NOT terminate with an error if feed is empty" in {
     Scenario(
       provider = feedProvider(None),
-      consumedEvents = List(),
-      lastConsumedEntryId = None
-    ).processingSucceeds()
+      consumedEvents = List()
+    ).shouldSucceed
   }
 
-  it should "process all entries without a initial entry id" in {
+  it should "process all entries when starting without an initial entry id" in {
     Scenario(
       provider = feedProvider(
-        initialPosition = None,
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        startingFrom = None,
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
-
-      consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"),
-      lastConsumedEntryId = Some("c3")
-    ).processingSucceeds()
+    
+      consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
+    ).shouldSucceed
   }
 
   it should "process all remaining entries when starting in the middle of a page" in {
     Scenario(
       provider = feedProvider(
-        initialPosition = pos("http://www.example.org/feeds/feed/3/3", "b2"),
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        startingFrom = pos("http://www.example.org/feeds/feed/3/3", "b2"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List("c2", "a3", "b3", "c3"),
-      lastConsumedEntryId = Some("c3")
-    ).processingSucceeds()
+      consumedEvents = List("c2", "a3", "b3", "c3")
+    ).shouldSucceed
   }
 
   it should "process all remaining entries when starting a new page" in {
     Scenario(
       provider = feedProvider(
-        initialPosition = pos("http://www.example.org/feeds/feed/3/3", "c2"),
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        startingFrom = pos("http://www.example.org/feeds/feed/3/3", "c2"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List("a3", "b3", "c3"),
-      lastConsumedEntryId = Some("c3")
-    ).processingSucceeds()
+      consumedEvents = List("a3", "b3", "c3")
+    ).shouldSucceed
   }
 
   it should "terminate with an error when started with a non-existent entry" in {
     Scenario(
       provider = feedProvider(
-        initialPosition = pos("http://www.example.org/feeds/feed/0/3", "d1"),
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        startingFrom = pos("http://www.example.org/feeds/feed/0/3", "d1"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List(),
-      lastConsumedEntryId = None
-    ).processingFails()
+      consumedEvents = List()
+    ).shouldFail
   }
 
   it should "process nothing when starting from the last entry" in {
     Scenario(
       provider = feedProvider(
-        initialPosition = pos("http://www.example.org/feeds/feed/0/3", "c3"),
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        startingFrom = pos("http://www.example.org/feeds/feed/0/3", "c3"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List(),
-      lastConsumedEntryId = None
+      consumedEvents = List()
     )
-    .processingSucceeds()
+    .shouldSucceed
     .assertResult { result =>
       result shouldBe a [AtomSuccess[_]]
     }
@@ -130,23 +116,18 @@ class FeedProcessorTest extends FlatSpec with Matchers {
 
     Scenario(
       provider = feedProviderBogus(
-        "a1", "b1", "c1",
-        "a2", "b2", "c2",
-        "a3", "b3", "c3"
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List("a1", "b1", "c1"),
-      lastConsumedEntryId = Some("c1")
+      consumedEvents = List("a1", "b1", "c1")
 
-    ).processingFails()
+    ).shouldFail
   }
 
-  it should "return a Failure if an exception is thrown when consuming an entry" in {
+  it should "return a Failure if consumer throws an exception" in {
     val provider = feedProvider(
-      initialPosition = None,
-      "a1", "b1", "c1",
-      "a2", "b2", "c2",
-      "a3", "b3", "c3"
+      startingFrom = None,
+      entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
     )
 
     val errorMessage = "Error when consuming Entry"
@@ -171,8 +152,8 @@ class FeedProcessorTest extends FlatSpec with Matchers {
   }
 
 
-  def feedProvider(initialPosition:Option[FeedEntryRef],
-                   entries:String*) = new TestFeedPageProvider(initialPosition, entries.toList)
+  def feedProvider(startingFrom:Option[FeedEntryRef],
+                   entries:String*) = new TestFeedPageProvider(startingFrom, entries.toList)
 
   /**
    * Bogus provider. Never returns the next Feed
