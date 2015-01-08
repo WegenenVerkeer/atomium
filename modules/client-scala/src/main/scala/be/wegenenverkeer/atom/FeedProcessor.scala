@@ -5,32 +5,29 @@ import resource._
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-/**
- * A feed processor fetches pages from the feed and offers the new items to the entry consumer.
- *
- * The processor decides which feed page to fetch and which items are considered as new items based on the initial feed
- * position.
- *
- * The processor uses the feed provider to fetch the feed pages.
- *
- * @param feedProvider the feed provider is responsible for fetching the feed pages
- * @param entryConsumer the entry consumer is responsible to consume the new entries
- *
- * @tparam E the type of the entries in the feed
- */
+/** A feed processor fetches pages from the feed and offers the new items to the entry consumer.
+  *
+  * The processor decides which feed page to fetch and which items are considered as new items based on the initial feed
+  * position.
+  *
+  * The processor uses the feed provider to fetch the feed pages.
+  *
+  * @param feedProvider the feed provider is responsible for fetching the feed pages
+  * @param entryConsumer the entry consumer is responsible to consume the new entries
+  *
+  * @tparam E the type of the entries in the feed
+  */
 class FeedProcessor[E](feedProvider: FeedPageProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 
 
-  /**
-   * Start the consuming of Feeds. Returns a {{{Try[Unit]}}}.
-   * In case of success a Success[Unit]
-   * or in case of failure a Failure[FeedProcessingException]
-   *
-   * TODO: we should find a better way for doing this. Eventually two method, start() and startManaged().
-   * @return Try[Unit].
-   *
-   */
+  /** Start the consuming of Feeds.
+    *
+    * @return In case of success a [[AtomSuccess]] containing the last successful consumed entry
+    *         or a [[AtomNothing]] if nothing is processed.
+    *         In case of failure a [[AtomFailure]] containing the thrown exception and the last successful
+    *         consumed entry if any.
+    */
   def start(): AtomResult[E] = {
 
     // Bloody hack: Scala-ARM needs a Manifest for the managed resource,
