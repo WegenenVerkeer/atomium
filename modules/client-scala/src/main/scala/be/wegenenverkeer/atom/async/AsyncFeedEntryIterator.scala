@@ -5,13 +5,47 @@ import be.wegenenverkeer.atom._
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future, ExecutionContext}
 import scala.language.higherKinds
-import scala.util.{Try, Success}
+import scala.util.control.NonFatal
+import scala.util.{Failure, Try, Success}
 
-class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Duration, implicit val execCtx:ExecutionContext)
-  extends Iterator[Future[Option[Entry[E]]]] {
+class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Duration, implicit val execCtx:ExecutionContext) {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
+
+  def hasNext: Future[Boolean] = {
+
+    futureCursor.map {
+      case _:EndOfEntries => false
+      case _ => true
+    } recover {
+      case NonFatal(e) => false
+    }
+  }
+
+  def next(): Option[Entry[E]] = {
+
+    // future must be completed
+    futureCursor.value match {
+
+      case Some(Success(entryPointer:EntryPointer)) =>
+        // start the next cursor
+        futureCursor = entryPointer.nextCursor
+        Some(entryPointer.currentEntry)
+
+      case Some(Success(end:EndOfEntries)) => None
+
+      case Some(Failure(e)) => throw e
+
+      case None =>
+        throw new IllegalStateException("next() called on a not-completed Async iterator ")
+
+      // being exhaustive to make the compiler happy
+      case Some(Success(anyOther)) =>
+        throw new IllegalArgumentException(s"next() called while iterator cursor of type $anyOther")
+    }
+
+  }
 
   /** Internal pointer to the current entry. */
   private trait EntryCursor {
@@ -102,25 +136,24 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
       */
     def nextCursor : Future[EntryCursor] = {
 
-      Future.successful {
-
-        if (stillToProcessEntries.nonEmpty) {
-          val nextEntryId = stillToProcessEntries.head.id
+      if (stillToProcessEntries.nonEmpty) {
+        val nextEntryId = stillToProcessEntries.head.id
+        Future.successful {
           copy(
             currentEntry = stillToProcessEntries.head,
             stillToProcessEntries = stillToProcessEntries.tail, // moving forward, dropping head
             entryRef = entryRef.copy(entryId = nextEntryId) // moving position forward
           )
-
-        } else {
-          feed.previousLink match {
-            case None => EndOfEntries(Some(entryRef))
-            case Some(link) => EntryOnPreviousFeedPage(feed.resolveUrl(link.href))
-          }
+        }
+      } else {
+        feed.previousLink match {
+          case None => Future.successful(EndOfEntries(Some(entryRef)))
+          case Some(link) => EntryOnPreviousFeedPage(feed.resolveUrl(link.href)).nextCursor
         }
       }
     }
   }
+
 
 
 
@@ -145,44 +178,16 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     def nextCursor : Future[EntryCursor] = throw new NoSuchElementException("No new entries available!")
   }
 
-  private var cursor: Future[EntryCursor] = Future.successful(InitCursor(feedProvider.initialEntryRef))
+  private var futureCursor: Future[EntryCursor] = InitCursor(feedProvider.initialEntryRef).nextCursor
 
-  override def hasNext: Boolean = {
-
-    val result = Try(Await.result(cursor, timeout))
-
-    result match {
-      case Success(end:EndOfEntries) => false
-      case Success(_) => true
-      case _ => false
-    }
-  }
-
-  override def next(): Future[Option[Entry[E]]] = {
-
-    cursor.flatMap {
-      case init:InitCursor =>
-        this.cursor = init.nextCursor
-        this.next()
-
-      case entryPointer:EntryPointer =>
-        this.cursor = entryPointer.nextCursor
-        Future.successful(Some(entryPointer.currentEntry))
-
-      case onPreviousPage: EntryOnPreviousFeedPage =>
-        this.cursor = onPreviousPage.nextCursor
-        this.next()
-
-      case end:EndOfEntries => Future.successful(None)
-    }
-
-  }
 
 
 }
 
 object AsyncFeedEntryIterator {
-  implicit class IteratorBuilder[T](feedProvider: AsyncFeedProvider[T]) {
-    def iterator(timeout:Duration)(implicit ec: ExecutionContext) = new AsyncFeedEntryIterator(feedProvider, timeout, ec)
+  object Implicits {
+    implicit class AsyncIteratorBuilder[T](feedProvider: AsyncFeedProvider[T]) {
+      def iterator(timeout:Duration)(implicit ec: ExecutionContext) = new AsyncFeedEntryIterator(feedProvider, timeout, ec)
+    }
   }
 }

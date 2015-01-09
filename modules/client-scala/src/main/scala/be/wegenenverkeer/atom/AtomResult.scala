@@ -8,10 +8,10 @@ trait AtomResult[+E] {
 
   /** Converts an AtomResult to a `Try[Option[Entry[E]]]`
     *
-    *   - If an [[AtomNothing]], returns a [[Success]] containing a [[None]]
+    *   - If an [[AtomNothing]], returns a `Success` containing a `None`
     *   (i.e.: there is no last successful entry).
-    *   - If an [[AtomSuccess]], returns a [[Success]] containing a [[Some]] with the last successful entry.
-    *   - If an [[AtomFailure]], returns a [[Failure]] containing is throwable.
+    *   - If an [[AtomSuccess]], returns a `Success` containing a `Some` with the last successful entry.
+    *   - If an [[AtomFailure]], returns a `Failure` containing is throwable.
     */
   def asTry : Try[Option[Entry[E]]] = {
     this match {

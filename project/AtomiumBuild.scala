@@ -148,6 +148,7 @@ object AtomiumBuild extends Build
   ).aggregate(
       javaFormatModuleName,
       formatModule,
+      commonPlayModule,
       clientScalaModule,
       clientJavaModule,
       serverModule,

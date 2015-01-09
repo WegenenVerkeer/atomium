@@ -6,6 +6,37 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Opti
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
+
+  private var cursor: EntryCursor = InitCursor(feedProvider.initialEntryRef)
+
+  override def hasNext: Boolean = {
+    cursor match {
+      case end:EndOfEntries => false
+      case _ => true
+    }
+  }
+
+  override def next(): Option[Entry[E]] = {
+
+    cursor match {
+
+      case init:InitCursor =>
+        this.cursor =  init.nextCursor
+        this.next()
+
+      case entryPointer:EntryPointer =>
+        this.cursor = entryPointer.nextCursor
+        Some(entryPointer.currentEntry)
+
+      case onPreviousPage: EntryOnPreviousFeedPage =>
+        this.cursor = onPreviousPage.nextCursor
+        this.next()
+
+      case end:EndOfEntries => None
+
+    }
+  }
+
   /** Internal pointer to the current entry. */
   private trait EntryCursor {
     def nextCursor : EntryCursor
@@ -99,7 +130,7 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Opti
         val nextEntryId = stillToProcessEntries.head.id
         copy(
           currentEntry = stillToProcessEntries.head,
-          stillToProcessEntries = stillToProcessEntries.tail, // moving forward, dropping head
+          stillToProcessEntries = stillToProcessEntries.tail, // moving forward, dropping headc
           entryRef = entryRef.copy(entryId = nextEntryId) // moving position forward
         )
 
@@ -135,40 +166,14 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Opti
     def nextCursor : EntryCursor = throw new NoSuchElementException("No new entries available!")
   }
 
-  private var cursor: EntryCursor = InitCursor(feedProvider.initialEntryRef)
-
-  override def hasNext: Boolean = {
-    cursor match {
-      case end:EndOfEntries => false
-      case _ => true
-    }
-  }
-
-  override def next(): Option[Entry[E]] = {
-
-    cursor match {
-
-      case init:InitCursor =>
-        this.cursor =  init.nextCursor
-        this.next()
-
-      case entryPointer:EntryPointer =>
-        this.cursor = entryPointer.nextCursor
-        Some(entryPointer.currentEntry)
-
-      case onPreviousPage: EntryOnPreviousFeedPage =>
-        this.cursor = onPreviousPage.nextCursor
-        this.next()
-
-      case end:EndOfEntries => None
-
-    }
-  }
-
 }
 
 object FeedEntryIterator {
-  implicit class IteratorBuilder[T](feedProvider: FeedProvider[T]) {
-    def iterator = new FeedEntryIterator(feedProvider)
+  object Implicits {
+    implicit class IteratorBuilder[T](feedProvider: FeedProvider[T]) {
+      def iterator = new FeedEntryIterator(feedProvider)
+    }
   }
 }
+
+
