@@ -137,24 +137,27 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Opti
 
   private var cursor: EntryCursor = InitCursor(feedProvider.initialEntryRef)
 
-  private var onGoing = true
-
-  override def hasNext: Boolean = onGoing
+  override def hasNext: Boolean = {
+    cursor match {
+      case end:EndOfEntries => false
+      case _ => true
+    }
+  }
 
   override def next(): Option[Entry[E]] = {
 
     cursor match {
 
       case init:InitCursor =>
-        updateCursor(init.nextCursor)
+        this.cursor =  init.nextCursor
         this.next()
 
       case entryPointer:EntryPointer =>
-        updateCursor(entryPointer.nextCursor)
+        this.cursor = entryPointer.nextCursor
         Some(entryPointer.currentEntry)
 
       case onPreviousPage: EntryOnPreviousFeedPage =>
-        updateCursor(onPreviousPage.nextCursor)
+        this.cursor = onPreviousPage.nextCursor
         this.next()
 
       case end:EndOfEntries => None
@@ -162,17 +165,10 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E]) extends Iterator[Opti
     }
   }
 
-  private def updateCursor(cursor:EntryCursor) : Unit = {
-    cursor match {
-      case end:EndOfEntries => onGoing = false
-      case _ => onGoing = true
-    }
-    this.cursor = cursor
+}
+
+object FeedEntryIterator {
+  implicit class IteratorBuilder[T](feedProvider: FeedProvider[T]) {
+    def iterator = new FeedEntryIterator(feedProvider)
   }
-
-
-
-
-
-
 }
