@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedProcessingException;
+import be.wegenenverkeer.atom.AtomResult;
 
 /**
  * A feed processor fetches pages from the feed and offers the new items to the entry consumer.
@@ -31,10 +31,18 @@ public class FeedProcessor<E> {
     /**
      * Start the consuming of Feeds.
      *
-     * @throws FeedProcessingException
+     * <ul>
+     *     <li>If feed is empty, returns a {@link be.wegenenverkeer.atom.AtomNothing}</li>
+     *     <li>If feed is consumed, returns a {@link be.wegenenverkeer.atom.AtomSuccess} containing the last successful
+     *     consumed entry</li>
+     *     <li>If an error occurs, returns a {@link be.wegenenverkeer.atom.AtomFailure} containing the last successful
+     *     consumed entry and the exception thrown during processing.</li>
+     * </ul>
+     *
+     * @return AtomResult<E>
      */
-    public void start() throws FeedProcessingException {
-        underlying.start().get();
+    public AtomResult<E> start() {
+        return underlying.start();
     }
 
 }

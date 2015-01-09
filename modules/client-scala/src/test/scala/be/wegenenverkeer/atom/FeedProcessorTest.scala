@@ -1,19 +1,19 @@
 package be.wegenenverkeer.atom
 
 import org.joda.time.LocalDateTime
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.{FlatSpec, Matchers}
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-class FeedProcessorTest extends FunSuite with Matchers {
+
+class FeedProcessorTest extends FlatSpec with Matchers {
 
   type StringFeed = Feed[String]
   type Feeds = List[StringFeed]
 
   case class Scenario(provider:TestFeedProvider,
-                      consumedEvents:List[String],
-                      finalPosition:Option[FeedPosition]) {
+                      consumedEvents:List[String]) {
 
     val consumer = new StatefulEntryConsumer
     val process = new FeedProcessor[String](provider, consumer)
@@ -23,174 +23,170 @@ class FeedProcessorTest extends FunSuite with Matchers {
     provider.isStopped shouldBe true
 
     consumedEvents shouldBe consumer.consumedEvents.toList
-    finalPosition shouldBe consumer.finalPosition
+    lastConsumedEntryId shouldBe consumer.lastConsumedEntryId
 
-    def assertResult(block: FeedProcessingResult => Unit) = block(result)
+    def lastConsumedEntryId:Option[String] = {
+      consumedEvents.reverse.headOption
+    }
+    def assertResult(block:  AtomResult[String] => Unit) = block(result)
+
+    def shouldSucceed : this.type = {
+      assertResult { result =>
+        result.asTry.isSuccess shouldBe true
+      }
+      this
+    }
+
+    def shouldFail : this.type = {
+      assertResult { result =>
+        result.asTry.isFailure shouldBe true
+      }
+      this
+    }
   }
 
 
-  test("Feed is empty") {
+  "FeedProcessor" should "NOT terminate with an error if feed is empty" in {
     Scenario(
       provider = feedProvider(None),
-      consumedEvents = List(),
-      finalPosition = None
-    ) assertResult { result =>
-      result.isFailure shouldBe true
+      consumedEvents = List()
+    ).shouldSucceed
+  }
+
+  it should "process all entries when starting without an initial entry id" in {
+    Scenario(
+      provider = feedProvider(
+        startingFrom = None,
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
+      ),
+    
+      consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
+    ).shouldSucceed
+  }
+
+  it should "process all remaining entries when starting in the middle of a page" in {
+    Scenario(
+      provider = feedProvider(
+        startingFrom = pos("http://www.example.org/feeds/feed/3/3", "b2"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
+      ),
+
+      consumedEvents = List("c2", "a3", "b3", "c3")
+    ).shouldSucceed
+  }
+
+  it should "process all remaining entries when starting a new page" in {
+    Scenario(
+      provider = feedProvider(
+        startingFrom = pos("http://www.example.org/feeds/feed/3/3", "c2"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
+      ),
+
+      consumedEvents = List("a3", "b3", "c3")
+    ).shouldSucceed
+  }
+
+  it should "terminate with an error when started with a non-existent entry" in {
+    Scenario(
+      provider = feedProvider(
+        startingFrom = pos("http://www.example.org/feeds/feed/0/3", "d1"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
+      ),
+
+      consumedEvents = List()
+    ).shouldFail
+  }
+
+  it should "process nothing when starting from the last entry" in {
+    Scenario(
+      provider = feedProvider(
+        startingFrom = pos("http://www.example.org/feeds/feed/0/3", "c3"),
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
+      ),
+
+      consumedEvents = List()
+    )
+    .shouldSucceed
+    .assertResult { result =>
+      result shouldBe a [AtomSuccess[_]]
     }
   }
 
-  test("Feed is consumed from begin to end") {
-    Scenario(
-      provider = feedProvider(initialPosition = None,
-        feed("feed/0/3")("a1", "b1", "c1"),
-        feed("feed/3/3")("a2", "b2", "c2"),
-        feed("feed/6/3")("a3", "b3", "c3")
-      ),
+  it should "return a Failure if provider throws an exception" in {
 
-      consumedEvents = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
-    )
-  }
-
-  test("Feed is consumed from position [/feed/3/3,1] until end") {
-    Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 1)),
-        feed("feed/0/3")("a1", "b1", "c1"),
-        feed("feed/3/3")("a2", "b2", "c2"),
-        feed("feed/6/3")("a3", "b3", "c3")
-      ),
-
-      consumedEvents = List("c2", "a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
-    )
-  }
-
-  test("Feed is consumed from position [/feed/3/3,2] until end") {
-    Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 2)),
-        feed("feed/0/3")("a1", "b1", "c1"),
-        feed("feed/3/3")("a2", "b2", "c2"),
-        feed("feed/6/3")("a3", "b3", "c3")
-      ),
-
-      consumedEvents = List("a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
-    )
-  }
-
-
-  test("Feed is consumed from position [/feed/3/3,10] until end. Latest successful position is wrong, it's outside feed") {
-    Scenario(
-      provider = feedProvider(initialPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/3/3"), 10)),
-        feed("feed/0/3")("a1", "b1", "c1"),
-        feed("feed/3/3")("a2", "b2", "c2"),
-        feed("feed/6/3")("a3", "b3", "c3")
-      ),
-
-      consumedEvents = List("a3", "b3", "c3"),
-      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/6/3"), 2))
-    )
-  }
-
-  test("Error while fetching next Feed") {
     Scenario(
       provider = feedProviderBogus(
-        feed("feed/0/3")("a1", "b1", "c1"),
-        feed("feed/3/3")("a2", "b2", "c2"),
-        feed("feed/6/3")("a3", "b3", "c3")
+        entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
       ),
 
-      consumedEvents = List("a1", "b1", "c1"),
-      finalPosition = Some(FeedPosition(Url("http://www.example.org/feeds/feed/0/3"), 2))
-    ) assertResult { result =>
-      result.isFailure shouldBe true
-    }
+      consumedEvents = List("a1", "b1", "c1")
+
+    ).shouldFail
   }
 
-  test("Error when consuming Entry") {
-    val provider = feedProvider(initialPosition = None,
-      feed("/feed/0/3")("a1", "b1", "c1"),
-      feed("/feed/3/3")("a2", "b2", "c2"),
-      feed("/feed/6/3")("a3", "b3", "c3")
+  it should "return a Failure if consumer throws an exception" in {
+    val provider = feedProvider(
+      startingFrom = None,
+      entries = "a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3"
     )
 
     val errorMessage = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
-        Failure(FeedProcessingException(Option(position), errorMessage))
-      }
-    }
-
-    val processor = new FeedProcessor[String](provider, consumer)
-    val result = processor.start()
-    result.isFailure shouldBe true
-    result.failed.map { error =>
-      error shouldBe errorMessage
-    }
-  }
-
-  test("Exception when consuming Entry is wrapped on a Failure") {
-    val provider = feedProvider(initialPosition = None,
-      feed("/feed/0/3")("a1", "b1", "c1"),
-      feed("/feed/3/3")("a2", "b2", "c2"),
-      feed("/feed/6/3")("a3", "b3", "c3")
-    )
-
-    val errorMessage = "Exception when consuming Entry"
-    val consumer = new EntryConsumer[String] {
-      override def apply(position: FeedPosition, eventEntry: Entry[String]): FeedProcessingResult = {
+      override def apply(eventEntry: Entry[String]): FeedProcessingResult[String] = {
         throw new RuntimeException(errorMessage)
       }
     }
 
     val processor = new FeedProcessor[String](provider, consumer)
     val result = processor.start()
-    result.isFailure shouldBe true
-    result.failed.map { error =>
+    result.asTry.isFailure shouldBe true
+    result.asTry.failed.map { error =>
       error shouldBe errorMessage
     }
   }
 
-  def feed(url:String)(events:String*) : Feed[String] = {
-    val entries = events.map { e =>
-      val content = Content[String](e, "")
-      Entry[String]("id", new LocalDateTime(), content, Nil)
-    }
 
-    val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
 
-    Feed(
-      id = "id",
-      base = Url("http://www.example.org/feeds"),
-      title = Option("title"),
-      generator = None,
-      updated = new LocalDateTime(),
-      links = links,
-      entries = entries.toList
-    )
+  def pos(url:String, entryId: String) : Option[EntryRef] = {
+    Some(EntryRef(Url(url), entryId))
   }
 
-  def feedProvider(initialPosition:Option[FeedPosition],
-                   feeds:Feed[String]*) = new TestFeedProvider(initialPosition, feeds.toList)
+
+  def feedProvider(startingFrom:Option[EntryRef],
+                   entries:String*) = new TestFeedProvider(startingFrom, entries.toList)
 
   /**
    * Bogus provider. Never returns the next Feed
    */
-  def feedProviderBogus(feeds:Feed[String]*) = new TestFeedProvider(None, feeds.toList) {
+  def feedProviderBogus(entries:String*) = new TestFeedProvider(None, entries.toList) {
     override def fetchFeed(page: String): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
       Failure(FeedProcessingException(None, "Can't fetch feed"))
     }
   }
 
-  class TestFeedProvider(initialPos:Option[FeedPosition],
-                         feeds: Feeds) extends FeedProvider[String] {
+  class TestFeedProvider(val initialEntryRef:Option[EntryRef],
+                             entries: List[String]) extends FeedProvider[String] {
 
-    val linkedFeeds = {
-      // build links between feeds
-      feeds match {
-        case x :: xs => linkFeeds(x.selfLink, x, xs)
-        case Nil => List()
+    private val pageSize = 3
+
+    var linkedFeeds : Feeds = buildLinkedFeeds(entries)
+
+    private def buildLinkedFeeds(entries:List[String]): Feeds = {
+
+      if (entries.isEmpty) {
+        List(feed("abc", List()))
+      } else {
+
+        val feeds = entries.grouped(pageSize).zipWithIndex.map { case (values, index) =>
+          feed(s"abc/$index")(values:_*)
+        }.toList
+
+        // build links between feeds
+        feeds match {
+          case x :: xs => linkFeeds(x.selfLink, x, xs)
+          case Nil => List()
+        }
       }
     }
 
@@ -228,9 +224,9 @@ class FeedProcessorTest extends FunSuite with Matchers {
      */
     override def fetchFeed(): Try[Feed[String]] = {
       assert(isStarted, "Provider must be managed")
-      initialPosition match {
+      initialEntryRef match {
         case None => optToTry(linkedFeeds.headOption)
-        case Some(position) => fetchFeed(position.url.path)
+        case Some(entryRef) => fetchFeedPageByEntryId(entryRef.entryId)
       }
 
     }
@@ -261,7 +257,41 @@ class FeedProcessorTest extends FunSuite with Matchers {
       _started = false
     }
 
-    override def initialPosition: Option[FeedPosition] = initialPos
+    private def fetchFeedPageByEntryId(entryId: String): Try[Feed[String]] = {
+      assert(isStarted, "Provider must be managed")
+      val reducedEntries = entries.dropWhile(_ != entryId)
+
+      val feed = reducedEntries match {
+        case x :: xs =>
+          linkedFeeds = buildLinkedFeeds(reducedEntries)
+          linkedFeeds.headOption // we may have something
+
+        case Nil => None // entry not found, let it blow!
+      }
+
+      optToTry(feed)
+    }
+
+    def feed(url:String)(events:String*) : Feed[String] = {
+      val entries = events.map { e =>
+        val content = Content[String](e, "")
+        Entry[String](e, new LocalDateTime(), content, Nil)
+      }
+      feed(url, entries.toList)
+    }
+
+    def feed(url:String, entries: List[Entry[String]]): Feed[String] = {
+      val links = List(Link(Link.selfLink, Url("http://www.example.org/feeds") / url))
+      Feed(
+        id = "id",
+        base = Url("http://www.example.org/feeds"),
+        title = Option("title"),
+        generator = None,
+        updated = new LocalDateTime(),
+        links = links,
+        entries = entries
+      )
+    }
   }
 
 }

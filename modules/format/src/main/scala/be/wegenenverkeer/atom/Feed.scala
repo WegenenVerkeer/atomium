@@ -18,7 +18,7 @@ import org.joda.time.LocalDateTime
  * @param entries the entries in the feed page
  * @tparam T the type of entry
  */
-case class Feed[T](id: String,
+case class Feed[+T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,

@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedPosition;
+import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 
 /**
@@ -32,7 +32,7 @@ public interface FeedProvider<T> {
      */
     be.wegenenverkeer.atom.java.Feed<T> fetchFeed(String page) throws FeedProcessingException;
 
-    FeedPosition getInitialPosition();
+    EntryRef getInitialPosition();
 
     /**
      * This method is called when the feed processor is started.

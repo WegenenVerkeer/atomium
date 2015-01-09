@@ -5,19 +5,19 @@ import scala.util.{Failure, Success, Try}
 
 package object atom {
 
-  type FeedProcessingResult = Try[Unit]
+  type FeedProcessingResult[E] = Try[Entry[E]]
 
-  type FeedEntryUnmarshaller[T] = (String) => Try[Feed[T]]
+  type FeedEntryUnmarshaller[E] = (String) => Try[Feed[E]]
 
-  trait FeedUnmarshaller[T] {
+  trait FeedUnmarshaller[E] {
 
-    private var unmarshallerRegistry: Map[String, String => Feed[T]] = Map.empty
+    private var unmarshallerRegistry: Map[String, String => Feed[E]] = Map.empty
 
-    def registerUnmarshaller(mimeType: String, unmarshaller: String => Feed[T]): Unit = {
+    def registerUnmarshaller(mimeType: String, unmarshaller: String => Feed[E]): Unit = {
       unmarshallerRegistry += mimeType -> unmarshaller
     }
 
-    def unmarshal(contentType: Option[String], body: String): Try[Feed[T]] = {
+    def unmarshal(contentType: Option[String], body: String): Try[Feed[E]] = {
       try {
         contentType match {
           case AnyJson(_) if unmarshallerRegistry.contains("application/json")
