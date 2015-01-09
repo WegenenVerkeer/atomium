@@ -1,12 +1,11 @@
 package be.wegenenverkeer.atom.java;
 
-import be.wegenenverkeer.atom.FeedPosition;
+import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
-import scala.Some;
-import scala.collection.immutable.HashMap;
+import scala.Option;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +50,19 @@ public class FeedProcessorTest {
 
     static class ExampleEntryConsumer implements be.wegenenverkeer.atom.java.EntryConsumer<ExampleFeedEntry> {
         @Override
-        public void accept(FeedPosition position, Entry<ExampleFeedEntry> entry) {
-            System.out.println("Consuming position " + position.index() + " entry " + entry.getContent());
+        public Entry<ExampleFeedEntry> accept(Entry<ExampleFeedEntry> entry) {
+            System.out.println("Consuming entry " + entry.getContent());
             try {
-                handleEvent(entry.getContent().getValue(), position);
+                handleEvent(entry.getContent().getValue());
+                return entry;
             } catch (Exception e) {
-                throw new FeedProcessingException(new Some(position), e.getMessage());
+                throw new FeedProcessingException(Option.apply(entry.getId()), e.getMessage());
             }
         }
 
-        public void handleEvent(ExampleFeedEntry event, FeedPosition position) throws Exception {
+        public void handleEvent(ExampleFeedEntry event) throws Exception {
             // handle the new event here and persist the current feed position here (possibly in 1 database transaction)
-            System.out.println("process feed entry and persist feed position " + event + " " + position);
+            System.out.println("process feed entry and persist feed position " + event);
         }
     }
 
@@ -73,8 +73,8 @@ public class FeedProcessorTest {
          * index -1 to assure all items are processed, index is position of last read entry in page
          */
         @Override
-        public FeedPosition getInitialPosition() {
-            return new FeedPosition(new Url(FEED_URL_PAGE1), -1, new HashMap<String, String>());
+        public EntryRef getInitialPosition() {
+            return new EntryRef(new Url(FEED_URL_PAGE1), null);
         }
 
         @Override

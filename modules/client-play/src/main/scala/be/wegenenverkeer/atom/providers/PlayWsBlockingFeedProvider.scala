@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
  * @tparam T the type of the entries in the feed
  */
 class PlayWsBlockingFeedProvider[T](feedUrl:String,
-                                    feedPosition: Option[FeedPosition],
+                                    feedPosition: Option[EntryRef],
                                     feedUnmarshaller: FeedUnmarshaller[T],
                                     contentType: String = "application/xml",
                                     timeout:Duration = 30.seconds,
@@ -60,7 +60,7 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
   }
 
   override def fetchFeed(): FeedResult = {
-    initialPosition match {
+    initialEntryRef match {
       case None => awaitResult(fetchFeedAsync)
       case Some(position) => awaitResult(fetchFeedAsync(position.url.path))
     }
@@ -159,5 +159,5 @@ class PlayWsBlockingFeedProvider[T](feedUrl:String,
     }
   }
 
-  override def initialPosition: Option[FeedPosition] = feedPosition
+  override def initialEntryRef: Option[EntryRef] = feedPosition
 }

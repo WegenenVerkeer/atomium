@@ -148,7 +148,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
       consumedEvents = List("a1", "b1", "a2", "b2"),
 
       //finalPosition is on second element (index=1) of second feed page
-      finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
+      finalPosition = Some(EntryRef(Url("http://example.com/feed/2"), 1))
     )
   }
 
@@ -171,7 +171,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
       provider = new PlayWsBlockingFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
+        feedPosition = Some(EntryRef(Url("http://example.com/feed/1"), 0)),
         feedUnmarshaller = this,
         wsClient = Some(MockWS(route))
       ),
@@ -179,7 +179,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
       consumedEvents = List("b1", "a2", "b2"),
 
       //finalPosition is on second element (index=1) of second feed page
-      finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
+      finalPosition = Some(EntryRef(Url("http://example.com/feed/2"), 1))
     )
   }
 
@@ -196,7 +196,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
       provider = new PlayWsBlockingFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1)),
+        feedPosition = Some(EntryRef(Url("http://example.com/feed/2"), 1)),
         feedUnmarshaller = this,
         wsClient = Some(MockWS(route))
       ),
@@ -246,7 +246,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
       provider = new PlayWsBlockingFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
+        feedPosition = Some(EntryRef(Url("http://example.com/feed/1"), 0)),
         feedUnmarshaller = this,
         wsClient = Some(MockWS(route))
       ),
@@ -262,7 +262,7 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   case class Scenario(provider: PlayWsBlockingFeedProvider[String],
                       consumedEvents: List[String],
-                      finalPosition: Option[FeedPosition]) {
+                      finalPosition: Option[EntryRef]) {
 
     val consumer = new StatefulEntryConsumer
     val process  = new FeedProcessor[String](provider, consumer)

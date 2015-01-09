@@ -46,19 +46,19 @@ object ClientScalaSample extends FeedUnmarshaller[String] {
 
   }
 
-  private def runProcessor(feedPosition:Option[FeedPosition]) : Option[FeedPosition] = {
+  private def runProcessor(feedPosition:Option[FeedEntryRef]) : Option[FeedEntryRef] = {
     val provider = new PlayWsBlockingFeedProvider[String](
       feedUrl =  "http://localhost:9000/feeds/my_feed",
       feedPosition = feedPosition,
       feedUnmarshaller = this
     )
 
-    var lastPos: Option[FeedPosition] = feedPosition
+    var lastPos: Option[FeedEntryRef] = feedPosition
 
     val processor = new FeedProcessor(
       provider,
       new EntryConsumer[String] {
-        override def apply(pos: FeedPosition, entry: Entry[String]): FeedProcessingResult = {
+        override def apply(pos: FeedEntryRef, entry: Entry[String]): FeedProcessingResult = {
           println(s"received: ${entry.content.value}")
           lastPos = Option(pos)
           Success()
