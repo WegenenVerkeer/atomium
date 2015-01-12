@@ -3,23 +3,22 @@ package be.wegenenverkeer.atom.async
 import be.wegenenverkeer.atom._
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
-import scala.util.control.NonFatal
-import scala.util.{Failure, Try, Success}
+import scala.util.{Failure, Success}
 
-class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Duration, implicit val execCtx:ExecutionContext) {
+class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Duration)(implicit val execCtx:ExecutionContext) {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
+
+  private var futureCursor: Future[Cursor] = InitCursor(feedProvider.initialEntryRef).nextCursor
 
   def hasNext: Future[Boolean] = {
 
     futureCursor.map {
       case _:EndOfEntries => false
       case _ => true
-    } recover {
-      case NonFatal(e) => false
     }
   }
 
@@ -42,24 +41,24 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 
       // being exhaustive to make the compiler happy
       case Some(Success(anyOther)) =>
-        throw new IllegalArgumentException(s"next() called while iterator cursor of type $anyOther")
+        throw new IllegalStateException(s"next() called while iterator cursor of type $anyOther")
     }
 
   }
 
   /** Internal pointer to the current entry. */
-  private trait EntryCursor {
-    def nextCursor : Future[EntryCursor]
+  private trait Cursor {
+    def nextCursor : Future[Cursor]
   }
 
-  private object EntryCursor {
+  private object Cursor {
 
-    /** Builds an [[EntryCursor]] for a [[Feed]].
+    /** Builds an [[Cursor]] for a [[Feed]].
       *
-      * @return an [[EntryPointer]] pointing to the head of the [[Feed]] is non-empty,
+      * @return an [[EntryPointer]] pointing to the head of the [[Feed]] if non-empty,
       * otherwise returns an [[EndOfEntries]]
       */
-    def fromHeadOfFeed(feed: Feed[EntryType]): EntryCursor = {
+    def fromHeadOfFeed(feed: Feed[EntryType]): Cursor = {
 
       feed.entries match {
         case head :: tail =>
@@ -77,47 +76,54 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     }
   }
 
-  private case class InitCursor(feedEntryRef: Option[EntryRef] = None) extends EntryCursor {
+  private case class InitCursor(entryRef: Option[EntryRef] = None) extends Cursor {
 
-    /** Builds the initial EntryCursor
+    /** Builds the initial Cursor
       * This method will search from the start of the feed for the given entry
       */
-    def nextCursor : Future[EntryCursor] = {
-      feedProvider.fetchFeed().map {
-        feed => buildCursor(feed, feedEntryRef)
+    def nextCursor : Future[Cursor] = {
+      feedProvider.fetchFeed().flatMap {
+        feed => buildCursor(feed, entryRef)
       }
     }
 
     /** Build an EventCursor according to the following rules:
       *
-      *  - If there is no FeedEntryRef => create a new cursor starting from the head of the Feed.
-      *  - If there is a valid FeedEntryRef => drop the corresponding entry and create new cursor starting
-      *  from the head of the Feed.
+      *  - If there is no `EntryRef` => create a new cursor starting from the head of the Feed.
+      *  - If there is a valid `EntryRef` => drop the corresponding entry and create new cursor starting
+      *    from the head of the Feed.
       *  - If the last element of this page is already consumed
-      *    - If there is 'previous' Link  create an EntryOnPreviousFeedPage cursor for the next page of the feed
-      *    - If there is no 'previous' Link then create an EndOfEntries cursor.
+      *    - If there is 'previous' Link  create an `EntryOnPreviousFeedPage` cursor for the next page of the feed
+      *    - If there is no 'previous' Link then create an `EndOfEntries` cursor.
       */
-    private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[EntryRef] = None): EntryCursor = {
+    private def buildCursor(feed: Feed[EntryType], entryRefOpt: Option[EntryRef] = None): Future[Cursor] = {
 
       val transformedFeed =
         entryRefOpt match {
           case Some(ref) =>
-            // drop entry corresponding to this FeedEntryRef
-            val remainingEntries = feed.entries.filter(_.id != ref.entryId)
-            feed.copy(entries = remainingEntries)
+            if(feed.entries.exists(_.id == ref.entryId)) {
+              // drop entry corresponding to this EntryRef
+              val remainingEntries = feed.entries.dropWhile(_.id != ref.entryId)
+              remainingEntries match {
+                case x :: xs => feed.copy(entries = xs)
+                case Nil => feed.copy(entries = Nil)
+              }
+            } else {
+              throw new EntryNotFoundException(ref)
+            }
 
           case None => feed
         }
 
       if (transformedFeed.entries.nonEmpty) {
         // go for a new EntryPointer if it still have entries
-        EntryCursor.fromHeadOfFeed(transformedFeed)
+        Future.successful(Cursor.fromHeadOfFeed(transformedFeed))
       } else {
         // it's the end of this Feed?
         // decide where to go: EndOfEntries or EntryOnPreviousFeedPage?
         feed.previousLink match {
-          case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href))
-          case None => EndOfEntries(entryRefOpt)
+          case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href)).nextCursor
+          case None => Future.successful(EndOfEntries(entryRefOpt))
         }
       }
 
@@ -127,14 +133,13 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
   private case class EntryPointer(currentEntry: Entry[EntryType],
                                   stillToProcessEntries: Entries,
                                   entryRef: EntryRef,
-                                  feed: Feed[EntryType]) extends EntryCursor {
+                                  feed: Feed[EntryType]) extends Cursor {
 
-    /** The next [[EntryCursor]]
-      *   - The next [[EntryPointer]] on current page if still entries to be consumed.
-      *   - An [[EntryOnPreviousFeedPage]] in case current page is exhausted and a new page is available.
+    /** The next [[Cursor]]
+      *   - The next [[EntryPointer]] if it still have entries to be consumed.
       *   - An [[EndOfEntries]] in case current page is exhausted and no new page is available.
       */
-    def nextCursor : Future[EntryCursor] = {
+    def nextCursor : Future[Cursor] = {
 
       if (stillToProcessEntries.nonEmpty) {
         val nextEntryId = stillToProcessEntries.head.id
@@ -158,27 +163,28 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 
 
 
-  private case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends EntryCursor {
+  private case class EntryOnPreviousFeedPage(previousFeedUrl: Url) extends Cursor {
 
-    /** The next [[EntryCursor]].
+    /** The next [[Cursor]].
       *
-      * This method will load the previous page an return an [[EntryCursor]].
+      * This method will load the previous page an return an [[EntryPointer]]
+      * placed on the head element of this new page.
       */
-    def nextCursor : Future[EntryCursor] = {
+    def nextCursor : Future[Cursor] = {
       feedProvider.fetchFeed(previousFeedUrl.path).map {
-        feed => EntryCursor.fromHeadOfFeed(feed)
+        feed => Cursor.fromHeadOfFeed(feed)
       }
     }
   }
 
 
 
-  private case class EndOfEntries(lastEntryRef: Option[EntryRef]) extends EntryCursor {
+  private case class EndOfEntries(lastEntryRef: Option[EntryRef]) extends Cursor {
     /** Throws a NonSuchElementException since there is no nextCursor for a [[EndOfEntries]] */
-    def nextCursor : Future[EntryCursor] = throw new NoSuchElementException("No new entries available!")
+    def nextCursor : Future[Cursor] = throw new NoSuchElementException("No new entries available!")
   }
 
-  private var futureCursor: Future[EntryCursor] = InitCursor(feedProvider.initialEntryRef).nextCursor
+
 
 
 
@@ -187,7 +193,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 object AsyncFeedEntryIterator {
   object Implicits {
     implicit class AsyncIteratorBuilder[T](feedProvider: AsyncFeedProvider[T]) {
-      def iterator(timeout:Duration)(implicit ec: ExecutionContext) = new AsyncFeedEntryIterator(feedProvider, timeout, ec)
+      def iterator(timeout:Duration)(implicit ec: ExecutionContext) = new AsyncFeedEntryIterator(feedProvider, timeout)
     }
   }
 }

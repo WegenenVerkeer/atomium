@@ -54,11 +54,11 @@ object AtomiumBuild extends Build
 
 
   //----------------------------------------------------------------
-  val clientplayModuleName = Name + "-client-play"
+  val clientPlayModuleName = Name + "-client-play"
   lazy val clientPlayModule = Project(
-    clientplayModuleName,
+    clientPlayModuleName,
     file("modules/client-play"),
-    settings = buildSettings(clientplayModuleName, clientPlayDependencies)
+    settings = buildSettings(clientPlayModuleName, clientPlayDependencies)
   ).dependsOn(clientScalaModule, commonPlayModule)
     .aggregate(clientScalaModule, commonPlayModule)
 

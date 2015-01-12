@@ -18,8 +18,8 @@ trait AsyncFeedProvider[T] {
     /**
      * Fetch a specific page of the feed.
      *
-     * @param page the page
+     * @param pageUrl the page
      * @return a page of the feed
      */
-    def fetchFeed(page: String): Future[Feed[T]]
+    def fetchFeed(pageUrl: String): Future[Feed[T]]
 }
