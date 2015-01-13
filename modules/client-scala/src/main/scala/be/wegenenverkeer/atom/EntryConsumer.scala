@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import scala.util.Try
+
 /**
  * An entry consumer is responsible for consuming the new entries offered by the feed processor.
  *
@@ -8,4 +10,4 @@ package be.wegenenverkeer.atom
  *
  * @tparam E the type of the entries in the feed
  */
-trait EntryConsumer[E] extends ((Entry[E]) => FeedProcessingResult[E])
+trait EntryConsumer[E] extends ((Entry[E]) => Try[Entry[E]])

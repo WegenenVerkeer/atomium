@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom.java
 
-import be.wegenenverkeer.atom.{FeedProcessingResult, JFeedConverters}
+import be.wegenenverkeer.atom.JFeedConverters
+import be.wegenenverkeer.atom
 
 import scala.util.Try
 
@@ -13,7 +14,7 @@ import scala.util.Try
 class EntryConsumerWrapper[E](underlying: be.wegenenverkeer.atom.java.EntryConsumer[E])
   extends be.wegenenverkeer.atom.EntryConsumer[E] {
 
-  override def apply(entry: be.wegenenverkeer.atom.Entry[E]): FeedProcessingResult[E] = {
+  override def apply(entry: atom.Entry[E]): Try[atom.Entry[E]] = {
     val consumedEntry = underlying.accept(JFeedConverters.entry2JEntry(entry))
     Try(JFeedConverters.jEntry2Entry(consumedEntry))
   }

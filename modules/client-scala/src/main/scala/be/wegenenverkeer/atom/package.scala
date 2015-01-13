@@ -5,8 +5,6 @@ import scala.util.{Failure, Success, Try}
 
 package object atom {
 
-  type FeedProcessingResult[E] = Try[Entry[E]]
-
   type FeedEntryUnmarshaller[E] = (String) => Try[Feed[E]]
 
   trait FeedUnmarshaller[E] {

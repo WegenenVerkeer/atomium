@@ -1,11 +1,9 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom._
 import org.joda.time.LocalDateTime
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.annotation.tailrec
-import scala.reflect.Manifest
 import scala.util.{Failure, Success, Try}
 
 
@@ -160,7 +158,7 @@ class FeedProcessorTest extends FlatSpec with Matchers {
 
     val errorMessage = "Error when consuming Entry"
     val consumer = new EntryConsumer[String] {
-      override def apply(eventEntry: Entry[String]): FeedProcessingResult[String] = {
+      override def apply(eventEntry: Entry[String]): Try[Entry[String]] = {
         throw new RuntimeException(errorMessage)
       }
     }

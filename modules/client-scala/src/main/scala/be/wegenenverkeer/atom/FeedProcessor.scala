@@ -47,24 +47,15 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         val nextEntry = Try(feedIterator.next())
 
         // consume it
-        val result = nextEntry.flatMap {
-          // consume entry if exist
-          case Some(entry) =>
-            // NOTE: entryConsumer returns a Try[Entry[E]]
-            // but we need Try[Option[Entry[E]]. Hence the extra mapping.
-            entryConsumer(entry).map(Option(_))
-
-          // no entry produced? we just return a Success with a None inside
-          case None => Success(None)
+        val result = nextEntry.flatMap { entry =>
+            // consume entry if exist
+            entryConsumer(entry)
         }
 
         // transform the final result to a AtomResult
         result match {
           // entity effectively consumed
-          case Success(Some(consumedEntry)) => AtomSuccess(consumedEntry)
-
-          // no entity consumed, we keep the last successful entry we know
-          case Success(None) => AtomSuccess(atomResult.lastSuccessfulEntry)
+          case Success(consumedEntry) => AtomSuccess(consumedEntry)
 
           // on failure, we keep the last successful entry
           // can be empty if it fails when consuming first entry
