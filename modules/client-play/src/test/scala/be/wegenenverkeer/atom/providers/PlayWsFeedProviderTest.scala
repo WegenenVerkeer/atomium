@@ -59,7 +59,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
       consumedEvents = List(),
 
-      lastConsumedEntryId = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -85,7 +85,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
       consumedEvents = List(),
 
-      lastConsumedEntryId = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -155,7 +155,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
       consumedEvents = List("a1", "b1", "a2", "b2"),
 
       //last successful entry is second element 'b2' of second feed page
-      lastConsumedEntryId = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
+      lastConsumedEntryRef = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
     )
   }
 
@@ -186,7 +186,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
       consumedEvents = List("b1", "a2", "b2"),
 
       //last successful entry is second element 'b2' of second feed page
-      lastConsumedEntryId = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
+      lastConsumedEntryRef = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
     )
   }
 
@@ -210,7 +210,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
       consumedEvents = List(),
 
-      lastConsumedEntryId = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
@@ -235,7 +235,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
       consumedEvents = List(),
 
-      lastConsumedEntryId = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
@@ -260,7 +260,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
       consumedEvents = List(),
 
-      lastConsumedEntryId = None //since there never was any entry consumed, this is None
+      lastConsumedEntryRef = None //since there never was any entry consumed, this is None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
@@ -269,7 +269,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
 
   case class Scenario(provider: PlayWsFeedProvider[String],
                       consumedEvents: List[String],
-                      lastConsumedEntryId: Option[EntryRef]) {
+                      lastConsumedEntryRef: Option[EntryRef]) {
 
     val syncProvider = new FeedProvider[String] {
 
@@ -288,7 +288,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
     val result = Try(process.start())
 
     consumedEvents shouldBe consumer.consumedEvents.toList
-    lastConsumedEntryId shouldBe consumer.consumedEvents.lastOption
+    lastConsumedEntryRef shouldBe consumer.consumedEvents.lastOption
 
     def assertResult(block: Try[AtomResult[String]] => Unit) = block(result)
   }

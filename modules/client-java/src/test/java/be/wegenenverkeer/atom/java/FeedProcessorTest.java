@@ -69,17 +69,17 @@ public class FeedProcessorTest {
     static class ExampleFeedProvider implements be.wegenenverkeer.atom.java.FeedProvider<ExampleFeedEntry> {
 
         /**
-         * @return the feed position from where you want to start processing
-         * index -1 to assure all items are processed, index is position of last read entry in page
+         * @return the EntryRef from where you want to start processing
+         * a null entryId assure all items are processed, It will for the processing from the first element onwards.
          */
         @Override
-        public EntryRef getInitialPosition() {
+        public EntryRef getInitialEntryRef() {
             return new EntryRef(new Url(FEED_URL_PAGE1), null);
         }
 
         @Override
         public Feed<ExampleFeedEntry> fetchFeed() {
-            return fetchFeed(getInitialPosition().url().path());
+            return fetchFeed(getInitialEntryRef().url().path());
         }
 
         @Override

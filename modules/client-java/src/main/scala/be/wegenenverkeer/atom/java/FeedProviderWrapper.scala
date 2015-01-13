@@ -20,5 +20,5 @@ class FeedProviderWrapper[E](underlying: be.wegenenverkeer.atom.java.FeedProvide
   def fetchFeed(page: String): Try[be.wegenenverkeer.atom.Feed[E]] =
     Try (JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
   
-  override def initialEntryRef: Option[EntryRef] = Option.apply(underlying.getInitialPosition)
+  override def initialEntryRef: Option[EntryRef] = Option.apply(underlying.getInitialEntryRef)
 }

@@ -32,7 +32,7 @@ public interface FeedProvider<T> {
      */
     be.wegenenverkeer.atom.java.Feed<T> fetchFeed(String page) throws FeedProcessingException;
 
-    EntryRef getInitialPosition();
+    EntryRef getInitialEntryRef();
 
     /**
      * This method is called when the feed processor is started.

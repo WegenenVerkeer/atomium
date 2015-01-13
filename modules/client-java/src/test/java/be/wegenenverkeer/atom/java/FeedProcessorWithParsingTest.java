@@ -25,12 +25,11 @@ public class FeedProcessorWithParsingTest {
     public void test() {
         System.out.println("Start processing");
 
-        // create the feed position from where you want to start processing
-        // position (-1) is meest recent verwerkte
-        EntryRef position = new EntryRef(new Url(FEED_URL), null);
+        // create the feed entryRef from where you want to start processing
+        EntryRef entryRef = new EntryRef(new Url(FEED_URL), null);
 
         // create the feed provider
-        ExampleFeedProvider provider = new ExampleFeedProvider(position);
+        ExampleFeedProvider provider = new ExampleFeedProvider(entryRef);
 
         // create your entry consumer
         ExampleEntryConsumer consumer = new ExampleEntryConsumer();
@@ -64,11 +63,11 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleFeedProvider implements FeedProvider<EventFeedEntryTo> {
 
-        private final EntryRef initialPostion;
+        private final EntryRef entryRef;
         private ObjectMapper mapper = new ObjectMapper();
 
-        public ExampleFeedProvider(EntryRef initialPostion) {
-            this.initialPostion = initialPostion;
+        public ExampleFeedProvider(EntryRef entryRef) {
+            this.entryRef = entryRef;
         }
 
         @Override
@@ -103,8 +102,8 @@ public class FeedProcessorWithParsingTest {
         public void stop() {}
 
         @Override
-        public EntryRef getInitialPosition() {
-            return initialPostion;
+        public EntryRef getInitialEntryRef() {
+            return entryRef;
         }
     }
 

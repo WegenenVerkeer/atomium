@@ -33,12 +33,12 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
         entryPointer.currentEntry
 
       case Some(Success(end:EndOfEntries)) =>
-        throw new NoSuchElementException("next() called on a terminated Async iterator ")
+        throw new NoSuchElementException("next() called on a terminated iterator ")
 
       case Some(Failure(e)) => throw e
 
       case None =>
-        throw new IllegalStateException("next() called on a not-completed Async iterator ")
+        throw new IllegalStateException("next() called on a not-completed async iterator")
 
       // being exhaustive to make the compiler happy
       case Some(Success(anyOther)) =>
@@ -135,8 +135,9 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
       }
 
     }
-
   }
+
+
   private case class EntryPointer(currentEntry: Entry[EntryType],
                                   stillToProcessEntries: Entries,
                                   entryRef: EntryRef,
