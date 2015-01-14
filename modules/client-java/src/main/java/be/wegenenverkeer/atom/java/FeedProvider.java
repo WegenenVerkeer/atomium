@@ -11,9 +11,9 @@ import be.wegenenverkeer.atom.FeedProcessingException;
  *
  * When fetching the feed pages, a feed provider should return a [[scala.util.Try]] instead of throwing an exception.
  *
- * @param <T> the type of the entries in the feed
+ * @param <E> the type of the entries in the feed
  */
-public interface FeedProvider<T> {
+public interface FeedProvider<E> {
 
     /**
      * Fetch the first page of the feed.
@@ -21,7 +21,7 @@ public interface FeedProvider<T> {
      * @return the first page of the feed.
      * @throws FeedProcessingException
      */
-    be.wegenenverkeer.atom.java.Feed<T> fetchFeed() throws FeedProcessingException;
+    be.wegenenverkeer.atom.java.Feed<E> fetchFeed() throws FeedProcessingException;
 
     /**
      * Fetch a specific page of the feed.
@@ -30,21 +30,8 @@ public interface FeedProvider<T> {
      * @return a page of the feed
      * @throws FeedProcessingException
      */
-    be.wegenenverkeer.atom.java.Feed<T> fetchFeed(String page) throws FeedProcessingException;
+    be.wegenenverkeer.atom.java.Feed<E> fetchFeed(String page) throws FeedProcessingException;
 
-    EntryRef getInitialEntryRef();
+    EntryRef<E> getInitialEntryRef();
 
-    /**
-     * This method is called when the feed processor is started.
-     *
-     * Implementations of this method can include any setup logic here.
-     */
-    void start();
-
-    /**
-     * This method is called when the feed processor is stopped.
-     *
-     * Implementations of this method can include any cleanup logic here.
-     */
-    void stop();
 }

@@ -22,7 +22,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     }
   }
 
-  def next(): Entry[E] = {
+  def next(): EntryLoc[E] = {
 
     // future must be completed
     futureCursor.value match {
@@ -30,7 +30,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
       case Some(Success(entryPointer:EntryPointer)) =>
         // start the next cursor
         futureCursor = entryPointer.nextCursor
-        entryPointer.currentEntry
+        entryPointer.current
 
       case Some(Success(end:EndOfEntries)) =>
         throw new NoSuchElementException("next() called on a terminated iterator ")
@@ -59,14 +59,13 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
       * @return an [[EntryPointer]] pointing to the head of the [[Feed]] if non-empty,
       * otherwise returns an [[EndOfEntries]]
       */
-    def apply(feed: Feed[EntryType], lastEntryRef:Option[EntryRef] = None): Cursor = {
+    def apply(feed: Feed[EntryType], lastEntryRef:Option[EntryLoc[EntryType]] = None): Cursor = {
 
       feed.entries match {
         case head :: tail =>
           EntryPointer(
-            currentEntry = feed.entries.head,
-            stillToProcessEntries = feed.entries.tail,
-            entryRef = EntryRef(feed.resolveUrl(feed.selfLink.href), feed.entries.head.id),
+            current = EntryLoc(feed),
+            stillToProcessEntries = tail,
             feed = feed
           )
 
@@ -76,7 +75,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     }
   }
 
-  private case class InitCursor(entryRefOpt: Option[EntryRef] = None) extends Cursor {
+  private case class InitCursor(entryRefOpt: Option[EntryRef[EntryType]] = None) extends Cursor {
 
     /** Build an EventCursor according to the following rules:
       *
@@ -108,29 +107,31 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     }
 
 
-    private def buildCursor(feed: Feed[EntryType], entryRef: EntryRef): Future[Cursor] = {
+    private def buildCursor(feed: Feed[EntryType], entryIdRef: EntryRef[EntryType]): Future[Cursor] = {
 
-      val transformedFeed =
-        if(feed.entries.exists(_.id == entryRef.entryId)) {
-          // drop entry corresponding to this EntryRef
-          val remainingEntries = feed.entries.dropWhile(_.id != entryRef.entryId)
-          remainingEntries match {
-            case x :: xs => feed.copy(entries = xs)
-            case Nil => feed.copy(entries = Nil)
-          }
-        } else {
-          throw new EntryNotFoundException(entryRef)
+      // explicitly calling Option.get 
+      // entry must be present, if not we want a NoSuchElementException
+      val entry = feed.entries.find(_.id == entryIdRef.entryId).get
+      val entryLoc = EntryLoc(feed, entry)
+
+      // drop everything up to Entry 
+      val reducedFeed = {
+        val remainingEntries = feed.entries.dropWhile(_.id != entryIdRef.entryId)
+        remainingEntries match {
+          case x :: xs => feed.copy(entries = xs)
+          case Nil => feed.copy(entries = Nil)
         }
+      }
 
-      if (transformedFeed.entries.nonEmpty) {
+      if (reducedFeed.entries.nonEmpty) {
         // go for a new EntryPointer if it still have entries
-        Future.successful(HeadOfFeed(transformedFeed))
+        Future.successful(HeadOfFeed(reducedFeed))
       } else {
         // Is its the end of this Feed?
         // decide where to go: EndOfEntries or EntryOnPreviousFeedPage?
         feed.previousLink match {
-          case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href), entryRef).nextCursor
-          case None => Future.successful(EndOfEntries(Some(entryRef)))
+          case Some(previousLink) => EntryOnPreviousFeedPage(feed.resolveUrl(previousLink.href), entryLoc).nextCursor
+          case None => Future.successful(EndOfEntries(Option(entryLoc)))
         }
       }
 
@@ -138,9 +139,8 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
   }
 
 
-  private case class EntryPointer(currentEntry: Entry[EntryType],
+  private case class EntryPointer(current: EntryLoc[EntryType],
                                   stillToProcessEntries: Entries,
-                                  entryRef: EntryRef,
                                   feed: Feed[EntryType]) extends Cursor {
 
     /** The next [[Cursor]]
@@ -150,18 +150,16 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
     def nextCursor : Future[Cursor] = {
 
       if (stillToProcessEntries.nonEmpty) {
-        val nextEntryId = stillToProcessEntries.head.id
         Future.successful {
           copy(
-            currentEntry = stillToProcessEntries.head,
-            stillToProcessEntries = stillToProcessEntries.tail, // moving forward, dropping head
-            entryRef = entryRef.copy(entryId = nextEntryId) // moving position forward
+            current = current.copy(entry = stillToProcessEntries.head),
+            stillToProcessEntries = stillToProcessEntries.tail // moving forward, dropping head
           )
         }
       } else {
         feed.previousLink match {
-          case None => Future.successful(EndOfEntries(Some(entryRef)))
-          case Some(link) => EntryOnPreviousFeedPage(feed.resolveUrl(link.href), this.entryRef).nextCursor
+          case Some(link) => EntryOnPreviousFeedPage(feed.resolveUrl(link.href), current).nextCursor
+          case None => Future.successful(EndOfEntries(Some(current)))
         }
       }
     }
@@ -171,7 +169,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 
 
 
-  private case class EntryOnPreviousFeedPage(previousFeedUrl: Url, lastEntryRef:EntryRef) extends Cursor {
+  private case class EntryOnPreviousFeedPage(previousFeedUrl: Url, lastEntryRef:EntryLoc[EntryType]) extends Cursor {
 
     /** The next [[Cursor]].
       *
@@ -187,7 +185,7 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 
 
 
-  private case class EndOfEntries(lastEntryRef: Option[EntryRef]) extends Cursor {
+  private case class EndOfEntries(lastEntryRef: Option[EntryLoc[EntryType]]) extends Cursor {
     /** Throws a NonSuchElementException since there is no nextCursor for a [[EndOfEntries]] */
     def nextCursor : Future[Cursor] = throw new NoSuchElementException("No new entries available!")
   }

@@ -4,16 +4,16 @@ import be.wegenenverkeer.atom.{EntryRef, Feed}
 
 import scala.concurrent.Future
 
-trait AsyncFeedProvider[T] {
+trait AsyncFeedProvider[E] {
 
-    def initialEntryRef: Option[EntryRef]
+    def initialEntryRef: Option[EntryRef[E]]
 
     /**
      * Fetch the first page of the feed.
      *
      * @return the first page of the feed.
      */
-    def fetchFeed(): Future[Feed[T]]
+    def fetchFeed(): Future[Feed[E]]
 
     /**
      * Fetch a specific page of the feed.
@@ -21,5 +21,5 @@ trait AsyncFeedProvider[T] {
      * @param pageUrl the page
      * @return a page of the feed
      */
-    def fetchFeed(pageUrl: String): Future[Feed[T]]
+    def fetchFeed(pageUrl: String): Future[Feed[E]]
 }

@@ -192,12 +192,12 @@ class FeedProcessorTest extends FlatSpec with Matchers {
     )
   }
 
-  def pos(url:String, entryId: String) : Option[EntryRef] = {
-    Some(EntryRef(Url(url), entryId))
+  def pos(url:String, entryId: String) : Option[EntryRef[String]] = {
+    Some(EntryRef[String](entryId, Url(url)))
   }
 
 
-  def feedProvider(startingFrom:Option[EntryRef],
+  def feedProvider(startingFrom:Option[EntryRef[String]],
                    feeds:Feed[String]*) = new TestFeedProvider(startingFrom, feeds.toList)
 
   /**
@@ -209,7 +209,7 @@ class FeedProcessorTest extends FlatSpec with Matchers {
     }
   }
 
-  class TestFeedProvider(val initialEntryRef:Option[EntryRef], feeds:List[Feed[String]]) extends FeedProvider[String] {
+  class TestFeedProvider(val initialEntryRef:Option[EntryRef[String]], feeds:List[Feed[String]]) extends FeedProvider[String] {
 
     val linkedFeeds = {
       // build links between feeds

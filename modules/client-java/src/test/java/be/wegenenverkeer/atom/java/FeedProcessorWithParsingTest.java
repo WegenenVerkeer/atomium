@@ -7,15 +7,16 @@ package be.wegenenverkeer.atom.java;
 
 import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
-import be.wegenenverkeer.atom.Url;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.ConfigException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import scala.Option;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 public class FeedProcessorWithParsingTest {
 
@@ -25,11 +26,8 @@ public class FeedProcessorWithParsingTest {
     public void test() {
         System.out.println("Start processing");
 
-        // create the feed entryRef from where you want to start processing
-        EntryRef entryRef = new EntryRef(new Url(FEED_URL), null);
-
-        // create the feed provider
-        ExampleFeedProvider provider = new ExampleFeedProvider(entryRef);
+        // create the feed provider, starting from first item
+        ExampleFeedProvider provider = new ExampleFeedProvider();
 
         // create your entry consumer
         ExampleEntryConsumer consumer = new ExampleEntryConsumer();
@@ -63,11 +61,9 @@ public class FeedProcessorWithParsingTest {
 
     static class ExampleFeedProvider implements FeedProvider<EventFeedEntryTo> {
 
-        private final EntryRef entryRef;
         private ObjectMapper mapper = new ObjectMapper();
 
-        public ExampleFeedProvider(EntryRef entryRef) {
-            this.entryRef = entryRef;
+        public ExampleFeedProvider() {
         }
 
         @Override
@@ -85,25 +81,31 @@ public class FeedProcessorWithParsingTest {
             }
 
             try {
-                String json = FileUtils.readFileToString(
-                        new File(this.getClass().getClassLoader().getResource(
-                                "be/wegenenverkeer/atom/java/atom-feed-sample.txt").getFile()));
-                Feed<EventFeedEntryTo> feed = mapper.readValue(json, new TypeReference<Feed<EventFeedEntryTo>>() {});
-                return feed;
+
+                String tplFile = "be/wegenenverkeer/atom/java/atom-feed-sample.txt";
+                URL resource = getClass().getClassLoader().getResource(tplFile);
+
+                if (resource != null) {
+
+                    String json = FileUtils.readFileToString(new File(resource.getFile()));
+                    return mapper.readValue(json, new TypeReference<Feed<EventFeedEntryTo>>() {});
+
+                } else {
+                    throw new FeedProcessingException(Option.<String>empty(), "Cannot open template " + tplFile);
+                }
+
+
             } catch (IOException ioe) {
                 throw new FeedProcessingException(Option.<String>empty(), "Cannot open template " + ioe.getMessage());
             }
         }
 
-        @Override
-        public void start() {}
+
 
         @Override
-        public void stop() {}
-
-        @Override
-        public EntryRef getInitialEntryRef() {
-            return entryRef;
+        public EntryRef<EventFeedEntryTo> getInitialEntryRef() {
+            // no initial EntryRef for this test
+            return null;
         }
     }
 

@@ -70,16 +70,16 @@ public class FeedProcessorTest {
 
         /**
          * @return the EntryRef from where you want to start processing
-         * a null entryId assure all items are processed, It will for the processing from the first element onwards.
+         * A null EntryRef assure that all items will be processed.
          */
         @Override
-        public EntryRef getInitialEntryRef() {
-            return new EntryRef(new Url(FEED_URL_PAGE1), null);
+        public EntryRef<ExampleFeedEntry> getInitialEntryRef() {
+            return null;
         }
 
         @Override
         public Feed<ExampleFeedEntry> fetchFeed() {
-            return fetchFeed(getInitialEntryRef().url().path());
+            return fetchFeed(FEED_URL_PAGE1);
         }
 
         @Override
@@ -119,10 +119,5 @@ public class FeedProcessorTest {
             return feed;
         }
 
-        @Override
-        public void start() {}
-
-        @Override
-        public void stop() {}
     }
 }
