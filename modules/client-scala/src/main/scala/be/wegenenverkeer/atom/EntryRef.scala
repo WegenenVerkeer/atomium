@@ -33,7 +33,7 @@ object EntryRef {
   }
 
 
-  /** Builds an [[EntryLoc]] from a given [[Feed]].
+  /** Builds an [[EntryRef]] from a given [[Feed]].
     *
     * The `EntryLoc` will reference the first `Entry` in the `Feed`
     *

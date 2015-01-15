@@ -7,7 +7,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 
 class FeedEntryIterator[E] (feedProvider: FeedProvider[E], timeout:Duration)(implicit val execContext:ExecutionContext)
-  extends Iterator[EntryLoc[E]] {
+  extends Iterator[EntryRef[E]] {
 
 
   val asyncFeedProvider = new AsyncFeedProvider[E] {
@@ -24,7 +24,7 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E], timeout:Duration)(imp
 
   override def hasNext: Boolean = Await.result(asyncIterator.hasNext, timeout)
 
-  override def next(): EntryLoc[E] = asyncIterator.next()
+  override def next(): EntryRef[E] = asyncIterator.next()
 }
 
 object FeedEntryIterator {

@@ -49,7 +49,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
         // consume it
         val result = nextEntry.flatMap { entryRef =>
             // consume entryRef if exist
-            entryConsumer(entryRef.entry)
+            entryConsumer(entryRef.entry.get)
         }
 
         // transform the final result to a AtomResult
