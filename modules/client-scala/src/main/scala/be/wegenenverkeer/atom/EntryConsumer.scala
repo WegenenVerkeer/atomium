@@ -10,4 +10,5 @@ import scala.util.Try
  *
  * @tparam E the type of the entries in the feed
  */
+@deprecated
 trait EntryConsumer[E] extends ((Entry[E]) => Try[Entry[E]])

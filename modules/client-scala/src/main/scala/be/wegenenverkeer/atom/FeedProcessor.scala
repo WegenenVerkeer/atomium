@@ -17,12 +17,13 @@ import scala.util.{Failure, Success, Try}
   *
   * @tparam E the type of the entries in the feed
   */
+@deprecated
 class FeedProcessor[E](feedProvider: FeedProvider[E],
                        entryConsumer: EntryConsumer[E]) {
 
   def start(): AtomResult[E] = {
     import scala.concurrent.duration._
-    implicit val timeout = 5 seconds
+    implicit val timeout = 60 seconds
     import scala.concurrent.ExecutionContext.Implicits.global
     start(timeout)
   }

@@ -38,8 +38,8 @@ object AtomiumBuild extends Build
     clientScalaModuleName,
     file("modules/client-scala"),
     settings = buildSettings(clientScalaModuleName)
-  ).dependsOn(formatModule)
-   .aggregate(formatModule)
+  ).dependsOn(formatModule, serverModule)
+   .aggregate(formatModule, serverModule)
 
 
   //----------------------------------------------------------------

@@ -43,10 +43,12 @@ case class Feed[+T](id: String,
   }
 
   val baseUri = new URI(base.path)
+
   require(baseUri.isAbsolute)
 
   def resolveUrl(url : Url) = {
-    new Url(baseUri.resolve(url.path).toString)
+    val resolvedUrl = new URI(baseUri.toString + "/" + url.path)
+    new Url(resolvedUrl.normalize().toString)
   }
 
   def calcETag: String = {
