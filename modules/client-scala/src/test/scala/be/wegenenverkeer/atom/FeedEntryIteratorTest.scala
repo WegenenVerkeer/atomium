@@ -20,7 +20,7 @@ class FeedEntryIteratorTest extends FlatSpec with Matchers {
     iteratorFromStart() should have size 0
   }
 
-  it should "process all entries when starting without an initial entry id" in new Scenario {
+  it should "iterate over all entries when starting without an initial entry id" in new Scenario {
 
     val entries = List("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
     pushEntries(entries)
@@ -29,7 +29,7 @@ class FeedEntryIteratorTest extends FlatSpec with Matchers {
 
   }
 
-  it should "process all remaining entries when starting in the middle of a page" in new Scenario {
+  it should "iterate over all remaining entries when starting in the middle of a page" in new Scenario {
 
     pushEntries("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
 
@@ -43,7 +43,7 @@ class FeedEntryIteratorTest extends FlatSpec with Matchers {
 
   }
 
-  it should "process all remaining entries when starting a new page" in new Scenario {
+  it should "iterate over all remaining entries when starting a new page" in new Scenario {
 
     pushEntries("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
 
@@ -68,7 +68,7 @@ class FeedEntryIteratorTest extends FlatSpec with Matchers {
     }
   }
 
-  it should "process nothing when starting from the last entry" in new Scenario {
+  it should "iterate over nothing when starting from the last entry" in new Scenario {
 
     pushEntries("a1", "b1", "c1", "a2", "b2", "c2", "a3", "b3", "c3")
 
