@@ -30,7 +30,7 @@ trait FeedComponent extends DriverComponent {
 
   }
 
-  class FeedTable(tag: Tag) extends Table[FeedModel](tag, "FEED") {
+  class FeedTable(tag: Tag) extends Table[FeedModel](tag, "FEEDS") {
 
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
