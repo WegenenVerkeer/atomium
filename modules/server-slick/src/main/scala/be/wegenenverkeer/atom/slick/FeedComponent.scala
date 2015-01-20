@@ -23,7 +23,7 @@ trait FeedComponent extends DriverComponent {
 
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
     def uuid = column[String]("uuid")
-    def value = column[String]("value", O.DBType("varchar(16384)"))
+    def value = column[String]("value", O.DBType("CLOB"))
     def timestamp = column[LocalDateTime]("timestamp", O.NotNull)
 
     def * = (id.?, uuid, value, timestamp) <> (EntryModel.tupled, EntryModel.unapply)
