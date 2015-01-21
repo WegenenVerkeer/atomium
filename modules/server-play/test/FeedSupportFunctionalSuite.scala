@@ -10,7 +10,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
   with Matchers with FutureAwaits with DefaultAwaitTimeout with Status with WsScalaTestClient {
 
   val feedName = "functest"
-  val feedPath = s"/feeds/$feedName/"
+  val feedPath = s"/feeds/$feedName"
   val lastPage = s"/feeds/$feedName/0/forward/2"
 
   var feedStore: FeedStore[String] = _
@@ -42,13 +42,13 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
   implicit override lazy val app: FakeApplication =
     FakeApplication(
       withRoutes = {
-        case ("GET", "/feeds/functest/") => feedController.headOfFeed()
+        case ("GET", "/feeds/functest") => feedController.headOfFeed()
         case ("GET", "/feeds/functest/0/forward/2") => feedController.getFeedPage(0, 2, forward = true)
       }
     )
 
   def createFeedStore = new MemoryFeedStore[String](feedName,
-    Url(s"http://localhost/feeds/$feedName/"),
+    Url(s"http://localhost/feeds/$feedName"),
     None)
 
   test("get head of empty feed should return Not-Found") {

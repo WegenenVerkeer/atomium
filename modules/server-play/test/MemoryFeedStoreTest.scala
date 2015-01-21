@@ -26,7 +26,7 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
     feedName = "int_feed",
     urlBuilder = createUrlBuilder,
     title = Some("Test"),
-  "text/plain"
+    "text/plain"
   )
 
   test("getFeed returns correct page of the feed") {
