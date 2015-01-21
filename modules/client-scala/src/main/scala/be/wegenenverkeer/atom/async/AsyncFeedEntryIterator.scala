@@ -29,8 +29,9 @@ class AsyncFeedEntryIterator[E] (feedProvider: AsyncFeedProvider[E], timeout:Dur
 
       case Some(Success(entryPointer:EntryPointer)) =>
         // start the next cursor
+        val current = entryPointer.current
         futureCursor = entryPointer.nextCursor
-        entryPointer.current
+        current
 
       case Some(Success(end:EndOfEntries)) =>
         throw new NoSuchElementException("next() called on a terminated iterator ")
