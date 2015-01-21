@@ -116,7 +116,8 @@ object AtomiumBuild extends Build
   val serverPlayModuleName = Name + "-server-play"
   lazy val serverPlayModule = Project(
     serverPlayModuleName,
-    file("modules/server-play")
+    file("modules/server-play"),
+    settings = buildSettings(serverJdbcModuleName)
   ).enablePlugins(PlayScala)
 	.settings(libraryDependencies ++= Seq(filters, scalaTestPlay))
     .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
