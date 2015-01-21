@@ -3,7 +3,7 @@ import sbt._
 
 object Dependencies {
 
-  val playVersion = "2.3.0"
+  val playVersion = "2.3.6"
 
   // main deps
   val scalaLogging      = "com.typesafe"            %%    "scalalogging-slf4j"      % "1.0.1"
@@ -46,7 +46,7 @@ object Dependencies {
     scalaLogging,
     logback,
     jodaTime,
-	jodaConvert,
+	  jodaConvert,
     scalaArm
   )
 

@@ -18,7 +18,7 @@ import org.joda.time.LocalDateTime
  * @param entries the entries in the feed page
  * @tparam T the type of entry
  */
-case class Feed[T](id: String,
+case class Feed[+T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,
@@ -43,10 +43,13 @@ case class Feed[T](id: String,
   }
 
   val baseUri = new URI(base.path)
-  require(baseUri.isAbsolute)
+
+  require(baseUri.isAbsolute, "base Url must be absolute")
+  require(!base.path.endsWith("/"), "base Url must NOT end with a trailing /")
 
   def resolveUrl(url : Url) = {
-    new Url(baseUri.resolve(url.path).toString)
+    val resolvedUrl = new URI(baseUri.toString + "/" + url.path)
+    new Url(resolvedUrl.normalize().toString)
   }
 
   def calcETag: String = {

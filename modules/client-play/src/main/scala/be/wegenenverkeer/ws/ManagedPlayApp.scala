@@ -34,7 +34,7 @@ class ManagedPlayApp {
 
   }
 
-  implicit def playApp = playAppOpt
+  implicit def playApp: Application = playAppOpt
                          .getOrElse(sys.error("Play Application not started!"))
 
   def config = playApp.configuration
@@ -54,7 +54,7 @@ class ManagedPlayApp {
 }
 
 object ManagedPlayApp {
-  implicit def managedPlayAppResource(managedPlayApp:ManagedPlayApp) = new Resource[ManagedPlayApp] {
+  implicit def managedPlayAppResource(managedPlayApp:ManagedPlayApp): Resource[ManagedPlayApp] = new Resource[ManagedPlayApp] {
     override def open(app: ManagedPlayApp): Unit = app.onStart()
     override def close(app: ManagedPlayApp): Unit = app.onStop()
   }

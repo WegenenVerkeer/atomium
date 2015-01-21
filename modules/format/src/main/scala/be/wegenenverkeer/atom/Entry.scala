@@ -12,4 +12,4 @@ import org.joda.time.LocalDateTime
  * @param links links associated with this entry
  * @tparam T the type of entry
  */
-case class Entry[T](id: String, updated: LocalDateTime, content: Content[T], links: List[Link])
+case class Entry[+T](id: String, updated: LocalDateTime, content: Content[T], links: List[Link])

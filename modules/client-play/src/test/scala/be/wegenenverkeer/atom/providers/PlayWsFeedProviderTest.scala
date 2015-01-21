@@ -1,21 +1,25 @@
 package be.wegenenverkeer.atom.providers
 
 import javax.xml.bind.JAXBContext
+
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.java.{Adapters, Feed => JFeed}
+import be.wegenenverkeer.ws.ManagedPlayApp
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import mockws._
 import org.joda.time.LocalDateTime
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
 import play.api.http.MimeTypes
 import play.api.mvc.Action
 import play.api.mvc.Results._
 import play.api.test.Helpers._
-import support.JaxbSupport
 
-class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] {
+import scala.concurrent.Await
+import scala.util.{Success, Try}
+
+class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshaller[String] with BeforeAndAfterAll {
 
   implicit val jaxbContext = JAXBContext.newInstance("be.wegenenverkeer.atom.java")
 
@@ -30,6 +34,9 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
   implicit val objectReader = objectMapper.reader(new TypeReference[JFeed[String]]() {})
 
+
+
+
   registerUnmarshaller(MimeTypes.JSON,
     JacksonSupport.jacksonUnmarshaller.andThen(JFeedConverters.jFeed2Feed))
 
@@ -43,16 +50,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = None,
+        initialEntryRef = None,
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(notFoundRoute))
+        wsClient = MockWS(notFoundRoute)
       ),
 
       consumedEvents = List(),
 
-      finalPosition = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -69,16 +76,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = None,
+        initialEntryRef = None,
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(emptyRoute))
+        wsClient = MockWS(emptyRoute)
       ),
 
       consumedEvents = List(),
 
-      finalPosition = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe true
@@ -98,8 +105,8 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
                         |     { "rel" : "previous", "href" : "/feed/2"}
                         |  ],
                         |  "entries" : [
-                        |     { "content" : { "value" : "a1", "type" : "text/plain" }},
-                        |     { "content" : { "value" : "b1", "type" : "text/plain" }}
+                        |     { "id" : "a1", "content" : { "value" : "a1", "type" : "text/plain" }},
+                        |     { "id" : "b1", "content" : { "value" : "b1", "type" : "text/plain" }}
                         |  ]
                         |}
                         | """.stripMargin
@@ -115,8 +122,8 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
                         |     { "rel" : "next", "href" : "/feed/1" }
                         |  ],
                         |  "entries" : [
-                        |     { "content" : { "value" : "a2", "type" : "text/plain" }},
-                        |     { "content" : { "value" : "b2", "type" : "text/plain" }}
+                        |     { "id" : "a2", "content" : { "value" : "a2", "type" : "text/plain" }},
+                        |     { "id" : "b2", "content" : { "value" : "b2", "type" : "text/plain" }}
                         |  ]
                         |}
                         | """.stripMargin
@@ -138,17 +145,17 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = None,
+        initialEntryRef = None,
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(route))
+        wsClient = MockWS(route)
       ),
 
       consumedEvents = List("a1", "b1", "a2", "b2"),
 
-      //finalPosition is on second element (index=1) of second feed page
-      finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
+      //last successful entry is second element 'b2' of second feed page
+      lastConsumedEntryRef = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
     )
   }
 
@@ -169,17 +176,17 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
+        initialEntryRef = Some(EntryRef(Url("http://example.com/feed/1"), "b1")),
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(route))
+        wsClient = MockWS(route)
       ),
 
       consumedEvents = List("b1", "a2", "b2"),
 
-      //finalPosition is on second element (index=1) of second feed page
-      finalPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1))
+      //last successful entry is second element 'b2' of second feed page
+      lastConsumedEntryRef = Some(EntryRef(Url("http://example.com/feed/2"), "b2"))
     )
   }
 
@@ -194,16 +201,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/2"), 1)),
+        initialEntryRef = Some(EntryRef(Url("http://example.com/feed/2"), "b2")),
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(route))
+        wsClient = MockWS(route)
       ),
 
       consumedEvents = List(),
 
-      finalPosition = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
@@ -219,16 +226,16 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = None,
+        initialEntryRef = None,
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(route))
+        wsClient = MockWS(route)
       ),
 
       consumedEvents = List(),
 
-      finalPosition = None
+      lastConsumedEntryRef = None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
@@ -244,35 +251,60 @@ class PlayWsBlockingFeedProviderTest extends FunSuite with Matchers with FeedUnm
 
     Scenario(
 
-      provider = new PlayWsBlockingFeedProvider[String](
+      provider = new PlayWsFeedProvider[String](
         feedUrl = "http://example.com/feed",
-        feedPosition = Some(FeedPosition(Url("http://example.com/feed/1"), 0)),
+        initialEntryRef = Some(EntryRef(Url("http://example.com/feed/1"), "a2")),
         feedUnmarshaller = this,
-        wsClient = Some(MockWS(route))
+        wsClient = MockWS(route)
       ),
 
       consumedEvents = List(),
 
-      finalPosition = None //since there never was any entry consumed, this is None
+      lastConsumedEntryRef = None //since there never was any entry consumed, this is None
 
     ) assertResult { result =>
       result.isFailure shouldBe false
     }
   }
 
-  case class Scenario(provider: PlayWsBlockingFeedProvider[String],
+  case class Scenario(provider: PlayWsFeedProvider[String],
                       consumedEvents: List[String],
-                      finalPosition: Option[FeedPosition]) {
+                      lastConsumedEntryRef: Option[EntryRef]) {
+
+    val syncProvider = new FeedProvider[String] {
+
+      import scala.concurrent.duration._
+
+      override def initialEntryRef: Option[EntryRef] = provider.initialEntryRef
+
+      override def fetchFeed(): Try[Feed[String]] = Try(Await.result(provider.fetchFeed(), 2 seconds))
+
+      override def fetchFeed(pageUrl: String): Try[Feed[String]] = Try(Await.result(provider.fetchFeed(), 2 seconds))
+    }
 
     val consumer = new StatefulEntryConsumer
-    val process  = new FeedProcessor[String](provider, consumer)
+    val process  = new FeedProcessor[String](syncProvider, consumer)
 
-    val result = process.start()
+    val result = Try(process.start())
 
     consumedEvents shouldBe consumer.consumedEvents.toList
-    finalPosition shouldBe consumer.finalPosition
+    lastConsumedEntryRef shouldBe consumer.consumedEvents.lastOption
 
-    def assertResult(block: FeedProcessingResult => Unit) = block(result)
+    def assertResult(block: Try[AtomResult[String]] => Unit) = block(result)
+  }
+
+
+  class StatefulEntryConsumer extends EntryConsumer[String] {
+    import scala.collection.mutable
+
+    var lastConsumedEntryId: Option[String] = None
+    var consumedEvents = new mutable.ListBuffer[String]
+
+    override def apply(eventEntry: Entry[String]): FeedProcessingResult[String] = {
+      lastConsumedEntryId = Option(eventEntry.id)
+      consumedEvents += eventEntry.content.value
+      Success(eventEntry)
+    }
   }
 
 }
