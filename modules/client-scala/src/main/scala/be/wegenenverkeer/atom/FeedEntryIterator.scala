@@ -6,9 +6,11 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 
-class FeedEntryIterator[E] (feedProvider: FeedProvider[E], timeout:Duration)(implicit val execContext:ExecutionContext)
-  extends Iterator[EntryRef[E]] {
+class FeedEntryIterator[E] (feedProvider: FeedProvider[E],
+                            timeout:Duration,
+                            execContext:ExecutionContext) extends Iterator[EntryRef[E]] {
 
+  implicit val ec = execContext
 
   val asyncFeedProvider = new AsyncFeedProvider[E] {
 
@@ -30,7 +32,24 @@ class FeedEntryIterator[E] (feedProvider: FeedProvider[E], timeout:Duration)(imp
 object FeedEntryIterator {
   object Implicits {
     implicit class IteratorBuilder[T](feedProvider: FeedProvider[T]) {
-      def iterator(timeout:Duration)(implicit ec: ExecutionContext) = new FeedEntryIterator(feedProvider, timeout)
+
+      def iterator(): FeedEntryIterator[T] = {
+
+        import scala.concurrent.duration._
+        val executionContext = scala.concurrent.ExecutionContext.global
+        val timeout = 500 millis
+
+        new FeedEntryIterator(feedProvider, timeout, executionContext)
+      }
+
+      def iterator(timeout:Duration, executionContext: ExecutionContext): FeedEntryIterator[T] = {
+        new FeedEntryIterator(feedProvider, timeout, executionContext)
+      }
+
+      def iterator(timeout:Duration): FeedEntryIterator[T] = {
+        val executionContext = scala.concurrent.ExecutionContext.global
+        iterator(timeout, executionContext)
+      }
     }
   }
 }

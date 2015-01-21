@@ -37,7 +37,7 @@ class FeedProcessor[E](feedProvider: FeedProvider[E],
     */
   def start(timeout:Duration)(implicit execContext:ExecutionContext): AtomResult[E] = {
 
-    val feedIterator = new FeedEntryIterator(feedProvider, timeout)
+    val feedIterator = new FeedEntryIterator(feedProvider, timeout, execContext)
 
     @tailrec
     def consume(atomResult:AtomResult[E]) : AtomResult[E] = {
