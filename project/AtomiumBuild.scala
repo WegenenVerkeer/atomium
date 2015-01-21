@@ -37,11 +37,13 @@ object AtomiumBuild extends Build
   lazy val clientScalaModule = Project(
     clientScalaModuleName,
     file("modules/client-scala"),
-    settings = buildSettings(clientScalaModuleName)
+    settings = buildSettings(clientScalaModuleName) ++ Seq (
+      publishArtifact in Test := true
+    )
   ).dependsOn(formatModule, serverModule)
    .aggregate(formatModule, serverModule)
 
-
+  
   //----------------------------------------------------------------
   val commonPlayModuleName = Name + "-common-play"
   lazy val commonPlayModule = Project(
@@ -72,6 +74,7 @@ object AtomiumBuild extends Build
     file("modules/server"),
     settings = buildSettings(serverModuleName)
   ).dependsOn(formatModule)
+
 
 
 
