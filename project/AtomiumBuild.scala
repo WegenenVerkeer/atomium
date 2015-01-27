@@ -117,7 +117,7 @@ object AtomiumBuild extends Build
   lazy val serverPlayModule = Project(
     serverPlayModuleName,
     file("modules/server-play"),
-    settings = buildSettings(serverJdbcModuleName)
+    settings = buildSettings(serverPlayModuleName)
   ).enablePlugins(PlayScala)
 	.settings(libraryDependencies ++= Seq(filters, scalaTestPlay))
     .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
@@ -150,7 +150,7 @@ object AtomiumBuild extends Build
     file("."),
     settings = buildSettings(Name)
   ).aggregate(
-      javaFormatModuleName,
+      javaFormatModule,
       formatModule,
       commonPlayModule,
       clientScalaModule,
