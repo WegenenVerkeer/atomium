@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,7 +16,7 @@ public final class Entry<T> {
     private String id;
 
     @XmlElement @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    LocalDateTime updated;
+    DateTime updated;
 
     @XmlElement
     private Content<T> content;
@@ -36,10 +36,10 @@ public final class Entry<T> {
     }
 
     public Entry(String id, Content<T> content, List<Link> links) {
-        this(id, new LocalDateTime(), content, links);
+        this(id, new DateTime(), content, links);
     }
 
-    public Entry(String id, LocalDateTime updated, Content<T> content, List<Link> links) {
+    public Entry(String id, DateTime updated, Content<T> content, List<Link> links) {
         this.id = id;
         this.updated = updated;
         this.content = content;
@@ -54,11 +54,11 @@ public final class Entry<T> {
         this.id = id;
     }
 
-    public LocalDateTime getUpdated() {
+    public DateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(LocalDateTime updated) {
+    public void setUpdated(DateTime updated) {
         this.updated = updated;
     }
 

@@ -4,7 +4,7 @@ import _root_.java.net.URI
 import _root_.java.security.MessageDigest
 import _root_.java.math.BigInteger
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 /**
  * Representation of a (page in an) Atom feed.
@@ -22,7 +22,7 @@ case class Feed[+T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,
-                   updated: LocalDateTime,
+                   updated: DateTime,
                    links: List[Link],
                    entries: List[Entry[T]],
                    headers: Map[String, String] = Map.empty) {

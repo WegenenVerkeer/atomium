@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.FeedEntryIterator.Implicits._
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 import scala.util.{Success, Try}
 
@@ -155,7 +155,7 @@ trait FeedIteratorFixture[E] {
           base = Url(baseUrl),
           title = Option("title"),
           generator = None,
-          updated = new LocalDateTime(),
+          updated = new DateTime(),
           links = links,
           entries = List()
         )

@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.slick
 import java.sql.Date
 
 import be.wegenenverkeer.atom.models.{EntryModel, FeedModel}
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 trait FeedComponent extends DriverComponent {
   this: DriverComponent =>
@@ -14,9 +14,9 @@ trait FeedComponent extends DriverComponent {
     TableQuery[EntryTable]((tag:Tag) => new EntryTable(tag, entriesTableName))
   }
 
-  implicit val jodaLocalDateTimeColumnType = MappedColumnType.base[LocalDateTime, Date](
-  { ldt => new Date(ldt.toDate.getTime) },    // map LocalDateTime to sql.Date
-  { sd => new LocalDateTime(sd.getTime) } // map sql.Date to LocalDateTime
+  implicit val jodaDateTimeColumnType = MappedColumnType.base[DateTime, Date](
+  { ldt => new Date(ldt.toDate.getTime) },    // map DateTime to sql.Date
+  { sd => new DateTime(sd.getTime) } // map sql.Date to DateTime
   )
 
   class EntryTable(tag: Tag, tableName: String) extends Table[EntryModel](tag, tableName) {
@@ -24,7 +24,7 @@ trait FeedComponent extends DriverComponent {
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
     def uuid = column[String]("uuid")
     def value = column[String]("value")
-    def timestamp = column[LocalDateTime]("timestamp", O.NotNull)
+    def timestamp = column[DateTime]("timestamp", O.NotNull)
 
     def * = (id.?, uuid, value, timestamp) <> (EntryModel.tupled, EntryModel.unapply)
 

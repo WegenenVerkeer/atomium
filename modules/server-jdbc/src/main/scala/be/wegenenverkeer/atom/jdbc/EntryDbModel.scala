@@ -2,7 +2,7 @@ package be.wegenenverkeer.atom.jdbc
 
 import java.sql.ResultSet
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 /**
  * The entry model as it is stored in the DB.
@@ -13,7 +13,7 @@ import org.joda.time.LocalDateTime
  * @param value The actual data stored in the entry, serialized as a sring.
  * @param timestamp The time this entry was created and stored.
  */
-case class EntryDbModel(sequenceNo: Option[Long], uuid: String, value: String, timestamp: LocalDateTime)
+case class EntryDbModel(sequenceNo: Option[Long], uuid: String, value: String, timestamp: DateTime)
 
 object EntryDbModel {
 
@@ -21,7 +21,7 @@ object EntryDbModel {
     sequenceNo = Some(rs.getLong(EntryDbModel.Table.idColumn)),
     uuid = rs.getString(EntryDbModel.Table.uuidColumn),
     value = rs.getString(EntryDbModel.Table.valueColumn),
-    timestamp = new LocalDateTime(rs.getDate(EntryDbModel.Table.timestampColumn))
+    timestamp = new DateTime(rs.getDate(EntryDbModel.Table.timestampColumn))
   )
 
   object Table {

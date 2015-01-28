@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.jdbc.{EntryDbModel, Dialect}
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
                                         feedName: String,
@@ -74,14 +74,14 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * @param entries the entries to push to the feed
    */
   override def push(entries: Iterable[E]): Unit = {
-    val timestamp: LocalDateTime = new LocalDateTime()
+    val timestamp: DateTime = new DateTime()
     entries foreach { entry =>
       dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, generateEntryID, value = ser(entry), timestamp = timestamp))
     }
   }
 
   override def push(uuid: String, entry: E): Unit = {
-    val timestamp: LocalDateTime = new LocalDateTime()
+    val timestamp: DateTime = new DateTime()
     dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }
 

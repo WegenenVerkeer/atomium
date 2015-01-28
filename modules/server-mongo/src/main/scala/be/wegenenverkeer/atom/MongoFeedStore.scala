@@ -4,7 +4,7 @@ import be.wegenenverkeer.atom.MongoFeedStore.Keys
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.{DBObject, casbah}
-import org.joda.time.{DateTime, LocalDateTime}
+import org.joda.time.DateTime
 
 /**
  * [[AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
@@ -43,7 +43,7 @@ class MongoFeedStore[E](c: MongoContext,
 
   protected def feedEntry2DbObject(uuid: String, e: E): MongoDBObject = MongoDBObject(
     Keys.Uuid -> uuid,
-    Keys.Timestamp -> new LocalDateTime(),
+    Keys.Timestamp -> new DateTime(),
     Keys.Content -> ser(e)
   )
 
@@ -51,7 +51,7 @@ class MongoFeedStore[E](c: MongoContext,
     val entryDbo = dbo.as[DBObject](Keys.Content)
     FeedEntry(dbo.as[Long](Keys._Id),
           Entry(id = dbo.as[String](Keys.Uuid),
-            updated = dbo.as[DateTime](Keys.Timestamp).toLocalDateTime,
+            updated = dbo.as[DateTime](Keys.Timestamp).toDateTime,
             content = Content(deser(entryDbo), ""), Nil))
   }
 

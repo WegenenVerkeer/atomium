@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atom
 
-import org.joda.time.LocalDateTime
-
 import scala.collection.immutable.TreeMap
+
+import org.joda.time.DateTime
 
 object TestFeedStore {
 
@@ -30,7 +30,7 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
   override def push(entries: Iterable[T]): Unit = {
     entries foreach { e =>
       nextSequenceNum += (skip + 1)
-      entriesMap += (nextSequenceNum -> Entry("id", new LocalDateTime(), Content(e, ""), Nil))
+      entriesMap += (nextSequenceNum -> Entry("id", new DateTime(), Content(e, ""), Nil))
     }
     sequenceNumbersToSkipForPush(0)
   }

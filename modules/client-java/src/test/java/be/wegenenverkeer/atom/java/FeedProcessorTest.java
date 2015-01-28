@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.java;
 import be.wegenenverkeer.atom.EntryRef;
 import be.wegenenverkeer.atom.FeedProcessingException;
 import be.wegenenverkeer.atom.Url;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import scala.Option;
 
@@ -112,7 +112,7 @@ public class FeedProcessorTest {
                     FEED_URL,
                     "Blabla",
                     null,
-                    new LocalDateTime(),
+                    new DateTime(),
                 feedLinks,
                     entries
             );

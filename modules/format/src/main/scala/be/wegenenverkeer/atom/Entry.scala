@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 /**
  * Representation of an entry in an Atom feed. The entry acts as a container for metadata and data associated with the
@@ -12,4 +12,4 @@ import org.joda.time.LocalDateTime
  * @param links links associated with this entry
  * @tparam T the type of entry
  */
-case class Entry[+T](id: String, updated: LocalDateTime, content: Content[T], links: List[Link])
+case class Entry[+T](id: String, updated: DateTime, content: Content[T], links: List[Link])

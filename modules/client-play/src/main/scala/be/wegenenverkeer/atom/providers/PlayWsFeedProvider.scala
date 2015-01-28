@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.providers
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.async.AsyncFeedProvider
 import com.typesafe.scalalogging.slf4j.Logging
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSClient
 
@@ -63,7 +63,7 @@ class PlayWsFeedProvider[T](feedUrl:String,
               base = Url(pageUrl),
               title = None,
               generator = None,
-              updated = new LocalDateTime(),
+              updated = new DateTime(),
               links = List(Link(Link.selfLink, Url(pageUrl))),
               entries = Nil
             )

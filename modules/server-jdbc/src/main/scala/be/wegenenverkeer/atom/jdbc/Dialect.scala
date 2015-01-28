@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.jdbc
 import java.sql._
 
 import be.wegenenverkeer.atom.JdbcContext
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 trait Dialect {
 
@@ -129,7 +129,7 @@ trait Dialect {
           d match {
             case stringData: String => preparedStatement.setString(index, stringData)
             case intData: Int => preparedStatement.setInt(index, intData)
-            case timeData: LocalDateTime => preparedStatement.setTimestamp(index, new Timestamp(timeData.toDate.getTime))
+            case timeData: DateTime => preparedStatement.setTimestamp(index, new Timestamp(timeData.toDate.getTime))
             case _ => throw new SQLDataException("Unknown data type used in the atomium feed generator.")
           }
           setPreparedData(ds, index + 1)
