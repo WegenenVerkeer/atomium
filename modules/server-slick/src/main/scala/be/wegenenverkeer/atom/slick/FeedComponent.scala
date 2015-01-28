@@ -23,14 +23,14 @@ trait FeedComponent extends DriverComponent {
 
     def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
     def uuid = column[String]("uuid")
-    def value = column[String]("value")
+    def value = column[String]("value", O.DBType("CLOB"))
     def timestamp = column[LocalDateTime]("timestamp", O.NotNull)
 
     def * = (id.?, uuid, value, timestamp) <> (EntryModel.tupled, EntryModel.unapply)
 
   }
 
-  class FeedTable(tag: Tag) extends Table[FeedModel](tag, "FEED") {
+  class FeedTable(tag: Tag) extends Table[FeedModel](tag, "FEEDS") {
 
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
