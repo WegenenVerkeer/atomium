@@ -4,7 +4,7 @@ import _root_.java.util.UUID
 
 import be.wegenenverkeer.atom.models.EntryModel
 import be.wegenenverkeer.atom.slick.FeedComponent
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 /**
  * [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
@@ -54,7 +54,7 @@ import org.joda.time.LocalDateTime
 
   override def push(entries: Iterable[E]): Unit = {
     implicit val session = context.session
-    val timestamp: LocalDateTime = new LocalDateTime()
+    val timestamp: DateTime = new DateTime()
     entries foreach { entry =>
       getEntryTableQuery += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
     }
@@ -62,7 +62,7 @@ import org.joda.time.LocalDateTime
 
   override def push(uuid: String, entry: E): Unit = {
     implicit val session = context.session
-    val timestamp: LocalDateTime = new LocalDateTime()
+    val timestamp: DateTime = new DateTime()
     getEntryTableQuery += EntryModel(None, uuid, ser(entry), timestamp)
   }
 

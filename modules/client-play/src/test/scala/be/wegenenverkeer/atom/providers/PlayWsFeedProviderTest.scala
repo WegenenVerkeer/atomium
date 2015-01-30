@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import mockws._
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
 import play.api.http.MimeTypes
 import play.api.mvc.Action
@@ -92,7 +92,7 @@ class PlayWsFeedProviderTest extends FunSuite with Matchers with FeedUnmarshalle
     }
   }
 
-  val updated = Adapters.outputFormatterWithSecondsAndOptionalTZ.print(new LocalDateTime())
+  val updated = Adapters.outputFormatterWithSecondsAndOptionalTZ.print(new DateTime())
 
   val page1: String = """{
                         |  "base" : "http://example.com",

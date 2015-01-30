@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
 
@@ -32,17 +32,17 @@ class MemoryFeedStore[T](feedName: String,
   override def maxId = entries.size + 1
 
   override def push(it: Iterable[T]) = {
-    val timestamp: LocalDateTime = new LocalDateTime()
+    val timestamp: DateTime = new DateTime()
     it foreach { entry =>
-      push(generateEntryID(), entry, new LocalDateTime())
+      push(generateEntryID(), entry, new DateTime())
     }
   }
 
   override def push(uuid: String, entry: T): Unit = {
-    push(uuid, entry, new LocalDateTime())
+    push(uuid, entry, new DateTime())
   }
 
-  private def push(uuid: String, entry: T, timestamp: LocalDateTime): Unit = {
+  private def push(uuid: String, entry: T, timestamp: DateTime): Unit = {
     entries append Entry(uuid, timestamp, Content(entry, ""), Nil)
   }
 
