@@ -4,7 +4,7 @@ import _root_.java.net.URI
 import _root_.java.security.MessageDigest
 import _root_.java.math.BigInteger
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 /**
  * Representation of a (page in an) Atom feed.
@@ -18,11 +18,11 @@ import org.joda.time.LocalDateTime
  * @param entries the entries in the feed page
  * @tparam T the type of entry
  */
-case class Feed[T](id: String,
+case class Feed[+T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,
-                   updated: LocalDateTime,
+                   updated: DateTime,
                    links: List[Link],
                    entries: List[Entry[T]],
                    headers: Map[String, String] = Map.empty) {
@@ -43,10 +43,13 @@ case class Feed[T](id: String,
   }
 
   val baseUri = new URI(base.path)
-  require(baseUri.isAbsolute)
+
+  require(baseUri.isAbsolute, "base Url must be absolute")
+  require(!base.path.endsWith("/"), "base Url must NOT end with a trailing /")
 
   def resolveUrl(url : Url) = {
-    new Url(baseUri.resolve(url.path).toString)
+    val resolvedUrl = new URI(baseUri.toString + "/" + url.path)
+    new Url(resolvedUrl.normalize().toString)
   }
 
   def calcETag: String = {

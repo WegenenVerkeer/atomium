@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom.java
 
-import be.wegenenverkeer.atom.{FeedPosition, JFeedConverters}
+import be.wegenenverkeer.atom.{EntryRef, JFeedConverters}
 import com.typesafe.scalalogging.slf4j.Logging
 
 import scala.util.Try
@@ -19,10 +19,6 @@ class FeedProviderWrapper[E](underlying: be.wegenenverkeer.atom.java.FeedProvide
 
   def fetchFeed(page: String): Try[be.wegenenverkeer.atom.Feed[E]] =
     Try (JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
-
-  override def start(): Unit = underlying.start()
-
-  override def stop(): Unit = underlying.stop()
-
-  override def initialPosition: Option[FeedPosition] = Option.apply(underlying.getInitialPosition)
+  
+  override def initialEntryRef: Option[EntryRef[E]] = Option.apply(underlying.getInitialEntryRef)
 }

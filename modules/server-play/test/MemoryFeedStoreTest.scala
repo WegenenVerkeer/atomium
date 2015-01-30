@@ -1,5 +1,4 @@
-import be.wegenenverkeer.atom.{FeedStoreTestSupport, Url, UrlBuilder}
-import controllers.MemoryFeedStore
+import be.wegenenverkeer.atom.{MemoryFeedStore, FeedStoreTestSupport, Url, UrlBuilder}
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
@@ -27,7 +26,7 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
     feedName = "int_feed",
     urlBuilder = createUrlBuilder,
     title = Some("Test"),
-  "text/plain"
+    "text/plain"
   )
 
   test("getFeed returns correct page of the feed") {

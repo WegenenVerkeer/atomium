@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.PlayJsonFormats._
-import org.joda.time.{DateTimeUtils, LocalDateTime}
+import org.joda.time.{DateTimeUtils, DateTime}
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers, OptionValues}
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc.Result
@@ -19,7 +19,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
   }
 
   val incompleteFeed: Feed[String] = new Feed("id",
-    Url("http://example.com"), None, None, new LocalDateTime(0), List(Link(Link.selfLink, Url("foo"))), List())
+    Url("http://example.com"), None, None, new DateTime(0), List(Link(Link.selfLink, Url("foo"))), List())
 
   val completeFeed: Feed[String] = incompleteFeed.copy(links = Link(Link.previousLink, Url("prev")) :: incompleteFeed.links)
 
@@ -75,7 +75,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
     }
     val request = FakeRequest().withHeaders(HeaderNames.IF_NONE_MATCH -> incompleteFeed.calcETag)
     val changedFeed = incompleteFeed.copy(entries = Entry[String]("id",
-      new LocalDateTime(),
+      new DateTime(),
       new Content[String]("foo", ""), List()) :: incompleteFeed.entries)
     val result: Future[Result] = feedSupport processFeedPage Some(changedFeed) apply request
     status(result) shouldBe OK
@@ -95,7 +95,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
       registerMarshaller(MimeTypes.JSON, PlayJsonSupport.jsonMarshaller[Feed[String]])
     }
     val request = FakeRequest().withHeaders(HeaderNames.IF_MODIFIED_SINCE -> "Thu, 01 Jan 1970 00:00:00 UTC")
-    val updatedFeed = incompleteFeed.copy(updated = new LocalDateTime(1000)) //1 second later
+    val updatedFeed = incompleteFeed.copy(updated = new DateTime(1000)) //1 second later
     val result: Future[Result] = feedSupport processFeedPage Some(updatedFeed) apply request
     status(result) shouldBe OK
   }

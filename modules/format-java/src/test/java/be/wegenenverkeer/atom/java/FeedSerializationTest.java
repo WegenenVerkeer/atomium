@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,13 +54,13 @@ public class FeedSerializationTest {
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
 
-        LocalDateTime LocalDateTime = new LocalDateTime().withMillisOfSecond(0);
+        DateTime dateTime = new DateTime().withMillisOfSecond(0);
 
         stringsFeed = new Feed("urn:id:"+ UUID.randomUUID().toString(),
                 "http://www.example.org",
                 "strings of life",
                 null,
-                LocalDateTime);
+                dateTime);
         stringsFeed.getLinks().add(new Link("self", "foo"));
         stringsFeed.getEntries().add(new Entry("id1", new Content<String>("foo", "text/plain")));
         stringsFeed.getEntries().add(new Entry("id2", new Content<String>("<html><p>bla</p></html>", "text/html"))); //this will be escaped in xml but not in json
@@ -71,13 +71,13 @@ public class FeedSerializationTest {
                 "http://www.example.org",
                 "customers",
                 new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
-                LocalDateTime);
+                dateTime);
         customersFeed.getLinks().add(new Link("self", "foo"));
         customersFeed.getEntries().add(new Entry("id", new Content(customer, "application/xml")));
 
         jaxbElementFeed = new Feed();
         jaxbElementFeed.setId("urn:id:" + UUID.randomUUID().toString());
-        jaxbElementFeed.setUpdated(LocalDateTime);
+        jaxbElementFeed.setUpdated(dateTime);
         JAXBElement<Integer> jaxbElement = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
         jaxbElementFeed.getEntries().add(new Entry("id1", new Content(jaxbElement, "application/xml")));
         JAXBElement<Integer> jaxbElement2 = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);

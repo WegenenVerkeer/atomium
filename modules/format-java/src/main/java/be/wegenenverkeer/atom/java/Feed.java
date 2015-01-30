@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atom.java;
 
 import be.wegenenverkeer.atom.java.Adapters.AtomDateTimeAdapter;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -19,13 +19,13 @@ public final class Feed<T> {
     public Feed() {
     }
 
-    public Feed(String id, String base, String title, Generator generator, LocalDateTime updated) {
+    public Feed(String id, String base, String title, Generator generator, DateTime updated) {
         this(id, base, title, generator, updated, new ArrayList<Link>(), new ArrayList<Entry<T>>());
     }
 
 
     public Feed(String id, String base, String title, Generator generator,
-                LocalDateTime updated, List<Link> links, List<Entry<T>> entries) {
+                DateTime updated, List<Link> links, List<Entry<T>> entries) {
         this.id = id;
         this.base = base;
         this.title = title;
@@ -48,7 +48,7 @@ public final class Feed<T> {
     private Generator generator;
 
     @XmlElement @XmlJavaTypeAdapter(AtomDateTimeAdapter.class)
-    private LocalDateTime updated;
+    private DateTime updated;
 
     @XmlElement(name = "link")
     private List<Link> links = new ArrayList<Link>();
@@ -88,11 +88,11 @@ public final class Feed<T> {
         this.generator = generator;
     }
 
-    public LocalDateTime getUpdated() {
+    public DateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(LocalDateTime updated) {
+    public void setUpdated(DateTime updated) {
         this.updated = updated;
     }
 

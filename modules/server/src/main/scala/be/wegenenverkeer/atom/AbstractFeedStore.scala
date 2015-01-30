@@ -128,9 +128,12 @@ abstract class AbstractFeedStore[E](feedName: String,
    * @return the head of the feed
    */
   override def getHeadOfFeed(pageSize: Int): Option[Feed[E]] = {
-    require(pageSize > 0)
+
+    require(pageSize > 0, "page size must be greater than 0")
+
     //fetch most recent entries from feed, we ask for one more than the pageSize to check if we are on the last page
     val entries: List[FeedEntry] = getMostRecentFeedEntries(pageSize+1)
+
     if (entries.size > 0) {
       //we possibly need to return less entries to keep paging consistent => paging from tail to head or vice versa
       //must return the same pages in order to have efficient caching

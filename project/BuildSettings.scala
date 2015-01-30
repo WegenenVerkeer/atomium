@@ -8,10 +8,7 @@ import scala.util.Properties
 trait BuildSettings {
 
   import Dependencies._
-  val Organization = "be.wegenenverkeer"
-  
-  val Version = "0.2.0-SNAPSHOT"
-  val ScalaVersion = "2.10.3"
+
   val ScalaBuildOptions = Seq("-unchecked", "-deprecation", "-feature",
     "-language:reflectiveCalls",
     "-language:implicitConversions",
@@ -28,11 +25,7 @@ trait BuildSettings {
 
   
   def projectSettings(projectName:String, extraDependencies:Seq[ModuleID]) = Seq(
-    organization := Organization,
     name := projectName,
-    version := Version,
-    scalaVersion := ScalaVersion,
-    scalacOptions := ScalaBuildOptions,
     parallelExecution := false,
     resolvers +=  "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
     resolvers += Resolver.typesafeRepo("releases"),

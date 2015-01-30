@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atom
 
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
@@ -13,26 +13,10 @@ import play.api.libs.json._
  */
 object PlayJsonFormats {
 
-  val df = ISODateTimeFormat.dateTime()
+  val datePattern = "yyyy-MM-dd'T'HH:mm:ssZ"
 
-  private def parseDate(input: String): Option[LocalDateTime] =
-    scala.util.control.Exception.allCatch[LocalDateTime] opt (LocalDateTime.parse(input, df))
-
-  implicit val jodaISODateReads: Reads[LocalDateTime] = new Reads[LocalDateTime] {
-    override def reads(json: JsValue): JsResult[LocalDateTime] = json match {
-      case JsNumber(d) => JsSuccess(new LocalDateTime(d.toLong))
-      case JsString(s) => parseDate(s) match {
-        case Some(d) => JsSuccess(d)
-        case None => JsError(Seq(JsPath() -> Seq(ValidationError("validate.error.expected.date.isoformat", "ISO8601"))))
-      }
-      case _ => JsError(Seq(JsPath() -> Seq(ValidationError("validate.error.expected.date"))))
-    }
-  }
-
-  implicit val jodaDateWrites: Writes[LocalDateTime] = new Writes[LocalDateTime] {
-    override def writes(d: LocalDateTime): JsValue =
-      JsNumber(d.toDate.getTime)
-  }
+  implicit val jodaDateTimeFormat =
+    Format[DateTime](Reads.jodaDateReads(datePattern), Writes.jodaDateWrites(datePattern))
 
   implicit val urlFormat = new Format[Url] {
     override def writes(url: Url): JsValue = JsString(url.path)
@@ -68,14 +52,14 @@ object PlayJsonFormats {
 
   implicit def entryWrites[T](implicit fmt: Writes[T]): Writes[Entry[T]] = (
     (__ \ "id").write[String] and
-      (__ \ "updated").write[LocalDateTime] and
+      (__ \ "updated").write[DateTime] and
       (__ \ "content").write[Content[T]] and
       (__ \ "links").write[List[Link]]
     )(in => (in.id, in.updated, in.content, in.links))
 
   implicit def entryReads[T](implicit fmt: Reads[T]): Reads[Entry[T]] = (
     (__ \ "id").read[String] and
-      (__ \ "updated").read[LocalDateTime] and
+      (__ \ "updated").read[DateTime] and
       (__ \ "content").read[Content[T]] and
       (__ \ "links").read[List[Link]]
     )((id, updated, content, links) => Entry[T](id, updated, content, links))
@@ -87,7 +71,7 @@ object PlayJsonFormats {
       (__ \ "base").write[Url] and
       (__ \ "title").writeNullable[String] and
       (__ \ "generator").writeNullable[Generator] and
-      (__ \ "updated").write[LocalDateTime] and
+      (__ \ "updated").write[DateTime] and
       (__ \ "links").write[List[Link]] and
       (__ \ "entries").write[List[Entry[T]]]
     )(in => (in.id, in.base, in.title, in.generator, in.updated,in.links, in.entries))
@@ -97,7 +81,7 @@ object PlayJsonFormats {
       (__ \ "base").read[Url] and
       (__ \ "title").readNullable[String] and
       (__ \ "generator").readNullable[Generator] and
-      (__ \ "updated").read[LocalDateTime] and
+      (__ \ "updated").read[DateTime] and
       (__ \ "links").read[List[Link]] and
       (__ \ "entries").read[List[Entry[T]]]
     )((id, base, title, generator, updated, links, entries) => Feed[T](id, base, title, generator, updated, links, entries))

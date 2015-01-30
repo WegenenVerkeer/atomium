@@ -1,17 +1,17 @@
-package controllers
+package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom._
-import org.joda.time.LocalDateTime
+import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
 
 /**
- * an in memory feedstore. This implementation is very inefficient and should only be used for demo purposes
+ * An in memory feedstore. This implementation is very inefficient and should only be used for demo or test purposes
+ *
  * @param feedName the name of the feed
- * @param urlBuilder
+ * @param urlBuilder responsible for creating URL's in an Atom feed
  * @param title the optional title of the feed
  * @param contentType the content type of the entries in the feed
- * @tparam T
+ * @tparam T the type for the content of the generated feed
  */
 class MemoryFeedStore[T](feedName: String,
                          urlBuilder: UrlBuilder,
@@ -29,14 +29,23 @@ class MemoryFeedStore[T](feedName: String,
 
   override val minId = 0L
 
-  override def maxId = entries.size+1
+  override def maxId = entries.size + 1
 
   override def push(it: Iterable[T]) = {
-    val timestamp: LocalDateTime = new LocalDateTime()
-    it foreach { t =>
-      entries append Entry(generateEntryID, timestamp, Content(t, ""), Nil)
+    val timestamp: DateTime = new DateTime()
+    it foreach { entry =>
+      push(generateEntryID(), entry, new DateTime())
     }
   }
+
+  override def push(uuid: String, entry: T): Unit = {
+    push(uuid, entry, new DateTime())
+  }
+
+  private def push(uuid: String, entry: T, timestamp: DateTime): Unit = {
+    entries append Entry(uuid, timestamp, Content(entry, ""), Nil)
+  }
+
 
   /**
    * @param start the start entry
@@ -51,8 +60,8 @@ class MemoryFeedStore[T](feedName: String,
   }
 
   def entriesWithIndex: ListBuffer[FeedEntry] = {
-    entries.zipWithIndex.map { f: (Entry[T], Int) =>
-      FeedEntry(f._2 + 1.toLong, f._1)
+    entries.zipWithIndex.map { case (entry, index) =>
+      FeedEntry(index + 1.toLong, entry)
     }
   }
 
@@ -71,13 +80,13 @@ class MemoryFeedStore[T](feedName: String,
     entriesWithIndex.toList.reverse.take(count)
   }
 
-  override def push(uuid: String, entry: T): Unit = ???
+
 
 }
 
 object MemoryFeedStore {
 
-  private def newUrlBuilder(baseUrl:Url, feedName:String) = new UrlBuilder {
+  def newUrlBuilder(baseUrl:Url, feedName:String) = new UrlBuilder {
 
     override def base: Url = baseUrl
 

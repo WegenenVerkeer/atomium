@@ -29,7 +29,7 @@ trait FeedStore[E] {
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  def push(entries: Iterable[E])
+  def push(entries: Iterable[E]) : Unit
 
   /**
    * push a single entry to the feed

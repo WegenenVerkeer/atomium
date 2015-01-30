@@ -37,11 +37,13 @@ object AtomiumBuild extends Build
   lazy val clientScalaModule = Project(
     clientScalaModuleName,
     file("modules/client-scala"),
-    settings = buildSettings(clientScalaModuleName)
-  ).dependsOn(formatModule)
-   .aggregate(formatModule)
+    settings = buildSettings(clientScalaModuleName) ++ Seq (
+      publishArtifact in Test := true
+    )
+  ).dependsOn(formatModule, serverModule)
+   .aggregate(formatModule, serverModule)
 
-
+  
   //----------------------------------------------------------------
   val commonPlayModuleName = Name + "-common-play"
   lazy val commonPlayModule = Project(
@@ -54,11 +56,11 @@ object AtomiumBuild extends Build
 
 
   //----------------------------------------------------------------
-  val clientplayModuleName = Name + "-client-play"
+  val clientPlayModuleName = Name + "-client-play"
   lazy val clientPlayModule = Project(
-    clientplayModuleName,
+    clientPlayModuleName,
     file("modules/client-play"),
-    settings = buildSettings(clientplayModuleName, clientPlayDependencies)
+    settings = buildSettings(clientPlayModuleName, clientPlayDependencies)
   ).dependsOn(clientScalaModule, commonPlayModule)
     .aggregate(clientScalaModule, commonPlayModule)
 
@@ -72,6 +74,7 @@ object AtomiumBuild extends Build
     file("modules/server"),
     settings = buildSettings(serverModuleName)
   ).dependsOn(formatModule)
+
 
 
 
@@ -114,7 +117,7 @@ object AtomiumBuild extends Build
   lazy val serverPlayModule = Project(
     serverPlayModuleName,
     file("modules/server-play"),
-    settings = buildSettings(serverJdbcModuleName)
+    settings = buildSettings(serverPlayModuleName)
   ).enablePlugins(PlayScala)
 	.settings(libraryDependencies ++= Seq(filters, scalaTestPlay))
     .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
@@ -147,8 +150,9 @@ object AtomiumBuild extends Build
     file("."),
     settings = buildSettings(Name)
   ).aggregate(
-      javaFormatModuleName,
+      javaFormatModule,
       formatModule,
+      commonPlayModule,
       clientScalaModule,
       clientJavaModule,
       serverModule,
