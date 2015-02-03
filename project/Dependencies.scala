@@ -6,17 +6,15 @@ object Dependencies {
   val playVersion = "2.3.6"
 
   // main deps
-  val scalaLogging      = "com.typesafe"            %%    "scalalogging-slf4j"      % "1.0.1"
   val logback           = "ch.qos.logback"          %     "logback-classic"         % "1.1.1"
   val jodaTime          = "joda-time"               %     "joda-time"               % "2.3"
   val jodaConvert       = "org.joda"                %     "joda-convert"            % "1.2"
   val playJson          = "com.typesafe.play"       %%    "play-json"               % playVersion
   val playWs            = "com.typesafe.play"       %%    "play-ws"                 % playVersion
   val play              = "com.typesafe.play"       %%    "play"                    % playVersion
-  val scalaArm          = "com.jsuereth"            %%    "scala-arm"               % "1.3"
   val mongoJavaDriver   = "org.mongodb"             %     "mongo-java-driver"       % "2.0"
-  val casbah            = "org.mongodb"             %%    "casbah"                  % "2.6.2"
-  val slick             = "com.typesafe.slick"      %%    "slick"                   % "2.0.0"
+  val casbah            = "org.mongodb"             %%    "casbah"                  % "2.8.0"
+  val slick             = "com.typesafe.slick"      %%    "slick"                   % "2.1.0"
   val slickPostgres     = "com.github.tminglei"     %%    "slick-pg"                % "0.7.0"
 
   // test deps
@@ -43,11 +41,9 @@ object Dependencies {
 
 
   val mainDependencies = Seq(
-    scalaLogging,
     logback,
     jodaTime,
-	  jodaConvert,
-    scalaArm
+	  jodaConvert
   )
 
   val mainTestDependencies = Seq (

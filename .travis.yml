@@ -1,7 +1,7 @@
 language: scala
 scala:
 - 2.10.3
-script: sbt clean test
+script: sbt clean +test
 jdk:
 - oraclejdk7
 services:
@@ -20,4 +20,4 @@ env:
   - secure: LbfGcUboNsfAon9W3MP+XxtM9O3giR71plb4tB2UjcDvW3TatDQdcxEoF7CVVVQLNLbRrSX0iFs8aA2h1Uw4nM1oNS9kY8GKwYEZyYplu4rN05UWCIkqoCA0oWeqmHqZLNftrYdysy3hroJZOQccE+DHhj3w1Pqu3rfLjpeNAw8=
 
 after_success:
-  - "[[ $TRAVIS_BRANCH == \"develop\" ]] && { sbt publish; };"
+  - "[[ $TRAVIS_BRANCH == \"develop\" ]] && { sbt +publish; };"
