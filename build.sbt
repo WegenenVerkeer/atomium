@@ -13,7 +13,9 @@ com.typesafe.sbt.site.JekyllSupport.requiredGems := Map(
 
 organization in ThisBuild := "be.wegenenverkeer"
 
-scalaVersion in ThisBuild := "2.10.4"
+scalaVersion in ThisBuild := "2.11.5"
+
+crossScalaVersions := Seq("2.10.4", "2.11.5")
 
 scalacOptions in ThisBuild := Seq(
   "-deprecation",
