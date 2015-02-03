@@ -4,6 +4,7 @@ import _root_.java.util.UUID
 
 import be.wegenenverkeer.atom.models.EntryModel
 import be.wegenenverkeer.atom.slick.FeedComponent
+import be.wegenenverkeer.atomium.format.{Entry, Content}
 import org.joda.time.DateTime
 
 /**

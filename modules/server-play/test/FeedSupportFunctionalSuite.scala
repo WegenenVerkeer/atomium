@@ -1,5 +1,6 @@
 import be.wegenenverkeer.atom.PlayJsonFormats._
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atomium.format.{Feed, Url}
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.play.{OneServerPerSuite, WsScalaTestClient}
 import play.api.http.{HeaderNames, MimeTypes, Status}

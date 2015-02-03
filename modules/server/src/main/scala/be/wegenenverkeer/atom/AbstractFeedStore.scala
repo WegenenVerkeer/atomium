@@ -2,6 +2,8 @@ package be.wegenenverkeer.atom
 
 import _root_.java.util.UUID
 
+import be.wegenenverkeer.atomium.format.{Entry, Feed, Link}
+
 /**
  * A feed store is responsible for the persistence of feeds.
  * This abstract class serves as a base class for more specific FeedStore implementations.

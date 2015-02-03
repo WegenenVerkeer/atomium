@@ -1,4 +1,5 @@
-import be.wegenenverkeer.atom.{MemoryFeedStore, FeedStoreTestSupport, Url, UrlBuilder}
+import be.wegenenverkeer.atom.{MemoryFeedStore, FeedStoreTestSupport, UrlBuilder}
+import be.wegenenverkeer.atomium.format.Url
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 

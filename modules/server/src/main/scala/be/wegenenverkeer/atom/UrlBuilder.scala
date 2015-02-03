@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Url
+
 /**
  * Responsible for creating URL's in an Atom feed.
  */

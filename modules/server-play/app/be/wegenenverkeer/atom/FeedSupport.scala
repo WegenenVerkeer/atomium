@@ -2,6 +2,7 @@ package be.wegenenverkeer.atom
 
 import _root_.java.util.Locale
 
+import be.wegenenverkeer.atomium.format.{Url, Feed, Generator}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Duration}

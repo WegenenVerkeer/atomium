@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.{Url, Link}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {

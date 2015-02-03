@@ -3,6 +3,7 @@ package be.wegenenverkeer.atom
 import _root_.java.net.ServerSocket
 
 import be.wegenenverkeer.atom.MongoFeedStore.Keys
+import be.wegenenverkeer.atomium.format.Url
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject

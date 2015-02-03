@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format._
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import play.api.data.validation.ValidationError

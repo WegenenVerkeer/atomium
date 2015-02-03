@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Feed
+
 /**
  * A feed service provides the following functionality:
  * - push new entries to the feed

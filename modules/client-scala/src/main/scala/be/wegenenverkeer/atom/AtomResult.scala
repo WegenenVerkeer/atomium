@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Entry
+
 import scala.util.{Failure, Success, Try}
 
 trait AtomResult[+E] {

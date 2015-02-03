@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Url
 import org.scalatest.Matchers
 
 /**

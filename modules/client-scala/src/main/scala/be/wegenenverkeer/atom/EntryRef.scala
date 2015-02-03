@@ -2,6 +2,8 @@ package be.wegenenverkeer.atom
 
 import _root_.java.net.URI
 
+import be.wegenenverkeer.atomium.format.{Feed, Entry, Url}
+
 /** The feed entry id reference contains the data that indicates which entry was last consumed.
   *
   * @param entryId the entry id of the last consumed item

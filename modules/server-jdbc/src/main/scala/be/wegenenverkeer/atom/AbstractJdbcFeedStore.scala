@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.jdbc.{EntryDbModel, Dialect}
+import be.wegenenverkeer.atomium.format.{Entry, Content}
 import org.joda.time.DateTime
 
 abstract class AbstractJdbcFeedStore[E](context: JdbcContext,

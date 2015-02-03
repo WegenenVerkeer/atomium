@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Url
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.duration._

@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Feed
+
 import scala.util.Try
 
 trait FeedProvider[E] {

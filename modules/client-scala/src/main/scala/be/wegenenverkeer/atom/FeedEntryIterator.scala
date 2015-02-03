@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.async.{AsyncFeedEntryIterator, AsyncFeedProvider}
+import be.wegenenverkeer.atomium.format.Feed
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}

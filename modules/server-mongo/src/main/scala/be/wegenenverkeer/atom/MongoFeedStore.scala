@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.MongoFeedStore.Keys
+import be.wegenenverkeer.atomium.format.{Entry, Content}
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.{DBObject, casbah}

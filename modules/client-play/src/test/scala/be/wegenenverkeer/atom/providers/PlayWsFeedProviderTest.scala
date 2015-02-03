@@ -3,7 +3,9 @@ package be.wegenenverkeer.atom.providers
 import javax.xml.bind.JAXBContext
 
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atom.java.Feed
 import be.wegenenverkeer.atom.java.{Adapters, Feed => JFeed}
+import be.wegenenverkeer.atomium.format.{Entry, Feed, JFeedConverters, Url}
 import be.wegenenverkeer.ws.ManagedPlayApp
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}

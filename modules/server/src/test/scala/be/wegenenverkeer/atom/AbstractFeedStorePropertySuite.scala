@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.{Link, Url, Feed}
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}

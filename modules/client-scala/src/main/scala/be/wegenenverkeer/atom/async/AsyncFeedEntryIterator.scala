@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom.async
 
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atomium.format.{Url, Feed, Entry}
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}

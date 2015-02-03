@@ -2,6 +2,7 @@ import _root_.java.util.{Timer, TimerTask}
 
 import akka.japi.Option.Some
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atomium.format.Url
 import controllers.{Event, EventController, StringController}
 import play.api.GlobalSettings
 import play.api.mvc.WithFilters

@@ -2,6 +2,7 @@ package be.wegenenverkeer.atom.providers
 
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.async.AsyncFeedProvider
+import be.wegenenverkeer.atomium.format.{Feed, Url, Link}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.joda.time.DateTime
 import play.api.http.HeaderNames

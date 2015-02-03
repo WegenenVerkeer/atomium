@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.{Url, Entry, Content}
 import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer

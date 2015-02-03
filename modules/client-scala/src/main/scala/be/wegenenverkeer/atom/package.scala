@@ -1,5 +1,7 @@
 package be.wegenenverkeer
 
+import be.wegenenverkeer.atomium.format.Feed
+
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 

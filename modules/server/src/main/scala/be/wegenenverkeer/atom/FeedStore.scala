@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.Feed
+
 /**
  * A feed store is responsible for the persistence of feeds.
  *

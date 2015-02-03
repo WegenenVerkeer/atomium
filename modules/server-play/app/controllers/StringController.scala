@@ -1,6 +1,7 @@
 package controllers
 
 import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atomium.format.JFeedConverters
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule

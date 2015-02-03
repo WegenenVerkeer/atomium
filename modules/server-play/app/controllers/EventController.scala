@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBContext
 import be.wegenenverkeer.atom.PlayJsonFormats._
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atom.java.{Feed => JFeed}
+import be.wegenenverkeer.atomium.format.{JFeedConverters, Feed}
 import play.api.http.MimeTypes
 import play.api.mvc.Controller
 

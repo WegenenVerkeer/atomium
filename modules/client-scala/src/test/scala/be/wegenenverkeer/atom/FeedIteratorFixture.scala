@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.FeedEntryIterator.Implicits._
+import be.wegenenverkeer.atomium.format.{Link, Url, Feed}
 import org.joda.time.DateTime
 
 import scala.util.{Success, Try}

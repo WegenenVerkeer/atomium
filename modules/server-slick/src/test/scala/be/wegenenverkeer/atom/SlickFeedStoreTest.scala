@@ -2,6 +2,7 @@ package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.models.EntryModel
 import be.wegenenverkeer.atom.slick.FeedDAL
+import be.wegenenverkeer.atomium.format.Url
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 

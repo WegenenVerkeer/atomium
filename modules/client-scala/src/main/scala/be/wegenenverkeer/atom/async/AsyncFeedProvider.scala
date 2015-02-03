@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom.async
 
-import be.wegenenverkeer.atom.{EntryRef, Feed}
+import be.wegenenverkeer.atom.EntryRef
+import be.wegenenverkeer.atomium.format.Feed
 
 import scala.concurrent.Future
 

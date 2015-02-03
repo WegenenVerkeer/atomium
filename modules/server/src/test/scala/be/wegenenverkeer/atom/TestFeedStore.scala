@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atom
 
+import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+
 import scala.collection.immutable.TreeMap
 
 import org.joda.time.DateTime

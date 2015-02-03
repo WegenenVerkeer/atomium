@@ -3,6 +3,7 @@ package be.wegenenverkeer.atom
 import _root_.java.sql.{Connection, DriverManager}
 
 import be.wegenenverkeer.atom.jdbc.PostgresDialect
+import be.wegenenverkeer.atomium.format.Url
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, Matchers, FunSuite}
 
 class JdbcFeedStoreTest extends FunSuite
