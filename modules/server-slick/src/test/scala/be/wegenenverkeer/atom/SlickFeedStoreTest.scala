@@ -8,7 +8,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 import scala.slick.driver.H2Driver
 import scala.slick.driver.H2Driver.simple._
 
-class ManualSlickFeedStoreTest extends FunSuite
+class SlickFeedStoreTest extends FunSuite
   with FeedStoreTestSupport
   with Matchers
   with BeforeAndAfterAll
@@ -19,7 +19,7 @@ class ManualSlickFeedStoreTest extends FunSuite
 
   implicit var session: Session = _
 
-  var feedStore: ManualSlickFeedStore[String] = _
+  var feedStore: SlickFeedStore[String] = _
   val ENTRIES_TABLE_NAME = "my_feed_entries"
 
   val db = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver")
@@ -34,7 +34,6 @@ class ManualSlickFeedStoreTest extends FunSuite
 
   override protected def afterEach(): Unit = {
     dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.drop
-    FeedModelRegistry.clear()
   }
 
   override protected def afterAll() = {
@@ -46,7 +45,7 @@ class ManualSlickFeedStoreTest extends FunSuite
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = ManualSlickFeedStore[String](
+  def createFeedStore = SlickFeedStore[String](
     dal,
     dal.createJdbcContext,
     feedName = "int_feed",

@@ -3,7 +3,7 @@ package be.wegenenverkeer.atom.java
 import be.wegenenverkeer.atom.slick.FeedComponent
 import be.wegenenverkeer.atom.{AbstractFeedStore, SlickJdbcContext, UrlBuilder}
 
-class ManualSlickFeedStore[E](feedComponent: FeedComponent,
+class SlickFeedStore[E](feedComponent: FeedComponent,
                        context: SlickJdbcContext,
                        feedName: String,
                        title: String,
@@ -12,7 +12,7 @@ class ManualSlickFeedStore[E](feedComponent: FeedComponent,
                        urlProvider: UrlBuilder) extends FeedStore[E](feedName, Option(title), urlProvider) {
 
   override def underlying: AbstractFeedStore[E] =
-    be.wegenenverkeer.atom.ManualSlickFeedStore[E](
+    be.wegenenverkeer.atom.SlickFeedStore[E](
       feedComponent = feedComponent,
       context = context,
       feedName = feedName,

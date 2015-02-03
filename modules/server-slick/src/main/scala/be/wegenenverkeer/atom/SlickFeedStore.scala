@@ -16,7 +16,7 @@ import be.wegenenverkeer.atom.slick.FeedComponent
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
-case class ManualSlickFeedStore[E](feedComponent: FeedComponent,
+case class SlickFeedStore[E](feedComponent: FeedComponent,
                        context: SlickJdbcContext,
                        feedName: String,
                        title: Option[String],

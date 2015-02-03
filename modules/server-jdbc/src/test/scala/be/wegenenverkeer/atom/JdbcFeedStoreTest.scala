@@ -5,7 +5,7 @@ import _root_.java.sql.{Connection, DriverManager}
 import be.wegenenverkeer.atom.jdbc.PostgresDialect
 import org.scalatest.{BeforeAndAfterEach, BeforeAndAfterAll, Matchers, FunSuite}
 
-class ManualJdbcFeedStoreTest extends FunSuite
+class JdbcFeedStoreTest extends FunSuite
 with FeedStoreTestSupport
 with Matchers
 with BeforeAndAfterAll
@@ -16,7 +16,7 @@ with BeforeAndAfterEach {
 
   val ENTRIES_TABLE_NAME = "my_feed_entries"
 
-  var feedStore: ManualJdbcFeedStore[String] = _
+  var feedStore: JdbcFeedStore[String] = _
 
   override protected def beforeEach() = {
     feedStore = createFeedStore
@@ -74,7 +74,7 @@ with BeforeAndAfterEach {
    * can use it here to run tests on H2.
    */
   def createFeedStore =
-    PgManualJdbcFeedStore[String](JdbcContext(connection), "test_feed", Some("title"), ENTRIES_TABLE_NAME, s => s, d => d, createUrlBuilder)
+    PgJdbcFeedStore[String](JdbcContext(connection), "test_feed", Some("title"), ENTRIES_TABLE_NAME, s => s, d => d, createUrlBuilder)
 
   def createUrlBuilder = new UrlBuilder {
 
@@ -85,12 +85,12 @@ with BeforeAndAfterEach {
 
 }
 
-case class PgManualJdbcFeedStore[E](context: JdbcContext,
+case class PgJdbcFeedStore[E](context: JdbcContext,
                                     feedName: String,
                                     title: Option[String],
                                     entryTableName: String,
                                     ser: E => String,
                                     deser: String => E,
                                     urlBuilder: UrlBuilder)
-  extends ManualJdbcFeedStore[E](context, feedName, title, entryTableName, ser, deser, urlBuilder)
+  extends JdbcFeedStore[E](context, feedName, title, entryTableName, ser, deser, urlBuilder)
   with PostgresDialect

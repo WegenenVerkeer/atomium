@@ -2,7 +2,7 @@ package be.wegenenverkeer.atom
 
 import be.wegenenverkeer.atom.jdbc.Dialect
 
-abstract class ManualJdbcFeedStore[E](context: JdbcContext,
+abstract class JdbcFeedStore[E](context: JdbcContext,
                                       feedName: String,
                                       title: Option[String],
                                       entryTableNm: String,
