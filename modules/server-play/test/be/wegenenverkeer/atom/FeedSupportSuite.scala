@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atom
 
-import be.wegenenverkeer.atom.PlayJsonFormats._
+import be.wegenenverkeer.atomium.play.{PlayJsonSupport, PlayJsonFormats}
+import PlayJsonFormats._
 import be.wegenenverkeer.atomium.format._
 import org.joda.time.{DateTimeUtils, DateTime}
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers, OptionValues}

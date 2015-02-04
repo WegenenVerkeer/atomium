@@ -1,11 +1,12 @@
 package be.wegenenverkeer.atom
 
-import _root_.java.util.Locale
+import java.util.Locale
 
 import be.wegenenverkeer.atomium.format.{Url, Feed, Generator}
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.{LazyLogging, Logger}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Duration}
+import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc._
 
@@ -17,7 +18,7 @@ import play.api.mvc._
  *
  * @tparam T the type of the feed entries²
  */
-trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors with Logging {
+trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors with LazyLogging {
 
   type FeedMarshaller = Feed[T] => Array[Byte]
 

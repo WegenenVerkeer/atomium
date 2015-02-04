@@ -1,5 +1,5 @@
-import be.wegenenverkeer.atom.{MemoryFeedStore, FeedStoreTestSupport, UrlBuilder}
 import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.server.{FeedStoreTestSupport, MemoryFeedStore, UrlBuilder}
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
@@ -20,6 +20,7 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
 
   def createUrlBuilder = new UrlBuilder {
     override def base: Url = Url("http://www.example.org/feeds")
+
     override def collectionLink: Url = ???
   }
 

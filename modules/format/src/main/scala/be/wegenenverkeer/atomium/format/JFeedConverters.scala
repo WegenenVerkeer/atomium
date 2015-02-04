@@ -1,37 +1,42 @@
 package be.wegenenverkeer.atomium.format
 
+import be.wegenenverkeer.atomium.japi.format
+
+import scala.collection.JavaConverters._
+
+
 object JFeedConverters {
 
-  implicit def feed2JFeed[T](feed: Feed[T]): JFeed[T] = {
-    new JFeed[T](
+  implicit def feed2JFeed[T](feed: Feed[T]): format.Feed[T] = {
+    new format.Feed[T](
       feed.id,
       feed.base.path,
       feed.title.orNull,
       feed.generator.map(generator2JGenerator).orNull,
       feed.updated,
-      feed.links.map(l => new JLink(l.rel, l.href.path)).asJava,
+      feed.links.map(l => new format.Link(l.rel, l.href.path)).asJava,
       feed.entries.map(e => entry2JEntry(e)).asJava
     )
   }
 
-  implicit def generator2JGenerator(generator: Generator): JGenerator = {
-    new JGenerator(
+  implicit def generator2JGenerator(generator: Generator): format.Generator = {
+    new format.Generator(
       generator.text,
       generator.uri.map(u => u.path).orNull,
       generator.version.getOrElse(null.asInstanceOf[String])
     )
   }
 
-  implicit def entry2JEntry[T](entry: Entry[T]): JEntry[T] = {
-    new JEntry[T](
+  implicit def entry2JEntry[T](entry: Entry[T]): format.Entry[T] = {
+    new format.Entry[T](
       entry.id,
       entry.updated,
-      new JContent[T](entry.content.value, entry.content.`type`),
-      entry.links.map(l => new JLink(l.rel, l.href.path)).asJava
+      new format.Content[T](entry.content.value, entry.content.`type`),
+      entry.links.map(l => new format.Link(l.rel, l.href.path)).asJava
     )
   }
 
-  implicit def jFeed2Feed[T](jfeed: be.wegenenverkeer.atom.java.Feed[T]): Feed[T] = {
+  implicit def jFeed2Feed[T](jfeed: format.Feed[T]): Feed[T] = {
     Feed(
       jfeed.getId,
       Url(jfeed.getBase),
@@ -43,7 +48,7 @@ object JFeedConverters {
     )
   }
 
-  implicit def jGenerator2Generator(jGenerator: JGenerator): Option[Generator] = {
+  implicit def jGenerator2Generator(jGenerator: format.Generator): Option[Generator] = {
     jGenerator match {
       case null => None
       case _ => Some(Generator(jGenerator.getText, Option(jGenerator.getUri).map(p => Url(p)),
@@ -51,7 +56,7 @@ object JFeedConverters {
     }
   }
 
-  implicit def jEntry2Entry[T](jEntry: JEntry[T]): Entry[T] = {
+  implicit def jEntry2Entry[T](jEntry: format.Entry[T]): Entry[T] = {
     Entry[T](
       jEntry.getId,
       jEntry.getUpdated,

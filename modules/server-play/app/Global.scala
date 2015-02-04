@@ -3,6 +3,7 @@ import _root_.java.util.{Timer, TimerTask}
 import akka.japi.Option.Some
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.server.{FeedService, Context, MemoryFeedStore, AbstractFeedStore}
 import controllers.{Event, EventController, StringController}
 import play.api.GlobalSettings
 import play.api.mvc.WithFilters
@@ -28,7 +29,7 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   //event service
 
   val events_id = "events"
-  val eventStore: AbstractFeedStore[Event] = new MemoryFeedStore[Event](events_id, Url(s"http://localhost:9000/feeds/$events_id/"), Some("events"), "application/xml")
+  val eventStore = new MemoryFeedStore[Event](events_id, Url(s"http://localhost:9000/feeds/$events_id/"), Some("events"), "application/xml")
   val eventService = new FeedService[Event, Context](events_id, 10, { (s, c) => eventStore })
   val eventController = new EventController(eventService)
 

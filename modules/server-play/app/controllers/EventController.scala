@@ -2,10 +2,12 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atom.PlayJsonFormats._
-import be.wegenenverkeer.atom._
-import be.wegenenverkeer.atom.java.{Feed => JFeed}
+import be.wegenenverkeer.atom.FeedSupport
+import be.wegenenverkeer.atomium.play.{PlayJsonSupport, JaxbSupport, PlayJsonFormats}
+import PlayJsonFormats._
+import be.wegenenverkeer.atomium.japi.format.{Feed => JFeed}
 import be.wegenenverkeer.atomium.format.{JFeedConverters, Feed}
+import be.wegenenverkeer.atomium.server.{Context, FeedService}
 import play.api.http.MimeTypes
 import play.api.mvc.Controller
 

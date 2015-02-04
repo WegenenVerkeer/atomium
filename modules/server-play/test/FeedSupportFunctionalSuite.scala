@@ -1,6 +1,8 @@
-import be.wegenenverkeer.atom.PlayJsonFormats._
 import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atomium.format.{Feed, Url}
+import be.wegenenverkeer.atomium.play.PlayJsonFormats._
+import be.wegenenverkeer.atomium.play.PlayJsonSupport
+import be.wegenenverkeer.atomium.server.{Context, FeedService, FeedStore, MemoryFeedStore}
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.play.{OneServerPerSuite, WsScalaTestClient}
 import play.api.http.{HeaderNames, MimeTypes, Status}
@@ -8,7 +10,7 @@ import play.api.mvc.Controller
 import play.api.test.{DefaultAwaitTimeout, FakeApplication, FutureAwaits}
 
 class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
-  with Matchers with FutureAwaits with DefaultAwaitTimeout with Status with WsScalaTestClient {
+with Matchers with FutureAwaits with DefaultAwaitTimeout with Status with WsScalaTestClient {
 
   val feedName = "functest"
   val feedPath = s"/feeds/$feedName"
@@ -24,7 +26,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
     entriesPerPage = 2,
     feedStoreFactory = feedStoreFactory)
 
-  implicit val context: Context = new Context(){} //memory feed store does not require a context
+  implicit val context: Context = new Context() {} //memory feed store does not require a context
 
   val feedController = new Controller with FeedSupport[String] {
 
@@ -43,7 +45,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
   implicit override lazy val app: FakeApplication =
     FakeApplication(
       withRoutes = {
-        case ("GET", "/feeds/functest") => feedController.headOfFeed()
+        case ("GET", "/feeds/functest")             => feedController.headOfFeed()
         case ("GET", "/feeds/functest/0/forward/2") => feedController.getFeedPage(0, 2, forward = true)
       }
     )
@@ -94,7 +96,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
     response.status shouldBe OK
     val etag = response.header(HeaderNames.ETAG)
 
-    val notModified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_NONE_MATCH -> etag.get)get())
+    val notModified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_NONE_MATCH -> etag.get) get())
     notModified.status shouldBe NOT_MODIFIED
   }
 
@@ -108,7 +110,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
 
     //modify feed
     feedService.push("bar")
-    val modified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_NONE_MATCH -> etag.get)get())
+    val modified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_NONE_MATCH -> etag.get) get())
     modified.status shouldBe OK
   }
 
@@ -120,7 +122,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
     response.status shouldBe OK
     val lastModified = response.header(HeaderNames.LAST_MODIFIED)
 
-    val notModified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_MODIFIED_SINCE -> lastModified.get)get())
+    val notModified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_MODIFIED_SINCE -> lastModified.get) get())
     notModified.status shouldBe NOT_MODIFIED
   }
 
@@ -139,7 +141,7 @@ class FeedSupportFunctionalSuite extends FunSuite with OneServerPerSuite
     Thread.sleep(1000)
     feedService.push("bar")
 
-    val modified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_MODIFIED_SINCE -> lastModified.get)get())
+    val modified = await(wsUrl(feedPath).withHeaders(HeaderNames.IF_MODIFIED_SINCE -> lastModified.get) get())
     modified.status shouldBe OK
   }
 }
