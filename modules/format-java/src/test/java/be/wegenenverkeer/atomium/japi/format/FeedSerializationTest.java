@@ -78,9 +78,9 @@ public class FeedSerializationTest {
         jaxbElementFeed = new Feed<>();
         jaxbElementFeed.setId("urn:id:" + UUID.randomUUID().toString());
         jaxbElementFeed.setUpdated(dateTime);
-        JAXBElement<Integer> jaxbElement = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
+        JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
         jaxbElementFeed.getEntries().add(new Entry<>("id1", new Content<>(jaxbElement, "application/xml")));
-        JAXBElement<Integer> jaxbElement2 = new JAXBElement<Integer>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
+        JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
         jaxbElementFeed.getEntries().add(new Entry<>("id2", new Content<>(jaxbElement2, "application/xml")));
 
     }
@@ -105,9 +105,8 @@ public class FeedSerializationTest {
 
     private void checkXml(Feed feed) throws JAXBException {
         String xml = marshalToXml(feed);
-        System.out.println(xml);
         Feed feedFromXml = unmarshalFromXml(xml);
-        Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<Integer>(jaxbContext, Integer.class));
+        Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<>(jaxbContext, Integer.class));
         assertEquals(feed.getUpdated(), feedFromXml.getUpdated());
         feedFromXml.setUpdated(feed.getUpdated());
         assertEquals(feed, feedFromXml);
@@ -115,7 +114,6 @@ public class FeedSerializationTest {
 
     private void checkJson(Feed feed, TypeReference typeReference) throws IOException {
         String json = marshalToJson(feed);
-        System.out.println(json);
         Feed feedFromJson = unmarshalFromJson(json, typeReference);
         assertEquals(feed.getUpdated(), feedFromJson.getUpdated());
         feedFromJson.setUpdated(feed.getUpdated());
