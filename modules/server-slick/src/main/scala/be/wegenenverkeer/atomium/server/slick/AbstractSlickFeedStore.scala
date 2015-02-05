@@ -2,9 +2,9 @@ package be.wegenenverkeer.atomium.server.slick
 
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{Content, Entry}
+import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
+import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
-import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import org.joda.time.DateTime
 
 /**
@@ -16,16 +16,16 @@ import org.joda.time.DateTime
  * @param title the optional title of the feed
  * @param ser function to serialize an element to a String
  * @param deser function to deserialize a String to an element
- * @param urlBuilder helper to build urls
+ * @param url the base `Url`
  * @tparam E type of the elements in the feed
  */
 abstract class AbstractSlickFeedStore[E](feedName: String,
                                          title: Option[String],
                                          ser: E => String,
                                          deser: String => E,
-                                         urlBuilder: UrlBuilder)
+                                         url: Url)
                                         (implicit context: SlickJdbcContext)
-  extends AbstractFeedStore[E, SlickJdbcContext](feedName, title, urlBuilder) {
+  extends AbstractFeedStore[E, SlickJdbcContext](feedName, title, url) {
 
   val feedComponent: FeedComponent
 

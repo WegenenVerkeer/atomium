@@ -5,20 +5,10 @@ import org.joda.time.DateTime
 
 import scala.collection.immutable.TreeMap
 
-object TestFeedStore {
-
-  val urlBuilder: UrlBuilder = new UrlBuilder {
-    override def base: Url = Url("http://www.example.org/testfeed")
-
-    override def collectionLink: Url = ???
-  }
-
-}
-
 class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
   "test_store",
   None,
-  TestFeedStore.urlBuilder) {
+  Url("http://www.example.org/testfeed")) {
 
   var skip = 0
   var nextSequenceNum = 0L

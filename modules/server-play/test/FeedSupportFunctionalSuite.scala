@@ -23,7 +23,8 @@ class FeedSupportFunctionalSuite
   val feedStore = new MemoryFeedStore[String, Context](
     feedName,
     Url(s"http://localhost/feeds/$feedName"),
-    None
+    None,
+    "text/plain"
   )
 
   val feedService = new FeedService[String, Context](

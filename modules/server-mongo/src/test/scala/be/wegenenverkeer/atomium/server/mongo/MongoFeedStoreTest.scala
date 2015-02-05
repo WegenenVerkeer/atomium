@@ -3,8 +3,8 @@ package be.wegenenverkeer.atomium.server.mongo
 import _root_.java.net.ServerSocket
 
 import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
-import be.wegenenverkeer.atomium.server.{FeedStoreTestSupport, UrlBuilder}
 import com.github.simplyscala.{MongoEmbedDatabase, MongodProps}
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
@@ -12,8 +12,6 @@ import com.mongodb.casbah.commons.conversions.scala.{DeregisterJodaTimeConversio
 import com.mongodb.{MongoClient => JavaMongoClient}
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
-
-import scala.util.Try
 
 class MongoFeedStoreTest
   extends FunSuite with Matchers with BeforeAndAfterAll
@@ -102,18 +100,12 @@ class MongoFeedStoreTest
     block(context)
   }
 
-  def createUrlBuilder = new UrlBuilder {
-    override def base: Url = Url("http://www.example.org")
-
-    override def collectionLink: Url = ???
-  }
-
   def createFeedStore[T:Manifest](feedName:String)(implicit context: MongoContext) = new MongoFeedStore[T](
     feedName = feedName,
     feedInfoCollectionName = "feed_info",
     ser = i => MongoDBObject("value" -> i),
     deser = dbo => dbo.as[T]("value"),
-    urlProvider = createUrlBuilder
+    url = Url("http://www.example.org")
   )
 
 

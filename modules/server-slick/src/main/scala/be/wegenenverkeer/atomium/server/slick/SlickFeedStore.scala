@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.server.slick
 
+import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 
 /**
@@ -12,7 +13,7 @@ import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
  * @param entriesTableName the name of the table storing the entries for this feed, must be created explicitly
  * @param ser function to serialize an element to a String
  * @param deser function to deserialize a String to an element
- * @param urlBuilder helper to build urls
+ * @param url the base `Url`
  * @tparam E type of the elements in the feed
  */
 case class SlickFeedStore[E](feedComponent: FeedComponent,
@@ -21,9 +22,9 @@ case class SlickFeedStore[E](feedComponent: FeedComponent,
                              entriesTableName: String,
                              ser: E => String,
                              deser: String => E,
-                             urlBuilder: UrlBuilder)
+                             url: Url)
                             (implicit context:SlickJdbcContext)
-  extends AbstractSlickFeedStore[E](feedName, title, ser, deser, urlBuilder) {
+  extends AbstractSlickFeedStore[E](feedName, title, ser, deser, url) {
 
 
   import feedComponent.driver.simple._

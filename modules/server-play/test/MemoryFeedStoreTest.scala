@@ -13,15 +13,9 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
     block(new Context {})
   }
 
-  def createUrlBuilder = new UrlBuilder {
-    override def base: Url = Url("http://www.example.org/feeds")
-
-    override def collectionLink: Url = ???
-  }
-
   def createFeedStore(implicit context: Context) = new MemoryFeedStore[String, Context](
     feedName = "int_feed",
-    urlBuilder = createUrlBuilder,
+    url = Url("http://www.example.org/feeds"),
     title = Some("Test"),
     "text/plain"
   )

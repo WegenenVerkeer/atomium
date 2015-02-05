@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server
 
 import _root_.java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{Entry, Feed, Link}
+import be.wegenenverkeer.atomium.format.{Entry, Feed, Link, Url}
 
 /**
  * A feed store is responsible for the persistence of feeds.
@@ -11,8 +11,8 @@ import be.wegenenverkeer.atomium.format.{Entry, Feed, Link}
  * @tparam E type of the elements in the feed
  */
 abstract class AbstractFeedStore[E, C <: Context](feedName: String,
-                                    title: Option[String],
-                                    urlProvider: UrlBuilder) extends FeedStore[E, C] {
+                                                  title: Option[String],
+                                                  url: Url) extends FeedStore[E, C] {
 
   /**
    * Retrieves a page of the feed.
@@ -23,7 +23,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    *                else navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(start:Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
+  override def getFeed(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
     require(pageSize > 0)
     val allowed =
       if (forward)
@@ -58,10 +58,12 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
     var feedEntries: List[FeedEntry] = Nil
 
     //entries are sorted by id ascending
-    if (start == entries.head.sequenceNr) { //start should be excluded
+    if (start == entries.head.sequenceNr) {
+      //start should be excluded
       feedEntries = entries.tail.take(pageSize).reverse
       nextId = Some(start) //nextId is start
-    } else { //there is no next page
+    } else {
+      //there is no next page
       feedEntries = entries.take(pageSize).reverse
     }
     if (feedEntries.size > 0 && feedEntries.head.sequenceNr != entries.last.sequenceNr)
@@ -80,10 +82,12 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
     var feedEntries: List[FeedEntry] = Nil
 
     //backward => entries are sorted by id descending
-    if (start == entries.head.sequenceNr) { // exclude start
+    if (start == entries.head.sequenceNr) {
+      // exclude start
       feedEntries = entries.tail.take(pageSize)
       previousId = Some(start) //previousId is start
-    } else { //there is no next page
+    } else {
+      //there is no next page
       feedEntries = entries.take(pageSize)
     }
     if (feedEntries.size > 0 && feedEntries.last.sequenceNr != entries.last.sequenceNr)
@@ -101,19 +105,19 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    * @return a page feed or None
    */
   private[this] def toFeed(pageSize: Int,
-                       entries: List[FeedEntry],
-                       previousEntryId: Option[Long],
-                       nextEntryId: Option[Long]): Option[Feed[E]] = {
-    
+                           entries: List[FeedEntry],
+                           previousEntryId: Option[Long],
+                           nextEntryId: Option[Long]): Option[Feed[E]] = {
+
     for {
       entries <- Some(entries); if entries.size > 0
     } yield Feed[E](
       id = feedName,
-      base = urlProvider.base,
+      base = url,
       title = title,
       updated = entries.head.entry.updated,
-      links = List(Link(Link.selfLink, urlProvider.feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true)),
-        Link(Link.lastLink, urlProvider.feedLink(minId, pageSize, forward = true))) ++
+      links = List(Link(Link.selfLink, feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true)),
+        Link(Link.lastLink, feedLink(minId, pageSize, forward = true))) ++
         nextEntryId.map { _ =>
           link(Link.nextLink, entries.last.sequenceNr, pageSize, forward = false)
         } ++
@@ -135,7 +139,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
     require(pageSize > 0, "page size must be greater than 0")
 
     //fetch most recent entries from feed, we ask for one more than the pageSize to check if we are on the last page
-    val entries: List[FeedEntry] = getMostRecentFeedEntries(pageSize+1)
+    val entries: List[FeedEntry] = getMostRecentFeedEntries(pageSize + 1)
 
     if (entries.size > 0) {
       //we possibly need to return less entries to keep paging consistent => paging from tail to head or vice versa
@@ -147,7 +151,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
         entries.take(limit),
         None,
         entries.drop(limit) match {
-          case Nil => None
+          case Nil    => None
           case h :: _ => Some(h.sequenceNr)
         }
       )
@@ -188,13 +192,13 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    * @param start the starting entry (inclusive), MUST be returned in the entries
    * @param count the number of entries to return
    * @param ascending if true return entries with sequence numbers >= start in ascending order
-   *                else return entries with sequence numbers <= start in descending order
+   *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  def getFeedEntries(start:Long, count: Int, ascending: Boolean)(implicit context: C): List[FeedEntry]
+  def getFeedEntries(start: Long, count: Int, ascending: Boolean)(implicit context: C): List[FeedEntry]
 
-  protected def getNextLink(id: Long, count: Int, next: Option[Long]) : Option[Link] = {
-    next.map { _ => 
+  protected def getNextLink(id: Long, count: Int, next: Option[Long]): Option[Link] = {
+    next.map { _ =>
       link(Link.nextLink, id, count, forward = false)
     }
   }
@@ -206,17 +210,31 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
   }
 
   protected def link(l: String, start: Long, pageSize: Int, forward: Boolean): Link = {
-    Link(l, urlProvider.feedLink(start, pageSize, forward))
+    Link(l, feedLink(start, pageSize, forward))
   }
 
   protected def generateEntryID(): String = {
     s"urn:uuid:${UUID.randomUUID().toString}"
   }
 
+  /**
+   * Creates a link to a feed page.
+   *
+   * @param startId the starting entry's id (non inclusive)
+   * @param count the number of entries in the page
+   * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
+   *                else navigate to 'next' elements in feed (towards last page of feed)
+   * @return the URL
+   */
+  protected def feedLink(startId:Long, count: Int, forward: Boolean): Url = {
+    val direction = if (forward) "forward" else "backward"
+    Url(startId.toString) / direction / count.toString
+  }
+
   protected case class FeedEntry(sequenceNr: Long, entry: Entry[E])
 
   private[this] case class ProcessedFeedEntries(previousSequenceNr: Option[Long],
-                                            feedEntries: List[FeedEntry],
-                                            nextSequenceNr: Option[Long])
+                                                feedEntries: List[FeedEntry],
+                                                nextSequenceNr: Option[Long])
 
 }

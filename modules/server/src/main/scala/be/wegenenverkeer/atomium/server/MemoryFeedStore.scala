@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Url, Entry, Content}
+import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
 import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
@@ -9,21 +9,16 @@ import scala.collection.mutable.ListBuffer
  * An in memory feedstore. This implementation is very inefficient and should only be used for demo or test purposes
  *
  * @param feedName the name of the feed
- * @param urlBuilder responsible for creating URL's in an Atom feed
+ * @param url the base `Url`
  * @param title the optional title of the feed
  * @param contentType the content type of the entries in the feed
  * @tparam T the type for the content of the generated feed
  */
 class MemoryFeedStore[T, C <: Context](feedName: String,
-                         urlBuilder: UrlBuilder,
-                         title : Option[String],
-                         contentType: String) extends AbstractFeedStore[T, C](feedName, title, urlBuilder) {
+                                       url: Url,
+                                       title: Option[String],
+                                       contentType: String) extends AbstractFeedStore[T, C](feedName, title, url) {
 
-  def this(feedName: String,
-           baseUrl: Url,
-           title: Option[String],
-           contentType: String = "text/plain") =
-    this(feedName, MemoryFeedStore.newUrlBuilder(baseUrl, feedName), title, contentType)
 
   private val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
 
@@ -80,18 +75,10 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
     entriesWithIndex.toList.reverse.take(count)
   }
 
-  def clear() : Unit = entries.clear()
+  def clear(): Unit = entries.clear()
+
   def count: Int = entries.size
 
 
 }
 
-object MemoryFeedStore {
-
-  def newUrlBuilder(baseUrl:Url, feedName:String) = new UrlBuilder {
-
-    override def base: Url = baseUrl
-
-    override def collectionLink: Url = ???
-  }
-}

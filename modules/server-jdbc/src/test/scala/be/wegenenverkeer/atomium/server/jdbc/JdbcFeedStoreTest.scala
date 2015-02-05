@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.server.jdbc
 import java.sql.{Connection, DriverManager}
 
 import be.wegenenverkeer.atomium.format.Url
-import be.wegenenverkeer.atomium.server.{Context, FeedStoreTestSupport, UrlBuilder}
+import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -77,14 +77,14 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
    * can use it here to run tests on H2.
    */
   def createFeedStore(implicit context:JdbcContext): PgJdbcFeedStore[String] =
-    PgJdbcFeedStore[String]("test_feed", Some("title"), ENTRIES_TABLE_NAME, s => s, d => d, createUrlBuilder)
+    PgJdbcFeedStore[String](
+      "test_feed",
+      Some("title"),
+      ENTRIES_TABLE_NAME,
+      identity, identity,
+      Url("http://www.example.org/feeds")
+    )
 
-  def createUrlBuilder = new UrlBuilder {
-
-    override def base: Url = Url("http://www.example.org/feeds")
-
-    override def collectionLink: Url = ???
-  }
 
 }
 
@@ -93,7 +93,7 @@ case class PgJdbcFeedStore[E](feedName: String,
                               entryTableName: String,
                               ser: E => String,
                               deser: String => E,
-                              urlBuilder: UrlBuilder)
+                              url: Url)
                              (implicit context: JdbcContext)
-  extends JdbcFeedStore[E](feedName, title, entryTableName, ser, deser, urlBuilder)
+  extends JdbcFeedStore[E](feedName, title, entryTableName, ser, deser, url)
   with PostgresDialect

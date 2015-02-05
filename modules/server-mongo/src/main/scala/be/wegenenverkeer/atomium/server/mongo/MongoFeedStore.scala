@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.mongo
 
-import be.wegenenverkeer.atomium.format.{Content, Entry}
+import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
 import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import com.mongodb.casbah.Imports._
@@ -15,7 +15,7 @@ import org.joda.time.DateTime
  * @param feedInfoCollectionName name of the entriesCollection that contains the feed info of all the feeds
  * @param ser function to serialize an element to a DBObject
  * @param deser function to deserialize a DBObject to an element
- * @param urlProvider a `UrlBuilder`
+ * @param url the base `Url`
  * @param context a implicit MongoContext implementation
  * @tparam E type of the elements in the feed
  */
@@ -24,8 +24,8 @@ class MongoFeedStore[E](feedName: String,
                         feedEntriesCollectionName: Option[String] = None,
                         feedInfoCollectionName: String,
                         ser: E => DBObject, deser: DBObject => E,
-                        urlProvider: UrlBuilder)
-                       (implicit context: MongoContext) extends AbstractFeedStore[E, MongoContext](feedName, title, urlProvider) {
+                        url: Url)
+                       (implicit context: MongoContext) extends AbstractFeedStore[E, MongoContext](feedName, title, url) {
 
   private lazy val db = context.db.asScala
 

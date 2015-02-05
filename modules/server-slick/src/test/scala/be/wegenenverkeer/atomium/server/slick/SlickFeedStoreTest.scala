@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.server.slick
 
 import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
-import be.wegenenverkeer.atomium.server.{FeedStoreTestSupport, UrlBuilder}
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
@@ -37,11 +37,6 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
     DateTimeUtils.setCurrentMillisSystem()
   }
 
-  def createUrlBuilder = new UrlBuilder {
-    override def base: Url = Url("http://www.example.org/feeds")
-
-    override def collectionLink: Url = ???
-  }
 
   def createFeedStore(implicit context: SlickJdbcContext) = {
     SlickFeedStore[String](
@@ -51,7 +46,8 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
       ENTRIES_TABLE_NAME,
       ser = s => s,
       deser = s => s,
-      urlBuilder = createUrlBuilder)
+      url = Url("http://www.example.org/feeds")
+    )
   }
 
   test("push should store entry") { implicit context =>

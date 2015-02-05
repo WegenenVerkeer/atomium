@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.japi.server
 
 import be.wegenenverkeer.atomium.format
+import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.{Context, UrlBuilder}
 
 /**
@@ -8,7 +9,7 @@ import be.wegenenverkeer.atomium.server.{Context, UrlBuilder}
  *
  * @tparam E type of the elements in the feed
  */
-abstract class FeedStore[E, C <: Context](feedName: String, title: Option[String], urlProvider: UrlBuilder) {
+abstract class FeedStore[E, C <: Context](feedName: String, title: Option[String]) {
 
   def underlying: be.wegenenverkeer.atomium.server.FeedStore[E, C]
 

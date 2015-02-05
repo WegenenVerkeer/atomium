@@ -19,7 +19,7 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   //string service
 
   val id = "my_feed"
-  val stringStore = new MemoryFeedStore[String, Context](id, Url(s"http://localhost:9000/feeds/$id/"), Some("strings of life"))
+  val stringStore = new MemoryFeedStore[String, Context](id, Url(s"http://localhost:9000/feeds/$id/"), Some("strings of life"), "text/plain")
   val stringService = new FeedService[String, Context](id, 2, stringStore)
   val stringController = new StringController(stringService)
 

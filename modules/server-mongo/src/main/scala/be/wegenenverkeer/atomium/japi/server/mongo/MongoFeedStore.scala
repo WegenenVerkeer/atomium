@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.japi.server.mongo
 
+import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.japi.server.FeedStore
 import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import be.wegenenverkeer.atomium.server.mongo.MongoContext
@@ -10,7 +11,7 @@ class MongoFeedStore[E](context: MongoContext,
                         title: Option[String],
                         feedEntriesCollectionName: Option[String],
                         feedInfoCollectionName: String,
-                        mapper: ElementMapper[E], urlProvider: UrlBuilder) extends FeedStore[E, MongoContext](feedName, title, urlProvider) {
+                        mapper: ElementMapper[E], url: Url) extends FeedStore[E, MongoContext](feedName, title) {
 
   implicit val cxt = context
 
@@ -21,7 +22,7 @@ class MongoFeedStore[E](context: MongoContext,
     feedInfoCollectionName = feedInfoCollectionName,
     ser = (e) => mapper.serialize(e),
     deser = (dbo) => mapper.deserialize(dbo),
-    urlProvider = urlProvider
+    url = url
   )
 
 

@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
-import be.wegenenverkeer.atomium.format.{Content, Entry}
+import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
 import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import org.joda.time.DateTime
 
@@ -8,9 +8,9 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
                                         title: Option[String],
                                         ser: E => String,
                                         deser: String => E,
-                                        urlBuilder: UrlBuilder)
+                                        url: Url)
                                        (implicit context: JdbcContext)
-  extends AbstractFeedStore[E, JdbcContext](feedName, title, urlBuilder) {
+  extends AbstractFeedStore[E, JdbcContext](feedName, title, url) {
 
   /**
    * The concrete implementation of the JDBC feed store must extend a specific SQL dialect.
