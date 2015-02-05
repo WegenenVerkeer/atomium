@@ -4,8 +4,11 @@ import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.play.PlayJsonSupport
 import org.joda.time.{DateTime, DateTimeUtils}
+import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers, OptionValues}
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
