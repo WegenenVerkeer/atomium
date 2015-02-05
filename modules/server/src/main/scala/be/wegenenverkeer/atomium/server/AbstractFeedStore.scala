@@ -107,7 +107,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
   private[this] def toFeed(pageSize: Int,
                            entries: List[FeedEntry],
                            previousEntryId: Option[Long],
-                           nextEntryId: Option[Long]): Option[Feed[E]] = {
+                           nextEntryId: Option[Long])(implicit context: C): Option[Feed[E]] = {
 
     for {
       entries <- Some(entries); if entries.size > 0
@@ -164,19 +164,19 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
   /**
    * @return one less than the minimum sequence number used in this feed
    */
-  def minId: Long
+  def minId(implicit context: C): Long
 
   /**
    * @return the maximum sequence number used in this feed or minId if feed is empty
    */
-  def maxId: Long
+  def maxId(implicit context: C): Long
 
   /**
    * @param sequenceNr sequence number to match
    * @param inclusive if true include the specified sequence number
    * @return the number of entries in the feed with sequence number lower than specified
    */
-  def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long
+  def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true)(implicit context: C): Long
 
   /**
    * Retrieves the most recent entries from the `FeedStore` sorted in descending order

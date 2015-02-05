@@ -5,7 +5,7 @@ import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.{DBObject, casbah}
+import com.mongodb.{casbah, DBObject}
 import org.joda.time.DateTime
 
 /**
@@ -27,13 +27,13 @@ class MongoFeedStore[E](feedName: String,
                         url: Url)
                        (implicit context: MongoContext) extends AbstractFeedStore[E, MongoContext](feedName, title, url) {
 
-  private lazy val db = context.db.asScala
+  private lazy val db: casbah.MongoDB = context.db.asScala
 
-  private lazy val entriesCollection = {
+  private lazy val entriesCollection: casbah.MongoCollection = {
     db(feedEntriesCollectionName.getOrElse(feedName))
   }
 
-  private lazy val feedInfoCollection = db(feedInfoCollectionName)
+  private lazy val feedInfoCollection: casbah.MongoCollection = db(feedInfoCollectionName)
 
   //insert feed into to feedInfoCollection if it does not exist yet
   feedInfoCollection.findAndModify(
@@ -41,7 +41,8 @@ class MongoFeedStore[E](feedName: String,
     fields = MongoDBObject(), //return all elements
     sort = MongoDBObject(), //no sorting
     update = $setOnInsert(Keys.Sequence -> 0), //create with seq -> 1 if not exists
-    remove = false, returnNew = true, upsert = true)
+    remove = false, returnNew = true, upsert = true
+  )
 
   protected def feedEntry2DbObject(e: E): MongoDBObject = feedEntry2DbObject(generateEntryID(), e)
 
@@ -106,7 +107,7 @@ class MongoFeedStore[E](feedName: String,
    * @param sequenceNr sequence number to match
    * @return the number of entries in the feed with sequence number equal or lower than specified
    */
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true)(implicit context: MongoContext): Long = {
 
     val find = if (inclusive)
       entriesCollection.find(Keys._Id $lte sequenceNr)
@@ -137,9 +138,9 @@ class MongoFeedStore[E](feedName: String,
     retry(5)(_getNextSequence).as[Int](Keys.Sequence).toLong
   }
 
-  override val minId: Long = 0L
+  override def minId(implicit context: MongoContext): Long = 0L
 
-  def maxId: Long = {
+  def maxId(implicit context: MongoContext): Long = {
 
     val entries = entriesCollection
                   .find()

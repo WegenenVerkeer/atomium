@@ -22,9 +22,9 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
 
   private val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
 
-  override val minId = 0L
+  override def minId(implicit context: C) = 0L
 
-  override def maxId = entries.size + 1
+  override def maxId(implicit context: C) = entries.size + 1
 
   override def push(it: Iterable[T])(implicit context: C) = {
     val timestamp: DateTime = new DateTime()
@@ -63,7 +63,7 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
   /**
    * @return the total number of entries in the feed
    */
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true)(implicit context: C): Long = {
     if (inclusive)
       entriesWithIndex.count(_.sequenceNr <= sequenceNr)
     else

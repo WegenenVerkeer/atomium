@@ -11,7 +11,6 @@ import org.joda.time.DateTime
  * An [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
  * This implementation automatically manages the entries tables for each feed.
  *
- * @param context: the context implementation (wraps a session)
  * @param feedName the name of the feed
  * @param title the optional title of the feed
  * @param ser function to serialize an element to a String
@@ -24,7 +23,6 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
                                          ser: E => String,
                                          deser: String => E,
                                          url: Url)
-                                        (implicit context: SlickJdbcContext)
   extends AbstractFeedStore[E, SlickJdbcContext](feedName, title, url) {
 
   val feedComponent: FeedComponent
@@ -67,7 +65,7 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
     getEntryTableQuery += EntryModel(None, uuid, ser(entry), timestamp)
   }
 
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long = {
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true)(implicit context: SlickJdbcContext): Long = {
     implicit val session = context.session
     if (inclusive)
       getEntryTableQuery.filter(_.id <= sequenceNr).length.run
@@ -104,9 +102,9 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
    *         since SQL sequences start at 1 this is 0. If your DB sequences start with another number override this
    *         class and modify accordingly
    */
-  override val minId: Long = 0L
+  override def minId(implicit context: SlickJdbcContext): Long = 0L
 
-  override def maxId: Long = {
+  override def maxId(implicit context: SlickJdbcContext): Long = {
     implicit val session = context.session
     Query(getEntryTableQuery.map(_.id).max).first(session).getOrElse(minId)
   }

@@ -62,12 +62,12 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
     implicit val context = JdbcContext(connection)
 
     val feedStore = createFeedStore
-    feedStore.createTables()
+    feedStore.createTables
 
     try {
       block(feedStore, context)
     } finally {
-      feedStore.dropTables()
+      feedStore.dropTables
     }
 
   }
@@ -88,12 +88,4 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
 
 }
 
-case class PgJdbcFeedStore[E](feedName: String,
-                              title: Option[String],
-                              entryTableName: String,
-                              ser: E => String,
-                              deser: String => E,
-                              url: Url)
-                             (implicit context: JdbcContext)
-  extends JdbcFeedStore[E](feedName, title, entryTableName, ser, deser, url)
-  with PostgresDialect
+

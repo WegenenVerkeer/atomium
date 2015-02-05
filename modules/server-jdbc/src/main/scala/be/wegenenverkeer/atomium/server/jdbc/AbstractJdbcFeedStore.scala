@@ -9,7 +9,6 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
                                         ser: E => String,
                                         deser: String => E,
                                         url: Url)
-                                       (implicit context: JdbcContext)
   extends AbstractFeedStore[E, JdbcContext](feedName, title, url) {
 
   /**
@@ -51,18 +50,18 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
   /**
    * @return The maximum sequence number used in this feed or minId if feed is empty.
    */
-  override def maxId: Long = {
+  override def maxId(implicit context: JdbcContext): Long = {
     dialect.fetchMaxEntryId(entryTableName)
   }
 
-  override def minId: Long = 0L
+  override def minId(implicit context: JdbcContext): Long = 0L
 
   /**
    * @param sequenceNo sequence number to match
    * @param inclusive if true include the specified sequence number
    * @return the number of entries in the feed with sequence number lower than specified
    */
-  override def getNumberOfEntriesLowerThan(sequenceNo: Long, inclusive: Boolean): Long = {
+  override def getNumberOfEntriesLowerThan(sequenceNo: Long, inclusive: Boolean)(implicit context: JdbcContext): Long = {
     dialect.fetchEntryCountLowerThan(entryTableName, sequenceNo, inclusive)
   }
 
@@ -82,12 +81,12 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
     dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }
 
-  def createTables() = {
+  def createTables(implicit context: JdbcContext) = {
     createFeedTableIfNotExists
     createEntryTableIfNotExists(entryTableName = entryTableName)
   }
 
-  def dropTables() = {
+  def dropTables(implicit context: JdbcContext) = {
     dropFeedTable
     dropEntryTable(entryTableName = entryTableName)
   }

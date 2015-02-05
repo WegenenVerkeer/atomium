@@ -29,15 +29,15 @@ class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
 
   override def push(uuid: String, entry: T)(implicit context: C): Unit = ???
 
-  override val minId: Long = 0
+  override def minId(implicit context: C): Long = 0
 
-  override def maxId: Long =
+  override def maxId(implicit context: C): Long =
     if (entriesMap.keys.size > 0)
       entriesMap.keys.max
     else
       minId
 
-  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long =
+  override def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true)(implicit context: C): Long =
     if (inclusive)
       entriesMap.count(_._1 <= sequenceNr)
     else
