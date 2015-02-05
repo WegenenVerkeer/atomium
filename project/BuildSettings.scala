@@ -69,7 +69,7 @@ trait BuildSettings {
       credentials.toSeq
     }
 
-    // explicitly creating a Def to avoid cluttered code inside when adding to Seq bellow
+    // explicitly creating a Def to avoid cluttered code inside Seq definition
     val repoToPublish = Def setting {
       val nexus = "https://oss.sonatype.org/"
       if (isSnapshot.value)
