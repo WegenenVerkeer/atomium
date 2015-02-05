@@ -1,14 +1,11 @@
-package be.wegenenverkeer.atom
+package be.wegenenverkeer.atomium.server.play
 
-import be.wegenenverkeer.atomium.play.{PlayJsonSupport, PlayJsonFormats}
-import PlayJsonFormats._
 import be.wegenenverkeer.atomium.format._
-import org.joda.time.{DateTimeUtils, DateTime}
-import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers, OptionValues}
+import be.wegenenverkeer.atomium.play.PlayJsonFormats._
+import be.wegenenverkeer.atomium.play.PlayJsonSupport
+import org.joda.time.{DateTime, DateTimeUtils}
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.mvc.Result
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 
 import scala.concurrent.Future
 

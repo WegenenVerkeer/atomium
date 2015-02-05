@@ -1,7 +1,6 @@
 import _root_.java.util.{Timer, TimerTask}
 
 import akka.japi.Option.Some
-import be.wegenenverkeer.atom._
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.{FeedService, Context, MemoryFeedStore, AbstractFeedStore}
 import controllers.{Event, EventController, StringController}

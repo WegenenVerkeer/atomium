@@ -2,11 +2,11 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atom.FeedSupport
-import be.wegenenverkeer.atomium.play.{PlayJsonSupport, JaxbSupport, PlayJsonFormats}
-import PlayJsonFormats._
+import be.wegenenverkeer.atomium.format.{Feed, JFeedConverters}
 import be.wegenenverkeer.atomium.japi.format.{Feed => JFeed}
-import be.wegenenverkeer.atomium.format.{JFeedConverters, Feed}
+import be.wegenenverkeer.atomium.play.PlayJsonFormats._
+import be.wegenenverkeer.atomium.play.{JaxbSupport, PlayJsonSupport}
+import be.wegenenverkeer.atomium.server.play.FeedSupport
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
 import play.api.http.MimeTypes
 import play.api.mvc.Controller
@@ -22,7 +22,9 @@ class EventController(feedService: FeedService[Event, Context]) extends Controll
   implicit val c: Context = new Context {} //dummy context for MemoryFeedStore
 
   //play json marshaller
+
   import controllers.EventFormat._
+
   registerMarshaller(MimeTypes.JSON, PlayJsonSupport.jsonMarshaller[Feed[Event]])
 
   //jaxb marshaller

@@ -4,7 +4,7 @@ import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 
 /**
- * [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
+ * An [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
  * This implementation requires that the entries table for each feed is explicitly created upfront.
  *
  * @param feedComponent the feedComponent trait to access the driver

@@ -1,8 +1,8 @@
 package controllers
 
-import be.wegenenverkeer.atom.FeedSupport
 import be.wegenenverkeer.atomium.format.JFeedConverters
 import be.wegenenverkeer.atomium.play.JacksonSupport
+import be.wegenenverkeer.atomium.server.play.FeedSupport
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}

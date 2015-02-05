@@ -1,3 +1,5 @@
+package be.wegenenverkeer.atomium.server.play
+
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.{Context, FeedStoreTestSupport, MemoryFeedStore}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}

@@ -8,7 +8,7 @@ import be.wegenenverkeer.atomium.server.slick.models.EntryModel
 import org.joda.time.DateTime
 
 /**
- * [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
+ * An [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
  * This implementation automatically manages the entries tables for each feed.
  *
  * @param context: the context implementation (wraps a session)

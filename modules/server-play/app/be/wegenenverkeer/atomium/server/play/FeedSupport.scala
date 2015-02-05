@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atom
+package be.wegenenverkeer.atomium.server.play
 
 import java.util.Locale
 

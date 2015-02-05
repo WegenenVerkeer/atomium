@@ -1,4 +1,5 @@
-import be.wegenenverkeer.atom._
+package be.wegenenverkeer.atomium.server.play
+
 import be.wegenenverkeer.atomium.format.{Feed, Url}
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.play.PlayJsonSupport

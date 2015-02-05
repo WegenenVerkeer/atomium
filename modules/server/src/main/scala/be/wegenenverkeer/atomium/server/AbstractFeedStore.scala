@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import _root_.java.util.UUID
+import java.util.UUID
 
 import be.wegenenverkeer.atomium.format.{Entry, Feed, Link, Url}
 
