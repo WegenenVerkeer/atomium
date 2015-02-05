@@ -1,8 +1,7 @@
 package be.wegenenverkeer.atomium.japi.server
 
 import be.wegenenverkeer.atomium.format
-import be.wegenenverkeer.atomium.format.Url
-import be.wegenenverkeer.atomium.server.{Context, UrlBuilder}
+import be.wegenenverkeer.atomium.server.Context
 
 /**
  * Wrapper around the [[be.wegenenverkeer.atomium.server.FeedStore]] that offers a Java-like interface.

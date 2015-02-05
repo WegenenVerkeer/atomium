@@ -1,5 +1,5 @@
 import be.wegenenverkeer.atomium.format.Url
-import be.wegenenverkeer.atomium.server.{Context, FeedStoreTestSupport, MemoryFeedStore, UrlBuilder}
+import be.wegenenverkeer.atomium.server.{Context, FeedStoreTestSupport, MemoryFeedStore}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -19,6 +19,4 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
     title = Some("Test"),
     "text/plain"
   )
-
-
 }

@@ -2,9 +2,8 @@ package be.wegenenverkeer.atomium.japi.server.mongo
 
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.japi.server.FeedStore
-import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import be.wegenenverkeer.atomium.server.mongo.MongoContext
-import be.wegenenverkeer.atomium.server.mongo
+import be.wegenenverkeer.atomium.server.{AbstractFeedStore, mongo}
 
 class MongoFeedStore[E](context: MongoContext,
                         feedName: String,

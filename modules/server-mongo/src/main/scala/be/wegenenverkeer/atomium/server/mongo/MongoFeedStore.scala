@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.server.mongo
 
-import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
+import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
-import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.{DBObject, casbah}

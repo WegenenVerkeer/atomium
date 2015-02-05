@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.server.slick
 
 import be.wegenenverkeer.atomium.format.Url
-import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
+import be.wegenenverkeer.atomium.server.AbstractFeedStore
 
 /**
  * [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.

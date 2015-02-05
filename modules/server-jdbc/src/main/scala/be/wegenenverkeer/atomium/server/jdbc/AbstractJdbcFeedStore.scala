@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
-import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
-import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
+import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import org.joda.time.DateTime
 
 abstract class AbstractJdbcFeedStore[E](feedName: String,
