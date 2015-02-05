@@ -1,6 +1,6 @@
-# atom-json
+# atomomium
 
-Atom-Json serialization in Scala
+Atom feed server and client in Scala
 
 # Build status 
 
