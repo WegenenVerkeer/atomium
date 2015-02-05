@@ -1,0 +1,372 @@
+= Atomium guide
+:linkcss:
+:toc2:
+:siteversion: 0.0.1
+
+This aims to be a comprehensive guide to Atomium, an open source project
+that provides support for creating atom feed clients and servers.
+
+== Features
+
+* Java and Scala implementations
+* partial support for clients (feed consumers), currently scala only
+* support for servers (feed producers)
+* support for different types of feed stores: relation databases or NoSQL (currently Mongo)
+* <<JSON data format>> in addition to the standard https://tools.ietf.org/html/rfc4287[Atom xml syndication format].
+
+== Atomium client
+
+=== Scala client
+
+The client library provides the necessary classes to consume and process an atom feed.
+The library provides a feed processor that when offered feed pages can consume them.
+
+The library user is still responsible for:
+
+* providing a feed provider: i.e. a class responsible for fetching the feed from the server
+* persisting the latest feed position
+
+NOTE: Atomium does not provide an implementation of a feed provider for now, so you must provide your own implementation.
+
+You have the choice of implementing either a synchronous or asynchronous feed provider:
+
+* synchronous feed provider
+
+Extend the trait +be.wegenenverkeer.atomium.FeedProvider+ and implement the following methods:
+
+[source,scala]
+----
+  /**
+   * Fetch the first page of the feed.
+   *
+   * @return the first page of the feed.
+   */
+  def fetchFeed(): Try[Feed[E]]
+
+  /**
+   * Fetch a specific page of the feed.
+   *
+   * @param pageUrl the page
+   * @return a page of the feed
+   */
+  def fetchFeed(pageUrl: String): Try[Feed[E]]
+----
+
+* asynchronous feed provider
+
+Extend the trait +be.wegenenverkeer.atomium.async.AsyncFeedProvider+ and implement the following methods:
+
+[source,scala]
+----
+    /**
+     * Fetch the first page of the feed.
+     *
+     * @return the first page of the feed.
+     */
+    def fetchFeed(): Future[Feed[E]]
+
+    /**
+     * Fetch a specific page of the feed.
+     *
+     * @param pageUrl the page
+     * @return a page of the feed
+     */
+    def fetchFeed(pageUrl: String): Future[Feed[E]]
+----
+
+==== Add dependency
+
+===== Maven
+
+[source,xml]
+----
+<dependency>
+    <groupId>be.wegenenverkeer</groupId>
+    <artifactId>atomium-client-scala</artifactId>
+    <version>{siteversion}</version>
+</dependency>
+----
+
+===== SBT
+
+[source,scala,subs="attributes"]
+----
+libraryDependencies += "be.wegenenverkeer" %% "atomium-client-scala" % "{siteversion}"
+----
+
+== Atomium server
+
+The server modules provide support for creating a server that allows you to publish Atom feeds.
+
+The server part consists of the following modules:
+
+* server
+* server-jdbc
+* server-slick
+* server-mongo
+* server-play
+
+The server library provides a feed service. A feed service can be used to
+
+* add new elements to the feed
+* retrieve a page of the feed
+
+=== Feed service
+
+A feed service is not responsible for the actual persistence of the entries and pages in feeds,
+this is delegated to a feed store.
+
+The feed service implementation is written in Scala, but the library also provides a Java wrapper.
+
+Feed pages provide 'previous' and 'next' links by which a client can navigate through the whole feed.
+
+Following a 'previous' link will move forwards through the feed, this means moving towards the head of the feed
+and this will retrieve more recent feed entries.
+
+Following a 'next' link will move backwards through the feed, this means moving towards the last page of the feed
+and this will retrieve older feed entries.
+
+WARNING: So, although it might seem counter-intuitive, the most recent entries are found on the first page
+while the oldest feed entries are found on the last page.
+
+This is compatible with the way http://docs.geteventstore.com/http-api/3.0.1/reading-streams/[Eventstore]
+and http://www.ietf.org/rfc/rfc5023.txt[AtomPUB] handle paging.
+
+So there are two strategies to iterate and consume a complete feed:
+
+* You can either request the 'first' page with the most recent entries and follow the 'next' links to consume the whole feed.
+* Or you can request the 'last' page from the feed, containing the oldest entries and follow the 'prev' links to arrive at the most recent entries.
+
+If you want to follow a live stream of events then you should use the second option and keep following the 'prev' links.
+When you reach the head of a feed you will receive a feed document that does not have any 'prev' link.
+This document will however have a 'self' link.
+You can then continue polling this URI (the self link),
+until new entries appear in the feed document and/or a new page is started and a 'prev' link is available.
+
+=== Feed store
+
+A feed store is responsible for the persistence of feeds. There are currently three implementations:
+
+- a feed store that stores data in a relational database using plain JDBC
+- a feed store that stores data in a relational database using http://slick.typesafe.com[Slick], a functional relational mapper for Scala
+- a feed store that stores data in a Mongo database
+
+The persistence libraries, except for the slick library, provide a Scala and Java variant.
+The Java implementation is a simple wrapper around the Scala implementation.
+
+There is also an AbstractFeedStore base class that can be used to implement your own feedStore implementation,
+using your own persistence technology.
+If you are planning on making your own FeedStore implementation then using this class will make sure that the paging (providing 'next'/'previous' links)
+ works correctly.
+
+==== AbstractFeedStore
+
+All feed stores inherit from AbstractFeedStore which makes sure that the paging works correctly.
+
+The paging for Atomium works as follows.
+
+First a FeedService is always instantiated with the desired pageSize.
+This is the maximum number of entries that can be present in a single feed page.
+
+Feed entries stored in a feed store must have a sequence number assigned to them.
+More recent entries will have a higher sequence number than older entries.
+However the sequence is allowed to have gaps, so some sequence numbers might be missing.
+
+Links in atom feed documents will always have the following structure: `/xxx/forward/yy` or `/xxx/backward/yy`
+where `xxx` is a sequence number and `yy` is the pagesize
+
+In both cases the xxx sequence number is exclusive and will never be returned in the feed page when you follow such a link.
+
+* `/xxx/forward/yy` means the first `yy` entries with a sequence number strictly higher than `xxx`
+* `xxx/backward/yy` means the first `yy` entries with a sequence number strictly lower then `xxx`
+
+The link to the 'last' page of the feed, containing the oldest entries will be `/0/forward/yy`,
+assuming the oldest entry of the feed has sequence number 1.
+
+If you implement an AbstractFeedStore and implement the following methods then the paging will just work:
+
+[source, scala]
+----
+  /**
+   * @return one less than the minimum sequence number used in this feed
+   */
+  def minId: Long
+
+  /**
+   * @return the maximum sequence number used in this feed or minId if feed is empty
+   */
+  def maxId: Long
+
+  /**
+   * @param sequenceNr sequence number to match
+   * @param inclusive if true include the specified sequence number
+   * @return the number of entries in the feed with sequence number lower than specified
+   */
+  def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long
+
+  /**
+   * retrieves the most recent entries from the feedstore sorted in descending order
+   * @param count the amount of recent entries to return
+   * @return a list of FeedEntries. a FeedEntry is a sequence number and its corresponding entry
+   *         and sorted by descending sequence number
+   */
+  def getMostRecentFeedEntries(count: Int): List[FeedEntry]
+
+  /**
+   * Retrieves entries with their sequence numbers from the feed
+   *
+   * @param start the starting entry (inclusive), MUST be returned in the entries
+   * @param count the number of entries to return
+   * @param ascending if true return entries with sequence numbers >= start in ascending order
+   *                else return entries with sequence numbers <= start in descending order
+   * @return the corresponding entries sorted accordingly
+   */
+  def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry]
+----
+
+=== JDBC Feed store
+
+The `atomium-server-jdbc` module provides a feed store implementation that stores the feeds in a relational database.
+
+==== Add dependency
+
+===== Maven
+
+[source,xml,subs="attributes"]
+----
+<dependency>
+    <groupId>be.wegenenverkeer</groupId>
+    <artifactId>atomium-server-jdbc</artifactId>
+    <version>{siteversion}</version>
+</dependency>
+----
+
+===== SBT
+
+[source,scala,subs="attributes"]
+----
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-jdbc" % "{siteversion}"
+----
+
+The JDBC feedstore uses the following tables:
+
+One table containing all the entries for each feed provided by the system.
+Each feed entries table MUST be manually created in the database.
+
+Each entries table MUST have the following columns:
+
+* "id" => an auto-incrementing unique id of each entry in a specific feed
+* "uuid" => a UUID generated by the server for uniquely referencing an entry
+* "value" => a string containing the serialized feed entry
+* "timestamp" => timestamp when the entry was added to the feed
+
+=== Slick Feed store
+
+The `atomium-server-slick` module provides a feed store implementation that stores the feeds in a relational database
+using http://slick.typesafe.com[Slick], a functional relational mapper for Scala
+
+==== Add dependency
+
+===== Maven
+
+[source,xml,subs="attributes"]
+----
+<dependency>
+    <groupId>be.wegenenverkeer</groupId>
+    <artifactId>atomium-server-slick</artifactId>
+    <version>{siteversion}</version>
+</dependency>
+----
+
+===== SBT
+
+[source,scala,subs="attributes"]
+----
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-slick" % "{siteversion}"
+----
+
+The Slick feedstore requires the same table layout as the JDBC feedstore.
+
+=== Mongo Feed store
+
+The `atomium-server-mongo` module provides a feed store implementation that stores the feeds in a http://www.mongodb.org/[[Mongo] NoSQL database.
+
+==== Add dependency
+
+===== Maven
+
+[source,xml,subs="attributes"]
+----
+<dependency>
+    <groupId>be.wegenenverkeer</groupId>
+    <artifactId>atomium-server-mongo</artifactId>
+    <version>{siteversion}</version>
+</dependency>
+----
+
+===== SBT
+
+[source,scala,subs="attributes"]
+----
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-mongo" % "{siteversion}"
+----
+
+=== Play server support
+
+The `atomium-server-play` module provides support for serving feeds from a http://play.typesafe.com[Play] application.
+
+==== Add dependency
+
+===== Maven
+
+[source,xml,subs="attributes"]
+----
+<dependency>
+    <groupId>be.wegenenverkeer</groupId>
+    <artifactId>atomium-server-play</artifactId>
+    <version>{siteversion}</version>
+</dependency>
+----
+
+===== SBT
+
+[source,scala,subs="attributes"]
+----
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-play" % "{siteversion}"
+----
+
+Atomium provides a +be.wegenenverkeer.atom.FeedSupport+ trait, which you can extend in your Play controller classes to make
+a well behaved atom feed HTTP server, supporting ETags and setting correct HTTP caching headers.
+
+Take a look at the +EventController+ and/or +StringController+ for details on how to use it.
+
+=== JSON data format
+
+While the atom specification only describes an xml data format, atomium also supports a JSON data format.
+
+The format is pretty straight forward:
+
+The feed page is a JSON object, containing the following:
+
+[horizontal]
+id:: a JSON string representing a permanent, universally unique identifier for the feed. Same as https://tools.ietf.org/html/rfc4287#section-4.2.6[atom:id]
+base:: a JSON string representing the base URI used for resolving any relative references. Same as xml:base attribute of feed element.
+title:: a JSON string containing a human-readable title for the feed. Same as https://tools.ietf.org/html/rfc4287#section-4.2.14[atom:title]
+generator:: a JSON string identifying the agent used to generate a feed, for debugging and other purposes. Same as https://tools.ietf.org/html/rfc4287#section-4.2.4[atom:generator]
+updated:: JSON string representing a ISO8601 formatted date and time indicating the most recent instant in time when an feed was modified in a way the publisher considers significant. Same as https://tools.ietf.org/html/rfc4287#section-4.2.15[atom:updated]
+links:: a JSON array containing links to other pages in the feed (see below)
+entries:: a JSON array containing feed entry details
+
+Each link from the JSON links array is a JSON object containing the following:
+
+[horizontal]
+rel:: JSON string representing the link relation, either 'prev', 'next', 'first', 'last' or 'self'
+href:: JSON string: the link URI (may be relative)
+
+Each entry from the JSON entries array is a JSON object containing the following:
+
+[horizontal]
+id::  a JSON string  representing a permanent, universally unique identifier for the entry. Same as https://tools.ietf.org/html/rfc4287#section-4.2.6[atom:id]
+updated::  a JSON string representing ISO8601 formatted date and time indicating the instant in time when an entry was added. Same as https://tools.ietf.org/html/rfc4287#section-4.2.15[atom:updated]
+content:: the actual content of the entry, might be any JSON type: f.e. a JSON string, number or possibly another JSON object.
+links:: an empty JSON array. not used at the moment.
