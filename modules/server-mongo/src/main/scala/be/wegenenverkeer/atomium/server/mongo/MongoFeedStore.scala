@@ -9,7 +9,7 @@ import com.mongodb.{DBObject, casbah}
 import org.joda.time.DateTime
 
 /**
- * [[be.wegenenverkeer.atomium.server.AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
+ * An [[AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
  *
  * @param feedEntriesCollectionName name of the entriesCollection that contains the feed entries
  * @param feedInfoCollectionName name of the entriesCollection that contains the feed info of all the feeds

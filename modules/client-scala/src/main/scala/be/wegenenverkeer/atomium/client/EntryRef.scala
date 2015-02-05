@@ -21,7 +21,7 @@ object EntryRef {
     new EntryRef[E](entryId, url, None)
   }
 
-  /** Builds an [[EntryRef]] from a given [[Feed]] and [[Entry]]
+  /** Builds an `EntryRef` from a given `Feed` and `Entry`
     *
     * @param feed -  a non-empty `Feed` containing the `Entry`
     * @param entry - the `Entry`
@@ -36,7 +36,7 @@ object EntryRef {
   }
 
 
-  /** Builds an [[EntryRef]] from a given [[Feed]].
+  /** Builds an `EntryRef` from a given `Feed`.
     *
     * The `EntryLoc` will reference the first `Entry` in the `Feed`
     *

@@ -8,10 +8,10 @@ import org.joda.time.DateTime
 import scala.util.{Success, Try}
 
 /**
- * A trait fixture to used on tests requiring a [[FeedEntryIterator]] or eventually
- * an [[AsyncFeedEntryIterator]].
+ * A trait fixture to be used on tests requiring a [[be.wegenenverkeer.atomium.client.FeedEntryIterator]] or eventually
+ * an [[be.wegenenverkeer.atomium.client.async.AsyncFeedEntryIterator]].
  *
- * It's backed by a blocking in-memory [[be.wegenenverkeer.atomium.server.FeedStore]] and [[FeedService]].
+ * It's backed by a blocking in-memory [[MemoryFeedStore]] and [[FeedService]].
  *
  * Entries must be pushed prior to the initialization of the `Iterator`.
  *
