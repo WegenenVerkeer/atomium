@@ -1,4 +1,4 @@
-import _root_.java.util.{Timer, TimerTask}
+import java.util.{Timer, TimerTask}
 
 import akka.japi.Option.Some
 import be.wegenenverkeer.atomium.format.Url

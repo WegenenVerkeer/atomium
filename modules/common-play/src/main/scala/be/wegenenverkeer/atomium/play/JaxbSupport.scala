@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.play
 
-import _root_.java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStreamReader, StringReader}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStreamReader, StringReader}
 import javax.xml.bind._
 
 import play.api.mvc.Codec

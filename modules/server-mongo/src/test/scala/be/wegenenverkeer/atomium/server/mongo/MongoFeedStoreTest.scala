@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.mongo
 
-import _root_.java.net.ServerSocket
+import java.net.ServerSocket
 
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.FeedStoreTestSupport

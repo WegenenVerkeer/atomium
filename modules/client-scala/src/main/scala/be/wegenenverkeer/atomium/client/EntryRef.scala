@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.client
 
-import _root_.java.net.URI
+import java.net.URI
 
 import be.wegenenverkeer.atomium.format.{Entry, Feed, Url}
 
