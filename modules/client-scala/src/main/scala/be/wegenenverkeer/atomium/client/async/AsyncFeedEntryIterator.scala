@@ -8,12 +8,14 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 import scala.util.{Failure, Success}
 
-class AsyncFeedEntryIterator[E](feedProvider: AsyncFeedProvider[E], timeout: Duration)(implicit val execCtx: ExecutionContext) {
+class AsyncFeedEntryIterator[E](feedProvider: AsyncFeedProvider[E],
+                                timeout: Duration,
+                                initialEntryRef: Option[EntryRef[E]] = None)(implicit val execCtx: ExecutionContext) {
 
   type EntryType = E
   type Entries = List[Entry[EntryType]]
 
-  private var futureCursor: Future[Cursor] = InitCursor(feedProvider.initialEntryRef).nextCursor
+  private var futureCursor: Future[Cursor] = InitCursor(initialEntryRef).nextCursor
 
   def hasNext: Future[Boolean] = {
 

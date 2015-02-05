@@ -6,14 +6,12 @@ import scala.util.Try
 
 trait FeedProvider[E] {
 
-  def initialEntryRef: Option[EntryRef[E]]
-
   /**
    * Fetch the first page of the feed.
    *
    * @return the first page of the feed.
    */
-  def fetchFeed(): Try[Feed[E]]
+  def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Try[Feed[E]]
 
   /**
    * Fetch a specific page of the feed.

@@ -7,14 +7,12 @@ import scala.concurrent.Future
 
 trait AsyncFeedProvider[E] {
 
-  def initialEntryRef: Option[EntryRef[E]]
-
   /**
    * Fetch the first page of the feed.
    *
    * @return the first page of the feed.
    */
-  def fetchFeed(): Future[Feed[E]]
+  def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Future[Feed[E]]
 
   /**
    * Fetch a specific page of the feed.

@@ -18,22 +18,23 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   */
 class FeedEntryIterator[E](feedProvider: FeedProvider[E],
                            timeout: Duration,
-                           execContext: ExecutionContext) extends Iterator[EntryRef[E]] {
+                           execContext: ExecutionContext,
+                           initialEntryRef: Option[EntryRef[E]] = None) extends Iterator[EntryRef[E]] {
 
   implicit val ec = execContext
 
   private val asyncFeedProvider = new AsyncFeedProvider[E] {
 
-    override def initialEntryRef: Option[EntryRef[E]] = feedProvider.initialEntryRef
+    override def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Future[Feed[E]] =
+      Future(feedProvider.fetchFeed(initialEntryRef).get)
 
-    override def fetchFeed(): Future[Feed[E]] = Future(feedProvider.fetchFeed().get)
-
-    override def fetchFeed(pageUrl: String): Future[Feed[E]] = Future(feedProvider.fetchFeed(pageUrl).get)
+    override def fetchFeed(pageUrl: String): Future[Feed[E]] =
+      Future(feedProvider.fetchFeed(pageUrl).get)
 
   }
 
   /** The underlying `AsyncFeedEntryIterator` */
-  val asyncIterator = new AsyncFeedEntryIterator(asyncFeedProvider, timeout)
+  val asyncIterator = new AsyncFeedEntryIterator(asyncFeedProvider, timeout, initialEntryRef)
 
   override def hasNext: Boolean = Await.result(asyncIterator.hasNext, timeout)
 
@@ -44,17 +45,22 @@ object FeedEntryIterator {
 
   object Implicits {
 
-    implicit class IteratorBuilder[T](feedProvider: FeedProvider[T]) {
+    implicit class IteratorBuilder[E](feedProvider: FeedProvider[E]) {
 
-      /** Returns a `FeedEntryIterator` configured with the default scala `ExecutionContext` and a timeout of 500 millis */
-      def iterator(): FeedEntryIterator[T] = {
-        import scala.concurrent.ExecutionContext.Implicits.global
-        import scala.concurrent.duration._
-        iterator(500 millis)
+      def iterator(): FeedEntryIterator[E] = {
+        iterator(None)
       }
 
-      def iterator(timeout: Duration)(implicit executionContext: ExecutionContext): FeedEntryIterator[T] = {
-        new FeedEntryIterator(feedProvider, timeout, executionContext)
+      /** Returns a `FeedEntryIterator` configured with the default scala `ExecutionContext` and a timeout of 500 millis */
+      def iterator(initialEntryRef: Option[EntryRef[E]]): FeedEntryIterator[E] = {
+        import scala.concurrent.ExecutionContext.Implicits.global
+        import scala.concurrent.duration._
+        iterator(500 millis, initialEntryRef)
+      }
+
+      def iterator(timeout: Duration, initialEntryRef: Option[EntryRef[E]])
+                  (implicit executionContext: ExecutionContext): FeedEntryIterator[E] = {
+        new FeedEntryIterator(feedProvider, timeout, executionContext, initialEntryRef)
       }
 
     }

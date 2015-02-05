@@ -91,11 +91,11 @@ trait FeedIteratorFixture[E] {
 
 
   def iteratorFromStart: FeedEntryIterator[E] = {
-    new TestFeedProvider(None).iterator()
+    TestFeedProvider.iterator()
   }
 
   def iteratorStartingFrom(entryRef: Option[EntryRef[E]]): FeedEntryIterator[E] = {
-    new TestFeedProvider(entryRef).iterator()
+    TestFeedProvider.iterator(entryRef)
   }
 
   def iteratorStartingFrom(entryValue: E): FeedEntryIterator[E] = {
@@ -110,12 +110,12 @@ trait FeedIteratorFixture[E] {
     }
   }
 
-  private class TestFeedProvider(val initialEntryRef: Option[EntryRef[E]]) extends FeedProvider[E] {
+  private case object TestFeedProvider extends FeedProvider[E] {
 
     /**
      * Return first feed or a Failure
      */
-    override def fetchFeed(): Try[Feed[E]] = {
+    override def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Try[Feed[E]] = {
       initialEntryRef match {
         case None           => optToTry(fetchLastFeed)
         case Some(position) => fetchFeed(position.url.path)
