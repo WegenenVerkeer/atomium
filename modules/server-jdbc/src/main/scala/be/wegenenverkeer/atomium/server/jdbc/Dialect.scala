@@ -7,11 +7,23 @@ import org.joda.time.DateTime
 trait Dialect {
 
   /**
+   * @return the sql statement for the Feed table.
+   */
+  def createFeedTableStatement : String
+
+  /**
+   * @param entryTableName The entry table name.
+   * @return the sql statement for the Feed table.
+   */
+  def createEntryTableStatement(entryTableName: String): String
+
+  /**
    * Create an empty feed table.
    *
    * @param jdbcContext The JDBC context to use.
    */
-  def createFeedTableIfNotExists(implicit jdbcContext: JdbcContext): Unit
+  def createFeedTableIfNotExists(implicit jdbcContext: JdbcContext): Unit = sqlUpdate(createFeedTableStatement)
+
 
   /**
    * Drop the feed table.
@@ -41,7 +53,9 @@ trait Dialect {
    * @param entryTableName The entry table name.
    * @param jdbcContext The JDBC context to use.
    */
-  def createEntryTableIfNotExists(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit
+  def createEntryTableIfNotExists(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit =
+    sqlUpdate(createEntryTableStatement(entryTableName))
+
 
   /**
    * Drop the entry table.
@@ -161,10 +175,10 @@ trait Dialect {
     }
 
     val statement = jdbcContext.connection.createStatement()
-    maxRows match {
-      case Some(rows) => statement.setMaxRows(rows);
-      case None =>
+    maxRows.foreach { rows =>
+      statement.setMaxRows(rows)
     }
+
     statement.executeQuery(sql)
     processResultSet(statement.getResultSet, factory)
   }
