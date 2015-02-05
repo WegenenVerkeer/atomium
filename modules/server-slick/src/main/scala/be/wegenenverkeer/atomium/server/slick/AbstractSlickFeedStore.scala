@@ -19,13 +19,13 @@ import org.joda.time.DateTime
  * @param urlBuilder helper to build urls
  * @tparam E type of the elements in the feed
  */
- abstract class AbstractSlickFeedStore[E](
-                                          context: SlickJdbcContext,
-                                          feedName: String,
-                                          title: Option[String],
-                                          ser: E => String,
-                                          deser: String => E,
-                                          urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
+abstract class AbstractSlickFeedStore[E](feedName: String,
+                                         title: Option[String],
+                                         ser: E => String,
+                                         deser: String => E,
+                                         urlBuilder: UrlBuilder)
+                                        (implicit context: SlickJdbcContext)
+  extends AbstractFeedStore[E, SlickJdbcContext](feedName, title, urlBuilder) {
 
   val feedComponent: FeedComponent
 
@@ -42,7 +42,7 @@ import org.joda.time.DateTime
    *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
+  override def getFeedEntries(start: Long, count: Int, ascending: Boolean)(implicit context: SlickJdbcContext): List[FeedEntry] = {
     implicit val session = context.session
 
     val query = if (ascending)
@@ -53,7 +53,7 @@ import org.joda.time.DateTime
     query.take(count).list.map(toFeedEntry)
   }
 
-  override def push(entries: Iterable[E]): Unit = {
+  override def push(entries: Iterable[E])(implicit context: SlickJdbcContext): Unit = {
     implicit val session = context.session
     val timestamp: DateTime = new DateTime()
     entries foreach { entry =>
@@ -61,7 +61,7 @@ import org.joda.time.DateTime
     }
   }
 
-  override def push(uuid: String, entry: E): Unit = {
+  override def push(uuid: String, entry: E)(implicit context: SlickJdbcContext): Unit = {
     implicit val session = context.session
     val timestamp: DateTime = new DateTime()
     getEntryTableQuery += EntryModel(None, uuid, ser(entry), timestamp)
@@ -81,13 +81,13 @@ import org.joda.time.DateTime
    * @return a list containing tuples of a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+  override def getMostRecentFeedEntries(count: Int)(implicit context: SlickJdbcContext): List[FeedEntry] = {
     implicit val session = context.session
 
     getEntryTableQuery
-      .sortBy(_.id.desc)
-      .take(count)
-      .list(session).map(toFeedEntry)
+    .sortBy(_.id.desc)
+    .take(count)
+    .list(session).map(toFeedEntry)
   }
 
   /**

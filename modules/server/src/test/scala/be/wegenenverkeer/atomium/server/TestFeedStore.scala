@@ -1,35 +1,35 @@
 package be.wegenenverkeer.atomium.server
 
 import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import org.joda.time.DateTime
 
 import scala.collection.immutable.TreeMap
-
-import org.joda.time.DateTime
 
 object TestFeedStore {
 
   val urlBuilder: UrlBuilder = new UrlBuilder {
     override def base: Url = Url("http://www.example.org/testfeed")
+
     override def collectionLink: Url = ???
   }
 
 }
 
-class TestFeedStore[T] extends AbstractFeedStore[T](
+class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
   "test_store",
   None,
   TestFeedStore.urlBuilder) {
 
   var skip = 0
   var nextSequenceNum = 0L
-  var entriesMap : TreeMap[Long, Entry[T]] = TreeMap.empty[Long, Entry[T]]
+  var entriesMap: TreeMap[Long, Entry[T]] = TreeMap.empty[Long, Entry[T]]
 
   def sequenceNumbersToSkipForPush(skip: Int): Unit = {
     require(skip >= 0)
     this.skip = skip
   }
 
-  override def push(entries: Iterable[T]): Unit = {
+  override def push(entries: Iterable[T])(implicit context: C): Unit = {
     entries foreach { e =>
       nextSequenceNum += (skip + 1)
       entriesMap += (nextSequenceNum -> Entry("id", new DateTime(), Content(e, ""), Nil))
@@ -37,7 +37,7 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
     sequenceNumbersToSkipForPush(0)
   }
 
-  override def push(uuid: String, entry: T): Unit = ???
+  override def push(uuid: String, entry: T)(implicit context: C): Unit = ???
 
   override val minId: Long = 0
 
@@ -53,14 +53,14 @@ class TestFeedStore[T] extends AbstractFeedStore[T](
     else
       entriesMap.count(_._1 < sequenceNr)
 
-  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[FeedEntry] = {
+  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): List[FeedEntry] = {
     if (forward)
       entriesMap.dropWhile(_._1 < start).take(pageSize).toList.map(toFeedEntry)
     else
       entriesMap.takeWhile(_._1 <= start).toList.reverse.take(pageSize).map(toFeedEntry)
   }
 
-  override def getMostRecentFeedEntries(count: Int) = {
+  override def getMostRecentFeedEntries(count: Int)(implicit context: C) = {
     entriesMap.toList.reverse.take(count).map(toFeedEntry)
   }
 

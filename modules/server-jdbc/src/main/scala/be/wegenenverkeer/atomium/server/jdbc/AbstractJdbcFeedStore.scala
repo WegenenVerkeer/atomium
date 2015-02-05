@@ -4,22 +4,18 @@ import be.wegenenverkeer.atomium.format.{Content, Entry}
 import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import org.joda.time.DateTime
 
-abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
-                                        feedName: String,
+abstract class AbstractJdbcFeedStore[E](feedName: String,
                                         title: Option[String],
                                         ser: E => String,
                                         deser: String => E,
-                                        urlBuilder: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlBuilder) {
+                                        urlBuilder: UrlBuilder)
+                                       (implicit context: JdbcContext)
+  extends AbstractFeedStore[E, JdbcContext](feedName, title, urlBuilder) {
 
   /**
    * The concrete implementation of the JDBC feed store must extend a specific SQL dialect.
    */
   dialect: Dialect =>
-
-  /**
-   * The JDBC context is made implicit.
-   */
-  implicit val ctx: JdbcContext = context
 
   /**
    * The table name for the feed entries, which has to be specified by subclasses.
@@ -35,7 +31,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
+  override def getFeedEntries(start: Long, count: Int, ascending: Boolean)(implicit context: JdbcContext): List[FeedEntry] = {
     val entries: List[EntryDbModel] = dialect.fetchFeedEntries(entryTableName, start, count, ascending)
     entries.map(toFeedEntry)
   }
@@ -47,7 +43,7 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * @return a list of FeedEntries. a FeedEntry is a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+  override def getMostRecentFeedEntries(count: Int)(implicit context: JdbcContext): List[FeedEntry] = {
     val entries: List[EntryDbModel] = dialect.fetchMostRecentFeedEntries(entryTableName, count)
     entries.map(toFeedEntry)
   }
@@ -74,14 +70,14 @@ abstract class AbstractJdbcFeedStore[E](context: JdbcContext,
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  override def push(entries: Iterable[E]): Unit = {
+  override def push(entries: Iterable[E])(implicit context: JdbcContext): Unit = {
     val timestamp: DateTime = new DateTime()
     entries foreach { entry =>
       dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, generateEntryID(), value = ser(entry), timestamp = timestamp))
     }
   }
 
-  override def push(uuid: String, entry: E): Unit = {
+  override def push(uuid: String, entry: E)(implicit context: JdbcContext): Unit = {
     val timestamp: DateTime = new DateTime()
     dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }

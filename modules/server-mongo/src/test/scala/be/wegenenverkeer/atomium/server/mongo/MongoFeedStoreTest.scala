@@ -13,6 +13,8 @@ import com.mongodb.{MongoClient => JavaMongoClient}
 import org.joda.time.{DateTime, DateTimeUtils}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
+import scala.util.Try
+
 class MongoFeedStoreTest
   extends FunSuite with Matchers with BeforeAndAfterAll
   with BeforeAndAfterEach with MongoEmbedDatabase with FeedStoreTestSupport {
@@ -24,9 +26,6 @@ class MongoFeedStoreTest
   val port = FreePort()
   val mongoProps: MongodProps = mongoStart(port = port)
 
-  def createMongoClient = MongoClient(host = "localhost", port = port)
-
-  def createJavaMongoClient = new JavaMongoClient("localhost", port)
 
   override protected def afterAll(): Unit = {
     mongoStop(mongoProps)
@@ -39,23 +38,9 @@ class MongoFeedStoreTest
     createMongoClient("atom-test")("feed_info") remove MongoDBObject.empty
   }
 
-  def createUrlBuilder = new UrlBuilder {
-    override def base: Url = Url("http://www.example.org")
 
-    override def collectionLink: Url = ???
-  }
-
-  def createFeedStore = new MongoFeedStore[Int](
-    MongoContext(createJavaMongoClient.getDB("atom-test")),
-    feedName = "int_feed",
-    feedInfoCollectionName = "feed_info",
-    ser = i => MongoDBObject("value" -> i),
-    deser = dbo => dbo.as[Int]("value"),
-    urlProvider = createUrlBuilder
-  )
-
-  test("feed store creation should insert into feedInfoCollection") {
-    val feedStore = createFeedStore
+  test("feed store creation should insert into feedInfoCollection") { implicit context =>
+    val feedStore = createFeedStore[Int]("int_feed")
     val feedInfoCollection = createMongoClient("atom-test")("feed_info")
     feedInfoCollection.size should be(1)
     val feedObject = feedInfoCollection.find().toList.head
@@ -63,9 +48,10 @@ class MongoFeedStoreTest
     feedObject.as[Int](Keys.Sequence) should be(0)
   }
 
-  test("push should store entries") {
-    val feedStore = createFeedStore
 
+
+  test("push should store entries") { implicit context =>
+    val feedStore = createFeedStore[Int]("int_feed")
     //push first value on feedstore
     feedStore.push(666)
 
@@ -103,16 +89,37 @@ class MongoFeedStoreTest
     feedObject.as[Int](Keys.Sequence) should be(2)
   }
 
-  test("getFeed returns correct page of the feed") {
-    testFeedStorePaging(feedStore = new MongoFeedStore[String](
-      MongoContext(createJavaMongoClient.getDB("atom-test")),
-      feedName = "string_feed_1",
-      feedInfoCollectionName = "feed_info",
-      ser = i => MongoDBObject("value" -> i),
-      deser = dbo => dbo.as[String]("value"),
-      urlProvider = createUrlBuilder
-    ))
+
+
+  test("getFeed returns correct page of the feed")  { implicit context =>
+    val feedStore = createFeedStore[String]("string_feed_1")
+    testFeedStorePaging(feedStore = feedStore)
   }
+
+
+  def test(description: String)(block: MongoContext => Unit): Unit = {
+    implicit val context = MongoContext(createJavaMongoClient.getDB("atom-test"))
+    block(context)
+  }
+
+  def createUrlBuilder = new UrlBuilder {
+    override def base: Url = Url("http://www.example.org")
+
+    override def collectionLink: Url = ???
+  }
+
+  def createFeedStore[T:Manifest](feedName:String)(implicit context: MongoContext) = new MongoFeedStore[T](
+    feedName = feedName,
+    feedInfoCollectionName = "feed_info",
+    ser = i => MongoDBObject("value" -> i),
+    deser = dbo => dbo.as[T]("value"),
+    urlProvider = createUrlBuilder
+  )
+
+
+  def createMongoClient = MongoClient(host = "localhost", port = port)
+
+  def createJavaMongoClient: JavaMongoClient = new JavaMongoClient("localhost", port)
 
   object FreePort {
 

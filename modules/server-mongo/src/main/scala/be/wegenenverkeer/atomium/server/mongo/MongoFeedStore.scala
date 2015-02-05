@@ -11,26 +11,28 @@ import org.joda.time.DateTime
 /**
  * [[be.wegenenverkeer.atomium.server.AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
  *
- * @param c the context implementation
  * @param feedEntriesCollectionName name of the entriesCollection that contains the feed entries
  * @param feedInfoCollectionName name of the entriesCollection that contains the feed info of all the feeds
  * @param ser function to serialize an element to a DBObject
  * @param deser function to deserialize a DBObject to an element
  * @param urlProvider a `UrlBuilder`
+ * @param context a implicit MongoContext implementation
  * @tparam E type of the elements in the feed
  */
-class MongoFeedStore[E](c: MongoContext,
-                        feedName: String,
+class MongoFeedStore[E](feedName: String,
                         title: Option[String] = None,
                         feedEntriesCollectionName: Option[String] = None,
                         feedInfoCollectionName: String,
-                        ser: E => DBObject, deser: DBObject => E, urlProvider: UrlBuilder) extends AbstractFeedStore[E](feedName, title, urlProvider) {
+                        ser: E => DBObject, deser: DBObject => E,
+                        urlProvider: UrlBuilder)
+                       (implicit context: MongoContext) extends AbstractFeedStore[E, MongoContext](feedName, title, urlProvider) {
 
-  private lazy val db = c.db.asScala
-  private lazy val entriesCollection = db(feedEntriesCollectionName match {
-    case Some(name) => name
-    case None => feedName
-  })
+  private lazy val db = context.db.asScala
+
+  private lazy val entriesCollection = {
+    db(feedEntriesCollectionName.getOrElse(feedName))
+  }
+
   private lazy val feedInfoCollection = db(feedInfoCollectionName)
 
   //insert feed into to feedInfoCollection if it does not exist yet
@@ -49,25 +51,25 @@ class MongoFeedStore[E](c: MongoContext,
     Keys.Content -> ser(e)
   )
 
-  protected def dbObject2FeedEntry(dbo: DBObject): FeedEntry  = {
+  protected def dbObject2FeedEntry(dbo: DBObject): FeedEntry = {
     val entryDbo = dbo.as[DBObject](Keys.Content)
     FeedEntry(dbo.as[Long](Keys._Id),
-          Entry(id = dbo.as[String](Keys.Uuid),
-            updated = dbo.as[DateTime](Keys.Timestamp).toDateTime,
-            content = Content(deser(entryDbo), ""), Nil))
+      Entry(id = dbo.as[String](Keys.Uuid),
+        updated = dbo.as[DateTime](Keys.Timestamp).toDateTime,
+        content = Content(deser(entryDbo), ""), Nil))
   }
 
   /**
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  override def push(entries: Iterable[E]): Unit = {
-    entries foreach {entry =>
+  override def push(entries: Iterable[E])(implicit context: MongoContext): Unit = {
+    entries foreach { entry =>
       entriesCollection.insert(feedEntry2DbObject(entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
     }
   }
 
-  override def push(uuid: String, entry: E): Unit = {
+  override def push(uuid: String, entry: E)(implicit context: MongoContext): Unit = {
     entriesCollection.insert(feedEntry2DbObject(uuid, entry) ++ (Keys._Id -> getNextSequence), WriteConcern.Safe)
   }
 
@@ -77,14 +79,15 @@ class MongoFeedStore[E](c: MongoContext,
    * @param start the starting entry (inclusive), MUST be returned in the entries
    * @param count the number of entries to return
    * @param ascending if true return entries with sequence numbers >= start in ascending order
-   *                else return entries with sequence numbers <= start in descending order
+   *                  else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  override def getFeedEntries(start: Long, count: Int, ascending: Boolean): List[FeedEntry] = {
-    val query = if (ascending)
-      entriesCollection.find(Keys._Id $gte start).sort(MongoDBObject(Keys._Id -> 1))
-    else
-      entriesCollection.find(Keys._Id $lte start).sort(MongoDBObject(Keys._Id -> -1))
+  override def getFeedEntries(start: Long, count: Int, ascending: Boolean)(implicit context: MongoContext): List[FeedEntry] = {
+    val query =
+      if (ascending)
+        entriesCollection.find(Keys._Id $gte start).sort(MongoDBObject(Keys._Id -> 1))
+      else
+        entriesCollection.find(Keys._Id $lte start).sort(MongoDBObject(Keys._Id -> -1))
 
     query.take(count).toList.map(dbObject2FeedEntry)
   }
@@ -95,7 +98,7 @@ class MongoFeedStore[E](c: MongoContext,
    * @return a list containing tuples of a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+  override def getMostRecentFeedEntries(count: Int)(implicit context: MongoContext): List[FeedEntry] = {
     entriesCollection.find().sort(MongoDBObject(Keys._Id -> -1)).take(count).toList.map(dbObject2FeedEntry)
   }
 
@@ -114,13 +117,12 @@ class MongoFeedStore[E](c: MongoContext,
   }
 
 
-
   @annotation.tailrec
   private def retry[T](n: Int)(fn: => Option[T]): T = {
-    if (n == 0) throw new Exception("could not retrieve next sequence number after retrying")
-    fn match {
-      case Some(x) => x
-      case None => retry(n - 1)(fn)
+    (n, fn) match {
+      case (0, _)       => throw new Exception("could not retrieve next sequence number after retrying")
+      case (_, Some(x)) => x
+      case (_, None)    => retry(n - 1)(fn)
     }
   }
 
@@ -138,20 +140,29 @@ class MongoFeedStore[E](c: MongoContext,
   override val minId: Long = 0L
 
   def maxId: Long = {
-    entriesCollection.find().sort(MongoDBObject(Keys._Id -> -1)).limit(1).toList match {
+
+    val entries = entriesCollection
+                  .find()
+                  .sort(MongoDBObject(Keys._Id -> -1))
+                  .limit(1).toList
+
+    entries match {
       case h :: Nil => h.as[Long](Keys._Id)
-      case _ => 0L
+      case _        => 0L
     }
   }
 
 }
 
 object MongoFeedStore {
+
   object Keys {
+
     val _Id = "_id"
     val Sequence = "seq"
     val Uuid = "uuid"
     val Timestamp = "timestamp"
     val Content = "content"
   }
+
 }

@@ -7,7 +7,7 @@ import be.wegenenverkeer.atomium.format.Feed
  *
  * @tparam E type of the elements in the feed
  */
-trait FeedStore[E] {
+trait FeedStore[E, C <: Context] {
 
   /**
    * Retrieves a page of the feed.
@@ -18,30 +18,30 @@ trait FeedStore[E] {
    *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(startSequenceNr: Long, count: Int, forward: Boolean): Option[Feed[E]]
+  def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[Feed[E]]
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  def getHeadOfFeed(pageSize: Int): Option[Feed[E]]
+  def getHeadOfFeed(pageSize: Int)(implicit context: C): Option[Feed[E]]
 
   /**
    * push a list of entries to the feed
    * @param entries the entries to push to the feed
    */
-  def push(entries: Iterable[E]) : Unit
+  def push(entries: Iterable[E])(implicit context: C) : Unit
 
   /**
    * push a single entry to the feed
    * @param entry the entry to push to the feed
    */
-  def push(entry: E): Unit = {
+  def push(entry: E)(implicit context: C): Unit = {
     push(List(entry))
   }
 
-  def push(uuid: String, entry: E): Unit
+  def push(uuid: String, entry: E)(implicit context: C): Unit
 
   /**
    * This method is called when the [[be.wegenenverkeer.atomium.server.FeedService]] is started.

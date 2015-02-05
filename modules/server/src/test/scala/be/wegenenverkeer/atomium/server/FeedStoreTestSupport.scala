@@ -8,7 +8,7 @@ import org.scalatest.Matchers
  */
 trait FeedStoreTestSupport extends Matchers {
 
-  def testFeedStorePaging(feedStore: AbstractFeedStore[String], pageSize: Int = 2): Unit = {
+  def testFeedStorePaging[C <: Context](feedStore: AbstractFeedStore[String, C], pageSize: Int = 2)(implicit context: C): Unit = {
 
     val minId = feedStore.minId.toInt
 

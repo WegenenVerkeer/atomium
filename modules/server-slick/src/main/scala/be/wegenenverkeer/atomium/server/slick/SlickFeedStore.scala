@@ -7,7 +7,6 @@ import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
  * This implementation requires that the entries table for each feed is explicitly created upfront.
  *
  * @param feedComponent the feedComponent trait to access the driver
- * @param context: the context implementation (wraps a session)
  * @param feedName the name of the feed
  * @param title the optional title of the feed
  * @param entriesTableName the name of the table storing the entries for this feed, must be created explicitly
@@ -17,13 +16,14 @@ import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
  * @tparam E type of the elements in the feed
  */
 case class SlickFeedStore[E](feedComponent: FeedComponent,
-                       context: SlickJdbcContext,
-                       feedName: String,
-                       title: Option[String],
-                       entriesTableName: String,
-                       ser: E => String,
-                       deser: String => E,
-                       urlBuilder: UrlBuilder) extends AbstractSlickFeedStore[E](context, feedName, title, ser, deser, urlBuilder) {
+                             feedName: String,
+                             title: Option[String],
+                             entriesTableName: String,
+                             ser: E => String,
+                             deser: String => E,
+                             urlBuilder: UrlBuilder)
+                            (implicit context:SlickJdbcContext)
+  extends AbstractSlickFeedStore[E](feedName, title, ser, deser, urlBuilder) {
 
 
   import feedComponent.driver.simple._

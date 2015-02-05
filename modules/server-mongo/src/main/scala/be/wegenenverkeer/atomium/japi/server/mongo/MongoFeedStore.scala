@@ -5,15 +5,16 @@ import be.wegenenverkeer.atomium.server.{AbstractFeedStore, UrlBuilder}
 import be.wegenenverkeer.atomium.server.mongo.MongoContext
 import be.wegenenverkeer.atomium.server.mongo
 
-class MongoFeedStore[E](c: MongoContext,
+class MongoFeedStore[E](context: MongoContext,
                         feedName: String,
                         title: Option[String],
                         feedEntriesCollectionName: Option[String],
                         feedInfoCollectionName: String,
-                        mapper: ElementMapper[E], urlProvider: UrlBuilder) extends FeedStore[E](feedName, title, urlProvider) {
+                        mapper: ElementMapper[E], urlProvider: UrlBuilder) extends FeedStore[E, MongoContext](feedName, title, urlProvider) {
 
-  override def underlying: AbstractFeedStore[E] = new mongo.MongoFeedStore[E](
-    c = c,
+  implicit val cxt = context
+
+  override def underlying: AbstractFeedStore[E, MongoContext] = new mongo.MongoFeedStore[E](
     feedName,
     title,
     feedEntriesCollectionName = feedEntriesCollectionName,

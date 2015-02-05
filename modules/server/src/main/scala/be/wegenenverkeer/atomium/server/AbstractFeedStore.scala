@@ -10,9 +10,9 @@ import be.wegenenverkeer.atomium.format.{Entry, Feed, Link}
  *
  * @tparam E type of the elements in the feed
  */
-abstract class AbstractFeedStore[E](feedName: String,
+abstract class AbstractFeedStore[E, C <: Context](feedName: String,
                                     title: Option[String],
-                                    urlProvider: UrlBuilder) extends FeedStore[E] {
+                                    urlProvider: UrlBuilder) extends FeedStore[E, C] {
 
   /**
    * Retrieves a page of the feed.
@@ -23,7 +23,7 @@ abstract class AbstractFeedStore[E](feedName: String,
    *                else navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(start:Long, pageSize: Int, forward: Boolean): Option[Feed[E]] = {
+  override def getFeed(start:Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
     require(pageSize > 0)
     val allowed =
       if (forward)
@@ -104,6 +104,7 @@ abstract class AbstractFeedStore[E](feedName: String,
                        entries: List[FeedEntry],
                        previousEntryId: Option[Long],
                        nextEntryId: Option[Long]): Option[Feed[E]] = {
+    
     for {
       entries <- Some(entries); if entries.size > 0
     } yield Feed[E](
@@ -129,7 +130,7 @@ abstract class AbstractFeedStore[E](feedName: String,
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  override def getHeadOfFeed(pageSize: Int): Option[Feed[E]] = {
+  override def getHeadOfFeed(pageSize: Int)(implicit context: C): Option[Feed[E]] = {
 
     require(pageSize > 0, "page size must be greater than 0")
 
@@ -174,12 +175,12 @@ abstract class AbstractFeedStore[E](feedName: String,
   def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long
 
   /**
-   * retrieves the most recent entries from the feedstore sorted in descending order
+   * Retrieves the most recent entries from the `FeedStore` sorted in descending order
    * @param count the amount of recent entries to return
    * @return a list of FeedEntries. a FeedEntry is a sequence number and its corresponding entry
    *         and sorted by descending sequence number
    */
-  def getMostRecentFeedEntries(count: Int): List[FeedEntry]
+  def getMostRecentFeedEntries(count: Int)(implicit context: C): List[FeedEntry]
 
   /**
    * Retrieves entries with their sequence numbers from the feed
@@ -190,7 +191,7 @@ abstract class AbstractFeedStore[E](feedName: String,
    *                else return entries with sequence numbers <= start in descending order
    * @return the corresponding entries sorted accordingly
    */
-  def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry]
+  def getFeedEntries(start:Long, count: Int, ascending: Boolean)(implicit context: C): List[FeedEntry]
 
   protected def getNextLink(id: Long, count: Int, next: Option[Long]) : Option[Link] = {
     next.map { _ => 

@@ -5,8 +5,10 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
+  private implicit val context: Context = new Context {}
+
   test("empty store") {
-    val feedStore = new TestFeedStore[Int]()
+    val feedStore = new TestFeedStore[Int, Context]()
     feedStore.getHeadOfFeed(1) shouldBe None
     feedStore.getHeadOfFeed(3) shouldBe None
     intercept[IllegalArgumentException] {
@@ -20,7 +22,7 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
   }
 
   test("invalid feed retrieval") {
-    val feedStore = new TestFeedStore[Int]()
+    val feedStore = new TestFeedStore[Int, Context]()
     feedStore.push(1) //stored with sequence number 1
     feedStore.push(2) //stored with sequence number 2
     feedStore.push(3) //stored with sequence number 3
@@ -82,11 +84,11 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
   }
 
   test("store with consecutive sequence numbers") {
-    testFeedStorePaging(feedStore = new TestFeedStore[String], pageSize = 5)
+    testFeedStorePaging(feedStore = new TestFeedStore[String, Context], pageSize = 5)
   }
 
   test("store with missing non-consecutive sequence numbers") {
-    val feedStore = new TestFeedStore[Int]()
+    val feedStore = new TestFeedStore[Int, Context]()
     feedStore.push(1)  //stored with sequence number 1
     feedStore.sequenceNumbersToSkipForPush(1)
     feedStore.push(2)  //stored with sequence number 3

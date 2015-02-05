@@ -14,11 +14,10 @@ import scala.collection.mutable.ListBuffer
  * @param contentType the content type of the entries in the feed
  * @tparam T the type for the content of the generated feed
  */
-class MemoryFeedStore[T](feedName: String,
+class MemoryFeedStore[T, C <: Context](feedName: String,
                          urlBuilder: UrlBuilder,
                          title : Option[String],
-                         contentType: String)
-  extends AbstractFeedStore[T](feedName, title, urlBuilder) {
+                         contentType: String) extends AbstractFeedStore[T, C](feedName, title, urlBuilder) {
 
   def this(feedName: String,
            baseUrl: Url,
@@ -26,20 +25,20 @@ class MemoryFeedStore[T](feedName: String,
            contentType: String = "text/plain") =
     this(feedName, MemoryFeedStore.newUrlBuilder(baseUrl, feedName), title, contentType)
 
-  val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
+  private val entries: ListBuffer[Entry[T]] = new ListBuffer[Entry[T]]
 
   override val minId = 0L
 
   override def maxId = entries.size + 1
 
-  override def push(it: Iterable[T]) = {
+  override def push(it: Iterable[T])(implicit context: C) = {
     val timestamp: DateTime = new DateTime()
     it foreach { entry =>
       push(generateEntryID(), entry, new DateTime())
     }
   }
 
-  override def push(uuid: String, entry: T): Unit = {
+  override def push(uuid: String, entry: T)(implicit context: C): Unit = {
     push(uuid, entry, new DateTime())
   }
 
@@ -53,7 +52,7 @@ class MemoryFeedStore[T](feedName: String,
    * @param pageSize the number of entries to return
    * @return pageSize entries starting from start
    */
-  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean): List[FeedEntry] = {
+  override def getFeedEntries(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): List[FeedEntry] = {
     if (forward)
       entriesWithIndex.dropWhile(_.sequenceNr < start).take(pageSize).toList
     else
@@ -77,10 +76,12 @@ class MemoryFeedStore[T](feedName: String,
   }
 
   //select * from entries order by id desc limit L
-  override def getMostRecentFeedEntries(count: Int): List[FeedEntry] = {
+  override def getMostRecentFeedEntries(count: Int)(implicit context: C): List[FeedEntry] = {
     entriesWithIndex.toList.reverse.take(count)
   }
 
+  def clear() : Unit = entries.clear()
+  def count: Int = entries.size
 
 
 }

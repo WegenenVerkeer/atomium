@@ -1,21 +1,16 @@
 import be.wegenenverkeer.atomium.format.Url
-import be.wegenenverkeer.atomium.server.{FeedStoreTestSupport, MemoryFeedStore, UrlBuilder}
-import org.joda.time.DateTimeUtils
+import be.wegenenverkeer.atomium.server.{Context, FeedStoreTestSupport, MemoryFeedStore, UrlBuilder}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  val timeMillis = System.currentTimeMillis()
-  DateTimeUtils.setCurrentMillisFixed(timeMillis)
-
-  var feedStore: MemoryFeedStore[String] = _
-
-  override protected def beforeEach() = {
-    feedStore = createFeedStore
+  test("getFeed returns correct page of the feed") { implicit context =>
+    val feedStore = createFeedStore
+    testFeedStorePaging(feedStore = feedStore, pageSize = 3)
   }
 
-  override protected def afterAll() = {
-    DateTimeUtils.setCurrentMillisSystem()
+  def test(description: String)(block: Context => Unit): Unit = {
+    block(new Context {})
   }
 
   def createUrlBuilder = new UrlBuilder {
@@ -24,15 +19,12 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = new MemoryFeedStore[String](
+  def createFeedStore(implicit context: Context) = new MemoryFeedStore[String, Context](
     feedName = "int_feed",
     urlBuilder = createUrlBuilder,
     title = Some("Test"),
     "text/plain"
   )
 
-  test("getFeed returns correct page of the feed") {
-    testFeedStorePaging(feedStore = feedStore, pageSize = 3)
-  }
 
 }

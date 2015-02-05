@@ -82,8 +82,8 @@ trait FeedIteratorFixture[E] {
 
   private implicit val context: Context = new Context {}
 
-  private lazy val feedStore = new MemoryFeedStore[E]("test", Url(baseUrl), Some("test"))
-  private lazy val feedService = new FeedService[E, Context]("test", pageSize, (_, _) => feedStore)
+  private lazy val feedStore = new MemoryFeedStore[E, Context]("test", Url(baseUrl), Some("test"))
+  private lazy val feedService = new FeedService[E, Context]("test", pageSize, feedStore)
 
   def push(values: E*): Unit = push(values.toList)
 

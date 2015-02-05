@@ -2,37 +2,36 @@ package be.wegenenverkeer.atomium.server.slick
 
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
-import be.wegenenverkeer.atomium.server.{UrlBuilder, FeedStoreTestSupport}
+import be.wegenenverkeer.atomium.server.{FeedStoreTestSupport, UrlBuilder}
 import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 import scala.slick.driver.H2Driver
-import scala.slick.driver.H2Driver.simple._
 
 class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
   val timeMillis = System.currentTimeMillis()
   DateTimeUtils.setCurrentMillisFixed(timeMillis)
 
-  implicit var session: Session = _
 
-  var feedStore: SlickFeedStore[String] = _
   val ENTRIES_TABLE_NAME = "my_feed_entries"
 
-  val db = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver")
-  val dal: FeedDAL = new FeedDAL(H2Driver)
+  val dal = new FeedDAL(H2Driver)
 
   import dal.driver.simple._
 
-  override protected def beforeEach() = {
-    session = db.createSession()
-    dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.create
-    feedStore = createFeedStore
-  }
+  def test(description: String)(block: SlickJdbcContext => Unit): Unit = {
 
-  override protected def afterEach(): Unit = {
+    val db = Database.forURL("jdbc:h2:mem:test", driver = "org.h2.Driver")
+    implicit val session = db.createSession()
+
+    dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.create
+
+    block(dal.createJdbcContext)
+
     dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.drop
   }
+
 
   override protected def afterAll() = {
     DateTimeUtils.setCurrentMillisSystem()
@@ -44,17 +43,20 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
     override def collectionLink: Url = ???
   }
 
-  def createFeedStore = SlickFeedStore[String](
-    dal,
-    dal.createJdbcContext,
-    feedName = "int_feed",
-    title = Some("Test"),
-    ENTRIES_TABLE_NAME,
-    ser = s => s,
-    deser = s => s,
-    urlBuilder = createUrlBuilder)
+  def createFeedStore(implicit context: SlickJdbcContext) = {
+    SlickFeedStore[String](
+      dal,
+      feedName = "int_feed",
+      title = Some("Test"),
+      ENTRIES_TABLE_NAME,
+      ser = s => s,
+      deser = s => s,
+      urlBuilder = createUrlBuilder)
+  }
 
-  test("push should store entry") {
+  test("push should store entry") { implicit context =>
+    implicit val session = context.session
+    val feedStore = createFeedStore
     feedStore.push(List("1"))
 
     dal.entriesTableQuery(ENTRIES_TABLE_NAME).length.run should be(1)
@@ -63,11 +65,15 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
 
   }
 
-  test("getFeed returns correct page of the feed") {
+  test("getFeed returns correct page of the feed") { implicit context =>
+    val feedStore = createFeedStore
     testFeedStorePaging(feedStore = feedStore, pageSize = 3)
   }
 
-  test("failed transaction should not push entry onto feed") {
+  test("failed transaction should not push entry onto feed") { implicit context =>
+    implicit val session = context.session
+    val feedStore = createFeedStore
+
     intercept[Exception] {
       session.withTransaction {
         feedStore.push("1")

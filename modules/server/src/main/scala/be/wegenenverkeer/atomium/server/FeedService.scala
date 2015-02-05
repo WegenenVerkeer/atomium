@@ -9,11 +9,11 @@ import be.wegenenverkeer.atomium.format.Feed
  *
  * @param feedName the name of this feed, which can be used as an identifier for the feed
  * @param entriesPerPage the number of entries per page
- * @param feedStoreFactory a factory for creating feed stores
+ * @param feedStore a feed store
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStoreFactory: (String, C) => FeedStore[E]) {
+class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStore: FeedStore[E, C]) {
 
   /**
    * Adds elements to the feed.
@@ -22,7 +22,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
    * @param context the context, which is required for feed stores
    */
   def push(elements: Iterable[E])(implicit context: C): Unit = {
-    feedStoreFactory(feedName, context).push(elements)
+    feedStore.push(elements)
   }
 
   /**
@@ -43,7 +43,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
    * @param context the context, which is required for feed stores
    */
   def push(uuid: String, element: E)(implicit context: C): Unit = {
-    feedStoreFactory(feedName, context).push(uuid, element)
+    feedStore.push(uuid, element)
   }
 
   /**
@@ -58,7 +58,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
    */
   def getFeedPage(startSequenceNr: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
     if (pageSize == entriesPerPage) {
-      feedStoreFactory(feedName, context).getFeed(startSequenceNr, pageSize, forward)
+      feedStore.getFeed(startSequenceNr, pageSize, forward)
     } else {
       None
     }
@@ -70,7 +70,7 @@ class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedSt
    * @return the head of the feed. This is the first page containing the most recent entries
    */
   def getHeadOfFeed()(implicit context: C): Option[Feed[E]] = {
-    feedStoreFactory(feedName, context).getHeadOfFeed(entriesPerPage)
+    feedStore.getHeadOfFeed(entriesPerPage)
   }
 
 

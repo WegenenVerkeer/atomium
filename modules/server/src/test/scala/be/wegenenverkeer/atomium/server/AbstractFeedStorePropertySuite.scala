@@ -1,17 +1,19 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Link, Url, Feed}
+import be.wegenenverkeer.atomium.format.{Feed, Link, Url}
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}
 
 class AbstractFeedStorePropertySuite extends FunSuite with Matchers with GeneratorDrivenPropertyChecks {
 
+  private implicit val context: Context = new Context {}
+
   def validFeedStores = for {
     n <- Gen.choose(1, 60)
     s <- Gen.choose(0, 2)
   } yield {
-    val feedStore = new TestFeedStore[Int]()
+    val feedStore = new TestFeedStore[Int, Context]()
     0 to n map { i =>
       feedStore.sequenceNumbersToSkipForPush(s)
       feedStore.push(i)
@@ -22,18 +24,18 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with Generat
   def validPageSizes = Gen.choose(1, 11)
 
   test("head of non-empty feed is correct") {
-    forAll (validFeedStores, validPageSizes) { (feedStore: FeedStore[Int], pageSize: Int) =>
+    forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
       val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
       head.complete shouldBe false
       head.entries.size should be > 0
       head.entries.size should be <= pageSize
-      head.previousLink should be (None)
+      head.previousLink should be(None)
       head.lastLink shouldEqual Some(Link(Link.lastLink, Url(s"0/forward/$pageSize")))
     }
   }
 
   test("last page of non-empty feed is correct") {
-    forAll (validFeedStores, validPageSizes) { (feedStore: FeedStore[Int], pageSize: Int) =>
+    forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
       val lastPage: Feed[Int] = feedStore.getFeed(0, pageSize, forward = true).get
       lastPage.entries.size should be > 0
       lastPage.entries.size should be <= pageSize
@@ -52,7 +54,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with Generat
   }
 
   test("navigate from head to tail") {
-    forAll (validFeedStores, validPageSizes) { (feedStore: FeedStore[Int], pageSize: Int) =>
+    forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
       var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
       page.entries.size should be > 0
       page.entries.size should be <= pageSize
@@ -73,7 +75,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with Generat
   }
 
   test("navigate from tail to head") {
-    forAll (validFeedStores, validPageSizes) { (feedStore: FeedStore[Int], pageSize: Int) =>
+    forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
       var page: Feed[Int] = feedStore.getFeed(0, pageSize, forward = true).get
       page.entries.size should be > 0
       while (page.previousLink != None) {
