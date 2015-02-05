@@ -93,7 +93,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val serverPlayModule = {
 
-    val mainDeps = Seq(scalaLogging, filters)
+    val mainDeps = Seq(filters)
     val testDeps = Seq(playMockWs, playTest, scalaTestPlay)
 
     project("server-play")

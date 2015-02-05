@@ -16,7 +16,6 @@ object Dependencies {
   val casbah            = "org.mongodb"                 %%    "casbah"                  % "2.8.0"
   val slick             = "com.typesafe.slick"          %%    "slick"                   % "2.1.0"
   val slickPostgres     = "com.github.tminglei"         %%    "slick-pg"                % "0.7.0"
-  val scalaLogging      = "com.typesafe.scala-logging"  %%    "scala-logging"           % "3.1.0"
 
   // test deps
   val scalaTest         = "org.scalatest"               %%    "scalatest"               % "2.2.0"        % "test"

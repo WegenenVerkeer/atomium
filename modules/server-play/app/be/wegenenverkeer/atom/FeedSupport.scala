@@ -2,8 +2,7 @@ package be.wegenenverkeer.atom
 
 import java.util.Locale
 
-import be.wegenenverkeer.atomium.format.{Url, Feed, Generator}
-import com.typesafe.scalalogging.{LazyLogging, Logger}
+import be.wegenenverkeer.atomium.format.{Feed, Generator, Url}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Duration}
 import org.slf4j.LoggerFactory
@@ -18,9 +17,11 @@ import play.api.mvc._
  *
  * @tparam T the type of the feed entries²
  */
-trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors with LazyLogging {
+trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors {
 
   type FeedMarshaller = Feed[T] => Array[Byte]
+
+  private val logger = LoggerFactory.getLogger(getClass)
 
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
 
@@ -60,22 +61,22 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
             case Accepts.Json() if marshallerRegistry.contains(MimeTypes.JSON) =>
               marshall(marshallerRegistry.get(MimeTypes.JSON), feed).as(MimeTypes.JSON)
 
-            case Accepts.Xml()  if marshallerRegistry.contains(MimeTypes.XML)  =>
+            case Accepts.Xml() if marshallerRegistry.contains(MimeTypes.XML) =>
               marshall(marshallerRegistry.get(MimeTypes.XML), feed).as(MimeTypes.XML)
           }
         }
-      case None =>
+      case None    =>
         logger.info("sending response: 404 Not-Found")
         NotFound("feed or page not found")
     }
   }
 
   private[this] def marshall(marshaller: Option[FeedMarshaller], feed: Feed[T]) = {
-    marshaller.fold(NotAcceptable: Result){ (m: FeedMarshaller) =>
+    marshaller.fold(NotAcceptable: Result) { (m: FeedMarshaller) =>
       //marshall feed and add Last-Modified header
       logger.info("sending response: 200 Found")
       val result = Ok(m(feed))
-        .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
+                   .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
 
       //add extra cache headers or forbid caching
       if (feed.complete()) {
@@ -93,15 +94,18 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 10:00:00 => not modified => true
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
-    (headers get IF_NONE_MATCH exists { _ == f.calcETag }) ||
-    (headers get IF_MODIFIED_SINCE exists { dateStr => try {
+    (headers get IF_NONE_MATCH exists {
+      _ == f.calcETag
+    }) ||
+      (headers get IF_MODIFIED_SINCE exists { dateStr => try {
         rfcFormat.parseDateTime(dateStr).toDate.getTime >= f.updated.withMillisOfSecond(0).toDate.getTime
-      } catch {
+      }
+      catch {
         case e: IllegalArgumentException =>
           logger.error(e.getMessage, e)
           false
       }
-    })
+      })
   }
 
 }
