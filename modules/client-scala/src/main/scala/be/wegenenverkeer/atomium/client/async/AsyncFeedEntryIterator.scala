@@ -200,7 +200,11 @@ object AsyncFeedEntryIterator {
 
     implicit class AsyncIteratorBuilder[T](feedProvider: AsyncFeedProvider[T]) {
 
-      def iterator(timeout: Duration)(implicit ec: ExecutionContext) = new AsyncFeedEntryIterator(feedProvider, timeout)
+      def iterator(timeout: Duration, initialEntryRef: Option[EntryRef[T]])(implicit ec: ExecutionContext):  AsyncFeedEntryIterator[T] =
+        new AsyncFeedEntryIterator(feedProvider, timeout, initialEntryRef)
+
+      def iterator(timeout: Duration)(implicit ec: ExecutionContext): AsyncFeedEntryIterator[T] = iterator(timeout, None)
+
     }
 
   }
