@@ -16,4 +16,10 @@ case class Url(path: String) {
     if (additionalPath.startsWith("/")) Url(s"$path$additionalPath")
     else Url(s"$path/$additionalPath")
   }
+
+  def /(additionalPath: Long): Url =
+    Url(s"$path/${additionalPath.toString}")
+
+  def /(additionalPath: Int): Url =
+    Url(s"$path/${additionalPath.toString}")
 }
