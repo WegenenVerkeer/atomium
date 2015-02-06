@@ -9,7 +9,7 @@ trait Dialect {
   /**
    * @return the sql statement for the Feed table.
    */
-  def createFeedTableStatement : String
+  def createFeedTableStatement: String
 
   /**
    * @param entryTableName The entry table name.
@@ -141,12 +141,12 @@ trait Dialect {
         case d :: ds =>
           d match {
             case stringData: String => preparedStatement.setString(index, stringData)
-            case intData: Int => preparedStatement.setInt(index, intData)
+            case intData: Int       => preparedStatement.setInt(index, intData)
             case timeData: DateTime => preparedStatement.setTimestamp(index, new Timestamp(timeData.toDate.getTime))
-            case _ => throw new SQLDataException("Unknown data type used in the atomium feed generator.")
+            case _                  => throw new SQLDataException("Unknown data type used in the atomium feed generator.")
           }
           setPreparedData(ds, index + 1)
-        case Nil =>
+        case Nil     =>
       }
     }
 
@@ -168,16 +168,14 @@ trait Dialect {
       def processResults: List[T] = {
         resultSet.next() match {
           case false => Nil
-          case true => factory(resultSet) :: processResults
+          case true  => factory(resultSet) :: processResults
         }
       }
       processResults
     }
 
     val statement = jdbcContext.connection.createStatement()
-    maxRows.foreach { rows =>
-      statement.setMaxRows(rows)
-    }
+    maxRows.foreach(rows => statement.setMaxRows(rows))
 
     statement.executeQuery(sql)
     processResultSet(statement.getResultSet, factory)
