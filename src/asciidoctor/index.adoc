@@ -1,6 +1,7 @@
 = Atomium guide
 :linkcss:
 :toc2:
+:icons: font
 :siteversion: 0.0.1
 
 This aims to be a comprehensive guide to Atomium, an open source project
@@ -15,6 +16,10 @@ that provides support for creating atom feed clients and servers.
 * support for servers (feed producers)
 * support for different types of feed stores: relation databases or NoSQL (currently Mongo)
 * <<JSON data format>> in addition to the standard https://tools.ietf.org/html/rfc4287[Atom xml syndication format].
+
+== Api documentation
+
+Scaladoc documentation is available link:./latest/api/index.html[here].
 
 == Atomium client
 
