@@ -2,12 +2,10 @@
 :linkcss:
 :toc2:
 :icons: font
-:siteversion: 0.0.1
+:project-version:
 
 This aims to be a comprehensive guide to Atomium, an open source project
 that provides support for creating atom feed clients and servers.
-
-
 
 == Features
 
@@ -86,19 +84,22 @@ Extend the trait +be.wegenenverkeer.atomium.async.AsyncFeedProvider+ and impleme
 ===== Maven
 
 [source,xml]
+[subs="specialcharacters,attributes"]
+.Declaring the dependency in a Maven build file (i.e., pom.xml)
 ----
 <dependency>
     <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-client-scala</artifactId>
-    <version>{siteversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
 ===== SBT
 
 [source,scala,subs="attributes"]
+.Declaring the dependency in a SBT build file (i.e., build.sbt)
 ----
-libraryDependencies += "be.wegenenverkeer" %% "atomium-client-scala" % "{siteversion}"
+libraryDependencies += "be.wegenenverkeer" %% "atomium-client-scala" % "{project-version}"
 ----
 
 == Atomium server
@@ -239,20 +240,23 @@ The `atomium-server-jdbc` module provides a feed store implementation that store
 
 ===== Maven
 
-[source,xml,subs="attributes"]
+[source,xml]
+[subs="specialcharacters,attributes"]
+.Declaring the dependency in a Maven build file (i.e., pom.xml)
 ----
 <dependency>
     <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-jdbc</artifactId>
-    <version>{siteversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
 ===== SBT
 
 [source,scala,subs="attributes"]
+.Declaring the dependency in a SBT build file (i.e., build.sbt)
 ----
-libraryDependencies += "be.wegenenverkeer" %% "atomium-server-jdbc" % "{siteversion}"
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-jdbc" % "{project-version}"
 ----
 
 The JDBC feedstore uses the following tables:
@@ -276,20 +280,23 @@ using http://slick.typesafe.com[Slick], a functional relational mapper for Scala
 
 ===== Maven
 
-[source,xml,subs="attributes"]
+[source,xml]
+[subs="specialcharacters,attributes"]
+.Declaring the dependency in a Maven build file (i.e., pom.xml)
 ----
 <dependency>
     <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-slick</artifactId>
-    <version>{siteversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
 ===== SBT
 
 [source,scala,subs="attributes"]
+.Declaring the dependency in a SBT build file (i.e., build.sbt)
 ----
-libraryDependencies += "be.wegenenverkeer" %% "atomium-server-slick" % "{siteversion}"
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-slick" % "{project-version}"
 ----
 
 The Slick feedstore requires the same table layout as the JDBC feedstore.
@@ -302,20 +309,23 @@ The `atomium-server-mongo` module provides a feed store implementation that stor
 
 ===== Maven
 
-[source,xml,subs="attributes"]
+[source,xml]
+[subs="specialcharacters,attributes"]
+.Declaring the dependency in a Maven build file (i.e., pom.xml)
 ----
 <dependency>
     <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-mongo</artifactId>
-    <version>{siteversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
 ===== SBT
 
 [source,scala,subs="attributes"]
+.Declaring the dependency in a SBT build file (i.e., build.sbt)
 ----
-libraryDependencies += "be.wegenenverkeer" %% "atomium-server-mongo" % "{siteversion}"
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-mongo" % "{project-version}"
 ----
 
 === Play server support
@@ -326,20 +336,23 @@ The `atomium-server-play` module provides support for serving feeds from a http:
 
 ===== Maven
 
-[source,xml,subs="attributes"]
+[source,xml]
+[subs="specialcharacters,attributes"]
+.Declaring the dependency in a Maven build file (i.e., pom.xml)
 ----
 <dependency>
     <groupId>be.wegenenverkeer</groupId>
     <artifactId>atomium-server-play</artifactId>
-    <version>{siteversion}</version>
+    <version>{project-version}</version>
 </dependency>
 ----
 
 ===== SBT
 
 [source,scala,subs="attributes"]
+.Declaring the dependency in a SBT build file (i.e., build.sbt)
 ----
-libraryDependencies += "be.wegenenverkeer" %% "atomium-server-play" % "{siteversion}"
+libraryDependencies += "be.wegenenverkeer" %% "atomium-server-play" % "{project-version}"
 ----
 
 Atomium provides a +be.wegenenverkeer.atom.FeedSupport+ trait, which you can extend in your Play controller classes to make
