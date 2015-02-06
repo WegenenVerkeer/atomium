@@ -19,7 +19,7 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
 
   val id = "my_feed"
   val stringStore = new MemoryFeedStore[String, Context](id, Url(s"http://localhost:9000/feeds/$id/"), Some("strings of life"), "text/plain")
-  val stringService = new FeedService[String, Context](id, 2, stringStore)
+  val stringService = new FeedService[String, Context](2, stringStore)
   val stringController = new StringController(stringService)
 
   stringService.push("foo")
@@ -30,7 +30,7 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
 
   val events_id = "events"
   val eventStore = new MemoryFeedStore[Event, Context](events_id, Url(s"http://localhost:9000/feeds/$events_id/"), Some("events"), "application/xml")
-  val eventService = new FeedService[Event, Context](events_id, 10, eventStore)
+  val eventService = new FeedService[Event, Context](10, eventStore)
   val eventController = new EventController(eventService)
 
   1 to 25 foreach {

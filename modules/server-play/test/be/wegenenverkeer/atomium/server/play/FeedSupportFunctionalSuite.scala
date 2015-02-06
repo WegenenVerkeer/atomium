@@ -29,7 +29,6 @@ class FeedSupportFunctionalSuite
   )
 
   val feedService = new FeedService[String, Context](
-    feedName = feedName,
     entriesPerPage = 2,
     feedStore = feedStore
   )

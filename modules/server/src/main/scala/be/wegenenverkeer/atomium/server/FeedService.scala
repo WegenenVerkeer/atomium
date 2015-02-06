@@ -7,13 +7,12 @@ import be.wegenenverkeer.atomium.format.Feed
  * - push new entries to the feed
  * - get a page from the feed
  *
- * @param feedName the name of this feed, which can be used as an identifier for the feed
  * @param entriesPerPage the number of entries per page
  * @param feedStore a feed store
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](feedName: String, entriesPerPage: Int, feedStore: FeedStore[E, C]) {
+class FeedService[E, C <: Context](entriesPerPage: Int, feedStore: FeedStore[E, C]) {
 
   /**
    * Adds elements to the feed.

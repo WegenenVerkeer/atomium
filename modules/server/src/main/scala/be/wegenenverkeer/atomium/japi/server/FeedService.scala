@@ -12,7 +12,6 @@ import scala.collection.JavaConverters._
 /**
  * Wrapper around the [[FeedService]] that offers a Java-like interface.
  *
- * @param feedName the name of this feed, which can be used as an identifier for the feed
  * @param entriesPerPage the number of entries per page
  * @param feedStore a factory for creating feed stores*
  * @param context the context, which is required for feed stores
@@ -20,7 +19,7 @@ import scala.collection.JavaConverters._
  * @tparam E the type of the feed entries
  * @tparam C the type of the context, which is required for feed stores
  */
-class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage: Integer, feedStore: FeedStore[E, C]) {
+class FeedService[E, C <: Context](entriesPerPage: Integer, feedStore: FeedStore[E, C], context: C) {
 
 
   /** A Scala FeedStore wrapping the java `feedStore` passed as argument */
@@ -42,7 +41,7 @@ class FeedService[E, C <: Context](context: C, feedName: String, entriesPerPage:
    * The underlying Scala `FeedService`
    */
   private val underlying: server.FeedService[E, C] =
-    new server.FeedService[E, C](feedName, entriesPerPage, underlyingFeedStore)
+    new server.FeedService[E, C](entriesPerPage, underlyingFeedStore)
 
   /**
    * Adds elements to the feed.
