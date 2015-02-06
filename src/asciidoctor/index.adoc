@@ -6,9 +6,11 @@
 This aims to be a comprehensive guide to Atomium, an open source project
 that provides support for creating atom feed clients and servers.
 
+
+
 == Features
 
-* Java and Scala implementations
+* Java and Scala implementations with link:./latest/api/index.html[documentation]
 * partial support for clients (feed consumers), currently scala only
 * support for servers (feed producers)
 * support for different types of feed stores: relation databases or NoSQL (currently Mongo)

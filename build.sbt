@@ -1,10 +1,14 @@
 net.virtualvoid.sbt.graph.Plugin.graphSettings
 
+unidocSettings
+
 site.settings
 
 site.asciidoctorSupport()
 
 site.includeScaladoc()
+
+site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api")
 
 organization in ThisBuild := "be.wegenenverkeer"
 
