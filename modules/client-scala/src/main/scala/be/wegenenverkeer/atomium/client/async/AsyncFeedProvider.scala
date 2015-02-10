@@ -7,6 +7,7 @@ import scala.concurrent.Future
 
 trait AsyncFeedProvider[E] {
 
+  // tag::adoc[]
   /**
    * Fetch the first page of the feed.
    *
@@ -21,4 +22,5 @@ trait AsyncFeedProvider[E] {
    * @return a page of the feed
    */
   def fetchFeed(pageUrl: String): Future[Feed[E]]
+  // end::adoc[]
 }

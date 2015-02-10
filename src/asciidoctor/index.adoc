@@ -19,6 +19,7 @@ that provides support for creating atom feed clients and servers.
 
 Scaladoc documentation is available link:./latest/api/index.html[here].
 
+
 == Atomium client
 
 === Scala client
@@ -40,21 +41,8 @@ You have the choice of implementing either a synchronous or asynchronous feed pr
 Extend the trait +be.wegenenverkeer.atomium.FeedProvider+ and implement the following methods:
 
 [source,scala]
-----
-  /**
-   * Fetch the first page of the feed.
-   *
-   * @return the first page of the feed.
-   */
-  def fetchFeed(): Try[Feed[E]]
-
-  /**
-   * Fetch a specific page of the feed.
-   *
-   * @param pageUrl the page
-   * @return a page of the feed
-   */
-  def fetchFeed(pageUrl: String): Try[Feed[E]]
+----  
+include::../../modules/client-scala/src/main/scala/be/wegenenverkeer/atomium/client/FeedProvider.scala[tags=adoc]
 ----
 
 * asynchronous feed provider
@@ -63,20 +51,7 @@ Extend the trait +be.wegenenverkeer.atomium.async.AsyncFeedProvider+ and impleme
 
 [source,scala]
 ----
-    /**
-     * Fetch the first page of the feed.
-     *
-     * @return the first page of the feed.
-     */
-    def fetchFeed(): Future[Feed[E]]
-
-    /**
-     * Fetch a specific page of the feed.
-     *
-     * @param pageUrl the page
-     * @return a page of the feed
-     */
-    def fetchFeed(pageUrl: String): Future[Feed[E]]
+include::../../modules/client-scala/src/main/scala/be/wegenenverkeer/atomium/client/async/AsyncFeedProvider.scala[tags=adoc]
 ----
 
 ==== Add dependency

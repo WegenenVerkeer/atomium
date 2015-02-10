@@ -4,8 +4,10 @@ import be.wegenenverkeer.atomium.format.Feed
 
 import scala.util.Try
 
+
 trait FeedProvider[E] {
 
+  // tag::adoc[]
   /**
    * Fetch the first page of the feed.
    *
@@ -20,5 +22,6 @@ trait FeedProvider[E] {
    * @return a page of the feed
    */
   def fetchFeed(pageUrl: String): Try[Feed[E]]
+  // end::adoc[]
 
 }
