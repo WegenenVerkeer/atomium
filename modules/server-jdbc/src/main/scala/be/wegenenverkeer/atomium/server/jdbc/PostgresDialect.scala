@@ -2,16 +2,8 @@ package be.wegenenverkeer.atomium.server.jdbc
 
 trait PostgresDialect extends Dialect {
 
-  override def createFeedTableStatement: String = {
-    s"""CREATE TABLE IF NOT EXISTS ${FeedDbModel.Table.name} (
-         |${FeedDbModel.Table.idColumn} SERIAL primary key,
-         |${FeedDbModel.Table.nameColumn} varchar NOT NULL,
-         |${FeedDbModel.Table.titleColumn} varchar,
-         |UNIQUE(${FeedDbModel.Table.nameColumn}));""".stripMargin
-  }
 
-
-  override def createEntryTableStatement(entryTableName: String): String = {
+  protected override def createEntryTableStatement(entryTableName: String): String = {
     s"""CREATE TABLE IF NOT EXISTS $entryTableName (
          |${EntryDbModel.Table.idColumn} SERIAL primary key,
          |${EntryDbModel.Table.uuidColumn} varchar,
@@ -19,8 +11,8 @@ trait PostgresDialect extends Dialect {
          |${EntryDbModel.Table.timestampColumn} timestamp not null);""".stripMargin
   }
 
-  override def dropFeedTable(implicit jdbcContext: JdbcContext): Unit = {
-    sqlUpdate(s"DROP TABLE ${FeedDbModel.Table.name};")
+  protected override def dropEntryTable(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit = {
+    sqlUpdate(s"DROP TABLE $entryTableName")
   }
 
   override def fetchFeed(feedName: String)(implicit jdbcContext: JdbcContext): Option[FeedDbModel] = {
@@ -44,9 +36,6 @@ trait PostgresDialect extends Dialect {
   }
 
 
-  override def dropEntryTable(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit = {
-    sqlUpdate(s"DROP TABLE $entryTableName")
-  }
 
   override def fetchFeedEntries(entryTableName: String, start: Long, count: Int, ascending: Boolean)(implicit jdbcContext: JdbcContext): List[EntryDbModel] = {
 

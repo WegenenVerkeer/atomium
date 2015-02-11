@@ -62,12 +62,12 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
     implicit val context = JdbcContext(connection)
 
     val feedStore = createFeedStore
-    feedStore.createTables
+    feedStore.createEntryTable
 
     try {
       block(feedStore, context)
     } finally {
-      feedStore.dropTables
+      feedStore.dropEntryTable
     }
 
   }

@@ -6,29 +6,27 @@ import org.joda.time.DateTime
 
 trait Dialect {
 
-  /**
-   * @return the sql statement for the Feed table.
-   */
-  def createFeedTableStatement: String
 
   /**
    * @param entryTableName The entry table name.
    * @return the sql statement for the Feed table.
    */
-  def createEntryTableStatement(entryTableName: String): String
+  protected def createEntryTableStatement(entryTableName: String): String
 
   /**
-   * Create an empty feed table.
+   * Create an empty feed entry table with a given name.
    *
+   * @param entryTableName The entry table name.
    * @param jdbcContext The JDBC context to use.
    */
-  def createFeedTableIfNotExists(implicit jdbcContext: JdbcContext): Unit = sqlUpdate(createFeedTableStatement)
-
+  protected def createEntryTable(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit =
+    sqlUpdate(createEntryTableStatement(entryTableName))
 
   /**
-   * Drop the feed table.
+   * Drop the entry table.
    */
-  def dropFeedTable(implicit jdbcContext: JdbcContext): Unit
+  protected def dropEntryTable(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit
+
 
   /**
    * Fetch a feed model based on the feed name.
@@ -46,21 +44,6 @@ trait Dialect {
    * @return The id for the newly added feed.
    */
   def addFeed(feed: FeedDbModel)(implicit jdbcContext: JdbcContext): Unit
-
-  /**
-   * Create an empty feed entry table with a given name.
-   *
-   * @param entryTableName The entry table name.
-   * @param jdbcContext The JDBC context to use.
-   */
-  def createEntryTableIfNotExists(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit =
-    sqlUpdate(createEntryTableStatement(entryTableName))
-
-
-  /**
-   * Drop the entry table.
-   */
-  def dropEntryTable(entryTableName: String)(implicit jdbcContext: JdbcContext): Unit
 
   /**
    * Fetch entries from an entry table starting at a given index and entry count.

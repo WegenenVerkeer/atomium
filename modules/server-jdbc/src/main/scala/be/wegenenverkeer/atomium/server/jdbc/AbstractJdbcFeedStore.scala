@@ -81,14 +81,16 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
     dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }
 
-  def createTables(implicit context: JdbcContext) = {
-    createFeedTableIfNotExists
-    createEntryTableIfNotExists(entryTableName = entryTableName)
+  def createEntryTableStatement(): Unit = {
+    createEntryTableStatement(entryTableName)
   }
 
-  def dropTables(implicit context: JdbcContext) = {
-    dropFeedTable
-    dropEntryTable(entryTableName = entryTableName)
+  def createEntryTable(implicit context: JdbcContext): Unit = {
+    createEntryTable(entryTableName)
+  }
+
+  def dropEntryTable(implicit context: JdbcContext): Unit = {
+    dropEntryTable(entryTableName)
   }
 
   /**
