@@ -12,7 +12,7 @@ class JacksonParserAtomFeedTest extends FlatSpec with Matchers {
 
   private var mapper = new ObjectMapper
 
-  "A JacksonParser" should "read json deserialize atom json file" ignore {
+  "A JacksonParser" should "deserialize atom json file" ignore {
 
     val json = FileUtils.readFileToString(new
         File(this.getClass.getClassLoader.getResource("be/wegenenverkeer/atomium/japi/client/atom-feed-sample.txt").getFile))
