@@ -33,9 +33,8 @@ trait BuildSettings {
       id = projectName,
       base = file("."),
       settings = projectSettings()
-    )
-    .settings(publishArtifact := false)
-    .aggregate(modules: _*)
+    ).settings(publishArtifact := false)
+      .aggregate(modules: _*)
   }
 
   private def projectSettings() = {

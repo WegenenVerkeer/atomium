@@ -19,7 +19,7 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(junit)
 
     project("format-java")
-    .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
 
   }
 
@@ -27,15 +27,29 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val formatModule =
     project("format")
-    .dependsOn(javaFormatModule)
+      .dependsOn(javaFormatModule)
 
 
   //----------------------------------------------------------------
   lazy val clientScalaModule =
     project("client-scala")
-    .settings(publishArtifact in Test := true)
-    .dependsOn(formatModule, serverModule)
-    .aggregate(formatModule, serverModule)
+      .settings(publishArtifact in Test := true)
+      .dependsOn(formatModule, serverModule)
+      .aggregate(formatModule, serverModule)
+
+
+  //----------------------------------------------------------------
+  lazy val clientJavaModule = {
+
+    val mainDeps = Seq(slf4j, commonsIo)
+    val testDeps = Seq(junit, mockitoCore, assertJ, jfakerMockito)
+
+    project("client-java")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(clientScalaModule % "test->test;compile->compile")
+      .aggregate(clientScalaModule)
+
+  }
 
 
   //----------------------------------------------------------------
@@ -44,9 +58,9 @@ object AtomiumBuild extends Build with BuildSettings {
     val mainDeps = Seq(play, playJson)
 
     project("common-play")
-    .settings(libraryDependencies ++= mainDeps)
-    .dependsOn(formatModule)
-    .aggregate(formatModule)
+      .settings(libraryDependencies ++= mainDeps)
+      .dependsOn(formatModule)
+      .aggregate(formatModule)
   }
 
 
@@ -62,8 +76,8 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(embededMongo)
 
     project("server-mongo")
-    .settings(libraryDependencies ++= mainDeps ++ testDeps)
-    .dependsOn(serverModule % "test->test;compile->compile")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(serverModule % "test->test;compile->compile")
   }
 
 
@@ -74,8 +88,8 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(h2database)
 
     project("server-slick")
-    .settings(libraryDependencies ++= mainDeps ++ testDeps)
-    .dependsOn(serverModule % "test->test;compile->compile")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(serverModule % "test->test;compile->compile")
   }
 
 
@@ -85,8 +99,8 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(h2database)
 
     project("server-jdbc")
-    .settings(libraryDependencies ++= testDeps)
-    .dependsOn(serverModule % "test->test;compile->compile")
+      .settings(libraryDependencies ++= testDeps)
+      .dependsOn(serverModule % "test->test;compile->compile")
   }
 
 
@@ -97,9 +111,9 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(playMockWs, playTest, scalaTestPlay)
 
     project("server-play")
-    .settings(libraryDependencies ++= mainDeps ++ testDeps)
-    .enablePlugins(PlayScala)
-    .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .enablePlugins(PlayScala)
+      .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
   }
 
 
@@ -109,6 +123,7 @@ object AtomiumBuild extends Build with BuildSettings {
     formatModule,
     commonPlayModule,
     clientScalaModule,
+    clientJavaModule,
     serverModule,
     serverMongoModule,
     serverSlickModule,
