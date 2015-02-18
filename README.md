@@ -8,3 +8,4 @@ Atom-Json serialization in Scala
 
 # Usage
 
+[Documentation](http://wegenenverkeer.github.io/atomium/)
