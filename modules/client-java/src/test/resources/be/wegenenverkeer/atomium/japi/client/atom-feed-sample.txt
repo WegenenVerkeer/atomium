@@ -1,0 +1,260 @@
+{
+    "base": "http://sample.com/feeds/registraties",
+    "title": "Registraties",
+    "updated": "2014-08-12T13:22:30.498+02:00",
+    "links": [
+        {
+            "rel": "self",
+            "href": "http://sample.com/feeds/registraties/feed/1"
+        },
+        {
+            "rel": "last",
+            "href": "http://sample.com/feeds/registraties/feed/1"
+        }
+    ],
+    "entries": [
+        {
+            "content": {
+                "value": {
+                    "type": "DOSSIER_LINK",
+                    "uri": "prx://registraties/53e9f8f6d7bde72abbda68a1",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53e9f8f6d7bde72abbda68a1"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53e9f8f6d7bde72abbda68a1/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53e9f8f6d7bde72abbda68a1/edit"
+                        }
+                    ],
+                    "dossier": "53d661cbd7bd52571b61b783"
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "CREATED",
+                    "uri": "prx://registraties/53ea17b9d7bd042198ee1802",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea17b9d7bd042198ee1802"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea17b9d7bd042198ee1802/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea17b9d7bd042198ee1802/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "CREATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "UPDATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "UPDATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "UPDATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "UPDATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "UPDATED",
+                    "uri": "prx://registraties/53ea293ed7bd90655ecbd742",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea293ed7bd90655ecbd742"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea293ed7bd90655ecbd742/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "CREATED",
+                    "uri": "prx://registraties/53ea2faed7bd90655ecbd75a",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53ea2faed7bd90655ecbd75a"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea2faed7bd90655ecbd75a/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/indicateur/details/53ea2faed7bd90655ecbd75a/edit"
+                        }
+                    ]
+                },
+                "type": ""
+            },
+            "links": [ ]
+        },
+        {
+            "content": {
+                "value": {
+                    "type": "DOSSIER_LINK",
+                    "uri": "prx://registraties/53f1f641d7bdfafd732b6dd5",
+                    "links": [
+                        {
+                            "rel": "data",
+                            "href": "http://sample.com/api/registraties/53f1f641d7bdfafd732b6dd5"
+                        },
+                        {
+                            "rel": "view",
+                            "href": "http://sample.com:80/#/indicateur/details/53f1f641d7bdfafd732b6dd5/view"
+                        },
+                        {
+                            "rel": "edit",
+                            "href": "http://sample.com:80/#/inadicateur/details/53f1f641d7bdfafd732b6dd5/edit"
+                        }
+                    ],
+                    "dossier": "dc://sdd-schadedossier/S/14/212/10316"
+                },
+                "type": ""
+            },
+            "links": [ ]
+        }
+    ]
+
+}

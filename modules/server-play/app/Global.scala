@@ -1,7 +1,8 @@
-import _root_.java.util.{Timer, TimerTask}
+import java.util.{Timer, TimerTask}
 
 import akka.japi.Option.Some
-import be.wegenenverkeer.atom._
+import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.server.{FeedService, Context, MemoryFeedStore, AbstractFeedStore}
 import controllers.{Event, EventController, StringController}
 import play.api.GlobalSettings
 import play.api.mvc.WithFilters
@@ -11,15 +12,16 @@ import scala.util.Random
 
 object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
 
+  //add some dummy values to the stringService
+  implicit val context: Context = new Context() {}
+
   //string service
 
   val id = "my_feed"
-  val stringStore: AbstractFeedStore[String] = new MemoryFeedStore[String](id, Url(s"http://localhost:9000/feeds/$id/"), Some("strings of life"))
-  val stringService = new FeedService[String, Context](id, 2, { (s, c) => stringStore })
+  val stringStore = new MemoryFeedStore[String, Context](id, Url(s"http://localhost:9000/feeds/$id/"), Some("strings of life"), "text/plain")
+  val stringService = new FeedService[String, Context](2, stringStore)
   val stringController = new StringController(stringService)
 
-  //add some dummy values to the stringService
-  implicit val c: Context = new Context() {}
   stringService.push("foo")
   stringService.push(List("bar", "baz"))
   stringService.push("foobar")
@@ -27,8 +29,8 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   //event service
 
   val events_id = "events"
-  val eventStore: AbstractFeedStore[Event] = new MemoryFeedStore[Event](events_id, Url(s"http://localhost:9000/feeds/$events_id/"), Some("events"), "application/xml")
-  val eventService = new FeedService[Event, Context](events_id, 10, { (s, c) => eventStore })
+  val eventStore = new MemoryFeedStore[Event, Context](events_id, Url(s"http://localhost:9000/feeds/$events_id/"), Some("events"), "application/xml")
+  val eventService = new FeedService[Event, Context](10, eventStore)
   val eventController = new EventController(eventService)
 
   1 to 25 foreach {
