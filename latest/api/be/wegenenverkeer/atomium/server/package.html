@@ -1,0 +1,271 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>server - be.wegenenverkeer.atomium.server</title>
+          <meta name="description" content="server - be.wegenenverkeer.atomium.server" />
+          <meta name="keywords" content="server be.wegenenverkeer.atomium.server" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'be.wegenenverkeer.atomium.server.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="be">be</a>.<a href="../../package.html" class="extype" name="be.wegenenverkeer">wegenenverkeer</a>.<a href="../package.html" class="extype" name="be.wegenenverkeer.atomium">atomium</a></p>
+        <h1>server</h1><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">server</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.server.AbstractFeedStore" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="AbstractFeedStore[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsFeedStore[E,C]"></a>
+      <a id="AbstractFeedStore[E,C&lt;:Context]:AbstractFeedStore[E,C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractFeedStore.html"><span class="name">AbstractFeedStore</span></a><span class="tparams">[<span name="E">E</span>, <span name="C">C &lt;: <a href="Context.html" class="extype" name="be.wegenenverkeer.atomium.server.Context">Context</a></span>]</span><span class="result"> extends <a href="FeedStore.html" class="extype" name="be.wegenenverkeer.atomium.server.FeedStore">FeedStore</a>[<span class="extype" name="be.wegenenverkeer.atomium.server.AbstractFeedStore.E">E</span>, <span class="extype" name="be.wegenenverkeer.atomium.server.AbstractFeedStore.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@AbstractFeedStore[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsFeedStore[E,C]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A feed store is responsible for the persistence of feeds.</p><div class="fullcomment"><div class="comment cmt"><p>A feed store is responsible for the persistence of feeds.
+This abstract class serves as a base class for more specific FeedStore implementations.
+</p></div><dl class="paramcmts block"><dt class="tparam">E</dt><dd class="cmt"><p>type of the elements in the feed
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.server.Context" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ContextextendsAnyRef"></a>
+      <a id="Context:Context"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Context.html"><span class="name">Context</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@ContextextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.FeedService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="FeedService[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAnyRef"></a>
+      <a id="FeedService[E,C&lt;:Context]:FeedService[E,C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedService.html"><span class="name">FeedService</span></a><span class="tparams">[<span name="E">E</span>, <span name="C">C &lt;: <a href="Context.html" class="extype" name="be.wegenenverkeer.atomium.server.Context">Context</a></span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@FeedService[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A feed service provides the following functionality:
+- push new entries to the feed
+- get a page from the feed
+</p><div class="fullcomment"><div class="comment cmt"><p>A feed service provides the following functionality:
+- push new entries to the feed
+- get a page from the feed
+</p></div><dl class="paramcmts block"><dt class="tparam">E</dt><dd class="cmt"><p>the type of the feed entries</p></dd><dt class="tparam">C</dt><dd class="cmt"><p>the type of the context, which is required for feed stores
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.server.FeedStore" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="FeedStore[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAnyRef"></a>
+      <a id="FeedStore[E,C&lt;:Context]:FeedStore[E,C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedStore.html"><span class="name">FeedStore</span></a><span class="tparams">[<span name="E">E</span>, <span name="C">C &lt;: <a href="Context.html" class="extype" name="be.wegenenverkeer.atomium.server.Context">Context</a></span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@FeedStore[E,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A feed store is responsible for the persistence of feeds.</p><div class="fullcomment"><div class="comment cmt"><p>A feed store is responsible for the persistence of feeds.
+</p></div><dl class="paramcmts block"><dt class="tparam">E</dt><dd class="cmt"><p>type of the elements in the feed
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.server.MemoryFeedStore" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="MemoryFeedStore[T,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAbstractFeedStore[T,C]"></a>
+      <a id="MemoryFeedStore[T,C&lt;:Context]:MemoryFeedStore[T,C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="MemoryFeedStore.html"><span class="name">MemoryFeedStore</span></a><span class="tparams">[<span name="T">T</span>, <span name="C">C &lt;: <a href="Context.html" class="extype" name="be.wegenenverkeer.atomium.server.Context">Context</a></span>]</span><span class="result"> extends <a href="AbstractFeedStore.html" class="extype" name="be.wegenenverkeer.atomium.server.AbstractFeedStore">AbstractFeedStore</a>[<span class="extype" name="be.wegenenverkeer.atomium.server.MemoryFeedStore.T">T</span>, <span class="extype" name="be.wegenenverkeer.atomium.server.MemoryFeedStore.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@MemoryFeedStore[T,C&lt;:be.wegenenverkeer.atomium.server.Context]extendsAbstractFeedStore[T,C]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An in memory feedstore.</p><div class="fullcomment"><div class="comment cmt"><p>An in memory feedstore. This implementation is very inefficient and should only be used for demo or test purposes
+</p></div><dl class="paramcmts block"><dt class="tparam">T</dt><dd class="cmt"><p>the type for the content of the generated feed
+</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.server.jdbc" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="jdbc"></a>
+      <a id="jdbc:jdbc"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="jdbc/package.html"><span class="name">jdbc</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@jdbc" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.mongo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="mongo"></a>
+      <a id="mongo:mongo"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="mongo/package.html"><span class="name">mongo</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@mongo" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.play" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="play"></a>
+      <a id="play:play"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="play/package.html"><span class="name">play</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@play" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.slick" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="slick"></a>
+      <a id="slick:slick"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="slick/package.html"><span class="name">slick</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.server.package@slick" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

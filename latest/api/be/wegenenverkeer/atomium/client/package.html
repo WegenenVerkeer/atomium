@@ -1,0 +1,288 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>client - be.wegenenverkeer.atomium.client</title>
+          <meta name="description" content="client - be.wegenenverkeer.atomium.client" />
+          <meta name="keywords" content="client be.wegenenverkeer.atomium.client" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'be.wegenenverkeer.atomium.client.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="be">be</a>.<a href="../../package.html" class="extype" name="be.wegenenverkeer">wegenenverkeer</a>.<a href="../package.html" class="extype" name="be.wegenenverkeer.atomium">atomium</a></p>
+        <h1>client</h1><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">client</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="be.wegenenverkeer.atomium.client"><span>client</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.client.EntryRef" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EntryRef[E]extendsProductwithSerializable"></a>
+      <a id="EntryRef[E]:EntryRef[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EntryRef.html"><span class="name">EntryRef</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="params">(<span name="entryId">entryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="url">url: <a href="../format/Url.html" class="extype" name="be.wegenenverkeer.atomium.format.Url">Url</a></span>, <span name="entry">entry: <span class="extype" name="scala.Option">Option</span>[<a href="../format/Entry.html" class="extype" name="be.wegenenverkeer.atomium.format.Entry">Entry</a>[<span class="extype" name="be.wegenenverkeer.atomium.client.EntryRef.E">E</span>]]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@EntryRef[E]extendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The feed entry id reference contains the data that indicates which entry was last consumed.</p><div class="fullcomment"><div class="comment cmt"><p>The feed entry id reference contains the data that indicates which entry was last consumed.
+</p></div><dl class="paramcmts block"><dt class="param">entryId</dt><dd class="cmt"><p>the entry id of the last consumed item</p></dd><dt class="param">url</dt><dd class="cmt"><p>the url of the last retrieved page
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.client.FeedEntryIterator" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="FeedEntryIterator[E]extendsIterator[be.wegenenverkeer.atomium.client.EntryRef[E]]"></a>
+      <a id="FeedEntryIterator[E]:FeedEntryIterator[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedEntryIterator.html"><span class="name">FeedEntryIterator</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.Iterator">Iterator</span>[<a href="EntryRef.html" class="extype" name="be.wegenenverkeer.atomium.client.EntryRef">EntryRef</a>[<span class="extype" name="be.wegenenverkeer.atomium.client.FeedEntryIterator.E">E</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedEntryIterator[E]extendsIterator[be.wegenenverkeer.atomium.client.EntryRef[E]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A blocking Feed Iterator.</p><div class="fullcomment"><div class="comment cmt"><p>A blocking Feed Iterator.</p><p>This Iterator is backed by an <code>AsyncFeedEntryIterator</code> and an <code>AsyncFeedProvider</code>
+</p></div><dl class="paramcmts block"><dt class="tparam">E</dt><dd class="cmt"><p>- the Feed's content type
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.client.FeedEntryUnmarshaller" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FeedEntryUnmarshaller[E]=String=&gt;scala.util.Try[be.wegenenverkeer.atomium.format.Feed[E]]"></a>
+      <a id="FeedEntryUnmarshaller[E]:FeedEntryUnmarshaller[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">FeedEntryUnmarshaller</span><span class="tparams">[<span name="E">E</span>]</span><span class="result"> = (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.util.Try">Try</span>[<a href="../format/Feed.html" class="extype" name="be.wegenenverkeer.atomium.format.Feed">Feed</a>[<span class="extype" name="be.wegenenverkeer.atomium.client.FeedEntryUnmarshaller.E">E</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedEntryUnmarshaller[E]=String=&gt;scala.util.Try[be.wegenenverkeer.atomium.format.Feed[E]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.client.FeedProcessingException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FeedProcessingExceptionextendsRuntimeExceptionwithProductwithSerializable"></a>
+      <a id="FeedProcessingException:FeedProcessingException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedProcessingException.html"><span class="name">FeedProcessingException</span></a><span class="params">(<span name="entryIdOpt">entryIdOpt: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedProcessingExceptionextendsRuntimeExceptionwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.client.FeedProvider" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FeedProvider[E]extendsAnyRef"></a>
+      <a id="FeedProvider[E]:FeedProvider[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedProvider.html"><span class="name">FeedProvider</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedProvider[E]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.client.FeedUnmarshaller" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="FeedUnmarshaller[E]extendsAnyRef"></a>
+      <a id="FeedUnmarshaller[E]:FeedUnmarshaller[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedUnmarshaller.html"><span class="name">FeedUnmarshaller</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedUnmarshaller[E]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.client.EntryRef" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EntryRef"></a>
+      <a id="EntryRef:EntryRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EntryRef$.html"><span class="name">EntryRef</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@EntryRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.client.FeedEntryIterator" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FeedEntryIterator"></a>
+      <a id="FeedEntryIterator:FeedEntryIterator"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedEntryIterator$.html"><span class="name">FeedEntryIterator</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@FeedEntryIterator" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.client.async" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="async"></a>
+      <a id="async:async"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="async/package.html"><span class="name">async</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#be.wegenenverkeer.atomium.client.package@async" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

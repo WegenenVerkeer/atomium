@@ -1,0 +1,266 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>controllers - controllers</title>
+          <meta name="description" content="controllers - controllers" />
+          <meta name="keywords" content="controllers controllers" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../index.html';
+            var hash = 'controllers.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../lib/package_big.png" />
+        
+        <h1>controllers</h1><span class="permalink">
+      <a href="../index.html#controllers.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">controllers</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="controllers.Event" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EventextendsProductwithSerializable"></a>
+      <a id="Event:Event"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Event.html"><span class="name">Event</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Double">Double</span></span>, <span name="description">description: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="version">version: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">1</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EventextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@XmlRootElement</span><span class="args">()</span>
+              
+                <span class="name">@XmlAccessorType</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="controllers.EventController" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EventControllerextendsControllerwithFeedSupport[controllers.Event]"></a>
+      <a id="EventController:EventController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventController.html"><span class="name">EventController</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.Controller">Controller</span> with <a href="../be/wegenenverkeer/atomium/server/play/FeedSupport.html" class="extype" name="be.wegenenverkeer.atomium.server.play.FeedSupport">FeedSupport</a>[<a href="Event.html" class="extype" name="controllers.Event">Event</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EventControllerextendsControllerwithFeedSupport[controllers.Event]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This controller serves pages of a feed containing {{Event}}.</p><div class="fullcomment"><div class="comment cmt"><p>This controller serves pages of a feed containing {{Event}}.
+It registers both a Play json marshaller and a Jaxb xml marshaller
+and thus supports content negotiation and can support both xml or json responses</p></div></div>
+    </li><li name="controllers.ReverseEventController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseEventControllerextendsAnyRef"></a>
+      <a id="ReverseEventController:ReverseEventController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseEventController.html"><span class="name">ReverseEventController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseEventControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.ReverseStringController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseStringControllerextendsAnyRef"></a>
+      <a id="ReverseStringController:ReverseStringController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseStringController.html"><span class="name">ReverseStringController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseStringControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.StringController" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="StringControllerextendsControllerwithFeedSupport[String]"></a>
+      <a id="StringController:StringController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StringController.html"><span class="name">StringController</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.Controller">Controller</span> with <a href="../be/wegenenverkeer/atomium/server/play/FeedSupport.html" class="extype" name="be.wegenenverkeer.atomium.server.play.FeedSupport">FeedSupport</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@StringControllerextendsControllerwithFeedSupport[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This controller serves pages of a feed containing Strings.</p><div class="fullcomment"><div class="comment cmt"><p>This controller serves pages of a feed containing Strings.
+It only registers a Jackson json marshaller and thus only supports JSON responses
+</p></div></div>
+    </li><li name="controllers.routes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="routesextendsObject"></a>
+      <a id="routes:routes"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="routes.html"><span class="name">routes</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@routesextendsObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="controllers.EventFormat" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EventFormat"></a>
+      <a id="EventFormat:EventFormat"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventFormat$.html"><span class="name">EventFormat</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EventFormat" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.javascript" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="javascript"></a>
+      <a id="javascript:javascript"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="javascript/package.html"><span class="name">javascript</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@javascript" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.ref" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ref"></a>
+      <a id="ref:ref"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="ref/package.html"><span class="name">ref</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ref" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

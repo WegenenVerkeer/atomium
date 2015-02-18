@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.2">
+<title>Atomium guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Atomium guide</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_features">Features</a></li>
+<li><a href="#_api_documentation">Api documentation</a></li>
+<li><a href="#_atomium_client">Atomium client</a>
+<ul class="sectlevel2">
+<li><a href="#_scala_client">Scala client</a></li>
+</ul>
+</li>
+<li><a href="#_atomium_server">Atomium server</a>
+<ul class="sectlevel2">
+<li><a href="#_feed_service">Feed service</a></li>
+<li><a href="#_feed_store">Feed store</a></li>
+<li><a href="#_jdbc_feed_store">JDBC Feed store</a></li>
+<li><a href="#_slick_feed_store">Slick Feed store</a></li>
+<li><a href="#_mongo_feed_store">Mongo Feed store</a></li>
+<li><a href="#_play_server_support">Play server support</a></li>
+<li><a href="#_json_data_format">JSON data format</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This aims to be a comprehensive guide to Atomium, an open source project
+that provides support for creating atom feed clients and servers.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_features">Features</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Java and Scala implementations with <a href="./latest/api/index.html">documentation</a></p>
+</li>
+<li>
+<p>partial support for clients (feed consumers), currently scala only</p>
+</li>
+<li>
+<p>support for servers (feed producers)</p>
+</li>
+<li>
+<p>support for different types of feed stores: relation databases or NoSQL (currently Mongo)</p>
+</li>
+<li>
+<p><a href="#_json_data_format">JSON data format</a> in addition to the standard <a href="https://tools.ietf.org/html/rfc4287">Atom xml syndication format</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_documentation">Api documentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Scaladoc documentation is available <a href="./latest/api/index.html">here</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_atomium_client">Atomium client</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_scala_client">Scala client</h3>
+<div class="paragraph">
+<p>The client library provides the necessary classes to consume and process an atom feed.
+The library provides a feed processor that when offered feed pages can consume them.</p>
+</div>
+<div class="paragraph">
+<p>The library user is still responsible for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>providing a feed provider: i.e. a class responsible for fetching the feed from the server</p>
+</li>
+<li>
+<p>persisting the latest feed position</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Atomium does not provide an implementation of a feed provider for now, so you must provide your own implementation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You have the choice of implementing either a synchronous or asynchronous feed provider:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>synchronous feed provider</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Extend the trait be.wegenenverkeer.atomium.FeedProvider and implement the following methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">  /**
+   * Fetch the first page of the feed.
+   *
+   * @return the first page of the feed.
+   */
+  def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Try[Feed[E]]
+
+  /**
+   * Fetch a specific page of the feed.
+   *
+   * @param pageUrl the page
+   * @return a page of the feed
+   */
+  def fetchFeed(pageUrl: String): Try[Feed[E]]</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>asynchronous feed provider</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Extend the trait be.wegenenverkeer.atomium.async.AsyncFeedProvider and implement the following methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">  /**
+   * Fetch the first page of the feed.
+   *
+   * @return the first page of the feed.
+   */
+  def fetchFeed(initialEntryRef: Option[EntryRef[E]] = None): Future[Feed[E]]
+
+  /**
+   * Fetch a specific page of the feed.
+   *
+   * @param pageUrl the page
+   * @return a page of the feed
+   */
+  def fetchFeed(pageUrl: String): Future[Feed[E]]</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_add_dependency">Add dependency</h4>
+<div class="sect4">
+<h5 id="_maven">Maven</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a Maven build file (i.e., pom.xml)</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;be.wegenenverkeer&lt;/groupId&gt;
+    &lt;artifactId&gt;atomium-client-scala&lt;/artifactId&gt;
+    &lt;version&gt;0.3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sbt">SBT</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a SBT build file (i.e., build.sbt)</div>
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">libraryDependencies += "be.wegenenverkeer" %% "atomium-client-scala" % "0.3.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_atomium_server">Atomium server</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The server modules provide support for creating a server that allows you to publish Atom feeds.</p>
+</div>
+<div class="paragraph">
+<p>The server part consists of the following modules:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>server</p>
+</li>
+<li>
+<p>server-jdbc</p>
+</li>
+<li>
+<p>server-slick</p>
+</li>
+<li>
+<p>server-mongo</p>
+</li>
+<li>
+<p>server-play</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The server library provides a feed service. A feed service can be used to</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>add new elements to the feed</p>
+</li>
+<li>
+<p>retrieve a page of the feed</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_feed_service">Feed service</h3>
+<div class="paragraph">
+<p>A feed service is not responsible for the actual persistence of the entries and pages in feeds,
+this is delegated to a feed store.</p>
+</div>
+<div class="paragraph">
+<p>The feed service implementation is written in Scala, but the library also provides a Java wrapper.</p>
+</div>
+<div class="paragraph">
+<p>Feed pages provide 'previous' and 'next' links by which a client can navigate through the whole feed.</p>
+</div>
+<div class="paragraph">
+<p>Following a 'previous' link will move forwards through the feed, this means moving towards the head of the feed
+and this will retrieve more recent feed entries.</p>
+</div>
+<div class="paragraph">
+<p>Following a 'next' link will move backwards through the feed, this means moving towards the last page of the feed
+and this will retrieve older feed entries.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+So, although it might seem counter-intuitive, the most recent entries are found on the first page
+while the oldest feed entries are found on the last page.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This is compatible with the way <a href="http://docs.geteventstore.com/http-api/3.0.1/reading-streams/">Eventstore</a>
+and <a href="http://www.ietf.org/rfc/rfc5023.txt">AtomPUB</a> handle paging.</p>
+</div>
+<div class="paragraph">
+<p>So there are two strategies to iterate and consume a complete feed:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can either request the 'first' page with the most recent entries and follow the 'next' links to consume the whole feed.</p>
+</li>
+<li>
+<p>Or you can request the 'last' page from the feed, containing the oldest entries and follow the 'prev' links to arrive at the most recent entries.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If you want to follow a live stream of events then you should use the second option and keep following the 'prev' links.
+When you reach the head of a feed you will receive a feed document that does not have any 'prev' link.
+This document will however have a 'self' link.
+You can then continue polling this URI (the self link),
+until new entries appear in the feed document and/or a new page is started and a 'prev' link is available.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_feed_store">Feed store</h3>
+<div class="paragraph">
+<p>A feed store is responsible for the persistence of feeds. There are currently three implementations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a feed store that stores data in a relational database using plain JDBC</p>
+</li>
+<li>
+<p>a feed store that stores data in a relational database using <a href="http://slick.typesafe.com">Slick</a>, a functional relational mapper for Scala</p>
+</li>
+<li>
+<p>a feed store that stores data in a Mongo database</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The persistence libraries, except for the slick library, provide a Scala and Java variant.
+The Java implementation is a simple wrapper around the Scala implementation.</p>
+</div>
+<div class="paragraph">
+<p>There is also an AbstractFeedStore base class that can be used to implement your own feedStore implementation,
+using your own persistence technology.
+If you are planning on making your own FeedStore implementation then using this class will make sure that the paging (providing 'next'/'previous' links)
+ works correctly.</p>
+</div>
+<div class="sect3">
+<h4 id="_abstractfeedstore">AbstractFeedStore</h4>
+<div class="paragraph">
+<p>All feed stores inherit from AbstractFeedStore which makes sure that the paging works correctly.</p>
+</div>
+<div class="paragraph">
+<p>The paging for Atomium works as follows.</p>
+</div>
+<div class="paragraph">
+<p>First a FeedService is always instantiated with the desired pageSize.
+This is the maximum number of entries that can be present in a single feed page.</p>
+</div>
+<div class="paragraph">
+<p>Feed entries stored in a feed store must have a sequence number assigned to them.
+More recent entries will have a higher sequence number than older entries.
+However the sequence is allowed to have gaps, so some sequence numbers might be missing.</p>
+</div>
+<div class="paragraph">
+<p>Links in atom feed documents will always have the following structure: <code>/xxx/forward/yy</code> or <code>/xxx/backward/yy</code>
+where <code>xxx</code> is a sequence number and <code>yy</code> is the pagesize</p>
+</div>
+<div class="paragraph">
+<p>In both cases the xxx sequence number is exclusive and will never be returned in the feed page when you follow such a link.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>/xxx/forward/yy</code> means the first <code>yy</code> entries with a sequence number strictly higher than <code>xxx</code></p>
+</li>
+<li>
+<p><code>xxx/backward/yy</code> means the first <code>yy</code> entries with a sequence number strictly lower then <code>xxx</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The link to the 'last' page of the feed, containing the oldest entries will be <code>/0/forward/yy</code>,
+assuming the oldest entry of the feed has sequence number 1.</p>
+</div>
+<div class="paragraph">
+<p>If you implement an AbstractFeedStore and implement the following methods then the paging will just work:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">  /**
+   * @return one less than the minimum sequence number used in this feed
+   */
+  def minId: Long
+
+  /**
+   * @return the maximum sequence number used in this feed or minId if feed is empty
+   */
+  def maxId: Long
+
+  /**
+   * @param sequenceNr sequence number to match
+   * @param inclusive if true include the specified sequence number
+   * @return the number of entries in the feed with sequence number lower than specified
+   */
+  def getNumberOfEntriesLowerThan(sequenceNr: Long, inclusive: Boolean = true): Long
+
+  /**
+   * retrieves the most recent entries from the feedstore sorted in descending order
+   * @param count the amount of recent entries to return
+   * @return a list of FeedEntries. a FeedEntry is a sequence number and its corresponding entry
+   *         and sorted by descending sequence number
+   */
+  def getMostRecentFeedEntries(count: Int): List[FeedEntry]
+
+  /**
+   * Retrieves entries with their sequence numbers from the feed
+   *
+   * @param start the starting entry (inclusive), MUST be returned in the entries
+   * @param count the number of entries to return
+   * @param ascending if true return entries with sequence numbers &gt;= start in ascending order
+   *                else return entries with sequence numbers &lt;= start in descending order
+   * @return the corresponding entries sorted accordingly
+   */
+  def getFeedEntries(start:Long, count: Int, ascending: Boolean): List[FeedEntry]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jdbc_feed_store">JDBC Feed store</h3>
+<div class="paragraph">
+<p>The <code>atomium-server-jdbc</code> module provides a feed store implementation that stores the feeds in a relational database.</p>
+</div>
+<div class="sect3">
+<h4 id="_add_dependency_2">Add dependency</h4>
+<div class="sect4">
+<h5 id="_maven_2">Maven</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a Maven build file (i.e., pom.xml)</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;be.wegenenverkeer&lt;/groupId&gt;
+    &lt;artifactId&gt;atomium-server-jdbc&lt;/artifactId&gt;
+    &lt;version&gt;0.3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sbt_2">SBT</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a SBT build file (i.e., build.sbt)</div>
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">libraryDependencies += "be.wegenenverkeer" %% "atomium-server-jdbc" % "0.3.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The JDBC feedstore uses the following tables:</p>
+</div>
+<div class="paragraph">
+<p>One table containing all the entries for each feed provided by the system.
+Each feed entries table MUST be manually created in the database.</p>
+</div>
+<div class="paragraph">
+<p>Each entries table MUST have the following columns:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>"id" &#8658; an auto-incrementing unique id of each entry in a specific feed</p>
+</li>
+<li>
+<p>"uuid" &#8658; a UUID generated by the server for uniquely referencing an entry</p>
+</li>
+<li>
+<p>"value" &#8658; a string containing the serialized feed entry</p>
+</li>
+<li>
+<p>"timestamp" &#8658; timestamp when the entry was added to the feed</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_slick_feed_store">Slick Feed store</h3>
+<div class="paragraph">
+<p>The <code>atomium-server-slick</code> module provides a feed store implementation that stores the feeds in a relational database
+using <a href="http://slick.typesafe.com">Slick</a>, a functional relational mapper for Scala</p>
+</div>
+<div class="sect3">
+<h4 id="_add_dependency_3">Add dependency</h4>
+<div class="sect4">
+<h5 id="_maven_3">Maven</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a Maven build file (i.e., pom.xml)</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;be.wegenenverkeer&lt;/groupId&gt;
+    &lt;artifactId&gt;atomium-server-slick&lt;/artifactId&gt;
+    &lt;version&gt;0.3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sbt_3">SBT</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a SBT build file (i.e., build.sbt)</div>
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">libraryDependencies += "be.wegenenverkeer" %% "atomium-server-slick" % "0.3.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Slick feedstore requires the same table layout as the JDBC feedstore.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mongo_feed_store">Mongo Feed store</h3>
+<div class="paragraph">
+<p>The <code>atomium-server-mongo</code> module provides a feed store implementation that stores the feeds in a <a href="http://www.mongodb.org/">[Mongo</a> NoSQL database.</p>
+</div>
+<div class="sect3">
+<h4 id="_add_dependency_4">Add dependency</h4>
+<div class="sect4">
+<h5 id="_maven_4">Maven</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a Maven build file (i.e., pom.xml)</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;be.wegenenverkeer&lt;/groupId&gt;
+    &lt;artifactId&gt;atomium-server-mongo&lt;/artifactId&gt;
+    &lt;version&gt;0.3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sbt_4">SBT</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a SBT build file (i.e., build.sbt)</div>
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">libraryDependencies += "be.wegenenverkeer" %% "atomium-server-mongo" % "0.3.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_play_server_support">Play server support</h3>
+<div class="paragraph">
+<p>The <code>atomium-server-play</code> module provides support for serving feeds from a <a href="http://play.typesafe.com">Play</a> application.</p>
+</div>
+<div class="sect3">
+<h4 id="_add_dependency_5">Add dependency</h4>
+<div class="sect4">
+<h5 id="_maven_5">Maven</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a Maven build file (i.e., pom.xml)</div>
+<div class="content">
+<pre class="highlight"><code class="language-xml" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;be.wegenenverkeer&lt;/groupId&gt;
+    &lt;artifactId&gt;atomium-server-play&lt;/artifactId&gt;
+    &lt;version&gt;0.3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_sbt_5">SBT</h5>
+<div class="listingblock">
+<div class="title">Declaring the dependency in a SBT build file (i.e., build.sbt)</div>
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">libraryDependencies += "be.wegenenverkeer" %% "atomium-server-play" % "0.3.0-SNAPSHOT"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Atomium provides a be.wegenenverkeer.atom.FeedSupport trait, which you can extend in your Play controller classes to make
+a well behaved atom feed HTTP server, supporting ETags and setting correct HTTP caching headers.</p>
+</div>
+<div class="paragraph">
+<p>Take a look at the EventController and/or StringController for details on how to use it.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_json_data_format">JSON data format</h3>
+<div class="paragraph">
+<p>While the atom specification only describes an xml data format, atomium also supports a JSON data format.</p>
+</div>
+<div class="paragraph">
+<p>The format is pretty straight forward:</p>
+</div>
+<div class="paragraph">
+<p>The feed page is a JSON object, containing the following:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+id
+</td>
+<td class="hdlist2">
+<p>a JSON string representing a permanent, universally unique identifier for the feed. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.6">atom:id</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+base
+</td>
+<td class="hdlist2">
+<p>a JSON string representing the base URI used for resolving any relative references. Same as xml:base attribute of feed element.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+title
+</td>
+<td class="hdlist2">
+<p>a JSON string containing a human-readable title for the feed. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.14">atom:title</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+generator
+</td>
+<td class="hdlist2">
+<p>a JSON string identifying the agent used to generate a feed, for debugging and other purposes. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.4">atom:generator</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+updated
+</td>
+<td class="hdlist2">
+<p>JSON string representing a ISO8601 formatted date and time indicating the most recent instant in time when an feed was modified in a way the publisher considers significant. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.15">atom:updated</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+links
+</td>
+<td class="hdlist2">
+<p>a JSON array containing links to other pages in the feed (see below)</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+entries
+</td>
+<td class="hdlist2">
+<p>a JSON array containing feed entry details</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each link from the JSON links array is a JSON object containing the following:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+rel
+</td>
+<td class="hdlist2">
+<p>JSON string representing the link relation, either 'prev', 'next', 'first', 'last' or 'self'</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+href
+</td>
+<td class="hdlist2">
+<p>JSON string: the link URI (may be relative)</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Each entry from the JSON entries array is a JSON object containing the following:</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+id
+</td>
+<td class="hdlist2">
+<p>a JSON string  representing a permanent, universally unique identifier for the entry. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.6">atom:id</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+updated
+</td>
+<td class="hdlist2">
+<p>a JSON string representing ISO8601 formatted date and time indicating the instant in time when an entry was added. Same as <a href="https://tools.ietf.org/html/rfc4287#section-4.2.15">atom:updated</a></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+content
+</td>
+<td class="hdlist2">
+<p>the actual content of the entry, might be any JSON type: f.e. a JSON string, number or possibly another JSON object.</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+links
+</td>
+<td class="hdlist2">
+<p>an empty JSON array. not used at the moment.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-02-18 09:57:16 CET
+</div>
+</div>
+</body>
+</html>

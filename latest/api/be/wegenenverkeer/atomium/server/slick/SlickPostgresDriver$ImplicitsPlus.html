@@ -1,0 +1,1765 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>ImplicitsPlus - be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitsPlus</title>
+          <meta name="description" content="ImplicitsPlus - be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitsPlus" />
+          <meta name="keywords" content="ImplicitsPlus be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitsPlus" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img src="../../../../../lib/trait_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="be">be</a>.<a href="../../../package.html" class="extype" name="be.wegenenverkeer">wegenenverkeer</a>.<a href="../../package.html" class="extype" name="be.wegenenverkeer.atomium">atomium</a>.<a href="../package.html" class="extype" name="be.wegenenverkeer.atomium.server">server</a>.<a href="package.html" class="extype" name="be.wegenenverkeer.atomium.server.slick">slick</a>.<a href="SlickPostgresDriver.html" class="extype" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver">SlickPostgresDriver</a></p>
+        <h1>ImplicitsPlus</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="SlickPostgresDriver.html" class="extype" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver">package SlickPostgresDriver</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ImplicitsPlus</span><span class="result"> extends <a href="SlickPostgresDriver.html#ImplicitsextendsJdbcProfile.this.LowPriorityImplicitswithJdbcProfile.this.ImplicitswithJdbcProfile.this.ImplicitColumnTypes" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.Implicits">Implicits</a> with <a href="SlickPostgresDriver.html#DateTimeImplicitsextendsPgDateSupportJoda.this.JodaDateTimeImplicits" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DateTimeImplicits">DateTimeImplicits</a></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><a href="SlickPostgresDriver.html#DateTimeImplicitsextendsPgDateSupportJoda.this.JodaDateTimeImplicits" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DateTimeImplicits">SlickPostgresDriver.DateTimeImplicits</a>, <a href="SlickPostgresDriver.html#JodaDateTimeImplicitsextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.JodaDateTimeImplicits">SlickPostgresDriver.JodaDateTimeImplicits</a>, <a href="SlickPostgresDriver.html#ImplicitsextendsJdbcProfile.this.LowPriorityImplicitswithJdbcProfile.this.ImplicitswithJdbcProfile.this.ImplicitColumnTypes" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.Implicits">SlickPostgresDriver.Implicits</a>, <a href="SlickPostgresDriver.html#ImplicitColumnTypesextendsJdbcTypesComponent.this.ImplicitColumnTypes" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitColumnTypes">SlickPostgresDriver.ImplicitColumnTypes</a>, <span class="extype" name="scala.slick.profile.RelationalProfile.Implicits">SlickPostgresDriver.Implicits</span>, <span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes">SlickPostgresDriver.ImplicitColumnTypes</span>, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits">SlickPostgresDriver.Implicits</span>, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions">ExtensionMethodConversions</span>, <a href="SlickPostgresDriver.html#LowPriorityImplicitsextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.LowPriorityImplicits">SlickPostgresDriver.LowPriorityImplicits</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="SlickPostgresDriver$SimpleQLPlus.html" class="extype" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.SimpleQLPlus">SimpleQLPlus</a></div>
+          </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitsPlus"><span>ImplicitsPlus</span></li><li class="in" name="com.github.tminglei.slickpg.PgDateSupportJoda.DateTimeImplicits"><span>DateTimeImplicits</span></li><li class="in" name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits"><span>JodaDateTimeImplicits</span></li><li class="in" name="scala.slick.driver.JdbcProfile.Implicits"><span>Implicits</span></li><li class="in" name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes"><span>ImplicitColumnTypes</span></li><li class="in" name="scala.slick.profile.RelationalProfile.Implicits"><span>Implicits</span></li><li class="in" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes"><span>ImplicitColumnTypes</span></li><li class="in" name="scala.slick.profile.BasicProfile.Implicits"><span>Implicits</span></li><li class="in" name="scala.slick.lifted.ExtensionMethodConversions"><span>ExtensionMethodConversions</span></li><li class="in" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits"><span>LowPriorityImplicits</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@##():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#anyColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="anyColumnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicitevidence$3:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.AnyExtensionMethods"></a>
+      <a id="anyColumnExtensionMethods[B1](Column[B1])(BaseTypedType[B1]):AnyExtensionMethods"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">anyColumnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyColumnExtensionMethods.B1">B1</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyColumnExtensionMethods.B1">B1</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.AnyExtensionMethods">AnyExtensionMethods</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@anyColumnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicitevidence$3:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.AnyExtensionMethods" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#anyOptionColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="anyOptionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]]):scala.slick.lifted.AnyExtensionMethods"></a>
+      <a id="anyOptionColumnExtensionMethods[B1](Column[Option[B1]]):AnyExtensionMethods"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">anyOptionColumnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyOptionColumnExtensionMethods.B1">B1</span>]]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.AnyExtensionMethods">AnyExtensionMethods</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@anyOptionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]]):scala.slick.lifted.AnyExtensionMethods" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#anyOptionValueExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="anyOptionValueExtensionMethods[B1](v:Option[B1])(implicitevidence$5:scala.slick.ast.TypedType[B1]):scala.slick.lifted.AnyExtensionMethods"></a>
+      <a id="anyOptionValueExtensionMethods[B1](Option[B1])(TypedType[B1]):AnyExtensionMethods"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">anyOptionValueExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="v">v: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyOptionValueExtensionMethods.B1">B1</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.TypedType">TypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyOptionValueExtensionMethods.B1">B1</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.AnyExtensionMethods">AnyExtensionMethods</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@anyOptionValueExtensionMethods[B1](v:Option[B1])(implicitevidence$5:scala.slick.ast.TypedType[B1]):scala.slick.lifted.AnyExtensionMethods" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#anyToToShapedValue" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="anyToToShapedValue[T](value:T):scala.slick.lifted.ToShapedValue[T]"></a>
+      <a id="anyToToShapedValue[T](T):ToShapedValue[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">anyToToShapedValue</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.anyToToShapedValue.T">T</span></span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.ToShapedValue">ToShapedValue</span>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.anyToToShapedValue.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@anyToToShapedValue[T](value:T):scala.slick.lifted.ToShapedValue[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd><dt>Annotations</dt><dd>
+                <span class="name">@inline</span><span class="args">()</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#anyValueExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="anyValueExtensionMethods[B1](v:B1)(implicitevidence$4:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.AnyExtensionMethods"></a>
+      <a id="anyValueExtensionMethods[B1](B1)(BaseTypedType[B1]):AnyExtensionMethods"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">anyValueExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="v">v: <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyValueExtensionMethods.B1">B1</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.anyValueExtensionMethods.B1">B1</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.AnyExtensionMethods">AnyExtensionMethods</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@anyValueExtensionMethods[B1](v:B1)(implicitevidence$4:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.AnyExtensionMethods" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#bigDecimalColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="bigDecimalColumnType:JdbcTypesComponent.this.columnTypes.BigDecimalJdbcType"></a>
+      <a id="bigDecimalColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.BigDecimalJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">bigDecimalColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.BigDecimalJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.BigDecimalJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@bigDecimalColumnType:JdbcTypesComponent.this.columnTypes.BigDecimalJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#blobColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="blobColumnType:JdbcTypesComponent.this.columnTypes.BlobJdbcType"></a>
+      <a id="blobColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.BlobJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">blobColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.BlobJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.BlobJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@blobColumnType:JdbcTypesComponent.this.columnTypes.BlobJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#booleanColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="booleanColumnExtensionMethods(c:scala.slick.lifted.Column[Boolean]):scala.slick.lifted.BooleanColumnExtensionMethods[Boolean]"></a>
+      <a id="booleanColumnExtensionMethods(Column[Boolean]):BooleanColumnExtensionMethods[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">booleanColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.BooleanColumnExtensionMethods">BooleanColumnExtensionMethods</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@booleanColumnExtensionMethods(c:scala.slick.lifted.Column[Boolean]):scala.slick.lifted.BooleanColumnExtensionMethods[Boolean]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#booleanColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="booleanColumnType:JdbcTypesComponent.this.columnTypes.BooleanJdbcType"></a>
+      <a id="booleanColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.BooleanJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">booleanColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.BooleanJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.BooleanJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@booleanColumnType:JdbcTypesComponent.this.columnTypes.BooleanJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#booleanOptionColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="booleanOptionColumnExtensionMethods(c:scala.slick.lifted.Column[Option[Boolean]]):scala.slick.lifted.BooleanColumnExtensionMethods[Option[Boolean]]"></a>
+      <a id="booleanOptionColumnExtensionMethods(Column[Option[Boolean]]):BooleanColumnExtensionMethods[Option[Boolean]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">booleanOptionColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>]]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.BooleanColumnExtensionMethods">BooleanColumnExtensionMethods</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@booleanOptionColumnExtensionMethods(c:scala.slick.lifted.Column[Option[Boolean]]):scala.slick.lifted.BooleanColumnExtensionMethods[Option[Boolean]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#byteArrayColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="byteArrayColumnType:JdbcTypesComponent.this.columnTypes.ByteArrayJdbcType"></a>
+      <a id="byteArrayColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.ByteArrayJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">byteArrayColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.ByteArrayJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.ByteArrayJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@byteArrayColumnType:JdbcTypesComponent.this.columnTypes.ByteArrayJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#byteColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="byteColumnType:JdbcTypesComponent.this.columnTypes.ByteJdbcType"></a>
+      <a id="byteColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.ByteJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">byteColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.ByteJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.ByteJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@byteColumnType:JdbcTypesComponent.this.columnTypes.ByteJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#charColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="charColumnType:JdbcTypesComponent.this.columnTypes.CharJdbcType"></a>
+      <a id="charColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.CharJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">charColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.CharJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.CharJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@charColumnType:JdbcTypesComponent.this.columnTypes.CharJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#clobColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clobColumnType:JdbcTypesComponent.this.columnTypes.ClobJdbcType"></a>
+      <a id="clobColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.ClobJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clobColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.ClobJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.ClobJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@clobColumnType:JdbcTypesComponent.this.columnTypes.ClobJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#columnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicitevidence$6:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.PlainColumnExtensionMethods[B1]"></a>
+      <a id="columnExtensionMethods[B1](Column[B1])(BaseTypedType[B1]):PlainColumnExtensionMethods[B1]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.columnExtensionMethods.B1">B1</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.columnExtensionMethods.B1">B1</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.PlainColumnExtensionMethods">PlainColumnExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.columnExtensionMethods.B1">B1</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@columnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicitevidence$6:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.PlainColumnExtensionMethods[B1]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.profile.RelationalProfile.Implicits#columnToOptionColumn" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columnToOptionColumn[T](c:scala.slick.lifted.Column[T])(implicitevidence$1:scala.slick.ast.BaseTypedType[T]):scala.slick.lifted.Column[Option[T]]"></a>
+      <a id="columnToOptionColumn[T](Column[T])(BaseTypedType[T]):Column[Option[T]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columnToOptionColumn</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.columnToOptionColumn.T">T</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.columnToOptionColumn.T">T</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.columnToOptionColumn.T">T</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@columnToOptionColumn[T](c:scala.slick.lifted.Column[T])(implicitevidence$1:scala.slick.ast.BaseTypedType[T]):scala.slick.lifted.Column[Option[T]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.profile.RelationalProfile.Implicits#columnToOrdered" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="columnToOrdered[T](c:scala.slick.lifted.Column[T]):scala.slick.lifted.ColumnOrdered[T]"></a>
+      <a id="columnToOrdered[T](Column[T]):ColumnOrdered[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">columnToOrdered</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.columnToOrdered.T">T</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.ColumnOrdered">ColumnOrdered</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.columnToOrdered.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@columnToOrdered[T](c:scala.slick.lifted.Column[T]):scala.slick.lifted.ColumnOrdered[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#dateColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dateColumnType:JdbcTypesComponent.this.columnTypes.DateJdbcType"></a>
+      <a id="dateColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.DateJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dateColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.DateJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.DateJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@dateColumnType:JdbcTypesComponent.this.columnTypes.DateJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#ddlToDDLInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ddlToDDLInvoker(d:JdbcProfile.this.DDL):JdbcProfile.this.DDLInvoker"></a>
+      <a id="ddlToDDLInvoker(SlickPostgresDriver.DDL):SlickPostgresDriver.DDLInvoker"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ddlToDDLInvoker</span><span class="params">(<span name="d">d: <a href="SlickPostgresDriver.html#DDLextendsSqlProfile.this.SchemaDescriptionDef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DDL">SlickPostgresDriver.DDL</a></span>)</span><span class="result">: <a href="SlickPostgresDriver.html#DDLInvokerextendsJdbcInvokerComponent.this.DDLInvoker" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DDLInvoker">SlickPostgresDriver.DDLInvoker</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@ddlToDDLInvoker(d:JdbcProfile.this.DDL):JdbcProfile.this.DDLInvoker" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits → Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#doubleColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="doubleColumnType:JdbcTypesComponent.this.columnTypes.DoubleJdbcType"></a>
+      <a id="doubleColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.DoubleJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">doubleColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.DoubleJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.DoubleJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@doubleColumnType:JdbcTypesComponent.this.columnTypes.DoubleJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#floatColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="floatColumnType:JdbcTypesComponent.this.columnTypes.FloatJdbcType"></a>
+      <a id="floatColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.FloatJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">floatColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.FloatJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.FloatJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@floatColumnType:JdbcTypesComponent.this.columnTypes.FloatJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#intColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="intColumnType:JdbcTypesComponent.this.columnTypes.IntJdbcType"></a>
+      <a id="intColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.IntJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">intColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.IntJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.IntJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@intColumnType:JdbcTypesComponent.this.columnTypes.IntJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes#isomorphicType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isomorphicType[A,B](implicitiso:scala.slick.lifted.Isomorphism[A,B],implicitct:scala.reflect.ClassTag[A],implicitjt:RelationalTypesComponent.this.BaseColumnType[B]):RelationalTypesComponent.this.BaseColumnType[A]"></a>
+      <a id="isomorphicType[A,B](Isomorphism[A,B],ClassTag[A],SlickPostgresDriver.BaseColumnType[B]):SlickPostgresDriver.BaseColumnType[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isomorphicType</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span class="implicit">implicit </span><span name="iso">iso: <span class="extype" name="scala.slick.lifted.Isomorphism">Isomorphism</span>[<span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes.isomorphicType.A">A</span>, <span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes.isomorphicType.B">B</span>]</span>, <span name="ct">ct: <span class="extype" name="scala.reflect.ClassTag">ClassTag</span>[<span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes.isomorphicType.A">A</span>]</span>, <span name="jt">jt: <a href="SlickPostgresDriver.html#BaseColumnType[T]=scala.slick.jdbc.JdbcType[T]withscala.slick.ast.BaseTypedType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.BaseColumnType">SlickPostgresDriver.BaseColumnType</a>[<span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes.isomorphicType.B">B</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#BaseColumnType[T]=scala.slick.jdbc.JdbcType[T]withscala.slick.ast.BaseTypedType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.BaseColumnType">SlickPostgresDriver.BaseColumnType</a>[<span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes.isomorphicType.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@isomorphicType[A,B](implicitiso:scala.slick.lifted.Isomorphism[A,B],implicitct:scala.reflect.ClassTag[A],implicitjt:RelationalTypesComponent.this.BaseColumnType[B]):RelationalTypesComponent.this.BaseColumnType[A]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#jdbcFastPathExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jdbcFastPathExtensionMethods[T,P](mp:scala.slick.lifted.MappedProjection[T,P]):JdbcProfile.this.JdbcFastPathExtensionMethods[T,P]"></a>
+      <a id="jdbcFastPathExtensionMethods[T,P](MappedProjection[T,P]):SlickPostgresDriver.JdbcFastPathExtensionMethods[T,P]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jdbcFastPathExtensionMethods</span><span class="tparams">[<span name="T">T</span>, <span name="P">P</span>]</span><span class="params">(<span name="mp">mp: <span class="extype" name="scala.slick.lifted.MappedProjection">MappedProjection</span>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.jdbcFastPathExtensionMethods.T">T</span>, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.jdbcFastPathExtensionMethods.P">P</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#JdbcFastPathExtensionMethods[T,P]extendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.JdbcFastPathExtensionMethods">SlickPostgresDriver.JdbcFastPathExtensionMethods</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.jdbcFastPathExtensionMethods.T">T</span>, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.jdbcFastPathExtensionMethods.P">P</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jdbcFastPathExtensionMethods[T,P](mp:scala.slick.lifted.MappedProjection[T,P]):JdbcProfile.this.JdbcFastPathExtensionMethods[T,P]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalDate]):PgDateSupportJoda.this.DateColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalDate]"></a>
+      <a id="jodaDateColumnExtensionMethods(Column[LocalDate]):SlickPostgresDriver.DateColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,LocalDate]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#DateColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[DATE,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DateColumnExtensionMethods">SlickPostgresDriver.DateColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="org.joda.time.LocalDate">LocalDate</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalDate]):PgDateSupportJoda.this.DateColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalDate]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateFormatter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateFormatter:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaDateFormatter:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateFormatter</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateFormatter:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateOptColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalDate]]):PgDateSupportJoda.this.DateColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalDate]]"></a>
+      <a id="jodaDateOptColumnExtensionMethods(Column[Option[LocalDate]]):SlickPostgresDriver.DateColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,Option[LocalDate]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateOptColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#DateColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[DATE,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DateColumnExtensionMethods">SlickPostgresDriver.DateColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalDate]]):PgDateSupportJoda.this.DateColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalDate]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateTimeFormatter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateTimeFormatter:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaDateTimeFormatter:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateTimeFormatter</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateTimeFormatter:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateTimeFormatter_NoFraction" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaDateTimeFormatter_NoFraction:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateTimeFormatter_NoFraction</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateTimeTypeMapper" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateTimeTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalDateTime]"></a>
+      <a id="jodaDateTimeTypeMapper:SlickPostgresDriver.GenericJdbcType[LocalDateTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateTimeTypeMapper</span><span class="result">: <a href="SlickPostgresDriver.html#GenericJdbcType[T]extendsPgCommonJdbcTypes.this.DriverJdbcType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.GenericJdbcType">SlickPostgresDriver.GenericJdbcType</a>[<span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateTimeTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalDateTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaDateTypeMapper" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaDateTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalDate]"></a>
+      <a id="jodaDateTypeMapper:SlickPostgresDriver.GenericJdbcType[LocalDate]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaDateTypeMapper</span><span class="result">: <a href="SlickPostgresDriver.html#GenericJdbcType[T]extendsPgCommonJdbcTypes.this.DriverJdbcType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.GenericJdbcType">SlickPostgresDriver.GenericJdbcType</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaDateTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalDate]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaIntervalColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaIntervalColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.Period]):PgDateSupportJoda.this.IntervalColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.Period]"></a>
+      <a id="jodaIntervalColumnExtensionMethods(Column[Period]):SlickPostgresDriver.IntervalColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,Period]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaIntervalColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="org.joda.time.Period">Period</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#IntervalColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[INTERVAL,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.IntervalColumnExtensionMethods">SlickPostgresDriver.IntervalColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="org.joda.time.Period">Period</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaIntervalColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.Period]):PgDateSupportJoda.this.IntervalColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.Period]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaIntervalOptColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaIntervalOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.Period]]):PgDateSupportJoda.this.IntervalColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.Period]]"></a>
+      <a id="jodaIntervalOptColumnExtensionMethods(Column[Option[Period]]):SlickPostgresDriver.IntervalColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,Option[Period]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaIntervalOptColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.Period">Period</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#IntervalColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[INTERVAL,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.IntervalColumnExtensionMethods">SlickPostgresDriver.IntervalColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.Period">Period</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaIntervalOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.Period]]):PgDateSupportJoda.this.IntervalColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.Period]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaPeriodTypeMapper" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaPeriodTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.Period]"></a>
+      <a id="jodaPeriodTypeMapper:SlickPostgresDriver.GenericJdbcType[Period]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaPeriodTypeMapper</span><span class="result">: <a href="SlickPostgresDriver.html#GenericJdbcType[T]extendsPgCommonJdbcTypes.this.DriverJdbcType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.GenericJdbcType">SlickPostgresDriver.GenericJdbcType</a>[<span class="extype" name="org.joda.time.Period">Period</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaPeriodTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.Period]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimeColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimeColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalTime]):PgDateSupportJoda.this.TimeColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalTime]"></a>
+      <a id="jodaTimeColumnExtensionMethods(Column[LocalTime]):SlickPostgresDriver.TimeColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,LocalTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimeColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="org.joda.time.LocalTime">LocalTime</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimeColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIME,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimeColumnExtensionMethods">SlickPostgresDriver.TimeColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimeColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalTime]):PgDateSupportJoda.this.TimeColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimeFormatter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimeFormatter:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaTimeFormatter:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimeFormatter</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimeFormatter:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimeFormatter_NoFraction" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaTimeFormatter_NoFraction:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimeFormatter_NoFraction</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimeOptColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimeOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalTime]]):PgDateSupportJoda.this.TimeColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalTime]]"></a>
+      <a id="jodaTimeOptColumnExtensionMethods(Column[Option[LocalTime]]):SlickPostgresDriver.TimeColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,Option[LocalTime]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimeOptColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalTime">LocalTime</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimeColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIME,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimeColumnExtensionMethods">SlickPostgresDriver.TimeColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalTime">LocalTime</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimeOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalTime]]):PgDateSupportJoda.this.TimeColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalTime]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimeTypeMapper" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimeTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalTime]"></a>
+      <a id="jodaTimeTypeMapper:SlickPostgresDriver.GenericJdbcType[LocalTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimeTypeMapper</span><span class="result">: <a href="SlickPostgresDriver.html#GenericJdbcType[T]extendsPgCommonJdbcTypes.this.DriverJdbcType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.GenericJdbcType">SlickPostgresDriver.GenericJdbcType</a>[<span class="extype" name="org.joda.time.LocalTime">LocalTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimeTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.LocalTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimestampColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimestampColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalDateTime]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalDateTime]"></a>
+      <a id="jodaTimestampColumnExtensionMethods(Column[LocalDateTime]):SlickPostgresDriver.TimestampColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,LocalDateTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimestampColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimestampColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIMESTAMP,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimestampColumnExtensionMethods">SlickPostgresDriver.TimestampColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimestampColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.LocalDateTime]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,org.joda.time.LocalDateTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimestampOptColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimestampOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalDateTime]]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalDateTime]]"></a>
+      <a id="jodaTimestampOptColumnExtensionMethods(Column[Option[LocalDateTime]]):SlickPostgresDriver.TimestampColumnExtensionMethods[LocalDate,LocalTime,LocalDateTime,Period,Option[LocalDateTime]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimestampOptColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimestampColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIMESTAMP,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimestampColumnExtensionMethods">SlickPostgresDriver.TimestampColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.LocalDateTime">LocalDateTime</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimestampOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.LocalDateTime]]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.LocalDateTime,org.joda.time.Period,Option[org.joda.time.LocalDateTime]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTimestampTZTypeMapper" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTimestampTZTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.DateTime]"></a>
+      <a id="jodaTimestampTZTypeMapper:SlickPostgresDriver.GenericJdbcType[DateTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTimestampTZTypeMapper</span><span class="result">: <a href="SlickPostgresDriver.html#GenericJdbcType[T]extendsPgCommonJdbcTypes.this.DriverJdbcType[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.GenericJdbcType">SlickPostgresDriver.GenericJdbcType</a>[<span class="extype" name="org.joda.time.DateTime">DateTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTimestampTZTypeMapper:PgDateSupportJoda.this.GenericJdbcType[org.joda.time.DateTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTzDateTimeFormatter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTzDateTimeFormatter:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaTzDateTimeFormatter:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTzDateTimeFormatter</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTzDateTimeFormatter:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTzDateTimeFormatter_NoFraction" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTzDateTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter"></a>
+      <a id="jodaTzDateTimeFormatter_NoFraction:DateTimeFormatter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTzDateTimeFormatter_NoFraction</span><span class="result">: <span class="extype" name="org.joda.time.format.DateTimeFormatter">DateTimeFormatter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTzDateTimeFormatter_NoFraction:org.joda.time.format.DateTimeFormatter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTzTimestampColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTzTimestampColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.DateTime]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.DateTime,org.joda.time.Period,org.joda.time.DateTime]"></a>
+      <a id="jodaTzTimestampColumnExtensionMethods(Column[DateTime]):SlickPostgresDriver.TimestampColumnExtensionMethods[LocalDate,LocalTime,DateTime,Period,DateTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTzTimestampColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="org.joda.time.DateTime">DateTime</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimestampColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIMESTAMP,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimestampColumnExtensionMethods">SlickPostgresDriver.TimestampColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.DateTime">DateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="org.joda.time.DateTime">DateTime</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTzTimestampColumnExtensionMethods(c:scala.slick.lifted.Column[org.joda.time.DateTime]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.DateTime,org.joda.time.Period,org.joda.time.DateTime]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits#jodaTzTimestampOptColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="jodaTzTimestampOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.DateTime]]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.DateTime,org.joda.time.Period,Option[org.joda.time.DateTime]]"></a>
+      <a id="jodaTzTimestampOptColumnExtensionMethods(Column[Option[DateTime]]):SlickPostgresDriver.TimestampColumnExtensionMethods[LocalDate,LocalTime,DateTime,Period,Option[DateTime]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jodaTzTimestampOptColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.DateTime">DateTime</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TimestampColumnExtensionMethods[DATE,TIME,TIMESTAMP,INTERVAL,P1]extendsExtensionMethods[TIMESTAMP,P1]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TimestampColumnExtensionMethods">SlickPostgresDriver.TimestampColumnExtensionMethods</a>[<span class="extype" name="org.joda.time.LocalDate">LocalDate</span>, <span class="extype" name="org.joda.time.LocalTime">LocalTime</span>, <span class="extype" name="org.joda.time.DateTime">DateTime</span>, <span class="extype" name="org.joda.time.Period">Period</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.DateTime">DateTime</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@jodaTzTimestampOptColumnExtensionMethods(c:scala.slick.lifted.Column[Option[org.joda.time.DateTime]]):PgDateSupportJoda.this.TimestampColumnExtensionMethods[org.joda.time.LocalDate,org.joda.time.LocalTime,org.joda.time.DateTime,org.joda.time.Period,Option[org.joda.time.DateTime]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>JodaDateTimeImplicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#longColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="longColumnType:JdbcTypesComponent.this.columnTypes.LongJdbcType"></a>
+      <a id="longColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.LongJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">longColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.LongJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.LongJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@longColumnType:JdbcTypesComponent.this.columnTypes.LongJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#numericColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="numericColumnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicittm:scala.slick.ast.BaseTypedType[B1]withscala.slick.ast.NumericTypedType):scala.slick.lifted.NumericColumnExtensionMethods[B1,B1]"></a>
+      <a id="numericColumnExtensionMethods[B1](Column[B1])(BaseTypedType[B1]withNumericTypedType):NumericColumnExtensionMethods[B1,B1]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">numericColumnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericColumnExtensionMethods.B1">B1</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="tm">tm: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericColumnExtensionMethods.B1">B1</span>] with <span class="extype" name="scala.slick.ast.NumericTypedType">NumericTypedType</span></span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.NumericColumnExtensionMethods">NumericColumnExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericColumnExtensionMethods.B1">B1</span>, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericColumnExtensionMethods.B1">B1</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@numericColumnExtensionMethods[B1](c:scala.slick.lifted.Column[B1])(implicittm:scala.slick.ast.BaseTypedType[B1]withscala.slick.ast.NumericTypedType):scala.slick.lifted.NumericColumnExtensionMethods[B1,B1]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#numericOptionColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="numericOptionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]])(implicittm:scala.slick.ast.BaseTypedType[B1]withscala.slick.ast.NumericTypedType):scala.slick.lifted.NumericColumnExtensionMethods[B1,Option[B1]]"></a>
+      <a id="numericOptionColumnExtensionMethods[B1](Column[Option[B1]])(BaseTypedType[B1]withNumericTypedType):NumericColumnExtensionMethods[B1,Option[B1]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">numericOptionColumnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericOptionColumnExtensionMethods.B1">B1</span>]]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="tm">tm: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericOptionColumnExtensionMethods.B1">B1</span>] with <span class="extype" name="scala.slick.ast.NumericTypedType">NumericTypedType</span></span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.NumericColumnExtensionMethods">NumericColumnExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericOptionColumnExtensionMethods.B1">B1</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.numericOptionColumnExtensionMethods.B1">B1</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@numericOptionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]])(implicittm:scala.slick.ast.BaseTypedType[B1]withscala.slick.ast.NumericTypedType):scala.slick.lifted.NumericColumnExtensionMethods[B1,Option[B1]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#optionColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="optionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]]):scala.slick.lifted.OptionColumnExtensionMethods[B1]"></a>
+      <a id="optionColumnExtensionMethods[B1](Column[Option[B1]]):OptionColumnExtensionMethods[B1]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">optionColumnExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.optionColumnExtensionMethods.B1">B1</span>]]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.OptionColumnExtensionMethods">OptionColumnExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.optionColumnExtensionMethods.B1">B1</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@optionColumnExtensionMethods[B1](c:scala.slick.lifted.Column[Option[B1]]):scala.slick.lifted.OptionColumnExtensionMethods[B1]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#productQueryToUpdateInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="productQueryToUpdateInvoker[T,C[_]](q:scala.slick.lifted.Query[_&lt;:scala.slick.lifted.Rep[T],T,C]):JdbcProfile.this.UpdateInvoker[T]"></a>
+      <a id="productQueryToUpdateInvoker[T,C[_]](Query[_&lt;:Rep[T],T,C]):SlickPostgresDriver.UpdateInvoker[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">productQueryToUpdateInvoker</span><span class="tparams">[<span name="T">T</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_ &lt;: <span class="extype" name="scala.slick.lifted.Rep">Rep</span>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.productQueryToUpdateInvoker.T">T</span>], <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.productQueryToUpdateInvoker.T">T</span>, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.productQueryToUpdateInvoker.C">C</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#UpdateInvoker[T]extendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.UpdateInvoker">SlickPostgresDriver.UpdateInvoker</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.productQueryToUpdateInvoker.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@productQueryToUpdateInvoker[T,C[_]](q:scala.slick.lifted.Query[_&lt;:scala.slick.lifted.Rep[T],T,C]):JdbcProfile.this.UpdateInvoker[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.LowPriorityImplicits#queryToAppliedQueryInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="queryToAppliedQueryInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):JdbcProfile.this.QueryInvoker[U]"></a>
+      <a id="queryToAppliedQueryInvoker[U,C[_]](Query[_,U,C]):SlickPostgresDriver.QueryInvoker[U]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">queryToAppliedQueryInvoker</span><span class="tparams">[<span name="U">U</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, <span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToAppliedQueryInvoker.U">U</span>, <span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToAppliedQueryInvoker.C">C</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#QueryInvoker[R]extendsStatementInvoker[R]withMutatingStatementInvoker[R]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.QueryInvoker">SlickPostgresDriver.QueryInvoker</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToAppliedQueryInvoker.U">U</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@queryToAppliedQueryInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):JdbcProfile.this.QueryInvoker[U]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LowPriorityImplicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#queryToDeleteInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="queryToDeleteInvoker[C[_]](q:scala.slick.lifted.Query[_&lt;:JdbcProfile.this.Table[_],_,C]):JdbcProfile.this.DeleteInvoker"></a>
+      <a id="queryToDeleteInvoker[C[_]](Query[_&lt;:SlickPostgresDriver.Table[_],_,C]):SlickPostgresDriver.DeleteInvoker"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">queryToDeleteInvoker</span><span class="tparams">[<span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_ &lt;: <a href="SlickPostgresDriver.html#Table[T]extendsAbstractTable[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.Table">SlickPostgresDriver.Table</a>[_], _, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.queryToDeleteInvoker.C">C</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#DeleteInvokerextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DeleteInvoker">SlickPostgresDriver.DeleteInvoker</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@queryToDeleteInvoker[C[_]](q:scala.slick.lifted.Query[_&lt;:JdbcProfile.this.Table[_],_,C]):JdbcProfile.this.DeleteInvoker" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#queryToInsertInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="queryToInsertInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):BasicProfile.this.InsertInvoker[U]"></a>
+      <a id="queryToInsertInvoker[U,C[_]](Query[_,U,C]):SlickPostgresDriver.InsertInvoker[U]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">queryToInsertInvoker</span><span class="tparams">[<span name="U">U</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.queryToInsertInvoker.U">U</span>, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.queryToInsertInvoker.C">C</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#InsertInvoker[T]=JdbcInsertInvokerComponent.this.CountingInsertInvokerDef[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.InsertInvoker">SlickPostgresDriver.InsertInvoker</a>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.queryToInsertInvoker.U">U</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@queryToInsertInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):BasicProfile.this.InsertInvoker[U]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.LowPriorityImplicits#queryToUpdateInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="queryToUpdateInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):JdbcProfile.this.UpdateInvoker[U]"></a>
+      <a id="queryToUpdateInvoker[U,C[_]](Query[_,U,C]):SlickPostgresDriver.UpdateInvoker[U]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">queryToUpdateInvoker</span><span class="tparams">[<span name="U">U</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, <span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToUpdateInvoker.U">U</span>, <span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToUpdateInvoker.C">C</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#UpdateInvoker[T]extendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.UpdateInvoker">SlickPostgresDriver.UpdateInvoker</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits.queryToUpdateInvoker.U">U</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@queryToUpdateInvoker[U,C[_]](q:scala.slick.lifted.Query[_,U,C]):JdbcProfile.this.UpdateInvoker[U]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>LowPriorityImplicits</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#recordToQueryExecutor" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recordToQueryExecutor[M,R](q:M)(implicitshape:scala.slick.lifted.Shape[_&lt;:scala.slick.lifted.FlatShapeLevel,M,R,_]):BasicProfile.this.QueryExecutor[R]"></a>
+      <a id="recordToQueryExecutor[M,R](M)(Shape[_&lt;:FlatShapeLevel,M,R,_]):SlickPostgresDriver.QueryExecutor[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recordToQueryExecutor</span><span class="tparams">[<span name="M">M</span>, <span name="R">R</span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.recordToQueryExecutor.M">M</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="shape">shape: <span class="extype" name="scala.slick.lifted.Shape">Shape</span>[_ &lt;: <span class="extype" name="scala.slick.lifted.FlatShapeLevel">FlatShapeLevel</span>, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.recordToQueryExecutor.M">M</span>, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.recordToQueryExecutor.R">R</span>, _]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#QueryExecutor[T]=JdbcExecutorComponent.this.QueryExecutorDef[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.QueryExecutor">SlickPostgresDriver.QueryExecutor</a>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.recordToQueryExecutor.R">R</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@recordToQueryExecutor[M,R](q:M)(implicitshape:scala.slick.lifted.Shape[_&lt;:scala.slick.lifted.FlatShapeLevel,M,R,_]):BasicProfile.this.QueryExecutor[R]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#repToQueryExecutor" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="repToQueryExecutor[U](rep:scala.slick.lifted.Rep[U]):BasicProfile.this.QueryExecutor[U]"></a>
+      <a id="repToQueryExecutor[U](Rep[U]):SlickPostgresDriver.QueryExecutor[U]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">repToQueryExecutor</span><span class="tparams">[<span name="U">U</span>]</span><span class="params">(<span name="rep">rep: <span class="extype" name="scala.slick.lifted.Rep">Rep</span>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.repToQueryExecutor.U">U</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#QueryExecutor[T]=JdbcExecutorComponent.this.QueryExecutorDef[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.QueryExecutor">SlickPostgresDriver.QueryExecutor</a>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.repToQueryExecutor.U">U</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@repToQueryExecutor[U](rep:scala.slick.lifted.Rep[U]):BasicProfile.this.QueryExecutor[U]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#runnableCompiledToAppliedQueryInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="runnableCompiledToAppliedQueryInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.QueryInvoker[RU]"></a>
+      <a id="runnableCompiledToAppliedQueryInvoker[RU,C[_]](RunnableCompiled[_&lt;:Query[_,_,C],C[RU]]):SlickPostgresDriver.QueryInvoker[RU]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">runnableCompiledToAppliedQueryInvoker</span><span class="tparams">[<span name="RU">RU</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.RunnableCompiled">RunnableCompiled</span>[_ &lt;: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, _, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToAppliedQueryInvoker.C">C</span>], <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToAppliedQueryInvoker.C">C</span>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToAppliedQueryInvoker.RU">RU</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#QueryInvoker[R]extendsStatementInvoker[R]withMutatingStatementInvoker[R]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.QueryInvoker">SlickPostgresDriver.QueryInvoker</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToAppliedQueryInvoker.RU">RU</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@runnableCompiledToAppliedQueryInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.QueryInvoker[RU]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#runnableCompiledToDeleteInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="runnableCompiledToDeleteInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.DeleteInvoker"></a>
+      <a id="runnableCompiledToDeleteInvoker[RU,C[_]](RunnableCompiled[_&lt;:Query[_,_,C],C[RU]]):SlickPostgresDriver.DeleteInvoker"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">runnableCompiledToDeleteInvoker</span><span class="tparams">[<span name="RU">RU</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.RunnableCompiled">RunnableCompiled</span>[_ &lt;: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, _, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToDeleteInvoker.C">C</span>], <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToDeleteInvoker.C">C</span>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToDeleteInvoker.RU">RU</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#DeleteInvokerextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DeleteInvoker">SlickPostgresDriver.DeleteInvoker</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@runnableCompiledToDeleteInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.DeleteInvoker" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#runnableCompiledToQueryExecutor" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="runnableCompiledToQueryExecutor[RU](c:scala.slick.lifted.RunnableCompiled[_,RU]):BasicProfile.this.QueryExecutor[RU]"></a>
+      <a id="runnableCompiledToQueryExecutor[RU](RunnableCompiled[_,RU]):SlickPostgresDriver.QueryExecutor[RU]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">runnableCompiledToQueryExecutor</span><span class="tparams">[<span name="RU">RU</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.RunnableCompiled">RunnableCompiled</span>[_, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.runnableCompiledToQueryExecutor.RU">RU</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#QueryExecutor[T]=JdbcExecutorComponent.this.QueryExecutorDef[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.QueryExecutor">SlickPostgresDriver.QueryExecutor</a>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.runnableCompiledToQueryExecutor.RU">RU</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@runnableCompiledToQueryExecutor[RU](c:scala.slick.lifted.RunnableCompiled[_,RU]):BasicProfile.this.QueryExecutor[RU]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcProfile.Implicits#runnableCompiledToUpdateInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="runnableCompiledToUpdateInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.UpdateInvoker[RU]"></a>
+      <a id="runnableCompiledToUpdateInvoker[RU,C[_]](RunnableCompiled[_&lt;:Query[_,_,C],C[RU]]):SlickPostgresDriver.UpdateInvoker[RU]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">runnableCompiledToUpdateInvoker</span><span class="tparams">[<span name="RU">RU</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.RunnableCompiled">RunnableCompiled</span>[_ &lt;: <span class="extype" name="scala.slick.lifted.Query">Query</span>[_, _, <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToUpdateInvoker.C">C</span>], <span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToUpdateInvoker.C">C</span>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToUpdateInvoker.RU">RU</span>]]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#UpdateInvoker[T]extendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.UpdateInvoker">SlickPostgresDriver.UpdateInvoker</a>[<span class="extype" name="scala.slick.driver.JdbcProfile.Implicits.runnableCompiledToUpdateInvoker.RU">RU</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@runnableCompiledToUpdateInvoker[RU,C[_]](c:scala.slick.lifted.RunnableCompiled[_&lt;:scala.slick.lifted.Query[_,_,C],C[RU]]):JdbcProfile.this.UpdateInvoker[RU]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#shortColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="shortColumnType:JdbcTypesComponent.this.columnTypes.ShortJdbcType"></a>
+      <a id="shortColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.ShortJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">shortColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.ShortJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.ShortJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@shortColumnType:JdbcTypesComponent.this.columnTypes.ShortJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#singleColumnQueryExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="singleColumnQueryExtensionMethods[B1,C[_]](q:scala.slick.lifted.Query[scala.slick.lifted.Column[B1],_,C])(implicitevidence$7:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.SingleColumnQueryExtensionMethods[B1,B1,C]"></a>
+      <a id="singleColumnQueryExtensionMethods[B1,C[_]](Query[Column[B1],_,C])(BaseTypedType[B1]):SingleColumnQueryExtensionMethods[B1,B1,C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">singleColumnQueryExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[<span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.B1">B1</span>], _, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.C">C</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.BaseTypedType">BaseTypedType</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.B1">B1</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.SingleColumnQueryExtensionMethods">SingleColumnQueryExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.B1">B1</span>, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.B1">B1</span>, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleColumnQueryExtensionMethods.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@singleColumnQueryExtensionMethods[B1,C[_]](q:scala.slick.lifted.Query[scala.slick.lifted.Column[B1],_,C])(implicitevidence$7:scala.slick.ast.BaseTypedType[B1]):scala.slick.lifted.SingleColumnQueryExtensionMethods[B1,B1,C]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#singleOptionColumnQueryExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="singleOptionColumnQueryExtensionMethods[B1,C[_]](q:scala.slick.lifted.Query[scala.slick.lifted.Column[Option[B1]],_,C]):scala.slick.lifted.SingleColumnQueryExtensionMethods[B1,Option[B1],C]"></a>
+      <a id="singleOptionColumnQueryExtensionMethods[B1,C[_]](Query[Column[Option[B1]],_,C]):SingleColumnQueryExtensionMethods[B1,Option[B1],C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">singleOptionColumnQueryExtensionMethods</span><span class="tparams">[<span name="B1">B1</span>, <span name="C">C<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[<span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleOptionColumnQueryExtensionMethods.B1">B1</span>]], _, <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleOptionColumnQueryExtensionMethods.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.SingleColumnQueryExtensionMethods">SingleColumnQueryExtensionMethods</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleOptionColumnQueryExtensionMethods.B1">B1</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleOptionColumnQueryExtensionMethods.B1">B1</span>], <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions.singleOptionColumnQueryExtensionMethods.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@singleOptionColumnQueryExtensionMethods[B1,C[_]](q:scala.slick.lifted.Query[scala.slick.lifted.Column[Option[B1]],_,C]):scala.slick.lifted.SingleColumnQueryExtensionMethods[B1,Option[B1],C]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#slickDriver" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="slickDriver:BasicProfile.this.type"></a>
+      <a id="slickDriver:SlickPostgresDriver.this.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">slickDriver</span><span class="result">: <a href="SlickPostgresDriver.html" class="extype" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver">SlickPostgresDriver</a>.this.type</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@slickDriver:BasicProfile.this.type" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.profile.BasicProfile.Implicits#streamableCompiledToInsertInvoker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="streamableCompiledToInsertInvoker[EU](c:scala.slick.lifted.StreamableCompiled[_,_,EU]):BasicProfile.this.InsertInvoker[EU]"></a>
+      <a id="streamableCompiledToInsertInvoker[EU](StreamableCompiled[_,_,EU]):SlickPostgresDriver.InsertInvoker[EU]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">streamableCompiledToInsertInvoker</span><span class="tparams">[<span name="EU">EU</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.StreamableCompiled">StreamableCompiled</span>[_, _, <span class="extype" name="scala.slick.profile.BasicProfile.Implicits.streamableCompiledToInsertInvoker.EU">EU</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#InsertInvoker[T]=JdbcInsertInvokerComponent.this.CountingInsertInvokerDef[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.InsertInvoker">SlickPostgresDriver.InsertInvoker</a>[<span class="extype" name="scala.slick.profile.BasicProfile.Implicits.streamableCompiledToInsertInvoker.EU">EU</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@streamableCompiledToInsertInvoker[EU](c:scala.slick.lifted.StreamableCompiled[_,_,EU]):BasicProfile.this.InsertInvoker[EU]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#stringColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringColumnExtensionMethods(c:scala.slick.lifted.Column[String]):scala.slick.lifted.StringColumnExtensionMethods[String]"></a>
+      <a id="stringColumnExtensionMethods(Column[String]):StringColumnExtensionMethods[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stringColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.StringColumnExtensionMethods">StringColumnExtensionMethods</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@stringColumnExtensionMethods(c:scala.slick.lifted.Column[String]):scala.slick.lifted.StringColumnExtensionMethods[String]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#stringColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringColumnType:JdbcTypesComponent.this.columnTypes.StringJdbcType"></a>
+      <a id="stringColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.StringJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stringColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.StringJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.StringJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@stringColumnType:JdbcTypesComponent.this.columnTypes.StringJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes → ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.lifted.ExtensionMethodConversions#stringOptionColumnExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringOptionColumnExtensionMethods(c:scala.slick.lifted.Column[Option[String]]):scala.slick.lifted.StringColumnExtensionMethods[Option[String]]"></a>
+      <a id="stringOptionColumnExtensionMethods(Column[Option[String]]):StringColumnExtensionMethods[Option[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stringOptionColumnExtensionMethods</span><span class="params">(<span name="c">c: <span class="extype" name="scala.slick.lifted.Column">Column</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.StringColumnExtensionMethods">StringColumnExtensionMethods</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@stringOptionColumnExtensionMethods(c:scala.slick.lifted.Column[Option[String]]):scala.slick.lifted.StringColumnExtensionMethods[Option[String]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ExtensionMethodConversions</dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.slick.profile.RelationalProfile.Implicits#tableQueryToTableQueryExtensionMethods" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="tableQueryToTableQueryExtensionMethods[T&lt;:RelationalProfile.this.Table[_],U](q:scala.slick.lifted.Query[T,U,Seq]withscala.slick.lifted.TableQuery[T]):RelationalProfile.this.TableQueryExtensionMethods[T,U]"></a>
+      <a id="tableQueryToTableQueryExtensionMethods[T&lt;:SlickPostgresDriver.Table[_],U](Query[T,U,Seq]withTableQuery[T]):SlickPostgresDriver.TableQueryExtensionMethods[T,U]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tableQueryToTableQueryExtensionMethods</span><span class="tparams">[<span name="T">T &lt;: <a href="SlickPostgresDriver.html#Table[T]extendsAbstractTable[T]" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.Table">SlickPostgresDriver.Table</a>[_]</span>, <span name="U">U</span>]</span><span class="params">(<span name="q">q: <span class="extype" name="scala.slick.lifted.Query">Query</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.tableQueryToTableQueryExtensionMethods.T">T</span>, <span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.tableQueryToTableQueryExtensionMethods.U">U</span>, <span class="extype" name="scala.Seq">Seq</span>] with <span class="extype" name="scala.slick.lifted.TableQuery">TableQuery</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.tableQueryToTableQueryExtensionMethods.T">T</span>]</span>)</span><span class="result">: <a href="SlickPostgresDriver.html#TableQueryExtensionMethods[T&lt;:RelationalProfile.this.Table[_],U]extendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.TableQueryExtensionMethods">SlickPostgresDriver.TableQueryExtensionMethods</a>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.tableQueryToTableQueryExtensionMethods.T">T</span>, <span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.tableQueryToTableQueryExtensionMethods.U">U</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@tableQueryToTableQueryExtensionMethods[T&lt;:RelationalProfile.this.Table[_],U](q:scala.slick.lifted.Query[T,U,Seq]withscala.slick.lifted.TableQuery[T]):RelationalProfile.this.TableQueryExtensionMethods[T,U]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#timeColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="timeColumnType:JdbcTypesComponent.this.columnTypes.TimeJdbcType"></a>
+      <a id="timeColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.TimeJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">timeColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.TimeJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.TimeJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@timeColumnType:JdbcTypesComponent.this.columnTypes.TimeJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#timestampColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="timestampColumnType:JdbcTypesComponent.this.columnTypes.TimestampJdbcType"></a>
+      <a id="timestampColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.TimestampJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">timestampColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.TimestampJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.TimestampJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@timestampColumnType:JdbcTypesComponent.this.columnTypes.TimestampJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@toString():String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes#uuidColumnType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="uuidColumnType:JdbcTypesComponent.this.columnTypes.UUIDJdbcType"></a>
+      <a id="uuidColumnType:scala.slick.driver.PostgresDriver.JdbcTypes.UUIDJdbcType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">uuidColumnType</span><span class="result">: <span class="extype" name="scala.slick.driver.JdbcTypesComponent.JdbcTypes.UUIDJdbcType">scala.slick.driver.PostgresDriver.JdbcTypes.UUIDJdbcType</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@uuidColumnType:JdbcTypesComponent.this.columnTypes.UUIDJdbcType" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ImplicitColumnTypes</dd></dl></div>
+    </li><li name="scala.slick.profile.RelationalProfile.Implicits#valueToConstColumn" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="valueToConstColumn[T](v:T)(implicitevidence$2:scala.slick.ast.TypedType[T]):scala.slick.lifted.LiteralColumn[T]"></a>
+      <a id="valueToConstColumn[T](T)(TypedType[T]):LiteralColumn[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">valueToConstColumn</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="v">v: <span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.valueToConstColumn.T">T</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="scala.slick.ast.TypedType">TypedType</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.valueToConstColumn.T">T</span>]</span>)</span><span class="result">: <span class="extype" name="scala.slick.lifted.LiteralColumn">LiteralColumn</span>[<span class="extype" name="scala.slick.profile.RelationalProfile.Implicits.valueToConstColumn.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@valueToConstColumn[T](v:T)(implicitevidence$2:scala.slick.ast.TypedType[T]):scala.slick.lifted.LiteralColumn[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Implicits</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver$ImplicitsPlus@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="com.github.tminglei.slickpg.PgDateSupportJoda.DateTimeImplicits">
+              <h3>Inherited from <a href="SlickPostgresDriver.html#DateTimeImplicitsextendsPgDateSupportJoda.this.JodaDateTimeImplicits" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.DateTimeImplicits">SlickPostgresDriver.DateTimeImplicits</a></h3>
+            </div><div class="parent" name="com.github.tminglei.slickpg.PgDateSupportJoda.JodaDateTimeImplicits">
+              <h3>Inherited from <a href="SlickPostgresDriver.html#JodaDateTimeImplicitsextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.JodaDateTimeImplicits">SlickPostgresDriver.JodaDateTimeImplicits</a></h3>
+            </div><div class="parent" name="scala.slick.driver.JdbcProfile.Implicits">
+              <h3>Inherited from <a href="SlickPostgresDriver.html#ImplicitsextendsJdbcProfile.this.LowPriorityImplicitswithJdbcProfile.this.ImplicitswithJdbcProfile.this.ImplicitColumnTypes" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.Implicits">SlickPostgresDriver.Implicits</a></h3>
+            </div><div class="parent" name="scala.slick.driver.JdbcTypesComponent.ImplicitColumnTypes">
+              <h3>Inherited from <a href="SlickPostgresDriver.html#ImplicitColumnTypesextendsJdbcTypesComponent.this.ImplicitColumnTypes" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.ImplicitColumnTypes">SlickPostgresDriver.ImplicitColumnTypes</a></h3>
+            </div><div class="parent" name="scala.slick.profile.RelationalProfile.Implicits">
+              <h3>Inherited from <span class="extype" name="scala.slick.profile.RelationalProfile.Implicits">SlickPostgresDriver.Implicits</span></h3>
+            </div><div class="parent" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes">
+              <h3>Inherited from <span class="extype" name="scala.slick.profile.RelationalTypesComponent.ImplicitColumnTypes">SlickPostgresDriver.ImplicitColumnTypes</span></h3>
+            </div><div class="parent" name="scala.slick.profile.BasicProfile.Implicits">
+              <h3>Inherited from <span class="extype" name="scala.slick.profile.BasicProfile.Implicits">SlickPostgresDriver.Implicits</span></h3>
+            </div><div class="parent" name="scala.slick.lifted.ExtensionMethodConversions">
+              <h3>Inherited from <span class="extype" name="scala.slick.lifted.ExtensionMethodConversions">ExtensionMethodConversions</span></h3>
+            </div><div class="parent" name="scala.slick.driver.JdbcProfile.LowPriorityImplicits">
+              <h3>Inherited from <a href="SlickPostgresDriver.html#LowPriorityImplicitsextendsAnyRef" class="extmbr" name="be.wegenenverkeer.atomium.server.slick.SlickPostgresDriver.LowPriorityImplicits">SlickPostgresDriver.LowPriorityImplicits</a></h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

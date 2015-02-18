@@ -1,0 +1,260 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>jdbc - be.wegenenverkeer.atomium.server.jdbc</title>
+          <meta name="description" content="jdbc - be.wegenenverkeer.atomium.server.jdbc" />
+          <meta name="keywords" content="jdbc be.wegenenverkeer.atomium.server.jdbc" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'be.wegenenverkeer.atomium.server.jdbc.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="be">be</a>.<a href="../../../package.html" class="extype" name="be.wegenenverkeer">wegenenverkeer</a>.<a href="../../package.html" class="extype" name="be.wegenenverkeer.atomium">atomium</a>.<a href="../package.html" class="extype" name="be.wegenenverkeer.atomium.server">server</a></p>
+        <h1>jdbc</h1><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jdbc</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.server.jdbc.AbstractJdbcFeedStore" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractJdbcFeedStore[E]extendsAbstractFeedStore[E,be.wegenenverkeer.atomium.server.jdbc.JdbcContext]"></a>
+      <a id="AbstractJdbcFeedStore[E]:AbstractJdbcFeedStore[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractJdbcFeedStore.html"><span class="name">AbstractJdbcFeedStore</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <a href="../AbstractFeedStore.html" class="extype" name="be.wegenenverkeer.atomium.server.AbstractFeedStore">AbstractFeedStore</a>[<span class="extype" name="be.wegenenverkeer.atomium.server.jdbc.AbstractJdbcFeedStore.E">E</span>, <a href="JdbcContext.html" class="extype" name="be.wegenenverkeer.atomium.server.jdbc.JdbcContext">JdbcContext</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@AbstractJdbcFeedStore[E]extendsAbstractFeedStore[E,be.wegenenverkeer.atomium.server.jdbc.JdbcContext]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.Dialect" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="DialectextendsAnyRef"></a>
+      <a id="Dialect:Dialect"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Dialect.html"><span class="name">Dialect</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@DialectextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.EntryDbModel" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EntryDbModelextendsProductwithSerializable"></a>
+      <a id="EntryDbModel:EntryDbModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EntryDbModel.html"><span class="name">EntryDbModel</span></a><span class="params">(<span name="sequenceNo">sequenceNo: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>, <span name="uuid">uuid: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="timestamp">timestamp: <span class="extype" name="org.joda.time.DateTime">DateTime</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@EntryDbModelextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The entry model as it is stored in the DB.</p><div class="fullcomment"><div class="comment cmt"><p>The entry model as it is stored in the DB.
+</p></div><dl class="paramcmts block"><dt class="param">sequenceNo</dt><dd class="cmt"><p>The unique DB id, this has no business meaning to the outside world, except to the extend that it is used
+                  to define the order of the entries.</p></dd><dt class="param">uuid</dt><dd class="cmt"><p>The business id for this entry.</p></dd><dt class="param">value</dt><dd class="cmt"><p>The actual data stored in the entry, serialized as a sring.</p></dd><dt class="param">timestamp</dt><dd class="cmt"><p>The time this entry was created and stored.
+</p></dd></dl></div>
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.FeedDbModel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FeedDbModelextendsProductwithSerializable"></a>
+      <a id="FeedDbModel:FeedDbModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedDbModel.html"><span class="name">FeedDbModel</span></a><span class="params">(<span name="id">id: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@FeedDbModelextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.JdbcContext" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JdbcContextextendsContextwithProductwithSerializable"></a>
+      <a id="JdbcContext:JdbcContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="JdbcContext.html"><span class="name">JdbcContext</span></a><span class="params">(<span name="connection">connection: <span class="extype" name="java.sql.Connection">Connection</span></span>)</span><span class="result"> extends <a href="../Context.html" class="extype" name="be.wegenenverkeer.atomium.server.Context">Context</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@JdbcContextextendsContextwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.PgJdbcFeedStore" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PgJdbcFeedStore[E]extendsAbstractJdbcFeedStore[E]withPostgresDialectwithProductwithSerializable"></a>
+      <a id="PgJdbcFeedStore[E]:PgJdbcFeedStore[E]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="PgJdbcFeedStore.html"><span class="name">PgJdbcFeedStore</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="params">(<span name="feedName">feedName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="entryTableName">entryTableName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ser">ser: (<span class="extype" name="be.wegenenverkeer.atomium.server.jdbc.PgJdbcFeedStore.E">E</span>) ⇒ <span class="extype" name="scala.Predef.String">String</span></span>, <span name="deser">deser: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="be.wegenenverkeer.atomium.server.jdbc.PgJdbcFeedStore.E">E</span></span>, <span name="url">url: <a href="../../format/Url.html" class="extype" name="be.wegenenverkeer.atomium.format.Url">Url</a></span>)</span><span class="result"> extends <a href="AbstractJdbcFeedStore.html" class="extype" name="be.wegenenverkeer.atomium.server.jdbc.AbstractJdbcFeedStore">AbstractJdbcFeedStore</a>[<span class="extype" name="be.wegenenverkeer.atomium.server.jdbc.PgJdbcFeedStore.E">E</span>] with <a href="PostgresDialect.html" class="extype" name="be.wegenenverkeer.atomium.server.jdbc.PostgresDialect">PostgresDialect</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@PgJdbcFeedStore[E]extendsAbstractJdbcFeedStore[E]withPostgresDialectwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.PostgresDialect" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="PostgresDialectextendsDialect"></a>
+      <a id="PostgresDialect:PostgresDialect"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="PostgresDialect.html"><span class="name">PostgresDialect</span></a><span class="result"> extends <a href="Dialect.html" class="extype" name="be.wegenenverkeer.atomium.server.jdbc.Dialect">Dialect</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@PostgresDialectextendsDialect" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="be.wegenenverkeer.atomium.server.jdbc.EntryDbModel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EntryDbModel"></a>
+      <a id="EntryDbModel:EntryDbModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EntryDbModel$.html"><span class="name">EntryDbModel</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@EntryDbModel" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="be.wegenenverkeer.atomium.server.jdbc.FeedDbModel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FeedDbModel"></a>
+      <a id="FeedDbModel:FeedDbModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="FeedDbModel$.html"><span class="name">FeedDbModel</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#be.wegenenverkeer.atomium.server.jdbc.package@FeedDbModel" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
