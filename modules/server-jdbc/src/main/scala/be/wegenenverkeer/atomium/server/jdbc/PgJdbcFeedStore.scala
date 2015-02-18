@@ -1,0 +1,12 @@
+package be.wegenenverkeer.atomium.server.jdbc
+
+import be.wegenenverkeer.atomium.format.Url
+
+case class PgJdbcFeedStore[E](feedName: String,
+                              title: Option[String],
+                              entryTableName: String,
+                              ser: E => String,
+                              deser: String => E,
+                              url: Url)
+  extends AbstractJdbcFeedStore[E](feedName, title, ser, deser, url)
+  with PostgresDialect

@@ -1,6 +1,9 @@
 *.class
 *.log
 
+# zsh file
+.zshrc
+
 # sbt specific
 .cache/
 .history/
