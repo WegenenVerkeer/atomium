@@ -1,8 +1,9 @@
 package controllers
 
 import javax.xml.bind.JAXBContext
-
-import be.wegenenverkeer.atomium.format.{Feed, JFeedConverters}
+import be.wegenenverkeer.atomium.format.FeedConverters._
+import be.wegenenverkeer.atomium.format.{Feed, FeedConverters}
+import be.wegenenverkeer.atomium.format.FeedConverters
 import be.wegenenverkeer.atomium.japi.format.{Feed => JFeed}
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.play.{JaxbSupport, PlayJsonSupport}
@@ -29,7 +30,8 @@ class EventController(feedService: FeedService[Event, Context]) extends Controll
 
   //jaxb marshaller
   implicit val jaxbContext = JAXBContext.newInstance(classOf[JFeed[Event]], classOf[Event])
-  registerMarshaller(MimeTypes.XML, JFeedConverters.feed2JFeed[Event] _ andThen JaxbSupport.jaxbMarshaller)
+  private val toJavaEventFeed = (feed:Feed[Event]) => feed.asJava
+  registerMarshaller(MimeTypes.XML, toJavaEventFeed andThen JaxbSupport.jaxbMarshaller)
 
   /**
    * @return the head of the page
