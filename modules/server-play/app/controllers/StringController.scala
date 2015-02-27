@@ -1,6 +1,6 @@
 package controllers
 
-import be.wegenenverkeer.atomium.server.play.{FeedMarshaller, FeedSupport}
+import be.wegenenverkeer.atomium.server.play.{JacksonFeedMarshaller, FeedMarshaller, FeedSupport}
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
@@ -24,7 +24,7 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
   implicit val objectWriter = objectMapper.writer()
 
   override def marshallers = {
-    case Accepts.Xml() => FeedMarshaller.jacksonMarshaller[String]
+    case Accepts.Xml() => JacksonFeedMarshaller[String]()
   }
 
 

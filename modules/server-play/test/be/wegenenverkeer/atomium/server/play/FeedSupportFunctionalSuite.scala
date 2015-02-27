@@ -44,7 +44,7 @@ class FeedSupportFunctionalSuite
     }
 
     override def marshallers = {
-      case Accepts.Json() => FeedMarshaller.playJson[String]
+      case Accepts.Json() => PlayJsonFeedMarshaller[String]()
     }
   }
 

@@ -36,8 +36,18 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    * {{{
    *   // supports XML and JSON and used predefined FeedMarshallers
    *   override def marshallers = {
-   *    case Accepts.Xml()  => FeedMarshaller.jaxbMarshaller[String]
-   *    case Accepts.Json() => FeedMarshaller.playJson[String]
+   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]()
+   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]()
+   *   }
+   * }}}
+   *
+   * or in case a specifc content types is need...
+   *
+   * {{{
+   *   // supports XML and JSON and used predefined FeedMarshallers
+   *   override def marshallers = {
+   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]("application/my-api-v1.0+xml")
+   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]("application/my-api-v1.0+json")
    *   }
    * }}}
    *
@@ -83,8 +93,11 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
   private def marshall(feedMarshaller: FeedMarshaller[T], feed: Feed[T]): Result = {
     //marshall feed and add Last-Modified header
+
+    val (contentType, payload) = feedMarshaller.marshall(feed)
+
     logger.info("sending response: 200 Found")
-    val result = Ok(feedMarshaller.marshaller(feed))
+    val result = Ok(payload)
       .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
 
     //add extra cache headers or forbid caching
@@ -98,7 +111,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
         result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
       }
 
-    resultWithCacheHeader.as(feedMarshaller.contentType)
+    resultWithCacheHeader.as(contentType)
   }
 
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 15:00:00 => modified => false

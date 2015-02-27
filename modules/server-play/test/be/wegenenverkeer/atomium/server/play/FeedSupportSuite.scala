@@ -95,7 +95,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
 
   class JsonFeedSupport extends FeedSupport[String] {
     override def marshallers = {
-      case Accepts.Json() => FeedMarshaller.playJson[String]
+      case Accepts.Json() => PlayJsonFeedMarshaller[String]()
     }
   }
 }
