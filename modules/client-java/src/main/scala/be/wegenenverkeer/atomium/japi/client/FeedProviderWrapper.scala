@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client
 
 import be.wegenenverkeer.atomium.client.EntryRef
-import be.wegenenverkeer.atomium.format.JFeedConverters
+import be.wegenenverkeer.atomium.format.FeedConverters._
 
 import scala.util.Try
 
@@ -22,10 +22,10 @@ class FeedProviderWrapper[E](underlying: FeedProvider[E])
         case None => underlying.fetchFeed()
       }
 
-    Try(JFeedConverters.jFeed2Feed(feed))
+    Try(feed.asScala)
   }
 
   def fetchFeed(page: String): Try[be.wegenenverkeer.atomium.format.Feed[E]] =
-    Try(JFeedConverters.jFeed2Feed(underlying.fetchFeed(page)))
+    Try(underlying.fetchFeed(page).asScala)
 
 }

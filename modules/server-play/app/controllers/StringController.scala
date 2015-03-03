@@ -1,6 +1,7 @@
 package controllers
 
-import be.wegenenverkeer.atomium.format.JFeedConverters
+import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.format.FeedConverters._
 import be.wegenenverkeer.atomium.play.JacksonSupport
 import be.wegenenverkeer.atomium.server.play.FeedSupport
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
@@ -25,7 +26,10 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
   objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
   objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
   implicit val objectWriter = objectMapper.writer()
-  registerMarshaller(MimeTypes.JSON, JFeedConverters.feed2JFeed[String] _ andThen JacksonSupport.jacksonMarshaller)
+
+  private val toJavaStringFeed = (feed:Feed[String]) => feed.asJava
+
+  registerMarshaller(MimeTypes.JSON, toJavaStringFeed andThen JacksonSupport.jacksonMarshaller)
 
   /**
    * @return the head of the feed

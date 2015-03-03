@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client
 
 import be.wegenenverkeer.atomium.client._
-import be.wegenenverkeer.atomium.format.JFeedConverters._
+import be.wegenenverkeer.atomium.format.FeedConverters._
 import be.wegenenverkeer.atomium.japi.format.Feed
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -43,13 +43,13 @@ class FeedEntryJavaIteratorTest extends FlatSpec with Matchers {
       val underlying = new TestFeedProvider()
 
       override def fetchFeed(entryRef: EntryRef[String]): Feed[String] =
-        feed2JFeed(underlying.fetchFeed(Option(entryRef)).get)
+        underlying.fetchFeed(Option(entryRef)).get.asJava
 
       override def fetchFeed(): Feed[String] =
-        feed2JFeed(underlying.fetchFeed(None).get)
+        underlying.fetchFeed(None).get.asJava
 
       override def fetchFeed(page: String): Feed[String] =
-        feed2JFeed(underlying.fetchFeed(page).get)
+        underlying.fetchFeed(page).get.asJava
     }
 
 
