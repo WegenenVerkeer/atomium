@@ -9,7 +9,7 @@ object AtomiumBuild extends Build with BuildSettings {
   import Dependencies._
 
 
-  javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint")
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
 
 
   //----------------------------------------------------------------
@@ -41,13 +41,12 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
 
-    val mainDeps = Seq(slf4j, commonsIo)
-    val testDeps = Seq(junit, mockitoCore, assertJ, jfakerMockito)
+    val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
+    val testDeps = Seq(junit, mockitoCore, assertJ, jfakerMockito, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .dependsOn(clientScalaModule % "test->test;compile->compile")
-      .aggregate(clientScalaModule)
+      .dependsOn(clientScalaModule % "test->test;compile->compile") //TODO -- inverse link when ready with java client
 
   }
 

@@ -2,14 +2,7 @@ net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 site.settings
 
-site.jekyllSupport()
-
 site.includeScaladoc()
-
-com.typesafe.sbt.site.JekyllSupport.requiredGems := Map(
-  "jekyll" -> "2.4.0",
-  "liquid" -> "2.6.1"
-)
 
 organization in ThisBuild := "be.wegenenverkeer"
 

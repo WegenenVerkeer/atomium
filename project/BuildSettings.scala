@@ -10,13 +10,15 @@ trait BuildSettings {
 
   val projectName = "atomium"
 
+  //TODO -- why do we need this? Enabling this means only ScalaTest is run, and not JUNIT. Unacceptable.
+  // Re-enable in modules that really need it
   def scalaTestOptions(config: Configuration) = inConfig(config)(Seq(
     testOptions += Tests.Argument("-F", Properties.envOrElse("SCALED_TIME_SPAN", "1"))
   ))
 
   lazy val testSettings = Seq(
     libraryDependencies ++= mainTestDependencies
-  ) ++ scalaTestOptions(Test) ++ scalaTestOptions(jacoco.Config)
+  )
 
 
   def project(moduleName: String): Project = {
