@@ -45,10 +45,9 @@ case class Feed[+T](id: String,
   val baseUri = new URI(base.path)
 
   require(baseUri.isAbsolute, "base Url must be absolute")
-  require(!base.path.endsWith("/"), "base Url must NOT end with a trailing /")
 
-  def resolveUrl(url : Url) = {
-    val resolvedUrl = new URI(baseUri.toString + "/" + url.path)
+  def resolveUrl(url : Url) : Url = {
+    val resolvedUrl = new URI((base / url).path)
     new Url(resolvedUrl.normalize().toString)
   }
 
