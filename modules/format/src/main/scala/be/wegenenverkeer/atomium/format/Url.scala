@@ -33,7 +33,9 @@ case class Url(path: String) {
   private def add(additional: String) : Url= {
     val raw = s"$path/$additional"
     def contractRepeatedSlashes: String = {
-      raw.replaceAll("(/)\\1+", "$1")
+      val repeatedRegex = "(/)\\1+"
+      if (raw.startsWith("http://")) s"http:/${raw.substring(6).replaceAll(repeatedRegex, "$1")}"
+      else raw.replaceAll(repeatedRegex, "$1")
     }
     Url(contractRepeatedSlashes)
   }
