@@ -16,15 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import rx.Observable;
 import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -75,10 +75,17 @@ public class AtomiumClient {
         }
 
         static class ClientState {
-            boolean isRunning = false;
             Optional<String> lastSeenEtag = Optional.empty();
             Optional<String> lastSeenSelfHref = Optional.empty();
             Optional<String> lastSeenEntryId = Optional.empty();
+        }
+
+
+        public Observable<Entry<E>> observeFrom(final String entryId, final String pageUrl, final int intervalInMs) {
+            final ClientState state = new ClientState();
+            state.lastSeenEntryId = Optional.of(entryId);
+            state.lastSeenSelfHref = Optional.of(pageUrl);
+            return feedWrapperObservable(state, intervalInMs);
         }
 
 
@@ -87,55 +94,59 @@ public class AtomiumClient {
          *
          * @return
          */
-        public Observable<Entry<E>> observe() {
+        public Observable<Entry<E>> observe(final int intervalInMs) {
+            final ClientState state = new ClientState();
+            return feedWrapperObservable(state, intervalInMs);
+        }
 
+        /**
+         * This is the core of the feed client
+         */
+        private Observable<Entry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
             Observable<FeedWrapper<E>> observableFeedPage = Observable.create((subscriber) -> {
-
-                final ClientState state = new ClientState();
-
                 Scheduler.Worker worker = Schedulers.newThread().createWorker();
                 worker.schedulePeriodically(() -> {
-                    if (state.isRunning) {
-                        return; //don't do anything when a previous poll is still ongoing....
-                    }
-                    state.isRunning = true;
-                    String url = state.lastSeenSelfHref.orElse(feedName);
+                    logger.debug("Scheduled work started");
+                    String url = state.lastSeenSelfHref.orElse("");
                     try {
                         while (!subscriber.isUnsubscribed() && url != null) {
-                            logger.info("Start polling");
+                            logger.debug("Start polling");
                             Optional<String> etag = Optional.empty();
                             etag = state.lastSeenEtag;
-                            logger.info("Retreiving page: " + url);
+                            logger.debug("Retreiving page: " + url);
                             Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
                             FeedWrapper<E> feed = prune(feedObservable.toBlocking().last(), state);
                             if (!feed.isEmpty()) {
 
-                                logger.info("Emitting: " + feed.getEntries());
+                                logger.debug("Emitting: " + feed.getEntries());
                                 subscriber.onNext(feed);
                                 state.lastSeenEtag = feed.getEtag();
                                 state.lastSeenEntryId = Optional.of(feed.getLastEntryId());
-                                logger.info("Setting lastseenSelfHref to :" + feed.getSelfHref());
+                                logger.debug("Setting lastseenSelfHref to :" + feed.getSelfHref());
                                 state.lastSeenSelfHref = feed.getSelfHref();
                             } else {
-                                logger.info("Received 304");
+                                logger.debug("Received 304");
                             }
                             url = feed.getPreviousHref().orElse(null);
                         }
 
-                        if(subscriber.isUnsubscribed()) {
-                            logger.info("Worker unsubscribe");
+                        if (subscriber.isUnsubscribed()) {
+                            logger.debug("Worker unsubscribe");
                             worker.unsubscribe();
                         }
 
                     } catch (Exception e) {
                         subscriber.onError(e);
+                        worker.unsubscribe();
+                        logger.debug("Worker unsubscribe after error");
                     }
-                    state.isRunning = false;
-                }, 0, 1000, TimeUnit.MILLISECONDS);
+                    logger.debug("Scheduled work finished.");
+                }, 0, intervalInMs, TimeUnit.MILLISECONDS);
             });
 
             return observableFeedPage.flatMap(feed -> Observable.from(feed.getEntries()));
         }
+
 
         //** removes the entries in the feedWrapper
         private static <T> FeedWrapper<T> prune(FeedWrapper<T> feedWrapper, ClientState state) {
@@ -155,67 +166,6 @@ public class AtomiumClient {
         }
 
 
-        /**
-         * Follows the "previous" links from the start Feed page
-         * <p>
-         * We do this in a single-threaded worker so we can use a BlockingObservable
-         *
-         * @param startPage
-         * @return
-         */
-        private Observable<FeedWrapper<E>> followPrevLinks(FeedWrapper<E> startPage) {
-
-            return Observable.create(new Observable.OnSubscribe<FeedWrapper<E>>() {
-
-                @Override
-                public void call(Subscriber<? super FeedWrapper<E>> subscriber) {
-                    Scheduler.Worker worker = Schedulers.newThread().createWorker();
-                    worker.schedule(new Action0() {
-                        @Override
-                        public void call() {
-                            try {
-                                String previousHref = getPreviousHref(startPage);
-                                Optional<String> etag = Optional.empty();
-                                while (!subscriber.isUnsubscribed() && previousHref != null) {
-                                    Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable
-                                            (previousHref, etag);
-                                    FeedWrapper<E> feed = feedObservable.toBlocking().last();
-                                    etag = feed.getEtag();
-                                    if (!feed.isEmpty()) {
-                                        subscriber.onNext(feed);
-                                    }
-                                    previousHref = getPreviousHref(feed);
-                                }
-                                subscriber.onCompleted();
-                            } catch (Exception e) {
-                                subscriber.onError(e);
-                            }
-                        }
-                    });
-                }
-            });
-
-        }
-
-        private String getPreviousHref(FeedWrapper<E> feedPage) {
-            String previousHref = null;
-            for (Link l : feedPage.getLinks()) {
-                if (l.getRel().equals("previous")) {
-                    previousHref = l.getHref();
-                }
-            }
-            return previousHref;
-        }
-
-        public Observable<Entry<E>> observeFrom(String entryId, String pageUrl) {
-            Observable<FeedWrapper<E>> observableFeedPage = createFeedWrapperObservable(pageUrl, Optional.empty());
-            Observable<FeedWrapper<E>> feedObservable = observableFeedPage.flatMap(feed -> followPrevLinks(feed));
-
-            return feedObservable.flatMap(feed -> {
-                Collections.reverse(feed.getEntries());
-                return Observable.from(feed.getEntries());
-            }).skipWhile(e -> !entryId.equals(e.getId())).skip(1);
-        }
 
         @SuppressWarnings("unchecked")
         private Observable<FeedWrapper<E>> createFeedWrapperObservable(String pageUrl, Optional<String> etag) {
@@ -238,7 +188,7 @@ public class AtomiumClient {
 
         private ClientRequest buildConditionalGet(String url, Optional<String> etag) {
             ClientRequestBuilder builder = rxHttpClient.requestBuilder().setMethod("GET");
-            String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(url);
+            String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(feedName, url);
             builder.setUrlRelativetoBase(relative);
 
             if (etag.isPresent()) {
@@ -274,19 +224,12 @@ public class AtomiumClient {
             }
         }
 
-
-        /**
-         * Observes the feed from the last page (meaning from the very oldest published entry).
-         *
-         * @return
-         */
-        Observable<E> observeFromLast() {
-            throw new UnsupportedOperationException();
-        }
-
-
     }
 
+    /**
+     * A Builder for an AtomiumClient.
+     *
+     */
     public static class Builder {
 
         private final String JSON_MIME_TYPE = "application/json"; //TODO -- change to "official" AtomPub mimetypes

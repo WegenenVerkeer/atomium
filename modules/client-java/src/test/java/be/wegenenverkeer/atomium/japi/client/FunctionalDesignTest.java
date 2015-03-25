@@ -5,6 +5,7 @@ import be.wegenenverkeer.atomium.japi.format.Feed;
 import org.junit.Test;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscription;
 
 import javax.xml.bind.annotation.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,25 +18,21 @@ public class FunctionalDesignTest{
     //TODO -- use a decent mock implementation, for now we just run the Play demo server
 
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
 
 
-        AtomiumClient client = new AtomiumClient.Builder().setBaseUrl("http://localhost:9000/feeds").setAcceptJson()
+        AtomiumClient client = new AtomiumClient.Builder()
+                .setBaseUrl("http://localhost:9000")
+                .setAcceptXml()
                 .build();
 
-
-        Observable<Entry<Event>> observable = client.feed("events", Event.class).observe();
-
+        Observable<Entry<Event>> observable = client.feed("feeds/events", Event.class).observe(1000);
 
 
-//        Observable<Entry<Event>> observable = client.feed("events", Event.class).observeFrom("urn:uuid:adfd1bf9-5456-416c-a811-8490f7f8ed18"
-//        , "/events/30/forward/10");
-//
         AtomicInteger cnt = new AtomicInteger(0);
 
-        observable.take(100).toBlocking().forEach(entry -> System.out.println(cnt.incrementAndGet() + " > " + entry.getId() + " - " +
-                entry.getUpdated() + " links: "));
-
+        observable.take(1000).toBlocking().forEach(entry -> System.out.println(cnt.incrementAndGet() + " > " + entry.getId() + " - " +
+                entry.getUpdated() +  " - " + entry.getContent().getValue()));
 
 
         client.close();

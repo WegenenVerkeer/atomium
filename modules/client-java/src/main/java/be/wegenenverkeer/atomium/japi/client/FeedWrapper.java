@@ -6,7 +6,6 @@ import be.wegenenverkeer.atomium.japi.format.Link;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
