@@ -57,7 +57,7 @@ public final class Content<T> {
         if (o == null || getClass() != o.getClass()) return false;
 
         Content content = (Content) o;
-        return Objects.equals(type, content.type) && Objects.equals(value, content.value);
+        return Objects.equals(type, content.type) && Objects.equals(getValue(), content.getValue());
 
     }
 
