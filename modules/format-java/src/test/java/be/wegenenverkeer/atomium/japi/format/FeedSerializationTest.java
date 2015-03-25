@@ -85,13 +85,12 @@ public class FeedSerializationTest {
     public void setup() throws JAXBException {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JodaModule());
-        TimeZone TZBrussels = TimeZone.getTimeZone("Europe/Brussels");
-        objectMapper.setTimeZone(TZBrussels);
+        objectMapper.setTimeZone(TimeZone.getDefault());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
 
-        DateTime dateTime = new DateTime(DateTimeZone.forTimeZone(TZBrussels)).withMillisOfSecond(0);
+        DateTime dateTime = new DateTime().withMillisOfSecond(0);
 
         stringsFeed = new Feed<>("urn:id:"+ UUID.randomUUID().toString(),
                 "http://www.example.org",

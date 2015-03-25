@@ -25,6 +25,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,7 @@ public class AtomiumClient {
             objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JodaModule());
             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            objectMapper.setTimeZone(TimeZone.getDefault());
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             this.javaType = objectMapper.getTypeFactory().constructParametricType(Feed.class, entryTypeMarker);
 
