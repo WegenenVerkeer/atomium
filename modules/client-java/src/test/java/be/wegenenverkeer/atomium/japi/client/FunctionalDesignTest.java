@@ -2,6 +2,7 @@ package be.wegenenverkeer.atomium.japi.client;
 
 import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.atomium.japi.format.Feed;
+import org.junit.Ignore;
 import org.junit.Test;
 import rx.Observable;
 import rx.Scheduler;
@@ -17,8 +18,8 @@ public class FunctionalDesignTest{
 
     //TODO -- use a decent mock implementation, for now we just run the Play demo server
 
-    @Test
-    public void test() throws InterruptedException {
+    @Test @Ignore
+    public void test(){
 
 
         AtomiumClient client = new AtomiumClient.Builder()
