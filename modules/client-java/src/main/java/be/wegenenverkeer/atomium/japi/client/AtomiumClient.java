@@ -30,6 +30,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * A client for Atomium AtomPub feeds.
+ *
+ * <p>It is best-practice to create a single AtomiumClient for all feeds on a specific host.</p>
+ *
  * Created by Karel Maesen, Geovise BVBA on 16/03/15.
  */
 public class AtomiumClient {
@@ -43,15 +47,37 @@ public class AtomiumClient {
         this.rxHttpClient = rxHttpClient;
     }
 
-    public <E> FeedObservableBuilder<E> feed(String feedName, Class<E> entryTypeMarker) {
-        return new FeedObservableBuilder<>(feedName, entryTypeMarker, rxHttpClient);
+    /**
+     * Creates a {@code FeedObservableBuilder} for the specified feed and entry type
+     *
+     * <p>The feedPath argument appended to the baseUrl of this {@code AtomiumClient} should equal the
+     * xml:base-attribute of the feedpage</p>
+     *
+     * <p>The entryTypeMarker-class should have the required public accessors and JAXB-annotations to enable
+     * proper unmarshalling. For Json-unmarshalling, the  Jackson library is used.</p>
+     *
+     * @param feedPath the path to the feed
+     * @param entryTypeMarker the Class of the Entry content value
+     * @param <E> the class parameter of the Entry content value
+     * @return
+     */
+    public <E> FeedObservableBuilder<E> feed(String feedPath, Class<E> entryTypeMarker) {
+        return new FeedObservableBuilder<>(feedPath, entryTypeMarker, rxHttpClient);
     }
 
+    /**
+     * Closes this instance.
+     *
+     */
     public void close() {
         this.rxHttpClient.close();
     }
 
 
+    /**
+     * Builds an {@code Observable<Entry<E>>}
+     * @param <E> the type of Entry content
+     */
     public static class FeedObservableBuilder<E> {
         private final RxHttpClient rxHttpClient;
         private final JAXBContext jaxbContext;
@@ -59,16 +85,17 @@ public class AtomiumClient {
         private final String feedName;
         private final JavaType javaType;
 
-        FeedObservableBuilder(String feedName, Class<E> entryTypeMarker, RxHttpClient rxClient) {
+        /**
+         * Creates an instance - only accessible from AtomiumClient.
+         * @param feedPath the path to the feed
+         * @param entryTypeMarker the class of Entry content
+         * @param rxClient the underlying Http-client.
+         */
+        FeedObservableBuilder(String feedPath, Class<E> entryTypeMarker, RxHttpClient rxClient) {
             this.rxHttpClient = rxClient;
-            this.feedName = feedName;
-            objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JodaModule());
-            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            objectMapper.setTimeZone(TimeZone.getDefault());
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+            this.feedName = feedPath;
+            this.objectMapper = configureObjectMapper();
             this.javaType = objectMapper.getTypeFactory().constructParametricType(Feed.class, entryTypeMarker);
-
             try {
                 jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, entryTypeMarker);
             } catch (JAXBException e) {
@@ -76,6 +103,18 @@ public class AtomiumClient {
             }
         }
 
+        private ObjectMapper configureObjectMapper() {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JodaModule());
+            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackons!
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+            return objectMapper;
+        }
+
+        /**
+         * Helper class that contains the mutable state of the Observable
+         */
         static class ClientState {
             Optional<String> lastSeenEtag = Optional.empty();
             Optional<String> lastSeenSelfHref = Optional.empty();
@@ -83,7 +122,30 @@ public class AtomiumClient {
         }
 
 
-        public Observable<Entry<E>> observeFrom(final String entryId, final String pageUrl, final int intervalInMs) {
+        /**
+         * Creates a "cold" {@code Observable<Entry<E>>} that, when subscribed to, emits all entries in the feed
+         * starting from the oldest entry immediately after the specified entry.
+         *
+         * <p>When subscribed to, the observable will create a single-threaded {@link Scheduler.Worker} that will:</p>
+         * <ul>
+         *     <li>retrieve the specified feed page</li>
+         *     <li>emit all entries more recent that the specified feed entry</li>
+         *     <li>follow iteratively the 'previous'-links and emits all entries on the linked-to pages until it
+         *     arrives at the head of the feed (identified by not having a 'previous'-link)</li>
+         *     <li>poll the feed at the specified interval (using conditional GETs) and emit all entries not yet seen</li>
+         * </ul>
+         *
+         * <p>The worker will exit only on an error condition, or on unsubscribe.</p>
+         *
+         * <p><em>Important:</em> a new and independent worker is created for each subscriber.</p>
+         *
+         * @param entryId the entry-id of an entry on the specified page
+         * @param pageUrl the url (absolute, or relative to the feed's base url) of the feed-page, containing the entry
+         *                identified with the entryId argument
+         * @param intervalInMs the polling interval in milliseconds.
+         * @return an Observable<Entry<E>> emitting all entries since the specified entry
+         */
+        public Observable<Entry<E>> observeSince(final String entryId, final String pageUrl, final int intervalInMs) {
             final ClientState state = new ClientState();
             state.lastSeenEntryId = Optional.of(entryId);
             state.lastSeenSelfHref = Optional.of(pageUrl);
@@ -92,7 +154,10 @@ public class AtomiumClient {
 
 
         /**
-         * Observes the head of the feed
+         * Creates a "cold" {@code Observale<Entry<E>>} that, when subscribed to, emits all entries on the feed
+         * starting from those then on the head of the feed.
+         *
+         * <p>The behavior is analogous to the method {@code observeSince()} but starting form </p>
          *
          * @return
          */
@@ -103,6 +168,10 @@ public class AtomiumClient {
 
         /**
          * This is the core of the feed client
+         *
+         * It creates a Scheduler.Worker that with the specified interval polls the feed, and retrieves all entries not
+         * yet "seen". The ClientState object is used to keep track of the latest seen feed-pages, Etags and entry-id's
+         *
          */
         private Observable<Entry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
             Observable<FeedWrapper<E>> observableFeedPage = Observable.create((subscriber) -> {
@@ -150,7 +219,7 @@ public class AtomiumClient {
         }
 
 
-        //** removes the entries in the feedWrapper
+        //** removes the entries in the feedWrapper that have already been seen.
         private static <T> FeedWrapper<T> prune(FeedWrapper<T> feedWrapper, ClientState state) {
 
             if (feedWrapper.isEmpty() || !state.lastSeenEntryId.isPresent()) return feedWrapper;
@@ -258,17 +327,31 @@ public class AtomiumClient {
             return new AtomiumClient(rxHttpClientBuilder.build());
         }
 
+        /**
+         * Sets the Accept-header to JSON.
+         * @return
+         */
         public Builder setAcceptJson() {
             rxHttpClientBuilder.setAccept(JSON_MIME_TYPE);
             return this;
         }
 
+        /**
+         * Sets the Accept-header to XML
+         * @return
+         */
         public Builder setAcceptXml() {
             rxHttpClientBuilder.setAccept(XML_MIME_TYPE);
             return this;
         }
 
 
+        /**
+         * Sets the base URL for this instance.
+         *
+         * @param url absolute URL where feeds are published
+         * @return
+         */
         public Builder setBaseUrl(String url) {
             rxHttpClientBuilder.setBaseUrl(url);
             return this;

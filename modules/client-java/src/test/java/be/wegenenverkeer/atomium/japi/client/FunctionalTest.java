@@ -4,17 +4,14 @@ import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.rxhttp.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
-import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.*;
 import rx.Observable;
 import rx.Subscription;
 import rx.observers.TestSubscriber;
-import sun.management.ThreadInfoCompositeData;
 
 import javax.xml.bind.annotation.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -59,8 +56,7 @@ public class FunctionalTest {
 
     @Test
     public void testSubscribingToObservable(){
-        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom
-                ("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10",1000);
+        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
         TestSubscriber subscriber = new TestSubscriber();
@@ -102,8 +98,7 @@ public class FunctionalTest {
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
 
-        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom
-                ("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
         TestSubscriber subscriber = new TestSubscriber();
