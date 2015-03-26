@@ -42,7 +42,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val clientJavaModule = {
 
     val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
-    val testDeps = Seq(junit, mockitoCore, assertJ, jfakerMockito, junitInterface)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, jfakerMockito, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)

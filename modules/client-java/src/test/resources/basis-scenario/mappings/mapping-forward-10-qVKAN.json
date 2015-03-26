@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/290/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-qVKAN.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "ecaa4c6774f3df06f5b0290df022fb4f",
+      "Expires" : "Fri, 25 Mar 2016 14:57:59 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:53:33 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2509"
+    }
+  }
+}

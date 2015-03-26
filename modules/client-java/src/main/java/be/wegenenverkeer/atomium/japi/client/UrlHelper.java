@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 /**
  * Created by Karel Maesen, Geovise BVBA on 17/03/15.
  */
-public class UrlHelper {
+public class  UrlHelper {
 
     final private URI baseURI;
 

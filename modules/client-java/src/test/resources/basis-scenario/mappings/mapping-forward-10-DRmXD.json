@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/200/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-DRmXD.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "dd10d510a0a1f92fda299e8d26091cde",
+      "Expires" : "Fri, 25 Mar 2016 14:57:58 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:53:15 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2509"
+    }
+  }
+}

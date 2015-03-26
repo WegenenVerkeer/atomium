@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/440/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-aAskf.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "8a34c846107be203444879173f0246d9",
+      "Expires" : "Fri, 25 Mar 2016 14:57:59 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:54:03 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2509"
+    }
+  }
+}
