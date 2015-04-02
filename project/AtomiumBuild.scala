@@ -20,6 +20,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("format-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossPaths := false)
 
   }
 
@@ -46,6 +47,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossPaths := false)
       .dependsOn(clientScalaModule % "test->test;compile->compile") //TODO -- inverse link when ready with java client
 
   }
