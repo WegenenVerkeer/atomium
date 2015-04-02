@@ -59,7 +59,7 @@ public class FunctionalTest {
         Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
-        TestSubscriber subscriber = new TestSubscriber();
+        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
 
         observable.take(1000).subscribe(subscriber);
 
@@ -82,7 +82,7 @@ public class FunctionalTest {
 
         Observable<Entry<Event>> observable = client.feed("/fault", Event.class).observe(100);
 
-        TestSubscriber subscriber = new TestSubscriber();
+        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
 
         observable.subscribe(subscriber);
 
@@ -101,8 +101,7 @@ public class FunctionalTest {
         Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
-        TestSubscriber subscriber = new TestSubscriber();
-
+        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
 
         Subscription subscription = observable.subscribe(subscriber);
 
