@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.atomium.japi.format.Link;
 
 import java.util.ArrayList;
@@ -15,10 +14,10 @@ public class EmptyFeedWrapper<T> extends FeedWrapper<T> {
     public static List<Link> emptyLinks = new ArrayList<>(0);
 
     public EmptyFeedWrapper(Optional<String> etag) {
-        super(emptyLinks, new ArrayList<Entry<T>>(0), etag);
+        super(emptyLinks, new ArrayList<>(0), etag);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return true;
     }
 

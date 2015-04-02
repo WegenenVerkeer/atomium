@@ -224,7 +224,7 @@ public class AtomiumClient {
 
             if (feedWrapper.isEmpty() || !state.lastSeenEntryId.isPresent()) return feedWrapper;
             if (!feedWrapper.getSelfHref().equals(state.lastSeenSelfHref)) return feedWrapper;
-            List<Entry<T>> pruned = new ArrayList<Entry<T>>();
+            List<Entry<T>> pruned = new ArrayList<>();
             boolean skip = true;
             for (Entry<T> entry : feedWrapper.getEntries()) {
                 if (!skip) {
