@@ -63,7 +63,7 @@ public final class Content<T> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, value);
+        return Objects.hash(type, getValue());
     }
 
     public T getValue() {
