@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/90/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-GMEaR.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "274218d821a1c490373966f59db3531a",
+      "Expires" : "Fri, 25 Mar 2016 14:57:58 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:52:53 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2498"
+    }
+  }
+}

@@ -101,4 +101,14 @@ public final class Entry<T> {
         result = 31 * result + (links != null ? links.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String    toString() {
+        return "Entry{" +
+                "id='" + id + '\'' +
+                ", updated=" + updated +
+                ", content=" + content +
+                ", links=" + links +
+                '}';
+    }
 }
