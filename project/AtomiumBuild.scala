@@ -32,12 +32,17 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val clientScalaModule =
+  lazy val clientScalaModule = {
+
+    val mainDeps = Seq(rxscala)
+    val testDeps = Seq(wiremock)
+
     project("client-scala")
       .settings(publishArtifact in Test := true)
-      .dependsOn(formatModule, serverModule, clientJavaModule)
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
       .aggregate(formatModule, serverModule)
-
+  }
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
