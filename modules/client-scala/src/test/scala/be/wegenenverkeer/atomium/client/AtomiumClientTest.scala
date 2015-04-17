@@ -80,6 +80,6 @@ class Event {
   @XmlAttribute var version: Integer = null.asInstanceOf[Integer]
 
   override def toString: String = {
-    return "Event " + version + " " + "description " + " value: " + value
+    "Event " + version + " " + "description " + " value: " + value
   }
 }
