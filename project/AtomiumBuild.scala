@@ -32,12 +32,17 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val clientScalaModule =
+  lazy val clientScalaModule = {
+
+    val mainDeps = Seq(rxscala)
+    val testDeps = Seq(wiremock)
+
     project("client-scala")
       .settings(publishArtifact in Test := true)
-      .dependsOn(formatModule, serverModule)
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
       .aggregate(formatModule, serverModule)
-
+  }
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
@@ -48,7 +53,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossPaths := false)
-      .dependsOn(clientScalaModule % "test->test;compile->compile") //TODO -- inverse link when ready with java client
+      .dependsOn(javaFormatModule)
 
   }
 
@@ -114,7 +119,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .enablePlugins(PlayScala)
-      .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
+      .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
   }
 
 
