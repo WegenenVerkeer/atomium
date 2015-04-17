@@ -48,7 +48,7 @@ class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
     toJavaObservable(observable.take(100)).subscribe(testSubscriber)
 
     testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS)
-    testSubscriber.assertNoErrors
+    testSubscriber.assertNoErrors()
   }
 
   before {
@@ -64,7 +64,7 @@ class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   after {
-    server.shutdown();
+    server.shutdown()
     Thread.sleep(1000)
   }
 
