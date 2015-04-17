@@ -9,7 +9,7 @@ object Dependencies {
   val logback           = "ch.qos.logback"              %     "logback-classic"         % "1.1.1"
   val jodaTime          = "joda-time"                   %     "joda-time"               % "2.3"
   val jodaConvert       = "org.joda"                    %     "joda-convert"            % "1.2"
-  val rxscala           = "io.reactivex"                %% "rxscala"                    % "0.24.0"
+  val rxscala           = "io.reactivex"                %%    "rxscala"                 % "0.24.0"
   val playJson          = "com.typesafe.play"           %%    "play-json"               % playVersion
   val playWs            = "com.typesafe.play"           %%    "play-ws"                 % playVersion
   val play              = "com.typesafe.play"           %%    "play"                    % playVersion
