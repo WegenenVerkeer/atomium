@@ -70,7 +70,7 @@ public class FunctionalTest {
         //we should have received exactly 1000 events.
         assertEquals(1000, subscriber.getOnNextEvents().size());
 
-        //we should have received exacdtly 1 onComplete
+        //we should have received exactly 1 onComplete
         assertEquals(1, subscriber.getOnCompletedEvents().size());
 
     }

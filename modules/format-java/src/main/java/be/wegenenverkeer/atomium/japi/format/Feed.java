@@ -19,7 +19,7 @@ public final class Feed<T> {
     }
 
     public Feed(String id, String base, String title, Generator generator, DateTime updated) {
-        this(id, base, title, generator, updated, new ArrayList<Link>(), new ArrayList<Entry<T>>());
+        this(id, base, title, generator, updated, new ArrayList<>(), new ArrayList<>());
     }
 
 
@@ -50,10 +50,10 @@ public final class Feed<T> {
     private DateTime updated;
 
     @XmlElement(name = "link")
-    private List<Link> links = new ArrayList<Link>();
+    private List<Link> links = new ArrayList<>();
 
     @XmlElement(name = "entry")
-    private List<Entry<T>> entries = new ArrayList<Entry<T>>();
+    private List<Entry<T>> entries = new ArrayList<>();
 
     public String getId() {
         return id;
