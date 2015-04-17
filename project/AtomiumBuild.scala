@@ -15,7 +15,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val javaFormatModule = {
 
-    val mainDeps = Seq(lombok, jacksonDatabind, jacksonJoda)
+    val mainDeps = Seq(jacksonDatabind, jacksonJoda)
     val testDeps = Seq(junit)
 
     project("format-java")
