@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
 import org.joda.time.DateTime
 
 import scala.collection.immutable.TreeMap
@@ -22,7 +22,7 @@ class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
   override def push(entries: Iterable[T])(implicit context: C): Unit = {
     entries foreach { e =>
       nextSequenceNum += (skip + 1)
-      entriesMap += (nextSequenceNum -> Entry("id", new DateTime(), Content(e, ""), Nil))
+      entriesMap += (nextSequenceNum -> AtomEntry("id", new DateTime(), Content(e, ""), Nil))
     }
     sequenceNumbersToSkipForPush(0)
   }

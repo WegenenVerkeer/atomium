@@ -10,7 +10,6 @@ public class Control {
     @XmlElement(namespace = "http://www.w3.org/2007/app")
     private Draft draft;
 
-
     public Control() {
     }
 

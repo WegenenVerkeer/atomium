@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server.slick
 
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{Url, Content, Entry}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Url, Content, Entry}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
 import org.joda.time.DateTime
@@ -94,7 +94,7 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
    */
   private[this] def toFeedEntry: (feedComponent.EntryTable#TableElementType) => FeedEntry = { dbEntry =>
     FeedEntry(dbEntry.id.get,
-      Entry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
+      AtomEntry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
   }
 
   /**

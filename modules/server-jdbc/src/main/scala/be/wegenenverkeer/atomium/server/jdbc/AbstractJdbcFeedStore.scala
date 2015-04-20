@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
-import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import org.joda.time.DateTime
 
@@ -100,7 +100,7 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
   private[this] def toFeedEntry(entry: EntryDbModel): FeedEntry = {
     FeedEntry(
       entry.sequenceNo.get,
-      Entry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
+      AtomEntry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
     )
   }
 

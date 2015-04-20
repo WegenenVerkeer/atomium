@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.mongo
 
-import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
 import com.mongodb.casbah.Imports._
@@ -55,7 +55,7 @@ class MongoFeedStore[E](feedName: String,
   protected def dbObject2FeedEntry(dbo: DBObject): FeedEntry = {
     val entryDbo = dbo.as[DBObject](Keys.Content)
     FeedEntry(dbo.as[Long](Keys._Id),
-      Entry(id = dbo.as[String](Keys.Uuid),
+      AtomEntry(id = dbo.as[String](Keys.Uuid),
         updated = dbo.as[DateTime](Keys.Timestamp).toDateTime,
         content = Content(deser(entryDbo), ""), Nil))
   }

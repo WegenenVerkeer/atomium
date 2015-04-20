@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.format
 
+import be.wegenenverkeer.atomium.format.pub.{DraftNo, DraftYes, Control, AtomPubEntry}
 import be.wegenenverkeer.atomium.japi.format
 
 import scala.collection.JavaConverters._
@@ -65,14 +66,32 @@ object FeedConverters {
     }
   }
 
+  implicit class JPubControl2PubControl(jControl:format.pub.Control)  {
+    def asScala : Control = {
+      val draft = if (jControl.getDraft == format.pub.Draft.YES) DraftYes else DraftNo
+      Control(draft)
+    }
+  }
+
   implicit class JEntry2Entry[T](jEntry: format.Entry[T]) {
     def asScala: Entry[T] = {
-      Entry[T](
-        jEntry.getId,
-        jEntry.getUpdated,
-        Content[T](jEntry.getContent.getValue, jEntry.getContent.getType),
-        jEntry.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList
-      )
+      if (jEntry.getControl == null) {
+        AtomEntry(
+          jEntry.getId,
+          jEntry.getUpdated,
+          Content(jEntry.getContent.getValue, jEntry.getContent.getType),
+          jEntry.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList
+        )
+      } else {
+        AtomPubEntry(
+          jEntry.getId,
+          jEntry.getUpdated,
+          Content(jEntry.getContent.getValue, jEntry.getContent.getType),
+          jEntry.getLinks.asScala.map(l => Link(l.getRel, Url(l.getHref))).toList,
+          jEntry.getEdited,
+          jEntry.getControl.asScala
+        )
+      }
     }
   }
 }
