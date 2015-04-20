@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.xml.bind.*;
@@ -102,11 +101,11 @@ public class FeedSerializationTest {
 
         public static FeedBuilder<String> stringFeed() {
             Feed<String> feed = new Feed<>(
-                "urn:id:" + UUID.randomUUID().toString(),
-                "http://www.example.org",
-                "strings of life",
-                null,
-                dateTime
+                    "urn:id:" + UUID.randomUUID().toString(),
+                    "http://www.example.org",
+                    "strings of life",
+                    null,
+                    dateTime
             );
             feed.getLinks().add(new Link("self", "foo"));
             return new FeedBuilder<>(feed);
@@ -115,11 +114,11 @@ public class FeedSerializationTest {
         public static FeedBuilder<Customer> customerFeed() {
 
             Feed<Customer> feed = new Feed<>(
-                "urn:id:" + UUID.randomUUID().toString(),
-                "http://www.example.org",
-                "customers",
-                new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
-                dateTime
+                    "urn:id:" + UUID.randomUUID().toString(),
+                    "http://www.example.org",
+                    "customers",
+                    new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
+                    dateTime
             );
 
             feed.getLinks().add(new Link("self", "foo"));
