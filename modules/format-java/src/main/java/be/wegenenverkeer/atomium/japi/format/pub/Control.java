@@ -26,6 +26,22 @@ public class Control {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Control control = (Control) o;
+
+        return draft == control.draft;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return draft != null ? draft.hashCode() : 0;
+    }
+
+    @Override
     public String toString() {
         return "Control{" +
                 "draft='" + draft + '\'' +

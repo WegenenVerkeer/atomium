@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.japi.format;
 
+import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
 import be.wegenenverkeer.atomium.japi.format.pub.Control;
 import be.wegenenverkeer.atomium.japi.format.pub.Draft;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.xml.bind.*;
@@ -24,6 +26,133 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 public class FeedSerializationTest {
+
+
+    static DateTime dateTime = new DateTime().withMillisOfSecond(0);
+    private JAXBContext jaxbContext;
+    private ObjectMapper objectMapper;
+    private Customer customer = new Customer("cname", 666);
+
+    @Before
+    public void setup() throws JAXBException {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JodaModule());
+        objectMapper.setTimeZone(TimeZone.getDefault());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
+    }
+
+    @Test
+    public void testMarshallingFeedWithStrings() throws JAXBException, IOException {
+        FeedBuilder<String> builder = FeedBuilder.stringFeed();
+        builder.addEntry(new AtomEntry<>("id1", dateTime, new Content<>("foo", "text/plain"), new ArrayList<>()));
+        //this will be escaped in xml but not in json
+        builder.addEntry(new AtomEntry<>("id2", dateTime, new Content<>("<html><p>bla</p></html>", "text/html"), new ArrayList<>()));
+        // \n will be escaped in json not in xml
+        builder.addEntry(new AtomEntry<>("id3", dateTime, new Content<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"), new ArrayList<>()));
+        // json text will be quoted in json not in xml
+        builder.addEntry(new AtomEntry<>("id4", dateTime, new Content<>("{'foo': 'bar'}", "application/json"), new ArrayList<>()));
+
+        checkJson(builder.feed, new TypeReference<Feed<String>>() {
+        });
+        checkXml(builder.feed);
+    }
+
+    @Test
+    public void testMarshallingFeedWithCustomers() throws JAXBException, IOException {
+
+        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
+        builder.addEntry(new AtomEntry<>("id", dateTime, new Content<>(customer, "application/xml"), new ArrayList<>()));
+
+        checkXml(builder.feed);
+        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        });
+    }
+
+    @Test
+    public void testMarshallingAtomPubFeedWithCustomers() throws JAXBException, IOException {
+
+        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
+        builder.addEntry(
+                new AtomPubEntry<>(
+                        "id",
+                        dateTime,
+                        new Content<>(customer, "application/xml"),
+                        new ArrayList<>(),
+                        dateTime,
+                        new Control(Draft.YES)
+                )
+        );
+        builder.addEntry(
+                new AtomPubEntry<>(
+                        "id",
+                        dateTime,
+                        new Content<>(customer, "application/xml"),
+                        new ArrayList<>(),
+                        dateTime,
+                        new Control(Draft.NO)
+                )
+        );
+        checkXml(builder.feed);
+        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        });
+    }
+
+    @Test
+    public void testMarshallingFeedWithJaxbElement() throws JAXBException, IOException {
+
+        FeedBuilder<JAXBElement> builder = FeedBuilder.jabxFeed();
+        JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
+        builder.addEntry(new AtomEntry<>("id1", dateTime, new Content<>(jaxbElement, "application/xml"), new ArrayList<>()));
+        JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
+        builder.addEntry(new AtomEntry<>("id2", dateTime, new Content<>(jaxbElement2, "application/xml"), new ArrayList<>()));
+
+        checkJson(builder.feed, new TypeReference<Feed<Integer>>() {
+        });
+        checkXml(builder.feed);
+    }
+
+    private void checkXml(Feed feed) throws JAXBException {
+        String xml = marshalToXml(feed);
+        Feed feedFromXml = unmarshalFromXml(xml);
+        Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<>(jaxbContext, Integer.class));
+        assertEquals("different updated on xml:", feed.getUpdated(), feedFromXml.getUpdated());
+        feedFromXml.setUpdated(feed.getUpdated());
+        assertEquals(feed, feedFromXml);
+    }
+
+    private void checkJson(Feed feed, TypeReference typeReference) throws IOException {
+        String json = marshalToJson(feed);
+        Feed feedFromJson = unmarshalFromJson(json, typeReference);
+        assertEquals("different updated on json:", feed.getUpdated(), feedFromJson.getUpdated());
+        feedFromJson.setUpdated(feed.getUpdated());
+        assertEquals(feed, feedFromJson);
+    }
+
+    private String marshalToJson(Feed feed) throws IOException {
+        StringWriter writer = new StringWriter();
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, feed);
+        return writer.toString();
+    }
+
+    private String marshalToXml(Feed feed) throws JAXBException {
+        StringWriter writer = new StringWriter();
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(feed, writer);
+        return writer.toString();
+    }
+
+    private Feed unmarshalFromXml(String xml) throws JAXBException {
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        return (Feed) unmarshaller.unmarshal(new StringReader(xml));
+    }
+
+    private Feed unmarshalFromJson(String json, TypeReference typeReference) throws IOException {
+        return objectMapper.readValue(new StringReader(json), typeReference);
+    }
 
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.NONE)
@@ -71,32 +200,11 @@ public class FeedSerializationTest {
         }
     }
 
-    private JAXBContext jaxbContext;
-    private ObjectMapper objectMapper;
-
-    static DateTime dateTime = new DateTime().withMillisOfSecond(0);
-    private Customer customer = new Customer("cname", 666);
-
-    @Before
-    public void setup() throws JAXBException {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JodaModule());
-        objectMapper.setTimeZone(TimeZone.getDefault());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
-    }
-
     private static class FeedBuilder<T> {
         private final Feed<T> feed;
 
         FeedBuilder(Feed<T> feed) {
             this.feed = feed;
-        }
-
-        public FeedBuilder<T> addEntry(Entry<T> entry) {
-            feed.getEntries().add(entry);
-            return this;
         }
 
         public static FeedBuilder<String> stringFeed() {
@@ -135,111 +243,10 @@ public class FeedSerializationTest {
 
             return new FeedBuilder<>(feed);
         }
-    }
 
-    @Test
-    public void testMarshallingFeedWithStrings() throws JAXBException, IOException {
-        FeedBuilder<String> builder = FeedBuilder.stringFeed();
-        builder.addEntry(new Entry<>("id1", dateTime, new Content<>("foo", "text/plain"), new ArrayList<>()));
-        //this will be escaped in xml but not in json
-        builder.addEntry(new Entry<>("id2", dateTime, new Content<>("<html><p>bla</p></html>", "text/html"), new ArrayList<>()));
-        // \n will be escaped in json not in xml
-        builder.addEntry(new Entry<>("id3", dateTime, new Content<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"), new ArrayList<>()));
-        // json text will be quoted in json not in xml
-        builder.addEntry(new Entry<>("id4", dateTime, new Content<>("{'foo': 'bar'}", "application/json"), new ArrayList<>()));
-
-        checkJson(builder.feed, new TypeReference<Feed<String>>() {});
-        checkXml(builder.feed);
-    }
-
-    @Test
-    public void testMarshallingFeedWithCustomers() throws JAXBException, IOException {
-
-        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
-        builder.addEntry(new Entry<>("id", dateTime, new Content<>(customer, "application/xml"), new ArrayList<>()));
-
-        checkXml(builder.feed);
-        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {});
-    }
-
-    @Test
-    public void testMarshallingAtomPubFeedWithCustomers() throws JAXBException, IOException {
-
-        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
-        builder.addEntry(
-                new Entry<>(
-                        "id",
-                        dateTime,
-                        new Content<>(customer, "application/xml"),
-                        new ArrayList<>(),
-                        new DateTime(),
-                        new Control(Draft.YES)
-                )
-        );
-        builder.addEntry(
-                new Entry<>(
-                        "id",
-                        dateTime,
-                        new Content<>(customer, "application/xml"),
-                        new ArrayList<>(),
-                        new DateTime(),
-                        new Control(Draft.NO)
-                )
-        );
-        checkXml(builder.feed);
-        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {});
-    }
-
-    @Test
-    public void testMarshallingFeedWithJaxbElement() throws JAXBException, IOException {
-
-        FeedBuilder<JAXBElement> builder = FeedBuilder.jabxFeed();
-        JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
-        builder.addEntry(new Entry<>("id1", dateTime, new Content<>(jaxbElement, "application/xml"), new ArrayList<>()));
-        JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
-        builder.addEntry(new Entry<>("id2", dateTime, new Content<>(jaxbElement2, "application/xml"), new ArrayList<>()));
-
-        checkJson(builder.feed, new TypeReference<Feed<Integer>>() {});
-        checkXml(builder.feed);
-    }
-
-    private void checkXml(Feed feed) throws JAXBException {
-        String xml = marshalToXml(feed);
-        Feed feedFromXml = unmarshalFromXml(xml);
-        Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<>(jaxbContext, Integer.class));
-        assertEquals("different updated on xml:", feed.getUpdated(), feedFromXml.getUpdated());
-        feedFromXml.setUpdated(feed.getUpdated());
-        assertEquals(feed, feedFromXml);
-    }
-
-    private void checkJson(Feed feed, TypeReference typeReference) throws IOException {
-        String json = marshalToJson(feed);
-        Feed feedFromJson = unmarshalFromJson(json, typeReference);
-        assertEquals("different updated on json:", feed.getUpdated(), feedFromJson.getUpdated());
-        feedFromJson.setUpdated(feed.getUpdated());
-        assertEquals(feed, feedFromJson);
-    }
-
-    private String marshalToJson(Feed feed) throws IOException {
-        StringWriter writer = new StringWriter();
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, feed);
-        return writer.toString();
-    }
-
-    private String marshalToXml(Feed feed) throws JAXBException {
-        StringWriter writer = new StringWriter();
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(feed, writer);
-        return writer.toString();
-    }
-
-    private Feed unmarshalFromXml(String xml) throws JAXBException {
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (Feed) unmarshaller.unmarshal(new StringReader(xml));
-    }
-
-    private Feed unmarshalFromJson(String json, TypeReference typeReference) throws IOException {
-        return objectMapper.readValue(new StringReader(json), typeReference);
+        public FeedBuilder<T> addEntry(Entry<T> entry) {
+            feed.getEntries().add(entry);
+            return this;
+        }
     }
 }

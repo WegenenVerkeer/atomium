@@ -28,19 +28,7 @@ object PlayJsonFormats {
   }
 
   implicit val linkFormat = Json.format[Link]
-
-  implicit def contentWrites[T:Writes]: Writes[Content[T]] = (
-    (__ \ "value").write[T] and
-      (__ \ "type").write[String]
-    )(in => (in.value, in.`type`))
-
-  implicit def contentReads[T:Reads]: Reads[Content[T]] = (
-    (__ \ "value").read[T] and
-      (__ \ "type").read[String]
-    )((value, `type`) => Content[T](value, `type`))
-
   implicit val generatorFormat = Json.format[Generator]
-
   implicit val draftFormat = new Format[Draft] {
     override def reads(json: JsValue): JsResult[Draft] = json match {
       case JsString(value) if value == DraftYes.value => JsSuccess(DraftYes)
@@ -50,44 +38,20 @@ object PlayJsonFormats {
 
     override def writes(o: Draft): JsValue = JsString(o.value)
   }
-
   implicit val controlFormat = Json.format[Control]
 
+  implicit def contentWrites[T: Writes]: Writes[Content[T]] = (
+    (__ \ "value").write[T] and
+      (__ \ "type").write[String]
+    )(in => (in.value, in.`type`))
 
-  implicit def atomEntryWrites[T:Writes]: Writes[AtomEntry[T]] = (
-    (__ \ "id").write[String] and
-      (__ \ "updated").write[DateTime] and
-      (__ \ "content").write[Content[T]] and
-      (__ \ "links").write[List[Link]]
-    )(in => (in.id, in.updated, in.content, in.links))
-
-  implicit def atomEntryReads[T:Reads]: Reads[AtomEntry[T]] = (
-    (__ \ "id").read[String] and
-      (__ \ "updated").read[DateTime] and
-      (__ \ "content").read[Content[T]] and
-      (__ \ "links").read[List[Link]]
-    )((id, updated, content, links) => AtomEntry[T](id, updated, content, links))
-
-  implicit def atomPubEntryWrites[T:Writes]: Writes[AtomPubEntry[T]] = (
-    (__ \ "id").write[String] and
-      (__ \ "updated").write[DateTime] and
-      (__ \ "content").write[Content[T]] and
-      (__ \ "links").write[List[Link]] and
-      (__ \ "edited").write[DateTime] and
-      (__ \ "control").write[Control]
-    )(in => (in.id, in.updated, in.content, in.links, in.edited, in.control))
-
-  implicit def atomPubEntryReads[T:Reads]: Reads[AtomPubEntry[T]] = (
-    (__ \ "id").read[String] and
-      (__ \ "updated").read[DateTime] and
-      (__ \ "content").read[Content[T]] and
-      (__ \ "links").read[List[Link]] and
-      (__ \ "edited").read[DateTime] and
-      (__ \ "control").read[Control]
-    )((id, updated, content, links, edited, control) => AtomPubEntry[T](id, updated, content, links, edited, control))
-
+  implicit def contentReads[T: Reads]: Reads[Content[T]] = (
+    (__ \ "value").read[T] and
+      (__ \ "type").read[String]
+    )((value, `type`) => Content[T](value, `type`))
 
   implicit def entryWrites[T: Writes]: Writes[Entry[T]] = new Writes[Entry[T]] {
+
     override def writes(o: Entry[T]): JsValue = {
       o match {
         case e: AtomPubEntry[T] => atomPubEntryWrites[T].writes(e)
@@ -96,19 +60,52 @@ object PlayJsonFormats {
     }
   }
 
+  implicit def atomEntryWrites[T: Writes]: Writes[AtomEntry[T]] = (
+    (__ \ "id").write[String] and
+      (__ \ "updated").write[DateTime] and
+      (__ \ "content").write[Content[T]] and
+      (__ \ "links").write[List[Link]] and
+      (__ \ "_type").write[String] // type information
+    )(in => (in.id, in.updated, in.content, in.links, "atom"))
+
+  implicit def atomPubEntryWrites[T: Writes]: Writes[AtomPubEntry[T]] = (
+    (__ \ "id").write[String] and
+      (__ \ "updated").write[DateTime] and
+      (__ \ "content").write[Content[T]] and
+      (__ \ "links").write[List[Link]] and
+      (__ \ "edited").write[DateTime] and
+      (__ \ "control").write[Control] and
+      (__ \ "_type").write[String] // type information
+    )(in => (in.id, in.updated, in.content, in.links, in.edited, in.control, "atom-pub"))
+
   implicit def entryReads[T: Reads]: Reads[Entry[T]] = new Reads[Entry[T]] {
     override def reads(json: JsValue): JsResult[Entry[T]] = {
-      val hasControl = (json \ "control").asOpt[Control]
+      val hasControl = (json \ "_type").as[String]
       hasControl match {
-        case Some(_) => atomPubEntryReads[T].reads(json)
-        case None    => atomEntryReads[T].reads(json)
+        case "atom-pub" => atomPubEntryReads[T].reads(json)
+        case _          => atomEntryReads[T].reads(json)
       }
     }
   }
 
+  implicit def atomEntryReads[T: Reads]: Reads[AtomEntry[T]] = (
+    (__ \ "id").read[String] and
+      (__ \ "updated").read[DateTime] and
+      (__ \ "content").read[Content[T]] and
+      (__ \ "links").read[List[Link]]
+    )((id, updated, content, links) => AtomEntry[T](id, updated, content, links))
+
+  implicit def atomPubEntryReads[T: Reads]: Reads[AtomPubEntry[T]] = (
+    (__ \ "id").read[String] and
+      (__ \ "updated").read[DateTime] and
+      (__ \ "content").read[Content[T]] and
+      (__ \ "links").read[List[Link]] and
+      (__ \ "edited").read[DateTime] and
+      (__ \ "control").read[Control]
+    )((id, updated, content, links, edited, control) => AtomPubEntry[T](id, updated, content, links, edited, control))
 
   // candidate for macro format
-  implicit def feedWrites[T:Writes]: Writes[Feed[T]] = (
+  implicit def feedWrites[T: Writes]: Writes[Feed[T]] = (
     (__ \ "id").write[String] and
       (__ \ "base").write[Url] and
       (__ \ "title").writeNullable[String] and
@@ -116,9 +113,9 @@ object PlayJsonFormats {
       (__ \ "updated").write[DateTime] and
       (__ \ "links").write[List[Link]] and
       (__ \ "entries").write[List[Entry[T]]]
-    )(in => (in.id, in.base, in.title, in.generator, in.updated,in.links, in.entries))
+    )(in => (in.id, in.base, in.title, in.generator, in.updated, in.links, in.entries))
 
-  implicit def feedReads[T:Reads]: Reads[Feed[T]] = (
+  implicit def feedReads[T: Reads]: Reads[Feed[T]] = (
     (__ \ "id").read[String] and
       (__ \ "base").read[Url] and
       (__ \ "title").readNullable[String] and
