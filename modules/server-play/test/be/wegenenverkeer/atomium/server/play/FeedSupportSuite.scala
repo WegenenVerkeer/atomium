@@ -71,7 +71,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
   test("processing a changed feed should not return Not-Modified") {
     val feedSupport = new JsonFeedSupport
     val request = FakeRequest().withHeaders(HeaderNames.IF_NONE_MATCH -> incompleteFeed.calcETag)
-    val changedFeed = incompleteFeed.copy(entries = Entry[String]("id",
+    val changedFeed = incompleteFeed.copy(entries = AtomEntry[String]("id",
       new DateTime(),
       new Content[String]("foo", ""), List()) :: incompleteFeed.entries)
     val result: Future[Result] = feedSupport processFeedPage Some(changedFeed) apply request

@@ -1,13 +1,16 @@
 package be.wegenenverkeer.atomium.japi.format;
 
+import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
+import be.wegenenverkeer.atomium.japi.format.pub.Control;
+import be.wegenenverkeer.atomium.japi.format.pub.Draft;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.xml.bind.*;
@@ -16,8 +19,6 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -26,59 +27,10 @@ import static org.junit.Assert.assertEquals;
 
 public class FeedSerializationTest {
 
-    @XmlRootElement
-    @XmlAccessorType(XmlAccessType.NONE)
-    public static class Customer {
-        @XmlElement
-        public String name;
-        @XmlAttribute
-        public int id;
 
-        public Customer() {
-        }
-
-        public Customer(String cname, int i) {
-            this.name = cname;
-            this.id = i;
-        }
-
-
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Customer customer = (Customer) o;
-
-            if (id != customer.id) return false;
-            if (name != null ? !name.equals(customer.name) : customer.name != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name != null ? name.hashCode() : 0;
-            result = 31 * result + id;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Customer{" +
-                    "name='" + name + '\'' +
-                    ", id=" + id +
-                    '}';
-        }
-    }
-
+    static DateTime dateTime = new DateTime().withMillisOfSecond(0);
     private JAXBContext jaxbContext;
     private ObjectMapper objectMapper;
-    private Feed<String> stringsFeed;
-    private Feed<Customer> customersFeed;
-    private Feed<JAXBElement> jaxbElementFeed;
-
     private Customer customer = new Customer("cname", 666);
 
     @Before
@@ -88,55 +40,78 @@ public class FeedSerializationTest {
         objectMapper.setTimeZone(TimeZone.getDefault());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
         jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
+    }
 
-        DateTime dateTime = new DateTime().withMillisOfSecond(0);
+    @Test
+    public void testMarshallingFeedWithStrings() throws JAXBException, IOException {
+        FeedBuilder<String> builder = FeedBuilder.stringFeed();
+        builder.addEntry(new AtomEntry<>("id1", dateTime, new Content<>("foo", "text/plain"), new ArrayList<>()));
+        //this will be escaped in xml but not in json
+        builder.addEntry(new AtomEntry<>("id2", dateTime, new Content<>("<html><p>bla</p></html>", "text/html"), new ArrayList<>()));
+        // \n will be escaped in json not in xml
+        builder.addEntry(new AtomEntry<>("id3", dateTime, new Content<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"), new ArrayList<>()));
+        // json text will be quoted in json not in xml
+        builder.addEntry(new AtomEntry<>("id4", dateTime, new Content<>("{'foo': 'bar'}", "application/json"), new ArrayList<>()));
 
-        stringsFeed = new Feed<>("urn:id:"+ UUID.randomUUID().toString(),
-                "http://www.example.org",
-                "strings of life",
-                null,
-                dateTime);
-        stringsFeed.getLinks().add(new Link("self", "foo"));
-        stringsFeed.getEntries().add(new Entry<>("id1", dateTime, new Content<>("foo", "text/plain"), new ArrayList<Link>()));
-        stringsFeed.getEntries().add(new Entry<>("id2", dateTime, new Content<>("<html><p>bla</p></html>", "text/html"), new ArrayList<Link>())); //this will be escaped in xml but not in json
-        stringsFeed.getEntries().add(new Entry<>("id3", dateTime, new Content<>("\n   ---foo---   \n   ---bar---   \n", "text/plain"), new ArrayList<Link>())); // \n will be escaped in json not in xml
-        stringsFeed.getEntries().add(new Entry<>("id4", dateTime, new Content<>("{'foo': 'bar'}", "application/json"), new ArrayList<Link>())); // json text will be quoted in json not in xml
+        checkJson(builder.feed, new TypeReference<Feed<String>>() {
+        });
+        checkXml(builder.feed);
+    }
 
-        customersFeed = new Feed<>("urn:id:" + UUID.randomUUID().toString(),
-                "http://www.example.org",
-                "customers",
-                new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
-                dateTime);
-        customersFeed.getLinks().add(new Link("self", "foo"));
-        customersFeed.getEntries().add(new Entry<>("id", dateTime, new Content<>(customer, "application/xml"), new ArrayList<Link>()));
+    @Test
+    public void testMarshallingFeedWithCustomers() throws JAXBException, IOException {
 
-        jaxbElementFeed = new Feed<>();
-        jaxbElementFeed.setId("urn:id:" + UUID.randomUUID().toString());
-        jaxbElementFeed.setUpdated(dateTime);
+        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
+        builder.addEntry(new AtomEntry<>("id", dateTime, new Content<>(customer, "application/xml"), new ArrayList<>()));
+
+        checkXml(builder.feed);
+        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        });
+    }
+
+    @Test
+    public void testMarshallingAtomPubFeedWithCustomers() throws JAXBException, IOException {
+
+        FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
+        builder.addEntry(
+                new AtomPubEntry<>(
+                        "id",
+                        dateTime,
+                        new Content<>(customer, "application/xml"),
+                        new ArrayList<>(),
+                        dateTime,
+                        new Control(Draft.YES)
+                )
+        );
+        builder.addEntry(
+                new AtomPubEntry<>(
+                        "id",
+                        dateTime,
+                        new Content<>(customer, "application/xml"),
+                        new ArrayList<>(),
+                        dateTime,
+                        new Control(Draft.NO)
+                )
+        );
+        checkXml(builder.feed);
+        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        });
+    }
+
+    @Test
+    public void testMarshallingFeedWithJaxbElement() throws JAXBException, IOException {
+
+        FeedBuilder<JAXBElement> builder = FeedBuilder.jabxFeed();
         JAXBElement<Integer> jaxbElement = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 999);
-        jaxbElementFeed.getEntries().add(new Entry<>("id1", dateTime, new Content<>(jaxbElement, "application/xml"), new ArrayList<Link>()));
+        builder.addEntry(new AtomEntry<>("id1", dateTime, new Content<>(jaxbElement, "application/xml"), new ArrayList<>()));
         JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
-        jaxbElementFeed.getEntries().add(new Entry<>("id2", dateTime, new Content<>(jaxbElement2, "application/xml"), new ArrayList<Link>()));
+        builder.addEntry(new AtomEntry<>("id2", dateTime, new Content<>(jaxbElement2, "application/xml"), new ArrayList<>()));
 
-    }
-
-    @Test
-    public void testMarshallingJFeedWithStrings() throws JAXBException, IOException {
-        checkJson(stringsFeed, new TypeReference<Feed<String>>() { });
-        checkXml(stringsFeed);
-    }
-
-    @Test
-    public void testMarshallingJFeedWithCustomers() throws JAXBException, IOException {
-        checkXml(customersFeed);
-        checkJson(customersFeed, new TypeReference<Feed<Customer>>() { });
-    }
-
-    @Test
-    public void testMarshallingJFeedWithJaxbElement() throws JAXBException, IOException {
-        checkJson(jaxbElementFeed, new TypeReference<Feed<Integer>>() { });
-        checkXml(jaxbElementFeed);
+        checkJson(builder.feed, new TypeReference<Feed<Integer>>() {
+        });
+        checkXml(builder.feed);
     }
 
     private void checkXml(Feed feed) throws JAXBException {
@@ -177,5 +152,101 @@ public class FeedSerializationTest {
 
     private Feed unmarshalFromJson(String json, TypeReference typeReference) throws IOException {
         return objectMapper.readValue(new StringReader(json), typeReference);
+    }
+
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.NONE)
+    public static class Customer {
+        @XmlElement
+        public String name;
+        @XmlAttribute
+        public int id;
+
+        public Customer() {
+        }
+
+        public Customer(String cname, int i) {
+            this.name = cname;
+            this.id = i;
+        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Customer customer = (Customer) o;
+
+            if (id != customer.id) return false;
+            if (name != null ? !name.equals(customer.name) : customer.name != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name != null ? name.hashCode() : 0;
+            result = 31 * result + id;
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Customer{" +
+                    "name='" + name + '\'' +
+                    ", id=" + id +
+                    '}';
+        }
+    }
+
+    private static class FeedBuilder<T> {
+        private final Feed<T> feed;
+
+        FeedBuilder(Feed<T> feed) {
+            this.feed = feed;
+        }
+
+        public static FeedBuilder<String> stringFeed() {
+            Feed<String> feed = new Feed<>(
+                    "urn:id:" + UUID.randomUUID().toString(),
+                    "http://www.example.org",
+                    "strings of life",
+                    null,
+                    dateTime
+            );
+            feed.getLinks().add(new Link("self", "foo"));
+            return new FeedBuilder<>(feed);
+        }
+
+        public static FeedBuilder<Customer> customerFeed() {
+
+            Feed<Customer> feed = new Feed<>(
+                    "urn:id:" + UUID.randomUUID().toString(),
+                    "http://www.example.org",
+                    "customers",
+                    new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1"),
+                    dateTime
+            );
+
+            feed.getLinks().add(new Link("self", "foo"));
+
+            return new FeedBuilder<>(feed);
+        }
+
+        public static FeedBuilder<JAXBElement> jabxFeed() {
+
+            Feed<JAXBElement> feed = new Feed<>();
+            feed.setId("urn:id:" + UUID.randomUUID().toString());
+            feed.setUpdated(dateTime);
+            feed.getLinks().add(new Link("self", "foo"));
+
+            return new FeedBuilder<>(feed);
+        }
+
+        public FeedBuilder<T> addEntry(Entry<T> entry) {
+            feed.getEntries().add(entry);
+            return this;
+        }
     }
 }

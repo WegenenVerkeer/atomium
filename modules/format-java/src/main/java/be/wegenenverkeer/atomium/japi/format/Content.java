@@ -13,26 +13,11 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class Content<T> {
 
-    private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<JAXBElementUnmarshaller>();
-
-    public static void setJAXBElementUnmarshaller(JAXBElementUnmarshaller jaxbElementUnmarshaller) {
-        Content.jaxbElementUnmarshallerThreadLocal.set(jaxbElementUnmarshaller);
-    }
-
-    public static void resetJAXBElementUnmarshaller() {
-        Content.jaxbElementUnmarshallerThreadLocal.remove();
-    }
-
+    private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<>();
     @XmlAttribute(name="type")
     private String type;
-
-    public String getType() {
-        return this.type;
-    }
-
     @XmlAnyElement(lax = true) @XmlMixed @JsonIgnore
     private List objects = new ArrayList();
-
     @XmlTransient
     private T value;
 
@@ -49,6 +34,18 @@ public final class Content<T> {
         } else {
             this.value = value;
         }
+    }
+
+    public static void setJAXBElementUnmarshaller(JAXBElementUnmarshaller jaxbElementUnmarshaller) {
+        Content.jaxbElementUnmarshallerThreadLocal.set(jaxbElementUnmarshaller);
+    }
+
+    public static void resetJAXBElementUnmarshaller() {
+        Content.jaxbElementUnmarshallerThreadLocal.remove();
+    }
+
+    public String getType() {
+        return this.type;
     }
 
     @Override
@@ -100,7 +97,7 @@ public final class Content<T> {
 
 
     public String toString() {
-        return String.format("JContent(type=%s, value=%s)", type, getValue());
+        return String.format("Content(type=%s, value=%s)", type, getValue());
     }
 
 }
