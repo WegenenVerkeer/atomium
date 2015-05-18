@@ -28,6 +28,7 @@ public final class AtomEntry<T> extends Entry<T> {
     /**
      * no arg constructor, needed for JAXB and/or Jackson POJO support
      */
+    @SuppressWarnings("unused")
     private AtomEntry() {
 
     }
