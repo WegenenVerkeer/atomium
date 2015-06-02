@@ -59,7 +59,7 @@ public class AtomiumClient {
      * @param feedPath the path to the feed
      * @param entryTypeMarker the Class of the Entry content value
      * @param <E> the class parameter of the Entry content value
-     * @return
+     * @return a {@code FeedObservableBuilder}
      */
     public <E> FeedObservableBuilder<E> feed(String feedPath, Class<E> entryTypeMarker) {
         return new FeedObservableBuilder<>(feedPath, entryTypeMarker, rxHttpClient);
@@ -143,7 +143,7 @@ public class AtomiumClient {
          * @param pageUrl the url (absolute, or relative to the feed's base url) of the feed-page, containing the entry
          *                identified with the entryId argument
          * @param intervalInMs the polling interval in milliseconds.
-         * @return an Observable<Entry<E>> emitting all entries since the specified entry
+         * @return an Observable emitting all entries since the specified entry
          */
         public Observable<Entry<E>> observeSince(final String entryId, final String pageUrl, final int intervalInMs) {
             final ClientState state = new ClientState();
