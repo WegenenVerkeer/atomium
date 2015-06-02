@@ -9,6 +9,7 @@ object Dependencies {
   val logback           = "ch.qos.logback"              %     "logback-classic"         % "1.1.1"
   val jodaTime          = "joda-time"                   %     "joda-time"               % "2.3"
   val jodaConvert       = "org.joda"                    %     "joda-convert"            % "1.2"
+  val rxscala           = "io.reactivex"                %%    "rxscala"                 % "0.24.0"
   val playJson          = "com.typesafe.play"           %%    "play-json"               % playVersion
   val playWs            = "com.typesafe.play"           %%    "play-ws"                 % playVersion
   val play              = "com.typesafe.play"           %%    "play"                    % playVersion
@@ -25,12 +26,15 @@ object Dependencies {
   val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
   val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
+  val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.54"         % "test"
+
 
   // java deps
   val junit             = "junit"                           %   "junit"                   % "4.11"    % "test"
-  val lombok            = "org.projectlombok"               %   "lombok"                  % "1.14.4"  % "test"
+  val junitInterface    = "com.novocode"                    %   "junit-interface"         % "0.11"    % "test"
   val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"        % "2.4.3"
   val jacksonJoda       = "com.fasterxml.jackson.datatype"  %   "jackson-datatype-joda"   % "2.4.3"
+  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"       % "0.1.0-SNAPSHOT"
 
 
   val slf4j             = "org.slf4j"                       %   "slf4j-api"               % "1.7.6"
@@ -43,7 +47,8 @@ object Dependencies {
   val mainDependencies = Seq(
     logback,
     jodaTime,
-	  jodaConvert
+	  jodaConvert,
+    junitInterface
   )
 
   val mainTestDependencies = Seq (

@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/60/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-skCNG.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "6d34490a33e624446b4097cfea8c9caf",
+      "Expires" : "Fri, 25 Mar 2016 14:57:58 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:52:47 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2496"
+    }
+  }
+}

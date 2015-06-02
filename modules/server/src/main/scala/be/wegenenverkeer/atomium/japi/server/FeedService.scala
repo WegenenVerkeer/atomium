@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.japi.server
 
 import java.lang.{Boolean => JBoolean, Long => JLong}
 
-import be.wegenenverkeer.atomium.format.JFeedConverters._
+import be.wegenenverkeer.atomium.format.FeedConverters._
 import be.wegenenverkeer.atomium.japi.format.Feed
 import be.wegenenverkeer.atomium.server.Context
 import be.wegenenverkeer.atomium.{format, server}
@@ -64,6 +64,6 @@ class FeedService[E, C <: Context](entriesPerPage: Integer, feedStore: FeedStore
    * @return the feed page
    */
   def getFeed(start: JLong, count: Integer, forward: JBoolean): Option[Feed[E]] =
-    underlying.getFeedPage(start, count, forward)(context).map(feed2JFeed)
+    underlying.getFeedPage(start, count, forward)(context).map(_.asJava)
 
 }

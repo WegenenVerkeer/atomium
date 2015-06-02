@@ -51,6 +51,15 @@ public final class Generator {
     }
 
     @Override
+    public String toString() {
+        return "Generator{" +
+                "text='" + text + '\'' +
+                ", uri='" + uri + '\'' +
+                ", version='" + version + '\'' +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

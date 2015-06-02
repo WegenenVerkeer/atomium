@@ -6,7 +6,7 @@ import be.wegenenverkeer.atomium.format.{Feed, Generator, Url}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, Duration}
 import org.slf4j.LoggerFactory
-import play.api.http.{HeaderNames, MimeTypes}
+import play.api.http.{HeaderNames, MediaRange}
 import play.api.mvc._
 
 /**
@@ -19,8 +19,6 @@ import play.api.mvc._
  */
 trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors {
 
-  type FeedMarshaller = Feed[T] => Array[Byte]
-
   private val logger = LoggerFactory.getLogger(getClass)
 
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
@@ -30,15 +28,43 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   val rfcFormat = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss z").withLocale(Locale.ENGLISH)
   val rfcUTCFormat = rfcFormat.withZoneUTC()
 
-  private var marshallerRegistry: Map[String, FeedMarshaller] = Map.empty
-
   /**
-   * register a marshaller, i.e. a function which turns a Feed[T] into an Array[Byte] for a specific mime-type
-   * @param mimeType the mime-type
-   * @param marshaller the marshaller
+   * Define the PartialFunction that will map acceptable content types to FeedMarshallers.
+   *
+   *
+   * For instance:
+   * {{{
+   *   // supports XML and JSON and used predefined FeedMarshallers
+   *   override def marshallers = {
+   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]()
+   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]()
+   *   }
+   * }}}
+   *
+   * or in case a specifc content types is need...
+   *
+   * {{{
+   *   // supports XML and JSON and used predefined FeedMarshallers
+   *   override def marshallers = {
+   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]("application/my-api-v1.0+xml")
+   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]("application/my-api-v1.0+json")
+   *   }
+   * }}}
+   *
+   *
+   * @return `PartialFunction[MediaRange, FeedMarshaller]`
    */
-  def registerMarshaller(mimeType: String, marshaller: FeedMarshaller): Unit = {
-    marshallerRegistry += mimeType -> marshaller
+  def marshallers: PartialFunction[MediaRange, FeedMarshaller[T]]
+
+  private def buildRenders(feed: Feed[T]): PartialFunction[MediaRange, Result] = {
+    new PartialFunction[MediaRange, Result] {
+      override def isDefinedAt(x: MediaRange): Boolean = marshallers.isDefinedAt(x)
+
+      override def apply(v1: MediaRange): Result = {
+        val feedMarshaller = marshallers.apply(v1)
+        marshall(feedMarshaller, feed)
+      }
+    }
   }
 
   /**
@@ -56,14 +82,8 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           NotModified
         } else {
           //add generator
-          val feed: Feed[T] = f.copy(generator = Some(generator))
-          render {
-            case Accepts.Json() if marshallerRegistry.contains(MimeTypes.JSON) =>
-              marshall(marshallerRegistry.get(MimeTypes.JSON), feed).as(MimeTypes.JSON)
-
-            case Accepts.Xml() if marshallerRegistry.contains(MimeTypes.XML) =>
-              marshall(marshallerRegistry.get(MimeTypes.XML), feed).as(MimeTypes.XML)
-          }
+          val feed = f.copy(generator = Some(generator))
+          render(buildRenders(feed))
         }
       case None    =>
         logger.info("sending response: 404 Not-Found")
@@ -71,14 +91,17 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     }
   }
 
-  private[this] def marshall(marshaller: Option[FeedMarshaller], feed: Feed[T]) = {
-    marshaller.fold(NotAcceptable: Result) { (m: FeedMarshaller) =>
-      //marshall feed and add Last-Modified header
-      logger.info("sending response: 200 Found")
-      val result = Ok(m(feed))
-                   .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
+  private def marshall(feedMarshaller: FeedMarshaller[T], feed: Feed[T]): Result = {
+    //marshall feed and add Last-Modified header
 
-      //add extra cache headers or forbid caching
+    val (contentType, payload) = feedMarshaller.marshall(feed)
+
+    logger.info("sending response: 200 Found")
+    val result = Ok(payload)
+      .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
+
+    //add extra cache headers or forbid caching
+    val resultWithCacheHeader =
       if (feed.complete()) {
         val expires = new DateTime().withDurationAdded(new Duration(cacheTime * 1000L), 1)
         result.withHeaders(CACHE_CONTROL -> {
@@ -87,17 +110,21 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
       } else {
         result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
       }
-    }
+
+    resultWithCacheHeader.as(contentType)
   }
 
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 15:00:00 => modified => false
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 10:00:00 => not modified => true
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
-    (headers get IF_NONE_MATCH exists {
+
+    val ifNoneMatch = headers get IF_NONE_MATCH exists {
       _ == f.calcETag
-    }) ||
-      (headers get IF_MODIFIED_SINCE exists { dateStr => try {
+    }
+
+    val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
+      try {
         rfcFormat.parseDateTime(dateStr).toDate.getTime >= f.updated.withMillisOfSecond(0).toDate.getTime
       }
       catch {
@@ -105,7 +132,9 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           logger.error(e.getMessage, e)
           false
       }
-      })
+    }
+
+    ifNoneMatch || ifModifiedSince
   }
 
 }

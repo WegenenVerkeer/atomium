@@ -10,13 +10,9 @@ trait BuildSettings {
 
   val projectName = "atomium"
 
-  def scalaTestOptions(config: Configuration) = inConfig(config)(Seq(
-    testOptions += Tests.Argument("-F", Properties.envOrElse("SCALED_TIME_SPAN", "1"))
-  ))
-
   lazy val testSettings = Seq(
     libraryDependencies ++= mainTestDependencies
-  ) ++ scalaTestOptions(Test) ++ scalaTestOptions(jacoco.Config)
+  )
 
 
   def project(moduleName: String): Project = {
@@ -42,6 +38,7 @@ trait BuildSettings {
     val projectSettings = Seq(
       parallelExecution := false,
       resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
+      resolvers += Resolver.sonatypeRepo("public") ,
       resolvers += Resolver.typesafeRepo("releases"),
       libraryDependencies ++= mainDependencies
     )

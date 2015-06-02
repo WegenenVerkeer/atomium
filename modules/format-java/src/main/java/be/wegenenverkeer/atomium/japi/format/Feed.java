@@ -19,7 +19,7 @@ public final class Feed<T> {
     }
 
     public Feed(String id, String base, String title, Generator generator, DateTime updated) {
-        this(id, base, title, generator, updated, new ArrayList<Link>(), new ArrayList<Entry<T>>());
+        this(id, base, title, generator, updated, new ArrayList<>(), new ArrayList<>());
     }
 
 
@@ -50,10 +50,10 @@ public final class Feed<T> {
     private DateTime updated;
 
     @XmlElement(name = "link")
-    private List<Link> links = new ArrayList<Link>();
+    private List<Link> links = new ArrayList<>();
 
     @XmlElement(name = "entry")
-    private List<Entry<T>> entries = new ArrayList<Entry<T>>();
+    private List<Entry<T>> entries = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -117,8 +117,8 @@ public final class Feed<T> {
         if (o == null || getClass() != o.getClass()) return false;
 
         Feed feed = (Feed) o;
-
-        if (!base.equals(feed.base)) return false;
+        if (base == null && feed.base != null) return false;
+        if (base != null && !base.equals(feed.base)) return false;
         if (entries != null ? !entries.equals(feed.entries) : feed.entries != null) return false;
         if (generator != null ? !generator.equals(feed.generator) : feed.generator != null) return false;
         if (!id.equals(feed.id)) return false;
@@ -132,12 +132,25 @@ public final class Feed<T> {
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + base.hashCode();
+        result = 31 * result + (base != null ? base.hashCode() : 0);
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (generator != null ? generator.hashCode() : 0);
         result = 31 * result + (updated != null ? updated.hashCode() : 0);
         result = 31 * result + (links != null ? links.hashCode() : 0);
         result = 31 * result + (entries != null ? entries.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "id='" + id + '\'' +
+                ", base='" + base + '\'' +
+                ", title='" + title + '\'' +
+                ", generator=" + generator +
+                ", updated=" + updated +
+                ", links=" + links +
+                ", entries=" + entries +
+                '}';
     }
 }

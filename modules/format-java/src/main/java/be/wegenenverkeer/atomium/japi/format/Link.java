@@ -57,4 +57,12 @@ public final class Link {
         result = 31 * result + href.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Link{" +
+                "rel='" + rel + '\'' +
+                ", href='" + href + '\'' +
+                '}';
+    }
 }

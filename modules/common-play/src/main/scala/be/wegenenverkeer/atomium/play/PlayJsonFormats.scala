@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.play
 
 import be.wegenenverkeer.atomium.format._
+import be.wegenenverkeer.atomium.format.pub._
 import org.joda.time.DateTime
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -19,53 +20,92 @@ object PlayJsonFormats {
 
   implicit val urlFormat = new Format[Url] {
     override def writes(url: Url): JsValue = JsString(url.path)
+
     override def reads(json: JsValue): JsResult[Url] = json match {
       case JsString(value) => JsSuccess(Url(value))
-      case _ => JsError(s"Can't read url value from $json")
+      case _               => JsError(s"Can't read url value from $json")
     }
   }
 
   implicit val linkFormat = Json.format[Link]
+  implicit val generatorFormat = Json.format[Generator]
+  implicit val draftFormat = new Format[Draft] {
+    override def reads(json: JsValue): JsResult[Draft] = json match {
+      case JsString(value) if value == DraftYes.value => JsSuccess(DraftYes)
+      case JsString(value) if value == DraftNo.value  => JsSuccess(DraftNo)
+      case _                                          => JsError(s"Can't read Draft from $json")
+    }
 
-  implicit def contentWrites[T](implicit fmt: Writes[T]): Writes[Content[T]] = (
+    override def writes(o: Draft): JsValue = JsString(o.value)
+  }
+  implicit val controlFormat = Json.format[Control]
+
+  implicit def contentWrites[T: Writes]: Writes[Content[T]] = (
     (__ \ "value").write[T] and
       (__ \ "type").write[String]
     )(in => (in.value, in.`type`))
 
-  implicit def contentReads[T](implicit fmt: Reads[T]): Reads[Content[T]] = (
+  implicit def contentReads[T: Reads]: Reads[Content[T]] = (
     (__ \ "value").read[T] and
       (__ \ "type").read[String]
     )((value, `type`) => Content[T](value, `type`))
 
-  implicit def generatorWrites: Writes[Generator] = (
-    (__ \ "text").write[String] and
-      (__ \ "uri").writeNullable[Url] and
-      (__ \ "version").writeNullable[String]
-    )(in => (in.text, in.uri, in.version))
+  implicit def entryWrites[T: Writes]: Writes[Entry[T]] = new Writes[Entry[T]] {
 
-  implicit def generatorReads: Reads[Generator] = (
-    (__ \ "text").read[String] and
-      (__ \ "uri").readNullable[Url] and
-      (__ \ "version").readNullable[String]
-    )((text, uri, version) => Generator(text, uri, version))
+    override def writes(o: Entry[T]): JsValue = {
+      o match {
+        case e: AtomPubEntry[T] => atomPubEntryWrites[T].writes(e)
+        case e: AtomEntry[T]    => atomEntryWrites[T].writes(e)
+      }
+    }
+  }
 
-  implicit def entryWrites[T](implicit fmt: Writes[T]): Writes[Entry[T]] = (
+  implicit def atomEntryWrites[T: Writes]: Writes[AtomEntry[T]] = (
     (__ \ "id").write[String] and
       (__ \ "updated").write[DateTime] and
       (__ \ "content").write[Content[T]] and
-      (__ \ "links").write[List[Link]]
-    )(in => (in.id, in.updated, in.content, in.links))
+      (__ \ "links").write[List[Link]] and
+      (__ \ "_type").write[String] // type information
+    )(in => (in.id, in.updated, in.content, in.links, "atom"))
 
-  implicit def entryReads[T](implicit fmt: Reads[T]): Reads[Entry[T]] = (
+  implicit def atomPubEntryWrites[T: Writes]: Writes[AtomPubEntry[T]] = (
+    (__ \ "id").write[String] and
+      (__ \ "updated").write[DateTime] and
+      (__ \ "content").write[Content[T]] and
+      (__ \ "links").write[List[Link]] and
+      (__ \ "edited").write[DateTime] and
+      (__ \ "control").write[Control] and
+      (__ \ "_type").write[String] // type information
+    )(in => (in.id, in.updated, in.content, in.links, in.edited, in.control, "atom-pub"))
+
+  implicit def entryReads[T: Reads]: Reads[Entry[T]] = new Reads[Entry[T]] {
+    override def reads(json: JsValue): JsResult[Entry[T]] = {
+      val hasControl = (json \ "_type").as[String]
+      hasControl match {
+        case "atom-pub" => atomPubEntryReads[T].reads(json)
+        case _          => atomEntryReads[T].reads(json)
+      }
+    }
+  }
+
+  implicit def atomEntryReads[T: Reads]: Reads[AtomEntry[T]] = (
     (__ \ "id").read[String] and
       (__ \ "updated").read[DateTime] and
       (__ \ "content").read[Content[T]] and
       (__ \ "links").read[List[Link]]
-    )((id, updated, content, links) => Entry[T](id, updated, content, links))
+    )((id, updated, content, links) => AtomEntry[T](id, updated, content, links))
 
+  implicit def atomPubEntryReads[T: Reads]: Reads[AtomPubEntry[T]] = (
+    (__ \ "id").read[String] and
+      (__ \ "updated").read[DateTime] and
+      (__ \ "content").read[Content[T]] and
+      (__ \ "links").read[List[Link]] and
+      (__ \ "edited").read[DateTime] and
+      (__ \ "control").read[Control]
+    )((id, updated, content, links, edited, control) => AtomPubEntry[T](id, updated, content, links, edited, control))
 
   // candidate for macro format
-  implicit def feedWrites[T](implicit fmt: Writes[T]): Writes[Feed[T]] = (
+  implicit def feedWrites[T: Writes]: Writes[Feed[T]] = (
     (__ \ "id").write[String] and
       (__ \ "base").write[Url] and
       (__ \ "title").writeNullable[String] and
@@ -73,9 +113,9 @@ object PlayJsonFormats {
       (__ \ "updated").write[DateTime] and
       (__ \ "links").write[List[Link]] and
       (__ \ "entries").write[List[Entry[T]]]
-    )(in => (in.id, in.base, in.title, in.generator, in.updated,in.links, in.entries))
+    )(in => (in.id, in.base, in.title, in.generator, in.updated, in.links, in.entries))
 
-  implicit def feedReads[T](implicit fmt: Reads[T]): Reads[Feed[T]] = (
+  implicit def feedReads[T: Reads]: Reads[Feed[T]] = (
     (__ \ "id").read[String] and
       (__ \ "base").read[Url] and
       (__ \ "title").readNullable[String] and
@@ -84,4 +124,5 @@ object PlayJsonFormats {
       (__ \ "links").read[List[Link]] and
       (__ \ "entries").read[List[Entry[T]]]
     )((id, base, title, generator, updated, links, entries) => Feed[T](id, base, title, generator, updated, links, entries))
+
 }

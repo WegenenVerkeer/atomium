@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
 import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
@@ -38,7 +38,7 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
   }
 
   private def push(uuid: String, entry: T, timestamp: DateTime): Unit = {
-    entries append Entry(uuid, timestamp, Content(entry, ""), Nil)
+    entries append AtomEntry(uuid, timestamp, Content(entry, ""), Nil)
   }
 
 

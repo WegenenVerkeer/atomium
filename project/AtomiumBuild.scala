@@ -9,17 +9,18 @@ object AtomiumBuild extends Build with BuildSettings {
   import Dependencies._
 
 
-  javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint")
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
 
 
   //----------------------------------------------------------------
   lazy val javaFormatModule = {
 
-    val mainDeps = Seq(lombok, jacksonDatabind, jacksonJoda)
+    val mainDeps = Seq(jacksonDatabind, jacksonJoda)
     val testDeps = Seq(junit)
 
     project("format-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossPaths := false)
 
   }
 
@@ -31,23 +32,28 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val clientScalaModule =
+  lazy val clientScalaModule = {
+
+    val mainDeps = Seq(rxscala)
+    val testDeps = Seq(wiremock)
+
     project("client-scala")
       .settings(publishArtifact in Test := true)
-      .dependsOn(formatModule, serverModule)
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
       .aggregate(formatModule, serverModule)
-
+  }
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
 
-    val mainDeps = Seq(slf4j, commonsIo)
-    val testDeps = Seq(junit, mockitoCore, assertJ, jfakerMockito)
+    val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, jfakerMockito, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .dependsOn(clientScalaModule % "test->test;compile->compile")
-      .aggregate(clientScalaModule)
+      .settings(crossPaths := false)
+      .dependsOn(javaFormatModule)
 
   }
 
@@ -113,7 +119,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .enablePlugins(PlayScala)
-      .dependsOn(clientScalaModule, serverModule % "test->test;compile->compile", commonPlayModule)
+      .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
   }
 
 

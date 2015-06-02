@@ -7,19 +7,36 @@ package be.wegenenverkeer.atomium.format
 case class Url(path: String) {
 
   /**
-   * Creates a new URL by adding the given path.
+   * Creates a new URL by adding the given path Url
+   *
+   * @param additionalPath the path to be added
+   * @return the new URL
+   */
+  def /(additionalPath: Url) : Url = this / additionalPath.path
+
+  /**
+   * Creates a new URL by adding the given path as String
    *
    * @param additionalPath the path to be added
    * @return the new URL
    */
   def /(additionalPath: String): Url = {
-    if (additionalPath.startsWith("/")) Url(s"$path$additionalPath")
-    else Url(s"$path/$additionalPath")
+    add(additionalPath)
   }
 
   def /(additionalPath: Long): Url =
-    Url(s"$path/${additionalPath.toString}")
+    add(additionalPath.toString)
 
   def /(additionalPath: Int): Url =
-    Url(s"$path/${additionalPath.toString}")
+    add(additionalPath.toString)
+
+  private def add(additional: String) : Url= {
+    val raw = s"$path/$additional"
+    def contractRepeatedSlashes: String = {
+      val repeatedRegex = "(/)\\1+"
+      if (raw.startsWith("http://")) s"http:/${raw.substring(6).replaceAll(repeatedRegex, "$1")}"
+      else raw.replaceAll(repeatedRegex, "$1")
+    }
+    Url(contractRepeatedSlashes)
+  }
 }

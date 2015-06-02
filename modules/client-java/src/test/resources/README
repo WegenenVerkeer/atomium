@@ -1,0 +1,5 @@
+This contains the wiremock recording of a session retrieving 1000 events.
+
+You can use these to observe a mocked replay using event-id: "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", feed-page: "20/forward/10".
+
+

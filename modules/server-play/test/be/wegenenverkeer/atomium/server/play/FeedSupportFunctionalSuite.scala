@@ -1,12 +1,11 @@
 package be.wegenenverkeer.atomium.server.play
 
-import be.wegenenverkeer.atomium.format.{Feed, Url}
+import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
-import be.wegenenverkeer.atomium.play.PlayJsonSupport
 import be.wegenenverkeer.atomium.server.{Context, FeedService, MemoryFeedStore}
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
 import org.scalatestplus.play.{OneServerPerSuite, WsScalaTestClient}
-import play.api.http.{HeaderNames, MimeTypes, Status}
+import play.api.http.{HeaderNames, Status}
 import play.api.mvc.Controller
 import play.api.test.{DefaultAwaitTimeout, FakeApplication, FutureAwaits}
 
@@ -35,7 +34,6 @@ class FeedSupportFunctionalSuite
 
   val feedController = new Controller with FeedSupport[String] {
 
-    registerMarshaller(MimeTypes.JSON, PlayJsonSupport.jsonMarshaller[Feed[String]])
 
     def headOfFeed() = {
       processFeedPage(feedService.getHeadOfFeed())
@@ -45,6 +43,9 @@ class FeedSupportFunctionalSuite
       processFeedPage(feedService.getFeedPage(start, pageSize, forward))
     }
 
+    override def marshallers = {
+      case Accepts.Json() => PlayJsonFeedMarshaller[String]()
+    }
   }
 
   implicit override lazy val app: FakeApplication =

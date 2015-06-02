@@ -33,14 +33,20 @@ object Global extends WithFilters(new GzipFilter()) with GlobalSettings {
   val eventService = new FeedService[Event, Context](10, eventStore)
   val eventController = new EventController(eventService)
 
+  val eventSeq : () => Double = {
+    var es = 0.0d
+    () => {es = es+1.0d; es}
+  }
+
   1 to 25 foreach {
-    i => eventService.push(Event(Random.nextDouble(), Some(s"populated at start $i")))
+    i => eventService.push(Event(eventSeq(), Some(s"populated at start $i")))
   }
 
   val timer = new Timer()
+
   timer.scheduleAtFixedRate(new TimerTask {
-    override def run() = { eventService.push(Event(Random.nextDouble(), None)) }
-  }, 1000L, 1000L)
+    override def run() = { eventService.push(Event(eventSeq(), None)) }
+  }, 1000L, 200L)
 
 
   override def getControllerInstance[A](controllerClass: Class[A]): A = {
