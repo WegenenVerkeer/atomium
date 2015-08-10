@@ -1,0 +1,11 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET        /feeds/my_feed/                                @controllers.StringController.headOfFeed()
+GET        /feeds/my_feed/:start/forward/:pageSize        @controllers.StringController.getFeedPage(start : Int, pageSize: Int, forward: Boolean = true)
+GET        /feeds/my_feed/:start/backward/:pageSize       @controllers.StringController.getFeedPage(start : Int, pageSize: Int, forward: Boolean = false)
+
+GET        /feeds/events                                 @controllers.EventController.headOfFeed()
+GET        /feeds/events/:start/forward/:pageSize         @controllers.EventController.getFeedPage(start : Int, pageSize: Int, forward: Boolean = true)
+GET        /feeds/events/:start/backward/:pageSize        @controllers.EventController.getFeedPage(start : Int, pageSize: Int, forward: Boolean = false)
