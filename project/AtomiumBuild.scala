@@ -118,8 +118,15 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .enablePlugins(PlayScala)
       .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
+  }
+
+ //----------------------------------------------------------------
+  lazy val serverPlaySampleModule = {
+   
+    project("server-play-sample")
+      .enablePlugins(PlayScala)
+      .dependsOn(serverModule % "test->test;compile->compile", serverPlayModule)
   }
 
 
@@ -134,6 +141,7 @@ object AtomiumBuild extends Build with BuildSettings {
     serverMongoModule,
     serverSlickModule,
     serverJdbcModule,
-    serverPlayModule
+    serverPlayModule,
+    serverPlaySampleModule
   )
 }
