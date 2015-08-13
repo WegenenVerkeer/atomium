@@ -3,7 +3,7 @@ import sbt._
 
 object Dependencies {
 
-  val playVersion = "2.3.6"
+  val playVersion = "2.4.2"
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"         % "1.1.1"

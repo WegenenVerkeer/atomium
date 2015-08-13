@@ -65,15 +65,6 @@ trait BuildSettings {
       credentials.toSeq
     }
 
-    // explicitly creating a Def to avoid cluttered code inside Seq definition
-    val repoToPublish = Def setting {
-      val nexus = "https://oss.sonatype.org/"
-      if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    }
-
 
     val pomInfo = {
       <url>https://github.com/WegenenVerkeer/atomium</url>
@@ -100,7 +91,6 @@ trait BuildSettings {
     Seq(
       publishMavenStyle := true,
       pomIncludeRepository := { _ => false},
-      publishTo := repoToPublish.value,
       pomExtra := pomInfo,
       credentials ++= publishingCredentials
     )
