@@ -61,14 +61,14 @@ public class FunctionalTest {
 
         TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
 
-        observable.take(1000).subscribe(subscriber);
+        observable.take(20).subscribe(subscriber);
 
         subscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
 
         //we should have received exactly 1000 events.
-        assertEquals(1000, subscriber.getOnNextEvents().size());
+        assertEquals(20, subscriber.getOnNextEvents().size());
 
         //we should have received exactly 1 onComplete
         assertEquals(1, subscriber.getOnCompletedEvents().size());
