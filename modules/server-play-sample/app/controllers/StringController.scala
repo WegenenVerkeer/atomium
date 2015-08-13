@@ -3,9 +3,11 @@ package controllers
 import be.wegenenverkeer.atomium.server.play.{JacksonFeedMarshaller, FeedMarshaller, FeedSupport}
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.databind.{ObjectWriter, ObjectMapper, SerializationFeature}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import play.api.mvc.Controller
+
+import scala.concurrent.Future
 
 /**
  * This controller serves pages of a feed containing Strings.
@@ -13,7 +15,9 @@ import play.api.mvc.Controller
 
  * @param feedService the feedService used for retrieving feed pages
  */
-class StringController(feedService: FeedService[String, Context]) extends Controller with FeedSupport[String] {
+class StringController() extends Controller with FeedSupport[String] {
+  
+  lazy val feedService = Deps.stringService
 
   implicit val context: Context = new Context {} //dummy context for MemoryFeedStore
 
@@ -21,7 +25,7 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
   objectMapper.registerModule(new JodaModule)
   objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
   objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-  implicit val objectWriter = objectMapper.writer()
+  implicit val objectWriter: ObjectWriter = objectMapper.writer()
 
   override def marshallers = {
     case Accepts.Xml() => JacksonFeedMarshaller[String]()
@@ -32,7 +36,7 @@ class StringController(feedService: FeedService[String, Context]) extends Contro
    * @return the head of the feed
    */
   def headOfFeed() = {
-    processFeedPage(feedService.getHeadOfFeed())
+    processFeedPage(Future.successful(feedService.getHeadOfFeed()))
   }
 
   /**

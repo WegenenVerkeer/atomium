@@ -14,7 +14,9 @@ import play.api.mvc.Controller
  * and thus supports content negotiation and can support both xml or json responses
  * @param feedService the feedService used for retrieving feed pages
  */
-class EventController(feedService: FeedService[Event, Context]) extends Controller with FeedSupport[Event] {
+class EventController() extends Controller with FeedSupport[Event] {
+
+  lazy val feedService = Deps.eventService
 
   implicit val context: Context = new Context {} //dummy context for MemoryFeedStore
 

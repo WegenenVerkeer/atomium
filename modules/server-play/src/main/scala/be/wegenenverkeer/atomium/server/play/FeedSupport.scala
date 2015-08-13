@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
 import play.api.mvc._
 
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 /**
  * trait supporting serving of feed pages:
  * sets correct caching headers
@@ -73,9 +76,9 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    * @param codec the implicit codec
    * @return the response
    */
-  def processFeedPage(page: Option[Feed[T]])(implicit codec: Codec) = Action { implicit request =>
+  def processFeedPage(page: Future[Option[Feed[T]]])(implicit codec: Codec) = Action.async { implicit request =>
     logger.info(s"processing request: $request")
-    page match {
+    page.map {
       case Some(f) =>
         if (notModified(f, request.headers)) {
           logger.info("sending response: 304 Not-Modified")
@@ -89,6 +92,10 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
         logger.info("sending response: 404 Not-Found")
         NotFound("feed or page not found")
     }
+  }
+
+  def processFeedPage(page: Option[Feed[T]])(implicit codec: Codec): Action[AnyContent] = {
+    processFeedPage(Future.successful(page))
   }
 
   private def marshall(feedMarshaller: FeedMarshaller[T], feed: Feed[T]): Result = {
