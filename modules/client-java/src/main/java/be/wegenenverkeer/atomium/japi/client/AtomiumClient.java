@@ -123,7 +123,7 @@ public class AtomiumClient {
 
 
         /**
-         * Creates a "cold" {@code Observable<Entry<E>>} that, when subscribed to, emits all entries in the feed
+         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries in the feed
          * starting from the oldest entry immediately after the specified entry.
          *
          * <p>When subscribed to, the observable will create a single-threaded {@link Scheduler.Worker} that will:</p>
@@ -154,7 +154,7 @@ public class AtomiumClient {
 
 
         /**
-         * Creates a "cold" {@code Observale<Entry<E>>} that, when subscribed to, emits all entries on the feed
+         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries on the feed
          * starting from those then on the head of the feed.
          *
          * <p>The behavior is analogous to the method {@code observeSince()} but starting form </p>
@@ -167,10 +167,10 @@ public class AtomiumClient {
         }
 
         /**
-         * This is the core of the feed client
+         * This is the core of the feed client.
          *
          * It creates a Scheduler.Worker that with the specified interval polls the feed, and retrieves all entries not
-         * yet "seen". The ClientState object is used to keep track of the latest seen feed-pages, Etags and entry-id's
+         * yet "seen". The ClientState object is used to keep track of the latest seen feed-pages, Etags and entry-id's.
          *
          */
         private Observable<Entry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
@@ -184,7 +184,7 @@ public class AtomiumClient {
                             logger.debug("Start polling");
                             Optional<String> etag = Optional.empty();
                             etag = state.lastSeenEtag;
-                            logger.debug("Retreiving page: " + url);
+                            logger.debug("Retrieving page: " + url);
                             Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
                             FeedWrapper<E> feed = prune(feedObservable.toBlocking().last(), state);
                             if (!feed.isEmpty()) {
