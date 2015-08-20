@@ -55,7 +55,7 @@ public class FailureTest {
 
         observable.subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(5, TimeUnit.SECONDS);
 
         assertEquals(1, subscriber.getOnErrorEvents().size());
         Throwable receivedError = subscriber.getOnErrorEvents().get(0);
