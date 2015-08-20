@@ -49,8 +49,16 @@ class FeedWrapper<T> {
         return getLinkHref("next");
     }
 
-    public Optional<String> getSelfHref() {
-        return getLinkHref("self");
+    /**
+     * Returns the (mandatory) self link of the feed
+     * @return the self link
+     * @throws IllegalStateException if the self link is not present
+     */
+    public String getSelfHref() {
+        return getLinkHref("self").orElseThrow(
+                //it is a requirement for Atomium that there is always a self link
+                () -> new IllegalStateException("No self link found on feed")
+        );
     }
 
     public Optional<String> getLinkHref(String attr){

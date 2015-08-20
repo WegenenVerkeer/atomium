@@ -1,0 +1,114 @@
+{
+  "id": "events",
+  "base": "http://localhost:9000/feeds/events/",
+  "title": "events",
+  "generator": {
+    "text": "atomium",
+    "uri": "http://github.com/WegenenVerkeer/atomium",
+    "version": "0.0.1"
+  },
+  "updated": "2015-08-20T12:15:13+0200",
+  "links": [
+    {
+      "rel": "last",
+      "href": "0/forward/10"
+    },
+    {
+      "rel": "next",
+      "href": "3101/backward/10"
+    }
+  ],
+  "entries": [
+    {
+      "id": "urn:uuid:d9dc0023-d7bc-4c8c-aec0-0d7ac173a2d8",
+      "updated": "2015-08-20T12:15:13+0200",
+      "content": {
+        "value": {
+          "value": 3107,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:f7e2edf1-af6d-476f-8853-585a142d4733",
+      "updated": "2015-08-20T12:15:12+0200",
+      "content": {
+        "value": {
+          "value": 3106,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:a56737f5-02c3-47c9-800f-92528b75ca3c",
+      "updated": "2015-08-20T12:15:12+0200",
+      "content": {
+        "value": {
+          "value": 3105,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:362a934d-787c-427c-984c-2626754cbec7",
+      "updated": "2015-08-20T12:15:12+0200",
+      "content": {
+        "value": {
+          "value": 3104,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:07a962ea-b794-4695-999d-721153644696",
+      "updated": "2015-08-20T12:15:12+0200",
+      "content": {
+        "value": {
+          "value": 3103,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:5c397e1a-8b2b-485a-bd82-9dfe6b711bca",
+      "updated": "2015-08-20T12:15:12+0200",
+      "content": {
+        "value": {
+          "value": 3102,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    },
+    {
+      "id": "urn:uuid:d199b02d-8ecc-4183-87e6-66c0ab065e46",
+      "updated": "2015-08-20T12:15:11+0200",
+      "content": {
+        "value": {
+          "value": 3101,
+          "version": 1
+        },
+        "type": ""
+      },
+      "links": [],
+      "_type": "atom"
+    }
+  ]
+}

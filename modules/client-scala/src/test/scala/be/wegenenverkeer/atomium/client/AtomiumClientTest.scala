@@ -5,6 +5,7 @@ import javax.xml.bind.annotation._
 
 
 import be.wegenenverkeer.atomium.japi
+import be.wegenenverkeer.atomium.japi.client.FeedEntry
 import be.wegenenverkeer.atomium.japi.format.Entry
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -39,10 +40,10 @@ class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
 
   it should "receive all events since a specific event in an Observable" in {
 
-    val observable: Observable[Entry[Event]] = client.feed("/feeds/events", classOf[Event])
+    val observable: Observable[FeedEntry[Event]] = client.feed("/feeds/events", classOf[Event])
       .observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000)
 
-    val testSubscriber: TestSubscriber[Entry[Event]] = new TestSubscriber[Entry[Event]]
+    val testSubscriber: TestSubscriber[FeedEntry[Event]] = new TestSubscriber
 
     import rx.lang.scala.JavaConversions._ //back to java so we can use the TestSubscriber
     toJavaObservable(observable.take(100)).subscribe(testSubscriber)
