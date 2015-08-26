@@ -253,7 +253,7 @@ public class AtomiumClient {
         private Observable<FeedWrapper<E>> createFeedWrapperObservable(String pageUrl, Optional<String> etag) {
             ClientRequest request = buildConditionalGet(pageUrl, etag);
 
-            Observable<FeedWrapper<E>> feedObservable = rxHttpClient.executeToCompletion(request, resp -> {
+            return rxHttpClient.executeToCompletion(request, resp -> {
                 if (resp.getStatusCode() == 304) {
                     return new EmptyFeedWrapper<>(etag);
                 }
@@ -264,8 +264,6 @@ public class AtomiumClient {
                     return new FeedWrapper<>((Feed<E>) unmarshalXml(resp.getResponseBody()), newETag);
                 }
             });
-
-            return feedObservable.flatMap(f -> f != null ? Observable.just(f) : Observable.empty());
         }
 
         private ClientRequest buildConditionalGet(String url, Optional<String> etag) {
