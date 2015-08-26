@@ -16,10 +16,10 @@ class AtomiumClient(val inner: JAtomiumClient) {
 
 class FeedObservableBuilder[E](val inner: JFeedObservableBuilder[E]) {
 
-  def observe(intervalInMs: Int) = toScalaObservable(inner.observe(intervalInMs))
+  def observe(intervalInMs: Int) = toScalaObservable(inner.observeFromNowOn(intervalInMs))
 
   def observeSince(entryId: String, pageUrl: String, intervalInMs: Int) =
-    toScalaObservable(inner.observeSince(entryId, pageUrl, intervalInMs))
+    toScalaObservable(inner.observeFrom(entryId, pageUrl, intervalInMs))
 }
 
 

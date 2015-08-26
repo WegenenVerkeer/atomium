@@ -48,7 +48,7 @@ public class FailureTest {
 
     @Test
     public void testReceivingAnError() {
-        Observable<FeedEntry<Event>> observable = client.feed("/noselflinkfeed", Event.class).observe(100)
+        Observable<FeedEntry<Event>> observable = client.feed("/noselflinkfeed", Event.class).observeFromNowOn(100)
                 .take(10);
 
         TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
