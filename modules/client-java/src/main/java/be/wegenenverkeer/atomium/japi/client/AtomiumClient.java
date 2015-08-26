@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A client for Atomium AtomPub feeds.
- *
+ * <p>
  * <p>It is best-practice to create a single AtomiumClient for all feeds on a specific host.</p>
- *
+ * <p>
  * Created by Karel Maesen, Geovise BVBA on 16/03/15.
  */
 public class AtomiumClient {
@@ -49,10 +49,10 @@ public class AtomiumClient {
 
     /**
      * Creates a {@code FeedObservableBuilder} for the specified feed and entry type
-     *
+     * <p>
      * <p>The feedPath argument appended to the baseUrl of this {@code AtomiumClient} should equal the
      * xml:base-attribute of the feedpage</p>
-     *
+     * <p>
      * <p>The entryTypeMarker-class should have the required public accessors and JAXB-annotations to enable
      * proper unmarshalling. For Json-unmarshalling, the  Jackson library is used.</p>
      *
@@ -126,7 +126,6 @@ public class AtomiumClient {
         /**
          * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries in the feed
          * starting from the oldest entry immediately after the specified entry.
-         *
          * <p>When subscribed to, the observable will create a single-threaded {@link Scheduler.Worker} that will:</p>
          * <ul>
          * <li>retrieve the specified feed page</li>
@@ -135,9 +134,7 @@ public class AtomiumClient {
          * arrives at the head of the feed (identified by not having a 'previous'-link)</li>
          * <li>poll the feed at the specified interval (using conditional GETs) and emit all entries not yet seen</li>
          * </ul>
-         *
          * <p>The worker will exit only on an error condition, or on unsubscribe.</p>
-         *
          * <p><em>Important:</em> a new and independent worker is created for each subscriber.</p>
          *
          * @param entryId      the entry-id of an entry on the specified page
@@ -154,8 +151,8 @@ public class AtomiumClient {
         }
 
         /**
-         *@see #observeFrom(String,String,int)
-         *@deprecated Replaced by {@link #observeFrom(String,String,int) observeFrom}. This method will be removed in the next version.
+         * @see #observeFrom(String, String, int)
+         * @deprecated Replaced by {@link #observeFrom(String, String, int) observeFrom}. This method will be removed in the next version.
          */
         @Deprecated
         public Observable<FeedEntry<E>> observeSince(final String entryId, final String pageUrl, final int intervalInMs) {
@@ -165,14 +162,32 @@ public class AtomiumClient {
         /**
          * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries on the feed
          * starting from those then on the head of the feed.
-         * <p>
          * <p>The behavior is analogous to the method {@code observeFrom()} but starting from the head page</p>
+         * @param intervalInMs the polling interval in milliseconds.
          *
-         * @return
+         * @return a "cold" {@link Observable<Entry<E>>}
          */
         public Observable<FeedEntry<E>> observeFromNowOn(final int intervalInMs) {
             final ClientState state = new ClientState();
             return feedWrapperObservable(state, intervalInMs);
+        }
+
+        /**
+         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries on the feed
+         * starting from the begnning.
+         * <p>Starting from the beginning means going to the 'last' page of the feed, and the bottom entry on that page, and working back
+         * to the present.</p>
+         *
+         * @return a "cold" {@link Observable<Entry<E>>}
+         */
+        public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
+            return observableToLastPageLink()
+                    .map(link -> {
+                        final ClientState state = new ClientState();
+                        state.lastSeenSelfHref = Optional.of(link);
+                        return state;
+                    })
+                    .flatMap(state -> feedWrapperObservable(state, intervalInMs));
         }
 
         /**
@@ -264,6 +279,20 @@ public class AtomiumClient {
                     return new FeedWrapper<>((Feed<E>) unmarshalXml(resp.getResponseBody()), newETag);
                 }
             });
+        }
+
+        private Observable<String> observableToLastPageLink() {
+            ClientRequest request = buildConditionalGet("/", Optional.empty());
+            return rxHttpClient.executeToCompletion(request, resp -> {
+                        FeedWrapper<?> fw = null;
+                        if (isJson(resp.getContentType())) {
+                            fw = new FeedWrapper<>((Feed<?>) unmarshalJson(resp.getResponseBody()), Optional.empty());
+                        } else {
+                            fw = new FeedWrapper<>((Feed<?>) unmarshalXml(resp.getResponseBody()), Optional.empty());
+                        }
+                        return fw.getLastHref();
+                    }
+            );
         }
 
         private ClientRequest buildConditionalGet(String url, Optional<String> etag) {
