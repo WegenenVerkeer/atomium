@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A client for Atomium AtomPub feeds.
- * <p>
+ *
  * <p>It is best-practice to create a single AtomiumClient for all feeds on a specific host.</p>
- * <p>
+ *
  * Created by Karel Maesen, Geovise BVBA on 16/03/15.
  */
 public class AtomiumClient {
@@ -49,10 +49,10 @@ public class AtomiumClient {
 
     /**
      * Creates a {@code FeedObservableBuilder} for the specified feed and entry type
-     * <p>
+     *
      * <p>The feedPath argument appended to the baseUrl of this {@code AtomiumClient} should equal the
      * xml:base-attribute of the feedpage</p>
-     * <p>
+     *
      * <p>The entryTypeMarker-class should have the required public accessors and JAXB-annotations to enable
      * proper unmarshalling. For Json-unmarshalling, the  Jackson library is used.</p>
      *
@@ -124,7 +124,7 @@ public class AtomiumClient {
 
 
         /**
-         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries in the feed
+         * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries in the feed
          * starting from the oldest entry immediately after the specified entry.
          * <p>When subscribed to, the observable will create a single-threaded {@link Scheduler.Worker} that will:</p>
          * <ul>
@@ -151,6 +151,11 @@ public class AtomiumClient {
         }
 
         /**
+         * @param entryId      the entry-id of an entry on the specified page
+         * @param pageUrl      the url (absolute, or relative to the feed's base url) of the feed-page, containing the entry
+         *                     identified with the entryId argument
+         * @param intervalInMs the polling interval in milliseconds.
+         * @return an Observable emitting all entries since the specified entry
          * @see #observeFrom(String, String, int)
          * @deprecated Replaced by {@link #observeFrom(String, String, int) observeFrom}. This method will be removed in the next version.
          */
@@ -160,12 +165,12 @@ public class AtomiumClient {
         }
 
         /**
-         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries on the feed
+         * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries on the feed
          * starting from those then on the head of the feed.
          * <p>The behavior is analogous to the method {@code observeFrom()} but starting from the head page</p>
          * @param intervalInMs the polling interval in milliseconds.
          *
-         * @return a "cold" {@link Observable<Entry<E>>}
+         * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromNowOn(final int intervalInMs) {
             final ClientState state = new ClientState();
@@ -173,12 +178,12 @@ public class AtomiumClient {
         }
 
         /**
-         * Creates a "cold" {@link Observable<Entry<E>>} that, when subscribed to, emits all entries on the feed
+         * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries on the feed
          * starting from the begnning.
          * <p>Starting from the beginning means going to the 'last' page of the feed, and the bottom entry on that page, and working back
          * to the present.</p>
          *
-         * @return a "cold" {@link Observable<Entry<E>>}
+         * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
             return observableToLastPageLink()
@@ -353,7 +358,8 @@ public class AtomiumClient {
          * Set the maximum time in millisecond an {@link com.ning.http.client.AsyncHttpClient} will keep connection
          * idle in pool.
          *
-         * @param pooledConnectionIdleTimeout @return a {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
+         * @param pooledConnectionIdleTimeout the maximum time in millisecond the client wil keep connection idle in pool
+         * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
          */
         public Builder setPooledConnectionIdleTimeout(int pooledConnectionIdleTimeout) {
             rxHttpClientBuilder.setPooledConnectionIdleTimeout(pooledConnectionIdleTimeout);
@@ -367,7 +373,7 @@ public class AtomiumClient {
         /**
          * Sets the Accept-header to JSON.
          *
-         * @return
+         * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
          */
         public Builder setAcceptJson() {
             rxHttpClientBuilder.setAccept(JSON_MIME_TYPE);
@@ -377,7 +383,7 @@ public class AtomiumClient {
         /**
          * Sets the Accept-header to XML
          *
-         * @return
+         * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
          */
         public Builder setAcceptXml() {
             rxHttpClientBuilder.setAccept(XML_MIME_TYPE);
@@ -389,7 +395,7 @@ public class AtomiumClient {
          * Sets the base URL for this instance.
          *
          * @param url absolute URL where feeds are published
-         * @return
+         * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
          */
         public Builder setBaseUrl(String url) {
             rxHttpClientBuilder.setBaseUrl(url);

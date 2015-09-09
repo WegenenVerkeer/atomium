@@ -10,11 +10,6 @@ trait BuildSettings {
 
   val projectName = "atomium"
 
-  lazy val testSettings = Seq(
-    libraryDependencies ++= mainTestDependencies
-  )
-
-
   def project(moduleName: String): Project = {
     Project(
       id = projectName + "-" + moduleName,
@@ -43,7 +38,7 @@ trait BuildSettings {
       libraryDependencies ++= mainDependencies
     )
 
-    Defaults.coreDefaultSettings ++ projectSettings ++ testSettings ++ publishSettings ++ jacoco.settings
+    Defaults.coreDefaultSettings ++ projectSettings ++  publishSettings ++ jacoco.settings
   }
 
   val publishSettings = {
