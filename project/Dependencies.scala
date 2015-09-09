@@ -51,7 +51,7 @@ object Dependencies {
     junitInterface
   )
 
-  val mainTestDependencies = Seq (
+  val mainScalaTestDependencies = Seq (
     scalaTest,
     scalaCheck
   )

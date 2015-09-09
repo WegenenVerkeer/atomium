@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.rxhttp.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
@@ -10,7 +9,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.observers.TestSubscriber;
 
-import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +55,7 @@ public class FunctionalTest {
 
     @Test
     public void testSubscribingToObservable(){
-        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
         TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
@@ -81,7 +79,7 @@ public class FunctionalTest {
         stubFor(get(urlEqualTo("/fault"))
                 .willReturn(aResponse().withStatus(500)));
 
-        Observable<FeedEntry<Event>> observable = client.feed("/fault", Event.class).observe(100);
+        Observable<FeedEntry<Event>> observable = client.feed("/fault", Event.class).observeFromNowOn(100);
 
         TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
 
@@ -99,7 +97,7 @@ public class FunctionalTest {
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
 
-        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
         TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
@@ -121,7 +119,7 @@ public class FunctionalTest {
     @Test
     public void testFeedEntryHasSelfLink() throws InterruptedException {
         Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class)
-                .observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+                .observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
         TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
