@@ -58,7 +58,7 @@ public class ObserveFromBeginningTest {
 
         observable.take(3).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
 

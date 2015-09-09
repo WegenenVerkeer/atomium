@@ -62,7 +62,7 @@ public class FunctionalTest {
 
         observable.take(20).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
 
@@ -85,7 +85,7 @@ public class FunctionalTest {
 
         observable.subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
 
         assertEquals(0, subscriber.getOnNextEvents().size());
         assertEquals(1, subscriber.getOnErrorEvents().size());
@@ -126,7 +126,7 @@ public class FunctionalTest {
 
         observable.take(2).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
 

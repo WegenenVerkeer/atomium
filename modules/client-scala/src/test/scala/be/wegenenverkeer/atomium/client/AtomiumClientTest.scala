@@ -48,7 +48,7 @@ class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
     import rx.lang.scala.JavaConversions._ //back to java so we can use the TestSubscriber
     toJavaObservable(observable.take(100)).subscribe(testSubscriber)
 
-    testSubscriber.awaitTerminalEvent(3, TimeUnit.SECONDS)
+    testSubscriber.awaitTerminalEvent(30, TimeUnit.SECONDS)
     testSubscriber.assertNoErrors()
   }
 
