@@ -74,7 +74,9 @@ object AtomiumBuild extends Build with BuildSettings {
 
   //----------------------------------------------------------------
   lazy val serverModule =
-    project("server").dependsOn(formatModule)
+    project("server")
+      .settings(libraryDependencies ++= mainScalaTestDependencies)
+      .dependsOn(formatModule)
 
 
   //----------------------------------------------------------------
