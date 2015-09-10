@@ -9,7 +9,7 @@ object AtomiumBuild extends Build with BuildSettings {
   import Dependencies._
 
 
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
+  javacOptions in Global ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint", "-Xdoclint:none")
 
 
   //----------------------------------------------------------------
@@ -20,6 +20,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("format-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
 
   }
@@ -35,7 +36,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val clientScalaModule = {
 
     val mainDeps = Seq(rxscala)
-    val testDeps = Seq(wiremock)
+    val testDeps = mainScalaTestDependencies ++ Seq(wiremock)
 
     project("client-scala")
       .settings(publishArtifact in Test := true)
@@ -52,6 +53,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
       .dependsOn(javaFormatModule)
 
@@ -64,7 +66,7 @@ object AtomiumBuild extends Build with BuildSettings {
     val mainDeps = Seq(play, playJson)
 
     project("common-play")
-      .settings(libraryDependencies ++= mainDeps)
+      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .dependsOn(formatModule)
       .aggregate(formatModule)
   }
@@ -72,14 +74,16 @@ object AtomiumBuild extends Build with BuildSettings {
 
   //----------------------------------------------------------------
   lazy val serverModule =
-    project("server").dependsOn(formatModule)
+    project("server")
+      .settings(libraryDependencies ++= mainScalaTestDependencies)
+      .dependsOn(formatModule)
 
 
   //----------------------------------------------------------------
   lazy val serverMongoModule = {
 
     val mainDeps = Seq(mongoJavaDriver, casbah)
-    val testDeps = Seq(embededMongo)
+    val testDeps = Seq(embededMongo) ++ mainScalaTestDependencies
 
     project("server-mongo")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
@@ -91,7 +95,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val serverSlickModule = {
 
     val mainDeps = Seq(slick, slickPostgres)
-    val testDeps = Seq(h2database)
+    val testDeps = Seq(h2database) ++ mainScalaTestDependencies
 
     project("server-slick")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
@@ -102,7 +106,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val serverJdbcModule = {
 
-    val testDeps = Seq(h2database)
+    val testDeps = Seq(h2database) ++ mainScalaTestDependencies
 
     project("server-jdbc")
       .settings(libraryDependencies ++= testDeps)
@@ -114,7 +118,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val serverPlayModule = {
 
     val mainDeps = Seq(filters)
-    val testDeps = Seq(playMockWs, playTest, scalaTestPlay)
+    val testDeps = Seq(playMockWs, playTest, scalaTestPlay) ++ mainScalaTestDependencies
 
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)

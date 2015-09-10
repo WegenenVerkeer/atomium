@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.rxhttp.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
@@ -10,7 +9,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.observers.TestSubscriber;
 
-import javax.xml.bind.annotation.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -56,14 +55,14 @@ public class FunctionalTest {
 
     @Test
     public void testSubscribingToObservable(){
-        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
-        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
+        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
 
         observable.take(20).subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
 
@@ -80,13 +79,13 @@ public class FunctionalTest {
         stubFor(get(urlEqualTo("/fault"))
                 .willReturn(aResponse().withStatus(500)));
 
-        Observable<Entry<Event>> observable = client.feed("/fault", Event.class).observe(100);
+        Observable<FeedEntry<Event>> observable = client.feed("/fault", Event.class).observeFromNowOn(100);
 
-        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
+        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
 
         observable.subscribe(subscriber);
 
-        subscriber.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
 
         assertEquals(0, subscriber.getOnNextEvents().size());
         assertEquals(1, subscriber.getOnErrorEvents().size());
@@ -98,10 +97,10 @@ public class FunctionalTest {
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
 
-        Observable<Entry<Event>> observable = client.feed("/feeds/events", Event.class).observeSince("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
+        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
-        TestSubscriber<Entry<Event>> subscriber = new TestSubscriber<>();
+        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
 
         Subscription subscription = observable.subscribe(subscriber);
 
@@ -117,33 +116,27 @@ public class FunctionalTest {
 
     }
 
-
-}
-
-
-
-
-// this is the Event model, annotations for XML deserialization
-// and public accessors for JSON
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.NONE)
-class Event {
-
-    @XmlElement
-    public Double value;
-
-    @XmlElement
-    public String description;
-
-    @XmlAttribute
-    public Integer version;
-
-    public Event(){
-    }
+    @Test
+    public void testFeedEntryHasSelfLink() throws InterruptedException {
+        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class)
+                .observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000);
 
 
-    public String toString() {
-        return "Event " + version + " " + "description " + " value: " + value;
+        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
+
+        observable.take(2).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent(30, TimeUnit.SECONDS);
+
+        subscriber.assertNoErrors();
+
+        List<FeedEntry<Event>> events = subscriber.getOnNextEvents();
+
+
+        for (FeedEntry<Event> entry : events) {
+            assertEquals("20/forward/10", entry.getSelfHref());
+        }
     }
 
 }
+

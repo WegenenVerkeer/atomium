@@ -1,12 +1,23 @@
 language: scala
+
 scala:
 - 2.11.5
+
 script: sbt clean +test
+
 sudo: false
+
 jdk:
 - oraclejdk8
+
 services:
 - mongodb
+
+cache:
+  directories:
+    - '$HOME/.ivy2'
+    - '$HOME/.sbt'
+
 notifications:
   email:
     recipients:
