@@ -34,7 +34,7 @@ class FeedWrapper<T> {
     }
 
     public boolean isEmpty(){
-        return false;
+        return getEntries().isEmpty();
     }
 
     public List<Link> getLinks() {
