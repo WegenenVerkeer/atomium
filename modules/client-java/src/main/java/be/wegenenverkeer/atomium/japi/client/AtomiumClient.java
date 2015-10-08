@@ -215,7 +215,7 @@ public class AtomiumClient {
                             logger.debug("Retrieving page: " + url);
                             Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
                             FeedWrapper<E> feed = prune(feedObservable.toBlocking().last(), state);
-                            if (!feed.isEmpty()) {
+                            if (!feed.getEntries().isEmpty()) {
 
                                 logger.debug("Emitting: " + feed.getEntries());
                                 subscriber.onNext(feed);
