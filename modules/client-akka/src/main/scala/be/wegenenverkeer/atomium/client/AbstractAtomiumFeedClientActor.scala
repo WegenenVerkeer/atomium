@@ -27,8 +27,8 @@ import scala.util.Try
  * @param config feed and actor config
  * @param eventFormat format for EventBus events
  * @param feedEntryFormat Reads for reading entries in the feed
- * @tparam EVENT EVENT type that will be put on the eventbus
- * @tparam FEEDENTRY FEEDENTRY type in the feed
+ * @tparam EVENT type of the event that will be put on the eventbus
+ * @tparam FEEDENTRY type of the entries in the feed
  */
 abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](config: FeedConfig,
                                                                               eventFormat: Format[EVENT],
@@ -57,10 +57,31 @@ abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](c
     case x: SnapshotOffer => positionInFeed = x.snapshot.asInstanceOf[Option[FeedPosition]]
   }
 
-  def createEventToPublish(c: NewFeedEntryReceived[FEEDENTRY]): EVENT
+  /**
+   * Abstract method to be implemented by concrete AtomiumFeedClients.
+   * Should convert a NewFeedEntryReceived message (containing the feed entry and position)
+   * to an event of type EVENT. The event will than be published via the publishEvent method,
+   * after it has been persisted.
+   *
+   * @param entryReceivedMessage a message that contains a new feed entry and position
+   * @return an event of type EVENT
+   */
+  def createEventToPublish(entryReceivedMessage: NewFeedEntryReceived[FEEDENTRY]): EVENT
 
+  /**
+   * New entries in the feed are transformed into events. This method will be called with
+   * the event as parameter when new entries are received.
+   *
+   * @param event The event that is based on an new entry in the feed.
+   */
   def publishEvent(event: EVENT): Unit
 
+  /**
+   * Implement this method to get informed about the status of the feed client.
+   * The default implementation just ignores the info.
+   *
+   * @param atomiumFeedClientStatus the current status
+   */
   def status(atomiumFeedClientStatus: AtomiumFeedClientStatus): Unit = ()
 
   override def receiveCommand: Receive = {
