@@ -28,11 +28,11 @@ import scala.util.Try
  * @param eventFormat format for EventBus events
  * @param feedEntryFormat Reads for reading entries in the feed
  * @tparam EVENT type of the event that will be put on the eventbus
- * @tparam FEEDENTRY type of the entries in the feed
+ * @tparam T (domain) type to deserialize the json feed entries to
  */
-abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](config: FeedConfig,
+abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, T](config: FeedConfig,
                                                                               eventFormat: Format[EVENT],
-                                                                              feedEntryFormat: Reads[FEEDENTRY],
+                                                                              feedEntryFormat: Reads[T],
                                                                               monitorActor: ActorRef
                                                                                ) extends PersistentActor with ActorLogging {
 
@@ -66,7 +66,7 @@ abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](c
    * @param entryReceivedMessage a message that contains a new feed entry and position
    * @return an event of type EVENT
    */
-  def createEventToPublish(entryReceivedMessage: NewFeedEntryReceived[FEEDENTRY]): EVENT
+  def createEventToPublish(entryReceivedMessage: NewFeedEntryReceived[T]): EVENT
 
   /**
    * New entries in the feed are transformed into events. This method will be called with
@@ -86,7 +86,7 @@ abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](c
 
   override def receiveCommand: Receive = {
 
-    case c: NewFeedEntryReceived[FEEDENTRY] =>
+    case c: NewFeedEntryReceived[T] =>
       val event = createEventToPublish(c)
       persistEvent(event) { evt =>
         updateState(evt)
@@ -176,7 +176,7 @@ abstract class AbstractAtomiumFeedClientActor[EVENT <: HasPosition, FEEDENTRY](c
         // since atomium client cannot configure it's own serializer yet, we need to convert the jackson json to play-json
         // (works reasonable efficient), en then use our own play formatter on it
         val value = Json.toJson(entry.getEntry.getContent.getValue)
-        val feedEntry = Json.fromJson[FEEDENTRY](value)(feedEntryFormat).get
+        val feedEntry = Json.fromJson[T](value)(feedEntryFormat).get
 
         // warning: at this point, we will put as many entries on our mailbox as atomiumclient has in it's feed
         // if the processing cannot keep up, we will get a very big mailbox
@@ -228,7 +228,7 @@ object AbstractAtomiumFeedClientActor {
 
   object Protocol {
 
-    case class NewFeedEntryReceived[FEEDENTRY](entry: FEEDENTRY, position: FeedPosition)
+    case class NewFeedEntryReceived[T](entry: T, position: FeedPosition)
 
     case class FeedReadError(error: Throwable)
 
