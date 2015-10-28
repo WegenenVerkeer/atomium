@@ -20,7 +20,7 @@ import scala.util.Try
  * If the feed handling goes wrong, the actor will stop (whatever the failure type is).
  * It is therefore suggested to run this actor within a BackoffSupervisor or similar construct.
  *
- * This actor only sends messages to itself. The feed entries are rapported by the [[publishEvent]] method.
+ * This actor only sends messages to itself. The feed entries are reported by the [[publishEvent]] method.
  *
  * It's the job of the subclass to decide what to do with these entries.
  *
