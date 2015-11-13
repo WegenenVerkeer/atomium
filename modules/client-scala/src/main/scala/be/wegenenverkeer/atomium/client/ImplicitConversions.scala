@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atomium.client
 
+import java.util.function.{BiFunction => JBiFunction}
+
 import be.wegenenverkeer.atomium.japi.client.{AtomiumClient => JAtomiumClient, FeedEntry}
 import be.wegenenverkeer.atomium.japi.client.AtomiumClient.{FeedObservableBuilder => JFeedObservableBuilder}
 import rx.lang.scala.JavaConversions._
@@ -21,6 +23,17 @@ class AtomiumClient(val inner: JAtomiumClient) {
 }
 
 class FeedObservableBuilder[E](val inner: JFeedObservableBuilder[E]) {
+
+
+
+  private def toJavaFunction(f: (Int,Throwable) => Long) = new JBiFunction[Integer,Throwable,java.lang.Long] {
+    override def apply(a: Integer, b: Throwable): java.lang.Long = f(a,b)
+  }
+
+
+  def withRetryStrategy( strategy: (Int, Throwable) => Long ) : FeedObservableBuilder[E] = {
+    new FeedObservableBuilder( this.inner.withRetryStrategy(toJavaFunction(strategy)) )
+  }
 
   /**
    * Creates a "cold" [[rx.lang.scala.Observable]] that, when subscribed to, emits all entries in the feed

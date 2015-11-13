@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
 import javax.xml.bind.JAXBContext;
@@ -28,12 +29,13 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 /**
  * A client for Atomium AtomPub feeds.
- *
+ * <p>
  * <p>It is best-practice to create a single AtomiumClient for all feeds on a specific host.</p>
- *
+ * <p>
  * Created by Karel Maesen, Geovise BVBA on 16/03/15.
  */
 public class AtomiumClient {
@@ -42,17 +44,16 @@ public class AtomiumClient {
 
     private final RxHttpClient rxHttpClient;
 
-
     private AtomiumClient(RxHttpClient rxHttpClient) {
         this.rxHttpClient = rxHttpClient;
     }
 
     /**
      * Creates a {@code FeedObservableBuilder} for the specified feed and entry type
-     *
+     * <p>
      * <p>The feedPath argument appended to the baseUrl of this {@code AtomiumClient} should equal the
      * xml:base-attribute of the feedpage</p>
-     *
+     * <p>
      * <p>The entryTypeMarker-class should have the required public accessors and JAXB-annotations to enable
      * proper unmarshalling. For Json-unmarshalling, the  Jackson library is used.</p>
      *
@@ -84,6 +85,14 @@ public class AtomiumClient {
         private final ObjectMapper objectMapper;
         private final String feedName;
         private final JavaType javaType;
+        private BiFunction<Integer, Throwable, Long> retryStrategy = (n, t) -> {
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else {
+                throw new RuntimeException(t);
+            }
+        };
+
 
         /**
          * Creates an instance - only accessible from AtomiumClient.
@@ -104,6 +113,11 @@ public class AtomiumClient {
             }
         }
 
+        public FeedObservableBuilder<E> withRetryStrategy(BiFunction<Integer, Throwable, Long> strategy) {
+            retryStrategy = strategy;
+            return this;
+        }
+
         private ObjectMapper configureObjectMapper() {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JodaModule());
@@ -120,6 +134,7 @@ public class AtomiumClient {
             Optional<String> lastSeenEtag = Optional.empty();
             Optional<String> lastSeenSelfHref = Optional.empty();
             Optional<String> lastSeenEntryId = Optional.empty();
+            int failedCount = 0;
         }
 
 
@@ -168,8 +183,8 @@ public class AtomiumClient {
          * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries on the feed
          * starting from those then on the head of the feed.
          * <p>The behavior is analogous to the method {@code observeFrom()} but starting from the head page</p>
-         * @param intervalInMs the polling interval in milliseconds.
          *
+         * @param intervalInMs the polling interval in milliseconds.
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromNowOn(final int intervalInMs) {
@@ -203,30 +218,16 @@ public class AtomiumClient {
          */
         private Observable<FeedEntry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
             Observable<FeedWrapper<E>> observableFeedPage = Observable.create((subscriber) -> {
-                Scheduler.Worker worker = Schedulers.newThread().createWorker();
+                Scheduler.Worker worker = Schedulers.io().createWorker();
                 worker.schedulePeriodically(() -> {
                     logger.debug("Scheduled work started");
-                    String url = state.lastSeenSelfHref.orElse("");
+                    String urlOfPageToRetrieve = state.lastSeenSelfHref.orElse("");
                     try {
-                        while (!subscriber.isUnsubscribed() && url != null) {
+                        while (!subscriber.isUnsubscribed() && urlOfPageToRetrieve != null) {
                             logger.debug("Start polling");
-                            Optional<String> etag = Optional.empty();
-                            etag = state.lastSeenEtag;
-                            logger.debug("Retrieving page: " + url);
-                            Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
-                            FeedWrapper<E> feed = prune(feedObservable.toBlocking().last(), state);
-                            if (!feed.isEmpty()) {
-
-                                logger.debug("Emitting: " + feed.getEntries());
-                                subscriber.onNext(feed);
-                                state.lastSeenEtag = feed.getEtag();
-                                state.lastSeenEntryId = Optional.of(feed.getLastEntryId());
-                                state.lastSeenSelfHref = Optional.of(feed.getSelfHref());
-                                logger.debug("Setting lastseenSelfHref to :" + feed.getSelfHref());
-                            } else {
-                                logger.debug("Received 304");
-                            }
-                            url = feed.getPreviousHref().orElse(null);
+                            FeedWrapper<E> page = retrievePagePruned(state, urlOfPageToRetrieve);
+                            notifySubscriberAndUpdateClientState(subscriber, page, state);
+                            urlOfPageToRetrieve = page.getPreviousHref().orElse(null);
                         }
 
                         if (subscriber.isUnsubscribed()) {
@@ -235,9 +236,16 @@ public class AtomiumClient {
                         }
 
                     } catch (Exception e) {
-                        subscriber.onError(e);
-                        worker.unsubscribe();
-                        logger.debug("Worker unsubscribe after error");
+                        try {
+                            state.failedCount = state.failedCount + 1;
+                            logger.warn("Receiving error on retrieving: " + urlOfPageToRetrieve + ": " + e.getMessage() + " (" + e.getClass().getName() + ")");
+                            logger.info("Setting failed count to:" + state.failedCount);
+                            retryStrategy.apply(state.failedCount, e);
+                        } catch (Exception e2) {
+                            subscriber.onError(e2);
+                            worker.unsubscribe();
+                            logger.debug("Worker unsubscribe after error");
+                        }
                     }
                     logger.debug("Scheduled work finished.");
                 }, 0, intervalInMs, TimeUnit.MILLISECONDS);
@@ -245,9 +253,31 @@ public class AtomiumClient {
 
             return observableFeedPage
                     .flatMap(feed ->
-                            Observable.from(feed.getEntries())
-                                    .map(entry -> new FeedEntry<>(entry, feed))
+                                    Observable.from(feed.getEntries())
+                                            .map(entry -> new FeedEntry<>(entry, feed))
                     );
+        }
+
+        private void notifySubscriberAndUpdateClientState(Subscriber<? super FeedWrapper<E>> subscriber, FeedWrapper<E> page, ClientState state) {
+            if (!page.isEmpty()) {
+                logger.debug("Emitting: " + page.getEntries());
+                subscriber.onNext(page);
+                state.lastSeenEtag = page.getEtag();
+                state.lastSeenEntryId = Optional.of(page.getLastEntryId());
+                state.lastSeenSelfHref = Optional.of(page.getSelfHref());
+                state.failedCount = 0;
+                logger.debug("Setting lastseenSelfHref to :" + page.getSelfHref());
+            } else {
+                logger.info("Received Empty page (after pruning)");
+            }
+        }
+
+        private FeedWrapper<E> retrievePagePruned(ClientState state, String url) {
+            Optional<String> etag = Optional.empty();
+            etag = state.lastSeenEtag;
+            logger.debug("Retrieving page: " + url);
+            Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
+            return prune(feedObservable.toBlocking().last(), state);
         }
 
 
@@ -347,7 +377,6 @@ public class AtomiumClient {
 
         private final String JSON_MIME_TYPE = "application/json"; //TODO -- change to "official" AtomPub mimetypes
         private final String XML_MIME_TYPE = "application/xml";
-
         final private RxHttpClient.Builder rxHttpClientBuilder = new RxHttpClient.Builder();
 
         public Builder() {

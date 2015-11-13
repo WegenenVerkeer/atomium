@@ -1,7 +1,7 @@
 {
   "scenarioName": "retry",
   "requiredScenarioState": "Error",
-  "newScenarioState": "Running",
+  "newScenarioState": "Error2",
   "request" : {
     "url" : "/feeds/events/10/forward/10",
     "method" : "GET",
