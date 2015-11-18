@@ -39,14 +39,17 @@ trait WithWireMock extends BeforeAndAfterAll {
     .build
     .asScala
 
-
-  override def beforeAll {
-    server.start()
-    configureFor("localhost", port)
-    WireMock.resetToDefault
+  def resetWireMock() {
+    WireMock.resetToDefault()
   }
 
-  override def afterAll {
+  override def beforeAll() {
+    server.start()
+    configureFor("localhost", port)
+    resetToDefault()
+  }
+
+  override def afterAll() {
     server.shutdown()
     Thread.sleep(1000)
   }

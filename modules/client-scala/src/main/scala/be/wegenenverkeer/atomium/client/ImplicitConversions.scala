@@ -1,19 +1,23 @@
 package be.wegenenverkeer.atomium.client
 
+import java.lang
 import java.util.function.{BiFunction => JBiFunction}
 
-import be.wegenenverkeer.atomium.japi.client.{AtomiumClient => JAtomiumClient, FeedEntry}
+import be.wegenenverkeer.atomium.japi.client.{AtomiumClient => JAtomiumClient, FeedEntry, RetryStrategy => JRetryStrategy}
 import be.wegenenverkeer.atomium.japi.client.AtomiumClient.{FeedObservableBuilder => JFeedObservableBuilder}
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
 
+
+trait RetryStrategy {
+  def apply(count: Int, exception: Throwable): Long
+}
 
 /**
  * Scala AtomiumClient.
  *
  * @see [[be.wegenenverkeer.atomium.japi.client.AtomiumClient]]
  */
-
 class AtomiumClient(val inner: JAtomiumClient) {
 
   def feed[E](path: String, entryTypeMarker: Class[E]) = new FeedObservableBuilder(inner.feed[E](path, entryTypeMarker))
@@ -26,13 +30,16 @@ class FeedObservableBuilder[E](val inner: JFeedObservableBuilder[E]) {
 
 
 
-  private def toJavaFunction(f: (Int,Throwable) => Long) = new JBiFunction[Integer,Throwable,java.lang.Long] {
-    override def apply(a: Integer, b: Throwable): java.lang.Long = f(a,b)
+//  private def toJavaFunction(f: (Int,Throwable) => Long) = new JBiFunction[Integer,Throwable,java.lang.Long] {
+//    override def apply(a: Integer, b: Throwable): java.lang.Long = f(a,b)
+//  }
+
+  private def toJRetryStrategy(retryStrategy: RetryStrategy) : JRetryStrategy = new JRetryStrategy {
+    override def apply(count: Integer, exception: Throwable): lang.Long = retryStrategy(count, exception)
   }
 
-
-  def withRetryStrategy( strategy: (Int, Throwable) => Long ) : FeedObservableBuilder[E] = {
-    new FeedObservableBuilder( this.inner.withRetryStrategy(toJavaFunction(strategy)) )
+  def withRetry( strategy: RetryStrategy ) : FeedObservableBuilder[E] = {
+    new FeedObservableBuilder( this.inner.withRetry( toJRetryStrategy(strategy)) )
   }
 
   /**
@@ -109,6 +116,10 @@ object ImplicitConversions {
   }
 
   implicit def unwrap(client: AtomiumClient): JAtomiumClient = client.inner
+
+  implicit def func2RetryStrategy( f : (Int, Throwable) => Long) : RetryStrategy = new RetryStrategy {
+    override def apply(count: Int, exception: Throwable): Long = f(count, exception)
+  }
 
 
 }

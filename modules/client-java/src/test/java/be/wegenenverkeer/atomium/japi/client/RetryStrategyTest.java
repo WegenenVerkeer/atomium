@@ -69,7 +69,7 @@ public class RetryStrategyTest {
 
         Observable<FeedEntry<Event>> observable = client
                 .feed("/feeds/events", Event.class)
-                .withRetryStrategy((n, t) -> {
+                .withRetry((n, t) -> {
                     if (n < 2) {
                         return 1000L;
                     } else throw new RuntimeException(t);
@@ -91,7 +91,7 @@ public class RetryStrategyTest {
 
         Observable<FeedEntry<Event>> observable = client
                 .feed("/feeds/events", Event.class)
-                .withRetryStrategy((n, t) -> {
+                .withRetry((n, t) -> {
                     if (n < 3) {
                         return 1000L;
                     } else throw new RuntimeException(t);

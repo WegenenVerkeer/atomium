@@ -85,7 +85,7 @@ public class AtomiumClient {
         private final ObjectMapper objectMapper;
         private final String feedName;
         private final JavaType javaType;
-        private BiFunction<Integer, Throwable, Long> retryStrategy = (n, t) -> {
+        private RetryStrategy retryStrategy= (n, t) -> {
             if (t instanceof RuntimeException) {
                 throw (RuntimeException)t;
             } else {
@@ -113,7 +113,7 @@ public class AtomiumClient {
             }
         }
 
-        public FeedObservableBuilder<E> withRetryStrategy(BiFunction<Integer, Throwable, Long> strategy) {
+        public FeedObservableBuilder<E> withRetry(RetryStrategy strategy) {
             retryStrategy = strategy;
             return this;
         }
