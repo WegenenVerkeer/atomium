@@ -27,7 +27,7 @@ object Dependencies {
   val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
   val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
-  val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.54"         % "test"
+  val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.57"         % "test"
 
 
   // java deps
