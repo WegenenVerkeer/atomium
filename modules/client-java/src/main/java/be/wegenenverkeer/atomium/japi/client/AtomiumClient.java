@@ -17,7 +17,11 @@ import org.xml.sax.InputSource;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func0;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.MultipleAssignmentSubscription;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -29,7 +33,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
 /**
  * A client for Atomium AtomPub feeds.
@@ -137,7 +140,6 @@ public class AtomiumClient {
             int failedCount = 0;
         }
 
-
         /**
          * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries in the feed
          * starting from the oldest entry immediately after the specified entry.
@@ -219,10 +221,11 @@ public class AtomiumClient {
         private Observable<FeedEntry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
             Observable<FeedWrapper<E>> observableFeedPage = Observable.create((subscriber) -> {
                 Scheduler.Worker worker = Schedulers.io().createWorker();
-                worker.schedulePeriodically(() -> {
+                schedulePeriodically(worker, () -> {
                     logger.debug("Scheduled work started");
                     String urlOfPageToRetrieve = state.lastSeenSelfHref.orElse("");
                     try {
+
                         while (!subscriber.isUnsubscribed() && urlOfPageToRetrieve != null) {
                             logger.debug("Start polling");
                             FeedWrapper<E> page = retrievePagePruned(state, urlOfPageToRetrieve);
@@ -240,7 +243,7 @@ public class AtomiumClient {
                             state.failedCount = state.failedCount + 1;
                             logger.warn("Receiving error on retrieving: " + urlOfPageToRetrieve + ": " + e.getMessage() + " (" + e.getClass().getName() + ")");
                             logger.info("Setting failed count to:" + state.failedCount);
-                            retryStrategy.apply(state.failedCount, e);
+                            return retryStrategy.apply(state.failedCount, e);
                         } catch (Exception e2) {
                             subscriber.onError(e2);
                             worker.unsubscribe();
@@ -248,7 +251,8 @@ public class AtomiumClient {
                         }
                     }
                     logger.debug("Scheduled work finished.");
-                }, 0, intervalInMs, TimeUnit.MILLISECONDS);
+                    return Long.valueOf(intervalInMs);
+                }, 0, TimeUnit.MILLISECONDS);
             });
 
             return observableFeedPage
@@ -265,6 +269,7 @@ public class AtomiumClient {
                 state.lastSeenEtag = page.getEtag();
                 state.lastSeenEntryId = Optional.of(page.getLastEntryId());
                 state.lastSeenSelfHref = Optional.of(page.getSelfHref());
+                //reset failed count and  delay between executions
                 state.failedCount = 0;
                 logger.debug("Setting lastseenSelfHref to :" + page.getSelfHref());
             } else {
@@ -278,6 +283,38 @@ public class AtomiumClient {
             logger.debug("Retrieving page: " + url);
             Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
             return prune(feedObservable.toBlocking().last(), state);
+        }
+
+        /**
+         * This is an adaptation of Scheduler.Worker#schedulePeriodically()
+         * <p>
+         * Schedules a cancelable action to be executed periodically. This implementation schedules
+         * recursively and waits for actions to complete (instead of potentially executing long-running actions
+         * concurrently). The delay time for the next execution is read out of the DelayHolder. This allows the action to modify
+         * delay time
+         * </p>
+         */
+        private Subscription schedulePeriodically(final Scheduler.Worker worker, final Func0<Long> action, long initialDelay, TimeUnit unit) {
+            final long startInNanos = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis()) + unit.toNanos(initialDelay);
+            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+            final Action0 recursiveAction = new Action0() {
+                long count = 0;
+                long nextTick = startInNanos;
+                long delay = initialDelay;
+                @Override
+                public void call() {
+                    if (!mas.isUnsubscribed()) {
+                        delay  = action.call();
+                        final long periodInNanos = unit.toNanos(delay);
+                        nextTick = nextTick + periodInNanos;
+                        long waitTime = nextTick - TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis());
+                        logger.debug("Setting wait time to: " + TimeUnit.NANOSECONDS.toMillis(waitTime));
+                        mas.set(worker.schedule(this, waitTime, TimeUnit.NANOSECONDS));
+                    }
+                }
+            };
+            mas.set(worker.schedule(recursiveAction, initialDelay, unit));
+            return mas;
         }
 
 

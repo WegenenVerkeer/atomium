@@ -71,7 +71,7 @@ public class RetryStrategyTest {
                 .feed("/feeds/events", Event.class)
                 .withRetry((n, t) -> {
                     if (n < 2) {
-                        return 1000L;
+                        return 2*n*1000L;
                     } else throw new RuntimeException(t);
                 })
                 .observeFromBeginning(1000);
@@ -87,13 +87,13 @@ public class RetryStrategyTest {
     }
 
     @Test
-    public void testretryStrategyThreeRetries() {
+    public void testRetryStrategyThreeRetries() {
 
         Observable<FeedEntry<Event>> observable = client
                 .feed("/feeds/events", Event.class)
                 .withRetry((n, t) -> {
                     if (n < 3) {
-                        return 1000L;
+                        return 2*n*1000L;
                     } else throw new RuntimeException(t);
                 })
                 .observeFromBeginning(1000).take(25);
@@ -105,6 +105,7 @@ public class RetryStrategyTest {
         subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
 
         subscriber.assertNoErrors();
+        assertEquals(25, subscriber.getOnNextEvents().size());
 
     }
 
