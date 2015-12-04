@@ -91,7 +91,7 @@ class FeedWrapper<T> {
 
     /**
      * Returns the entries in the feedpage in order oldest to newest.
-     * @return
+     * @return list of entries in the feedpage in order oldest to newest.
      */
     public List<Entry<T>> getEntries() {
         return this.entries;
