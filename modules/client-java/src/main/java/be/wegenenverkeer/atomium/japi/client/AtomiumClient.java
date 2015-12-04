@@ -36,9 +36,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A client for Atomium AtomPub feeds.
- * <p>
+ *
  * <p>It is best-practice to create a single AtomiumClient for all feeds on a specific host.</p>
- * <p>
+ *
  * Created by Karel Maesen, Geovise BVBA on 16/03/15.
  */
 public class AtomiumClient {
@@ -53,10 +53,10 @@ public class AtomiumClient {
 
     /**
      * Creates a {@code FeedObservableBuilder} for the specified feed and entry type
-     * <p>
+     *
      * <p>The feedPath argument appended to the baseUrl of this {@code AtomiumClient} should equal the
      * xml:base-attribute of the feedpage</p>
-     * <p>
+     *
      * <p>The entryTypeMarker-class should have the required public accessors and JAXB-annotations to enable
      * proper unmarshalling. For Json-unmarshalling, the  Jackson library is used.</p>
      *
@@ -199,7 +199,7 @@ public class AtomiumClient {
          * starting from the begnning.
          * <p>Starting from the beginning means going to the 'last' page of the feed, and the bottom entry on that page, and working back
          * to the present.</p>
-         *
+         * @param intervalInMs the polling interval in ms.
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
