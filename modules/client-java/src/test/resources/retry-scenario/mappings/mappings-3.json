@@ -1,0 +1,18 @@
+{
+  "scenarioName": "retry",
+  "requiredScenarioState": "Error",
+  "newScenarioState": "Error2",
+  "request" : {
+    "url" : "/feeds/events/10/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/json"
+      }
+    }
+  },
+  "response" : {
+    "status" : 503
+    }
+  }
+}

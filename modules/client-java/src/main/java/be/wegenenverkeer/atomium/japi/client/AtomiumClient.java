@@ -16,7 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import rx.Observable;
 import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func0;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.MultipleAssignmentSubscription;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -41,7 +46,6 @@ public class AtomiumClient {
     private final static Logger logger = LoggerFactory.getLogger(AtomiumClient.class);
 
     private final RxHttpClient rxHttpClient;
-
 
     private AtomiumClient(RxHttpClient rxHttpClient) {
         this.rxHttpClient = rxHttpClient;
@@ -84,6 +88,14 @@ public class AtomiumClient {
         private final ObjectMapper objectMapper;
         private final String feedName;
         private final JavaType javaType;
+        private RetryStrategy retryStrategy= (n, t) -> {
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else {
+                throw new RuntimeException(t);
+            }
+        };
+
 
         /**
          * Creates an instance - only accessible from AtomiumClient.
@@ -104,6 +116,11 @@ public class AtomiumClient {
             }
         }
 
+        public FeedObservableBuilder<E> withRetry(RetryStrategy strategy) {
+            retryStrategy = strategy;
+            return this;
+        }
+
         private ObjectMapper configureObjectMapper() {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JodaModule());
@@ -120,8 +137,8 @@ public class AtomiumClient {
             Optional<String> lastSeenEtag = Optional.empty();
             Optional<String> lastSeenSelfHref = Optional.empty();
             Optional<String> lastSeenEntryId = Optional.empty();
+            int failedCount = 0;
         }
-
 
         /**
          * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries in the feed
@@ -168,8 +185,8 @@ public class AtomiumClient {
          * Creates a "cold" {@link Observable} that, when subscribed to, emits all entries on the feed
          * starting from those then on the head of the feed.
          * <p>The behavior is analogous to the method {@code observeFrom()} but starting from the head page</p>
-         * @param intervalInMs the polling interval in milliseconds.
          *
+         * @param intervalInMs the polling interval in milliseconds.
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromNowOn(final int intervalInMs) {
@@ -182,7 +199,7 @@ public class AtomiumClient {
          * starting from the begnning.
          * <p>Starting from the beginning means going to the 'last' page of the feed, and the bottom entry on that page, and working back
          * to the present.</p>
-         *
+         * @param intervalInMs the polling interval in ms.
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
@@ -203,30 +220,17 @@ public class AtomiumClient {
          */
         private Observable<FeedEntry<E>> feedWrapperObservable(final ClientState state, final int intervalInMs) {
             Observable<FeedWrapper<E>> observableFeedPage = Observable.create((subscriber) -> {
-                Scheduler.Worker worker = Schedulers.newThread().createWorker();
-                worker.schedulePeriodically(() -> {
+                Scheduler.Worker worker = Schedulers.io().createWorker();
+                schedulePeriodically(worker, () -> {
                     logger.debug("Scheduled work started");
-                    String url = state.lastSeenSelfHref.orElse("");
+                    String urlOfPageToRetrieve = state.lastSeenSelfHref.orElse("");
                     try {
-                        while (!subscriber.isUnsubscribed() && url != null) {
-                            logger.debug("Start polling");
-                            Optional<String> etag = Optional.empty();
-                            etag = state.lastSeenEtag;
-                            logger.debug("Retrieving page: " + url);
-                            Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
-                            FeedWrapper<E> feed = prune(feedObservable.toBlocking().last(), state);
-                            if (!feed.isEmpty()) {
 
-                                logger.debug("Emitting: " + feed.getEntries());
-                                subscriber.onNext(feed);
-                                state.lastSeenEtag = feed.getEtag();
-                                state.lastSeenEntryId = Optional.of(feed.getLastEntryId());
-                                state.lastSeenSelfHref = Optional.of(feed.getSelfHref());
-                                logger.debug("Setting lastseenSelfHref to :" + feed.getSelfHref());
-                            } else {
-                                logger.debug("Received 304");
-                            }
-                            url = feed.getPreviousHref().orElse(null);
+                        while (!subscriber.isUnsubscribed() && urlOfPageToRetrieve != null) {
+                            logger.debug("Start polling");
+                            FeedWrapper<E> page = retrievePagePruned(state, urlOfPageToRetrieve);
+                            notifySubscriberAndUpdateClientState(subscriber, page, state);
+                            urlOfPageToRetrieve = page.getPreviousHref().orElse(null);
                         }
 
                         if (subscriber.isUnsubscribed()) {
@@ -235,19 +239,82 @@ public class AtomiumClient {
                         }
 
                     } catch (Exception e) {
-                        subscriber.onError(e);
-                        worker.unsubscribe();
-                        logger.debug("Worker unsubscribe after error");
+                        try {
+                            state.failedCount = state.failedCount + 1;
+                            logger.warn("Receiving error on retrieving: " + urlOfPageToRetrieve + ": " + e.getMessage() + " (" + e.getClass().getName() + ")");
+                            logger.info("Setting failed count to:" + state.failedCount);
+                            return retryStrategy.apply(state.failedCount, e);
+                        } catch (Exception e2) {
+                            subscriber.onError(e2);
+                            worker.unsubscribe();
+                            logger.debug("Worker unsubscribe after error");
+                        }
                     }
                     logger.debug("Scheduled work finished.");
-                }, 0, intervalInMs, TimeUnit.MILLISECONDS);
+                    return Long.valueOf(intervalInMs);
+                }, 0, TimeUnit.MILLISECONDS);
             });
 
             return observableFeedPage
                     .flatMap(feed ->
-                            Observable.from(feed.getEntries())
-                                    .map(entry -> new FeedEntry<>(entry, feed))
+                                    Observable.from(feed.getEntries())
+                                            .map(entry -> new FeedEntry<>(entry, feed))
                     );
+        }
+
+        private void notifySubscriberAndUpdateClientState(Subscriber<? super FeedWrapper<E>> subscriber, FeedWrapper<E> page, ClientState state) {
+            if (!page.isEmpty()) {
+                logger.debug("Emitting: " + page.getEntries());
+                subscriber.onNext(page);
+                state.lastSeenEtag = page.getEtag();
+                state.lastSeenEntryId = Optional.of(page.getLastEntryId());
+                state.lastSeenSelfHref = Optional.of(page.getSelfHref());
+                //reset failed count and  delay between executions
+                state.failedCount = 0;
+                logger.debug("Setting lastseenSelfHref to :" + page.getSelfHref());
+            } else {
+                logger.info("Received Empty page (after pruning)");
+            }
+        }
+
+        private FeedWrapper<E> retrievePagePruned(ClientState state, String url) {
+            Optional<String> etag = Optional.empty();
+            etag = state.lastSeenEtag;
+            logger.debug("Retrieving page: " + url);
+            Observable<FeedWrapper<E>> feedObservable = createFeedWrapperObservable(url, etag);
+            return prune(feedObservable.toBlocking().last(), state);
+        }
+
+        /**
+         * This is an adaptation of Scheduler.Worker#schedulePeriodically()
+         * <p>
+         * Schedules a cancelable action to be executed periodically. This implementation schedules
+         * recursively and waits for actions to complete (instead of potentially executing long-running actions
+         * concurrently). The delay time for the next execution is read out of the DelayHolder. This allows the action to modify
+         * delay time
+         * </p>
+         */
+        private Subscription schedulePeriodically(final Scheduler.Worker worker, final Func0<Long> action, long initialDelay, TimeUnit unit) {
+            final long startInNanos = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis()) + unit.toNanos(initialDelay);
+            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
+            final Action0 recursiveAction = new Action0() {
+                long count = 0;
+                long nextTick = startInNanos;
+                long delay = initialDelay;
+                @Override
+                public void call() {
+                    if (!mas.isUnsubscribed()) {
+                        delay  = action.call();
+                        final long periodInNanos = unit.toNanos(delay);
+                        nextTick = nextTick + periodInNanos;
+                        long waitTime = nextTick - TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis());
+                        logger.debug("Setting wait time to: " + TimeUnit.NANOSECONDS.toMillis(waitTime));
+                        mas.set(worker.schedule(this, waitTime, TimeUnit.NANOSECONDS));
+                    }
+                }
+            };
+            mas.set(worker.schedule(recursiveAction, initialDelay, unit));
+            return mas;
         }
 
 
@@ -347,7 +414,6 @@ public class AtomiumClient {
 
         private final String JSON_MIME_TYPE = "application/json"; //TODO -- change to "official" AtomPub mimetypes
         private final String XML_MIME_TYPE = "application/xml";
-
         final private RxHttpClient.Builder rxHttpClientBuilder = new RxHttpClient.Builder();
 
         public Builder() {

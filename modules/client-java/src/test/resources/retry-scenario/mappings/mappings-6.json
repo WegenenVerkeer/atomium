@@ -1,0 +1,27 @@
+{
+  "scenarioName": "retry",
+  "requiredScenarioState": "Running2",
+  "newScenarioState": "Running2",
+  "request" : {
+    "url" : "/feeds/events/10/forward/10",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/json"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-10-forward-10.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/json",
+      "ETag" : "a7efe08ab6814170156ae94cce8c4fbd",
+      "Expires" : "Fri, 25 Mar 2016 14:57:59 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:53:39 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "3880"
+    }
+  }
+}

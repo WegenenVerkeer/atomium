@@ -24,17 +24,11 @@ import rx.observers.TestSubscriber
  *
  * Created by Karel Maesen, Geovise BVBA on 16/04/15.
  */
-class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
+class AtomiumClientTest extends FlatSpec with Matchers  with WithWireMock {
 
-  val REQUEST_TIME_OUT = 5000
-  val WIREMOCK_MAPPINGS = new SingleRootFileSource("modules/client-java/src/test/resources/basis-scenario")
+  def fileSource = "modules/client-java/src/test/resources/basis-scenario"
 
-  //we take a different port then in java-client module, because tests unfortunately continue to overlap with java client module
-  val port: Int = 8089
-
-  val server = new WireMockServer(wireMockConfig.port(port).fileSource(WIREMOCK_MAPPINGS))
-
-  var client: AtomiumClient = null //will be instantiated in before block
+  val client = mkClientAcceptingXml
 
   behavior of "AtomiumClient (Scala) "
 
@@ -52,35 +46,18 @@ class AtomiumClientTest extends FlatSpec with Matchers with BeforeAndAfter {
     testSubscriber.assertNoErrors()
   }
 
-  before {
-    server.start()
-    configureFor("localhost", port)
-
-    client = new japi.client.AtomiumClient.Builder()
-      .setBaseUrl(s"http://localhost:$port/")
-      .setAcceptXml()
-      .build
-      .asScala
-
-  }
-
-  after {
-    server.shutdown()
-    Thread.sleep(1000)
-  }
-
 
 }
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.NONE)
-class Event {
-
-  @XmlElement var value: Double = null.asInstanceOf[Double]
-  @XmlElement var description: String = null.asInstanceOf[String]
-  @XmlAttribute var version: Integer = null.asInstanceOf[Integer]
-
-  override def toString: String = {
-    "Event " + version + " " + "description " + " value: " + value
-  }
-}
+//@XmlRootElement
+//@XmlAccessorType(XmlAccessType.NONE)
+//class Event {
+//
+//  @XmlElement var value: Double = null.asInstanceOf[Double]
+//  @XmlElement var description: String = null.asInstanceOf[String]
+//  @XmlAttribute var version: Integer = null.asInstanceOf[Integer]
+//
+//  override def toString: String = {
+//    "Event " + version + " " + "description " + " value: " + value
+//  }
+//}
