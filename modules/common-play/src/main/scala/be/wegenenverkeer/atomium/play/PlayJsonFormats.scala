@@ -80,10 +80,10 @@ object PlayJsonFormats {
 
   implicit def entryReads[T: Reads]: Reads[Entry[T]] = new Reads[Entry[T]] {
     override def reads(json: JsValue): JsResult[Entry[T]] = {
-      val hasControl = (json \ "_type").as[String]
+      val hasControl = (json \ "_type").asOpt[String]
       hasControl match {
-        case "atom-pub" => atomPubEntryReads[T].reads(json)
-        case _          => atomEntryReads[T].reads(json)
+        case Some("atom-pub") => atomPubEntryReads[T].reads(json)
+        case _                => atomEntryReads[T].reads(json)
       }
     }
   }
