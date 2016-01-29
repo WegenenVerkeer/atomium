@@ -210,7 +210,10 @@ public class AtomiumClient {
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
-            final ClientState initialState = new ClientState();
+            return observeFromBeginning(intervalInMs, new ClientState());
+        }
+
+        private Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs, ClientState initialState) {
             return observableToLastPageLink()
                     .map(link -> {
                         final ClientState state = new ClientState();
@@ -220,12 +223,14 @@ public class AtomiumClient {
                     .flatMap(state -> feedWrapperObservable(state, intervalInMs))
                     .onErrorResumeNext(t -> {
                         initialState.failedCount += 1;
-                        Long delay = retryStrategy.apply(initialState.failedCount, t);
                         try {
+                            Long delay = retryStrategy.apply(initialState.failedCount, t);
                             if (delay != null) Thread.sleep(delay);
-                            return observeFromBeginning(intervalInMs);
+                            return observeFromBeginning(intervalInMs, initialState);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
+                            return Observable.error(e);
+                        } catch (Exception e) {
                             return Observable.error(e);
                         }
                     });
