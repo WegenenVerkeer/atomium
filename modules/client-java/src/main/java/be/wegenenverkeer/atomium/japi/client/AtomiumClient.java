@@ -8,6 +8,7 @@ import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttp.RxHttpClient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -27,10 +28,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +45,12 @@ public class AtomiumClient {
 
     private final RxHttpClient rxHttpClient;
 
-    private AtomiumClient(RxHttpClient rxHttpClient) {
+    /**
+     * Creates an AtomiumClient from the specified {@code RxHttpClient} instance
+     *
+     * @param rxHttpClient the HTTP client
+     */
+    public AtomiumClient(RxHttpClient rxHttpClient) {
         this.rxHttpClient = rxHttpClient;
     }
 
@@ -63,10 +66,11 @@ public class AtomiumClient {
      * @param feedPath        the path to the feed
      * @param entryTypeMarker the Class of the Entry content value
      * @param <E>             the class parameter of the Entry content value
+     * @param modules         optional extra Jackson modules
      * @return a {@code FeedObservableBuilder}
      */
-    public <E> FeedObservableBuilder<E> feed(String feedPath, Class<E> entryTypeMarker) {
-        return new FeedObservableBuilder<>(feedPath, entryTypeMarker, rxHttpClient);
+    public <E> FeedObservableBuilder<E> feed(String feedPath, Class<E> entryTypeMarker, Module... modules) {
+        return new FeedObservableBuilder<>(feedPath, entryTypeMarker, rxHttpClient, modules);
     }
 
     /**
@@ -88,6 +92,7 @@ public class AtomiumClient {
         private final ObjectMapper objectMapper;
         private final String feedName;
         private final JavaType javaType;
+        private Map<String, String> extraHeaders = Collections.emptyMap();
         private RetryStrategy retryStrategy= (n, t) -> {
             if (t instanceof RuntimeException) {
                 throw (RuntimeException)t;
@@ -96,7 +101,6 @@ public class AtomiumClient {
             }
         };
 
-
         /**
          * Creates an instance - only accessible from AtomiumClient.
          *
@@ -104,10 +108,10 @@ public class AtomiumClient {
          * @param entryTypeMarker the class of Entry content
          * @param rxClient        the underlying Http-client.
          */
-        FeedObservableBuilder(String feedPath, Class<E> entryTypeMarker, RxHttpClient rxClient) {
+        FeedObservableBuilder(String feedPath, Class<E> entryTypeMarker, RxHttpClient rxClient, Module... modules) {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
-            this.objectMapper = configureObjectMapper();
+            this.objectMapper = configureObjectMapper(modules);
             this.javaType = objectMapper.getTypeFactory().constructParametricType(Feed.class, entryTypeMarker);
             try {
                 jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, entryTypeMarker);
@@ -121,12 +125,20 @@ public class AtomiumClient {
             return this;
         }
 
-        private ObjectMapper configureObjectMapper() {
+        public FeedObservableBuilder<E> withExtraHeaders(Map<String, String> headers) {
+            this.extraHeaders = headers;
+            return this;
+        }
+
+        private ObjectMapper configureObjectMapper(Module... modules) {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JodaModule());
             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+            for (Module module : modules) {
+                objectMapper.registerModule(module);
+            }
             return objectMapper;
         }
 
@@ -203,13 +215,30 @@ public class AtomiumClient {
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
+            return observeFromBeginning(intervalInMs, new ClientState());
+        }
+
+        private Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs, ClientState initialState) {
             return observableToLastPageLink()
                     .map(link -> {
                         final ClientState state = new ClientState();
                         state.lastSeenSelfHref = Optional.of(link);
                         return state;
                     })
-                    .flatMap(state -> feedWrapperObservable(state, intervalInMs));
+                    .flatMap(state -> feedWrapperObservable(state, intervalInMs))
+                    .onErrorResumeNext(t -> {
+                        initialState.failedCount += 1;
+                        try {
+                            Long delay = retryStrategy.apply(initialState.failedCount, t);
+                            if (delay != null) Thread.sleep(delay);
+                            return observeFromBeginning(intervalInMs, initialState);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return Observable.error(e);
+                        } catch (Exception e) {
+                            return Observable.error(e);
+                        }
+                    });
         }
 
         /**
@@ -369,6 +398,9 @@ public class AtomiumClient {
 
         private ClientRequest buildConditionalGet(String url, Optional<String> etag) {
             ClientRequestBuilder builder = rxHttpClient.requestBuilder().setMethod("GET");
+            for (Map.Entry<String, String> header : extraHeaders.entrySet()) {
+                builder.addHeader(header.getKey(), header.getValue());
+            }
             String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(feedName, url);
             builder.setUrlRelativetoBase(relative);
 
@@ -516,6 +548,17 @@ public class AtomiumClient {
          */
         public Builder setExecutorService(ExecutorService applicationThreadPool) {
             rxHttpClientBuilder.setExecutorService(applicationThreadPool);
+            return this;
+        }
+
+        /**
+         * Set to true to enable HTTP redirect
+         *
+         * @param followRedirects if true redirects will be automatically followed
+         * @return a {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
+         */
+        public Builder setFollowRedirect(boolean followRedirects) {
+            rxHttpClientBuilder.setFollowRedirect(followRedirects);
             return this;
         }
     }
