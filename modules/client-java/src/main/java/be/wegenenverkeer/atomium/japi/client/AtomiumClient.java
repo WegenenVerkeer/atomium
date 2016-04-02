@@ -45,7 +45,12 @@ public class AtomiumClient {
 
     private final RxHttpClient rxHttpClient;
 
-    private AtomiumClient(RxHttpClient rxHttpClient) {
+    /**
+     * Creates an AtomiumClient from the specified {@code RxHttpClient} instance
+     *
+     * @param rxHttpClient the HTTP client
+     */
+    public AtomiumClient(RxHttpClient rxHttpClient) {
         this.rxHttpClient = rxHttpClient;
     }
 
