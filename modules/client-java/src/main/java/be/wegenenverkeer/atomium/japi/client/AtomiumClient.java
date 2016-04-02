@@ -215,13 +215,30 @@ public class AtomiumClient {
          * @return a "cold" {@link Observable}
          */
         public Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs) {
+            return observeFromBeginning(intervalInMs, new ClientState());
+        }
+
+        private Observable<FeedEntry<E>> observeFromBeginning(final int intervalInMs, ClientState initialState) {
             return observableToLastPageLink()
                     .map(link -> {
                         final ClientState state = new ClientState();
                         state.lastSeenSelfHref = Optional.of(link);
                         return state;
                     })
-                    .flatMap(state -> feedWrapperObservable(state, intervalInMs));
+                    .flatMap(state -> feedWrapperObservable(state, intervalInMs))
+                    .onErrorResumeNext(t -> {
+                        initialState.failedCount += 1;
+                        try {
+                            Long delay = retryStrategy.apply(initialState.failedCount, t);
+                            if (delay != null) Thread.sleep(delay);
+                            return observeFromBeginning(intervalInMs, initialState);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return Observable.error(e);
+                        } catch (Exception e) {
+                            return Observable.error(e);
+                        }
+                    });
         }
 
         /**
