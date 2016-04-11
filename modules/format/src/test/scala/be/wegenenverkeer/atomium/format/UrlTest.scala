@@ -1,14 +1,8 @@
 package be.wegenenverkeer.atomium.format
 
-
 import org.scalatest.{FunSuite, Matchers}
 
-/**
-  * Created by cvf on 11/04/16.
-  */
 class UrlTest extends FunSuite with Matchers {
-
-
 
 
 
@@ -30,7 +24,7 @@ class UrlTest extends FunSuite with Matchers {
 
   test("Can build http path while avoiding double slashes slash already in base") {
 
-    val url = Url("http://foo.bar/") / "/test"
+    val url = Url("http://foo.bar/") / "test"
 
     url.path shouldBe "http://foo.bar/test"
 
@@ -62,7 +56,7 @@ class UrlTest extends FunSuite with Matchers {
 
   test("Can build https path while avoiding double slashes slash already in base") {
 
-    val url = Url("https://foo.bar/") / "/test"
+    val url = Url("https://foo.bar/") / "test"
 
     url.path shouldBe "https://foo.bar/test"
 
