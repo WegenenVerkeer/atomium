@@ -1,5 +1,6 @@
 import play.Play.autoImport._
 import play.PlayScala
+import Dependencies._
 import sbt.Keys._
 import sbt._
 
@@ -29,6 +30,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val formatModule =
     project("format")
+      .settings(libraryDependencies ++= mainScalaTestDependencies)
       .dependsOn(javaFormatModule)
 
 
