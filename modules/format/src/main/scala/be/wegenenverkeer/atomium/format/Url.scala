@@ -31,12 +31,20 @@ case class Url(path: String) {
     add(additionalPath.toString)
 
   private def add(additional: String) : Url= {
-    val raw = s"$path/$additional"
-    def contractRepeatedSlashes: String = {
-      val repeatedRegex = "(/)\\1+"
-      if (raw.startsWith("http://")) s"http:/${raw.substring(6).replaceAll(repeatedRegex, "$1")}"
-      else raw.replaceAll(repeatedRegex, "$1")
+
+    val startsWith = additional.startsWith("/")
+    val endsWith = path.endsWith("/")
+
+    if(startsWith && endsWith) {
+      //one of the slashes must go
+      Url(s"$path${additional.drop(1)}")
+    } else if( startsWith || endsWith) {
+      // only one slash, ok
+      Url(s"$path$additional")
+    } else {
+      // no slashes, add one
+      Url(s"$path/$additional")
     }
-    Url(contractRepeatedSlashes)
+
   }
 }
