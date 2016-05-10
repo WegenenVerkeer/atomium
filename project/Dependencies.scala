@@ -35,7 +35,7 @@ object Dependencies {
   val junitInterface    = "com.novocode"                    %   "junit-interface"         % "0.11"    % "test"
   val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"        % "2.4.3"
   val jacksonJoda       = "com.fasterxml.jackson.datatype"  %   "jackson-datatype-joda"   % "2.4.3"
-  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"       % "0.3.1"
+  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"       % "0.4.0"
 
 
   val slf4j             = "org.slf4j"                       %   "slf4j-api"               % "1.7.6"
