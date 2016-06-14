@@ -86,6 +86,16 @@ object AtomiumBuild extends Build with BuildSettings {
       .aggregate(formatModule)
   }
 
+  //----------------------------------------------------------------
+  lazy val commonPlay25Module = {
+
+    val mainDeps = Seq(play25, play25Json)
+
+    project("common-play25")
+      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
+      .dependsOn(formatModule)
+      .aggregate(formatModule)
+  }
 
   //----------------------------------------------------------------
   lazy val serverModule =
@@ -140,7 +150,18 @@ object AtomiumBuild extends Build with BuildSettings {
       .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
   }
 
- //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  lazy val serverPlay25Module = {
+
+    val mainDeps = Seq()
+    val testDeps = Seq(playMockWs, play25Test, scalaTestPlay) ++ mainScalaTestDependencies
+
+    project("server-play25")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
+  }
+
+  //----------------------------------------------------------------
   lazy val serverPlaySampleModule = {
    
     project("server-play-sample")
@@ -154,6 +175,7 @@ object AtomiumBuild extends Build with BuildSettings {
     javaFormatModule,
     formatModule,
     commonPlayModule,
+    commonPlay25Module,
     clientAkkaModule,
     clientScalaModule,
     clientJavaModule,
@@ -162,6 +184,7 @@ object AtomiumBuild extends Build with BuildSettings {
     serverSlickModule,
     serverJdbcModule,
     serverPlayModule,
+    serverPlay25Module,
     serverPlaySampleModule
   )
 }
