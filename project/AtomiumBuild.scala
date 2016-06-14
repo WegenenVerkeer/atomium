@@ -1,6 +1,5 @@
-import play.Play.autoImport._
-import play.PlayScala
-import Dependencies._
+import play.sbt.Play.autoImport._
+import play.sbt.PlayScala
 import sbt.Keys._
 import sbt._
 
@@ -31,6 +30,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val formatModule =
     project("format")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(javaFormatModule)
 
 
@@ -43,6 +43,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("client-akka")
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile", clientScalaModule % "test->test;compile->compile")
       .aggregate(formatModule, serverModule)
   }
@@ -56,6 +57,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("client-scala")
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
       .aggregate(formatModule, serverModule)
   }
@@ -82,6 +84,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("common-play")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(formatModule)
       .aggregate(formatModule)
   }
@@ -93,6 +96,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("common-play25")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
+      .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(formatModule)
       .aggregate(formatModule)
   }
@@ -101,6 +105,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val serverModule =
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(formatModule)
 
 
@@ -112,6 +117,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-mongo")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile")
   }
 
@@ -124,6 +130,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-slick")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile")
   }
 
@@ -135,6 +142,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-jdbc")
       .settings(libraryDependencies ++= testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile")
   }
 
@@ -147,6 +155,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
   }
 
@@ -158,6 +167,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-play25")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
   }
 
@@ -166,6 +176,7 @@ object AtomiumBuild extends Build with BuildSettings {
    
     project("server-play-sample")
       .enablePlugins(PlayScala)
+      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", serverPlayModule)
   }
 

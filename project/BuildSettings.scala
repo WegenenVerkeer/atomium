@@ -1,8 +1,7 @@
 import de.johoop.jacoco4sbt.JacocoPlugin._
 import sbt.Keys._
 import sbt.{Configuration, _}
-
-import scala.util.Properties
+import sbtdoge.CrossPerProjectPlugin
 
 trait BuildSettings {
 
@@ -26,6 +25,7 @@ trait BuildSettings {
       settings = projectSettings()
     ).settings(publishArtifact := false)
       .aggregate(modules: _*)
+      .enablePlugins(CrossPerProjectPlugin)
   }
 
   private def projectSettings() = {
