@@ -94,9 +94,13 @@ object AtomiumBuild extends Build with BuildSettings {
 
     val mainDeps = Seq(play25, play25Json)
 
-    project("common-play25")
+    //set source dir to source dir in commonPlayModule
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))     
+
+    project("common-play25")          
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.11.8"))
+      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
+      .settings(crossScalaVersions := Seq("2.11.8"))    
       .dependsOn(formatModule)
       .aggregate(formatModule)
   }
@@ -165,15 +169,19 @@ object AtomiumBuild extends Build with BuildSettings {
     val mainDeps = Seq()
     val testDeps = Seq(playMockWs, play25Test, scalaTestPlay) ++ mainScalaTestDependencies
 
+    //set source dir to source dir in serverPlaySampleModule
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))     
+
     project("server-play25")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
       .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
   }
 
   //----------------------------------------------------------------
   lazy val serverPlaySampleModule = {
-   
+
     project("server-play-sample")
       .enablePlugins(PlayScala)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
