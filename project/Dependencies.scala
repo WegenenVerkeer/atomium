@@ -4,6 +4,7 @@ import sbt._
 object Dependencies {
 
   val playVersion = "2.4.2"
+  val play25Version = "2.5.4"
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
@@ -18,6 +19,12 @@ object Dependencies {
   val slick             = "com.typesafe.slick"          %%    "slick"                         % "2.1.0"
   val slickPostgres     = "com.github.tminglei"         %%    "slick-pg"                      % "0.7.0"
   val akkaPersistence   = "com.typesafe.akka"           %%    "akka-persistence-experimental" % "2.3.12"
+
+  //play25 deps
+  val play25Json          = "com.typesafe.play"           %%    "play-json"                     % play25Version
+  val play25Ws            = "com.typesafe.play"           %%    "play-ws"                       % play25Version
+  val play25              = "com.typesafe.play"           %%    "play"                          % play25Version
+  val play25Test          = "com.typesafe.play"           %%    "play-test"                     % play25Version    % "test"
 
   // test deps
   val scalaTest         = "org.scalatest"               %%    "scalatest"               % "2.2.0"        % "test"
