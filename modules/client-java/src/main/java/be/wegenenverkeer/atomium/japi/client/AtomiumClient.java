@@ -469,6 +469,16 @@ public class AtomiumClient {
         }
 
         /**
+         * Sets the Accept-header to user supplied string.
+         *
+         * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
+         */
+        public Builder setAccept(String accept) {
+            rxHttpClientBuilder.setAccept(accept);
+            return this;
+        }
+
+        /**
          * Sets the Accept-header to JSON.
          *
          * @return this {@link be.wegenenverkeer.rxhttp.RxHttpClient.Builder}
