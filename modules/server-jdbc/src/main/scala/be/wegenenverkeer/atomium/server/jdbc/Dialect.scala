@@ -1,8 +1,7 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
 import java.sql._
-
-import org.joda.time.DateTime
+import java.time.OffsetDateTime
 
 trait Dialect {
 
@@ -125,7 +124,7 @@ trait Dialect {
           d match {
             case stringData: String => preparedStatement.setString(index, stringData)
             case intData: Int       => preparedStatement.setInt(index, intData)
-            case timeData: DateTime => preparedStatement.setTimestamp(index, new Timestamp(timeData.toDate.getTime))
+            case timeData: OffsetDateTime => preparedStatement.setTimestamp(index, new Timestamp(timeData.toInstant.toEpochMilli))
             case _                  => throw new SQLDataException("Unknown data type used in the atomium feed generator.")
           }
           setPreparedData(ds, index + 1)

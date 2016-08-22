@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.format
 
-import org.joda.time.DateTime
+import java.time.OffsetDateTime
 
-case class AtomEntry[+T](id: String, updated: DateTime, content: Content[T], links: List[Link]) extends Entry[T]
+
+case class AtomEntry[+T](id: String, updated: OffsetDateTime, content: Content[T], links: List[Link]) extends Entry[T]

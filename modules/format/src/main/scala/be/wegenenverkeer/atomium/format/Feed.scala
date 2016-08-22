@@ -3,8 +3,7 @@ package be.wegenenverkeer.atomium.format
 import java.math.BigInteger
 import java.net.URI
 import java.security.MessageDigest
-
-import org.joda.time.DateTime
+import java.time.OffsetDateTime
 
 /**
  * Representation of a (page in an) Atom feed.
@@ -22,7 +21,7 @@ case class Feed[+T](id: String,
                    base: Url,
                    title: Option[String],
                    generator: Option[Generator] = None,
-                   updated: DateTime,
+                   updated: OffsetDateTime,
                    links: List[Link],
                    entries: List[Entry[T]],
                    headers: Map[String, String] = Map.empty) {

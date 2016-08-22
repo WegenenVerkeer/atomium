@@ -1,8 +1,11 @@
 package be.wegenenverkeer.atomium.play
 
+import java.time.format.DateTimeFormatter
+import java.time.{OffsetDateTime, ZonedDateTime}
+
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.format.pub._
-import org.joda.time.DateTime
+import be.wegenenverkeer.atomium.japi.format.Adapters
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -13,10 +16,16 @@ import play.api.libs.json._
  */
 object PlayJsonFormats {
 
-  val datePattern = "yyyy-MM-dd'T'HH:mm:ssZ"
+  implicit def offsetDateTimeFormatter(formatter: DateTimeFormatter): Writes.TemporalFormatter[OffsetDateTime] = new Writes.TemporalFormatter[OffsetDateTime] {
+    def format(temporal: OffsetDateTime): String = formatter.format(temporal)
+  }
 
-  implicit val jodaDateTimeFormat =
-    Format[DateTime](Reads.jodaDateReads(datePattern), Writes.jodaDateWrites(datePattern))
+  implicit val dateTimeFormat =
+    Format[OffsetDateTime](
+      Reads.DefaultZonedDateTimeReads.map( _.toOffsetDateTime),
+      Writes.temporalWrites[OffsetDateTime, DateTimeFormatter](
+        Adapters.formatter)
+    )
 
   implicit val urlFormat = new Format[Url] {
     override def writes(url: Url): JsValue = JsString(url.path)
@@ -62,7 +71,7 @@ object PlayJsonFormats {
 
   implicit def atomEntryWrites[T: Writes]: Writes[AtomEntry[T]] = (
     (__ \ "id").write[String] and
-      (__ \ "updated").write[DateTime] and
+      (__ \ "updated").write[OffsetDateTime] and
       (__ \ "content").write[Content[T]] and
       (__ \ "links").write[List[Link]] and
       (__ \ "_type").write[String] // type information
@@ -70,10 +79,10 @@ object PlayJsonFormats {
 
   implicit def atomPubEntryWrites[T: Writes]: Writes[AtomPubEntry[T]] = (
     (__ \ "id").write[String] and
-      (__ \ "updated").write[DateTime] and
+      (__ \ "updated").write[OffsetDateTime] and
       (__ \ "content").write[Content[T]] and
       (__ \ "links").write[List[Link]] and
-      (__ \ "edited").write[DateTime] and
+      (__ \ "edited").write[OffsetDateTime] and
       (__ \ "control").write[Control] and
       (__ \ "_type").write[String] // type information
     )(in => (in.id, in.updated, in.content, in.links, in.edited, in.control, "atom-pub"))
@@ -90,17 +99,17 @@ object PlayJsonFormats {
 
   implicit def atomEntryReads[T: Reads]: Reads[AtomEntry[T]] = (
     (__ \ "id").read[String] and
-      (__ \ "updated").read[DateTime] and
+      (__ \ "updated").read[OffsetDateTime] and
       (__ \ "content").read[Content[T]] and
       (__ \ "links").read[List[Link]]
     )((id, updated, content, links) => AtomEntry[T](id, updated, content, links))
 
   implicit def atomPubEntryReads[T: Reads]: Reads[AtomPubEntry[T]] = (
     (__ \ "id").read[String] and
-      (__ \ "updated").read[DateTime] and
+      (__ \ "updated").read[OffsetDateTime] and
       (__ \ "content").read[Content[T]] and
       (__ \ "links").read[List[Link]] and
-      (__ \ "edited").read[DateTime] and
+      (__ \ "edited").read[OffsetDateTime] and
       (__ \ "control").read[Control]
     )((id, updated, content, links, edited, control) => AtomPubEntry[T](id, updated, content, links, edited, control))
 
@@ -110,7 +119,7 @@ object PlayJsonFormats {
       (__ \ "base").write[Url] and
       (__ \ "title").writeNullable[String] and
       (__ \ "generator").writeNullable[Generator] and
-      (__ \ "updated").write[DateTime] and
+      (__ \ "updated").write[OffsetDateTime] and
       (__ \ "links").write[List[Link]] and
       (__ \ "entries").write[List[Entry[T]]]
     )(in => (in.id, in.base, in.title, in.generator, in.updated, in.links, in.entries))
@@ -120,7 +129,7 @@ object PlayJsonFormats {
       (__ \ "base").read[Url] and
       (__ \ "title").readNullable[String] and
       (__ \ "generator").readNullable[Generator] and
-      (__ \ "updated").read[DateTime] and
+      (__ \ "updated").read[OffsetDateTime] and
       (__ \ "links").read[List[Link]] and
       (__ \ "entries").read[List[Entry[T]]]
     )((id, base, title, generator, updated, links, entries) => Feed[T](id, base, title, generator, updated, links, entries))

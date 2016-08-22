@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.joda.time.DateTime;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,6 +18,10 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -27,8 +30,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FeedSerializationTest {
 
-
-    static DateTime dateTime = new DateTime().withMillisOfSecond(0);
+    static OffsetDateTime dateTime = ZonedDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0).toOffsetDateTime();
     private JAXBContext jaxbContext;
     private ObjectMapper objectMapper;
     private Customer customer = new Customer("cname", 666);
@@ -36,7 +38,7 @@ public class FeedSerializationTest {
     @Before
     public void setup() throws JAXBException {
         objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JodaModule());
+        objectMapper.registerModule(new OffsetDateTimeModule());
         objectMapper.setTimeZone(TimeZone.getDefault());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

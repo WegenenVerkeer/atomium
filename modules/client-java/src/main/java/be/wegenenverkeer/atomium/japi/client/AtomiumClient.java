@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.japi.client;
 import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.atomium.japi.format.Feed;
 import be.wegenenverkeer.atomium.japi.format.Link;
+import be.wegenenverkeer.atomium.japi.format.OffsetDateTimeModule;
 import be.wegenenverkeer.rxhttp.ClientRequest;
 import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttp.RxHttpClient;
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -132,7 +133,7 @@ public class AtomiumClient {
 
         private ObjectMapper configureObjectMapper(Module... modules) {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JodaModule());
+            objectMapper.registerModule(new OffsetDateTimeModule());
             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
             objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

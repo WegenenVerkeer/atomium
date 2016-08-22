@@ -1,11 +1,12 @@
 package be.wegenenverkeer.atomium.format.pub
 
-import be.wegenenverkeer.atomium.format.{Entry, Link, Content}
-import org.joda.time.DateTime
+import java.time.OffsetDateTime
+
+import be.wegenenverkeer.atomium.format.{Content, Entry, Link}
 
 case class AtomPubEntry[+T](id: String,
-                            updated: DateTime,
+                            updated: OffsetDateTime,
                             content: Content[T],
                             links: List[Link],
-                            edited:DateTime,
+                            edited:OffsetDateTime,
                             control:Control ) extends Entry[T]

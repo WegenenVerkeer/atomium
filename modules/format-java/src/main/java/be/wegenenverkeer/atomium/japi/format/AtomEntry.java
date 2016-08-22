@@ -1,12 +1,11 @@
 package be.wegenenverkeer.atomium.japi.format;
 
 
-import org.joda.time.DateTime;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public final class AtomEntry<T> extends Entry<T> {
 
     @XmlElement
     @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    DateTime updated;
+    OffsetDateTime updated;
     @XmlElement
     private String id;
     @XmlElement
@@ -38,10 +37,10 @@ public final class AtomEntry<T> extends Entry<T> {
     }
 
     public AtomEntry(String id, Content<T> content, List<Link> links) {
-        this(id, new DateTime(), content, links);
+        this(id, OffsetDateTime.now(), content, links);
     }
 
-    public AtomEntry(String id, DateTime updated, Content<T> content, List<Link> links) {
+    public AtomEntry(String id, OffsetDateTime updated, Content<T> content, List<Link> links) {
         this.id = id;
         this.updated = updated;
         this.content = content;
@@ -57,11 +56,11 @@ public final class AtomEntry<T> extends Entry<T> {
         this.id = id;
     }
 
-    public DateTime getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(DateTime updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

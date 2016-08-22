@@ -1,8 +1,9 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
+import java.time.OffsetDateTime
+
 import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
-import org.joda.time.DateTime
 
 abstract class AbstractJdbcFeedStore[E](feedName: String,
                                         title: Option[String],
@@ -70,14 +71,14 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
    * @param entries the entries to push to the feed
    */
   override def push(entries: Iterable[E])(implicit context: JdbcContext): Unit = {
-    val timestamp: DateTime = new DateTime()
+    val timestamp: OffsetDateTime = OffsetDateTime.now()
     entries foreach { entry =>
       dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, generateEntryID(), value = ser(entry), timestamp = timestamp))
     }
   }
 
   override def push(uuid: String, entry: E)(implicit context: JdbcContext): Unit = {
-    val timestamp: DateTime = new DateTime()
+    val timestamp: OffsetDateTime = OffsetDateTime.now()
     dialect.addFeedEntry(entryTableName, EntryDbModel(sequenceNo = None, uuid, value = ser(entry), timestamp = timestamp))
   }
 

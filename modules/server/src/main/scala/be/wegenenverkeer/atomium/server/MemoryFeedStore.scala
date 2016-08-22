@@ -1,7 +1,8 @@
 package be.wegenenverkeer.atomium.server
 
+import java.time.OffsetDateTime
+
 import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
-import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
 
@@ -27,17 +28,17 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
   override def maxId(implicit context: C) = entries.size + 1
 
   override def push(it: Iterable[T])(implicit context: C) = {
-    val timestamp: DateTime = new DateTime()
+    val timestamp: OffsetDateTime = OffsetDateTime.now()
     it foreach { entry =>
-      push(generateEntryID(), entry, new DateTime())
+      push(generateEntryID(), entry, OffsetDateTime.now())
     }
   }
 
   override def push(uuid: String, entry: T)(implicit context: C): Unit = {
-    push(uuid, entry, new DateTime())
+    push(uuid, entry, OffsetDateTime.now())
   }
 
-  private def push(uuid: String, entry: T, timestamp: DateTime): Unit = {
+  private def push(uuid: String, entry: T, timestamp: OffsetDateTime): Unit = {
     entries append AtomEntry(uuid, timestamp, Content(entry, ""), Nil)
   }
 

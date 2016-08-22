@@ -1,8 +1,9 @@
 package be.wegenenverkeer.atomium.client
 
-import be.wegenenverkeer.atomium.format.{Link, Url, Feed}
-import be.wegenenverkeer.atomium.server.{FeedService, MemoryFeedStore, Context}
-import org.joda.time.DateTime
+import java.time.OffsetDateTime
+
+import be.wegenenverkeer.atomium.format.{Feed, Link, Url}
+import be.wegenenverkeer.atomium.server.{Context, FeedService, MemoryFeedStore}
 
 import scala.util.{Success, Try}
 
@@ -72,7 +73,7 @@ trait FeedProviderFixture[E] {
           base = Url(baseUrl),
           title = Option("title"),
           generator = None,
-          updated = new DateTime(),
+          updated = OffsetDateTime.now(),
           links = links,
           entries = List()
         )

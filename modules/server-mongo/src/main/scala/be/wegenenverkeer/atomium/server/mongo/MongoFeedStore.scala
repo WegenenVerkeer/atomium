@@ -1,12 +1,71 @@
 package be.wegenenverkeer.atomium.server.mongo
 
+import java.time.{OffsetDateTime, ZoneId}
+
+import be.wegenenverkeer.atomium.format.jaxb.Adapters
 import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
-import com.mongodb.{casbah, DBObject}
-import org.joda.time.DateTime
+import com.mongodb.casbah.commons.conversions.MongoConversionHelper
+import com.mongodb.{DBObject, casbah}
+import org.bson.{BSON, Transformer}
+
+
+trait OffsetDateTimeSerializer extends MongoConversionHelper {
+
+  private val encodeType = classOf[OffsetDateTime]
+
+  private val transformer = new Transformer{
+    override def transform(o: scala.AnyRef): AnyRef = o match {
+      case d: OffsetDateTime => java.util.Date.from(d.toInstant)
+      case _ => o
+    }
+  }
+
+  override def register(): Unit = {
+    log.debug("Hook up OffsetDateTime serializer")
+    BSON.addEncodingHook(encodeType, transformer)
+    super.register()
+  }
+
+  override def unregister(): Unit = {
+    log.debug("Remove OffsetDateTime serializer")
+    BSON.removeEncodingHooks(encodeType)
+    super.unregister()
+  }
+}
+
+trait OffsetDateTimeDeserializer extends MongoConversionHelper {
+  private val encodeType = classOf[java.util.Date]
+  private val transformer = new Transformer {
+    override def transform(o: scala.AnyRef)  : AnyRef = o match {
+      case d: java.util.Date => OffsetDateTime.ofInstant( d.toInstant, ZoneId.systemDefault() )
+      case _ => o
+    }
+  }
+
+  override def register(): Unit = {
+    log.info("Hook up OffsetDateTime Deserializer")
+    BSON.addDecodingHook(encodeType, transformer)
+    super.register()
+  }
+
+  override def unregister(): Unit = {
+    log.debug("Remove OffsetDateTime Deserializer")
+    BSON.removeDecodingHooks(encodeType)
+    super.unregister()
+  }
+}
+
+object RegisterOffsetDatTimeComversions extends OffsetDateTimeSerializer
+  with OffsetDateTimeDeserializer {
+
+  def apply() {
+    super.register()
+  }
+}
 
 /**
  * An [[AbstractFeedStore]] implementation that stores feeds and pages in a MongoDB entriesCollection.
@@ -48,7 +107,7 @@ class MongoFeedStore[E](feedName: String,
 
   protected def feedEntry2DbObject(uuid: String, e: E): MongoDBObject = MongoDBObject(
     Keys.Uuid -> uuid,
-    Keys.Timestamp -> new DateTime(),
+    Keys.Timestamp -> OffsetDateTime.now(),
     Keys.Content -> ser(e)
   )
 
@@ -56,7 +115,7 @@ class MongoFeedStore[E](feedName: String,
     val entryDbo = dbo.as[DBObject](Keys.Content)
     FeedEntry(dbo.as[Long](Keys._Id),
       AtomEntry(id = dbo.as[String](Keys.Uuid),
-        updated = dbo.as[DateTime](Keys.Timestamp).toDateTime,
+        updated = dbo.as[OffsetDateTime](Keys.Timestamp),
         content = Content(deser(entryDbo), ""), Nil))
   }
 

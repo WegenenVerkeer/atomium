@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class AtomPubEntry<T> extends Entry<T> {
 
     @XmlElement
     @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    DateTime updated;
+    OffsetDateTime updated;
     @XmlElement
     private String id;
     @XmlElement
@@ -27,7 +28,7 @@ public class AtomPubEntry<T> extends Entry<T> {
 
     @XmlElement(namespace = "http://www.w3.org/2007/app")
     @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    private DateTime edited;
+    private OffsetDateTime edited;
 
     @XmlElement(namespace = "http://www.w3.org/2007/app")
     private Control control;
@@ -41,7 +42,7 @@ public class AtomPubEntry<T> extends Entry<T> {
 
     }
 
-    public AtomPubEntry(String id, DateTime updated, Content<T> content, List<Link> links, DateTime edited, Control control) {
+    public AtomPubEntry(String id, OffsetDateTime updated, Content<T> content, List<Link> links, OffsetDateTime edited, Control control) {
         this.id = id;
         this.updated = updated;
         this.content = content;
@@ -58,11 +59,11 @@ public class AtomPubEntry<T> extends Entry<T> {
         this.id = id;
     }
 
-    public DateTime getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(DateTime updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 
@@ -82,11 +83,11 @@ public class AtomPubEntry<T> extends Entry<T> {
         this.links = links;
     }
 
-    public DateTime getEdited() {
+    public OffsetDateTime getEdited() {
         return edited;
     }
 
-    public void setEdited(DateTime edited) {
+    public void setEdited(OffsetDateTime edited) {
         this.edited = edited;
     }
 

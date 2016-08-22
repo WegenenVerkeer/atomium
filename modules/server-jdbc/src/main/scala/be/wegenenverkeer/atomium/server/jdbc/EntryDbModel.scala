@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.server.jdbc
 
 import java.sql.ResultSet
+import java.time.{OffsetDateTime, ZoneId}
 
-import org.joda.time.DateTime
 
 /**
  * The entry model as it is stored in the DB.
@@ -13,7 +13,7 @@ import org.joda.time.DateTime
  * @param value The actual data stored in the entry, serialized as a sring.
  * @param timestamp The time this entry was created and stored.
  */
-case class EntryDbModel(sequenceNo: Option[Long], uuid: String, value: String, timestamp: DateTime)
+case class EntryDbModel(sequenceNo: Option[Long], uuid: String, value: String, timestamp: OffsetDateTime)
 
 object EntryDbModel {
 
@@ -21,7 +21,7 @@ object EntryDbModel {
     sequenceNo = Some(rs.getLong(EntryDbModel.Table.idColumn)),
     uuid = rs.getString(EntryDbModel.Table.uuidColumn),
     value = rs.getString(EntryDbModel.Table.valueColumn),
-    timestamp = new DateTime(rs.getDate(EntryDbModel.Table.timestampColumn))
+    timestamp = (rs.getTimestamp(EntryDbModel.Table.timestampColumn)).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime
   )
 
   object Table {

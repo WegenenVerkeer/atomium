@@ -2,7 +2,6 @@ package be.wegenenverkeer.atomium.japi.format;
 
 import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
 import be.wegenenverkeer.atomium.japi.format.pub.Control;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.ISODateTimeFormat;
@@ -12,26 +11,45 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Adapters {
 
-    public static DateTimeFormatter outputFormatterWithSecondsAndOptionalTZ = new DateTimeFormatterBuilder()
+    public static DateTimeFormatter jodaOutputFormatterWithSecondsAndOptionalTZ = new DateTimeFormatterBuilder()
             .append(ISODateTimeFormat.dateHourMinuteSecond())
             .appendTimeZoneOffset("Z", true, 2, 4)
             .toFormatter();
 
-    public static class AtomDateTimeAdapter extends XmlAdapter<String, DateTime> {
+    public static java.time.format.DateTimeFormatter formatter =
+            new java.time.format.DateTimeFormatterBuilder()
+                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                    .appendPattern("XXXXX")
+                    .toFormatter();
+
+    public static java.time.format.DateTimeFormatter datetimeParser =
+            new java.time.format.DateTimeFormatterBuilder()
+                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                    .optionalStart()
+                    .appendPattern("XXXX")
+                    .optionalEnd()
+                    .optionalStart()
+                    .appendPattern("XXX")
+                    .optionalEnd()
+                    .toFormatter();
+
+
+    public static class AtomDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
 
         @Override
-        public DateTime unmarshal(String v) throws Exception {
-            return outputFormatterWithSecondsAndOptionalTZ.parseDateTime(v).toDateTime();
+        public OffsetDateTime unmarshal(String v) throws Exception {
+            return OffsetDateTime.parse(v, datetimeParser);
         }
 
         @Override
-        public String marshal(DateTime v) throws Exception {
-            return outputFormatterWithSecondsAndOptionalTZ.print(v);
+        public String marshal(OffsetDateTime v) throws Exception {
+            return formatter.format(v);
         }
     }
 
@@ -95,8 +113,8 @@ public class Adapters {
             public String id;
 
             @XmlElement
-            @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-            public DateTime updated;
+            @XmlJavaTypeAdapter(AtomDateTimeAdapter.class)
+            public OffsetDateTime updated;
 
             @XmlElement
             public Content<E> content;
@@ -106,8 +124,8 @@ public class Adapters {
 
 
             @XmlElement(namespace = "http://www.w3.org/2007/app")
-            @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-            public DateTime edited;
+            @XmlJavaTypeAdapter(AtomDateTimeAdapter.class)
+            public OffsetDateTime edited;
 
             @XmlElement(namespace = "http://www.w3.org/2007/app")
             public Control control;

@@ -1,9 +1,8 @@
 package be.wegenenverkeer.atomium.japi.format;
 
-import org.joda.time.DateTime;
-
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +17,13 @@ public final class Feed<T> {
     public Feed() {
     }
 
-    public Feed(String id, String base, String title, Generator generator, DateTime updated) {
+    public Feed(String id, String base, String title, Generator generator, OffsetDateTime updated) {
         this(id, base, title, generator, updated, new ArrayList<>(), new ArrayList<>());
     }
 
 
     public Feed(String id, String base, String title, Generator generator,
-                DateTime updated, List<Link> links, List<Entry<T>> entries) {
+                OffsetDateTime updated, List<Link> links, List<Entry<T>> entries) {
         this.id = id;
         this.base = base;
         this.title = title;
@@ -47,7 +46,7 @@ public final class Feed<T> {
     private Generator generator;
 
     @XmlElement @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    private DateTime updated;
+    private OffsetDateTime updated;
 
     @XmlElement(name = "link")
     private List<Link> links = new ArrayList<>();
@@ -87,11 +86,11 @@ public final class Feed<T> {
         this.generator = generator;
     }
 
-    public DateTime getUpdated() {
+    public OffsetDateTime getUpdated() {
         return updated;
     }
 
-    public void setUpdated(DateTime updated) {
+    public void setUpdated(OffsetDateTime updated) {
         this.updated = updated;
     }
 

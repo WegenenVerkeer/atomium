@@ -1,5 +1,6 @@
 import play.sbt.Play.autoImport._
 import play.sbt.PlayScala
+import Dependencies._
 import sbt.Keys._
 import sbt._
 
@@ -15,13 +16,13 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val javaFormatModule = {
 
-    val mainDeps = Seq(jacksonDatabind, jacksonJoda)
-    val testDeps = Seq(junit)
+    val mainDeps = Seq(jacksonDatabind, jacksonJavaTime)
+    val testDeps = Seq(junit, junitInterface)
 
     project("format-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
+      .settings( autoScalaLibrary := false )
 
   }
 

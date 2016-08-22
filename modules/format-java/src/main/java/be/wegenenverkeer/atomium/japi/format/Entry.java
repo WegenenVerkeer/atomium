@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ public abstract class Entry<T> {
 
     public abstract String getId();
 
-    public abstract DateTime getUpdated();
+    public abstract OffsetDateTime getUpdated();
 
     public abstract Content<T> getContent();
 
