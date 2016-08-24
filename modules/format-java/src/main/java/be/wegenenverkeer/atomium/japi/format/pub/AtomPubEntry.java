@@ -4,7 +4,6 @@ import be.wegenenverkeer.atomium.japi.format.Adapters;
 import be.wegenenverkeer.atomium.japi.format.Content;
 import be.wegenenverkeer.atomium.japi.format.Entry;
 import be.wegenenverkeer.atomium.japi.format.Link;
-import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

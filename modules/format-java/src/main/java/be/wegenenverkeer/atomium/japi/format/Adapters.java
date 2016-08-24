@@ -2,9 +2,6 @@ package be.wegenenverkeer.atomium.japi.format;
 
 import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
 import be.wegenenverkeer.atomium.japi.format.pub.Control;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.ISODateTimeFormat;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,10 +14,6 @@ import java.util.List;
 
 public class Adapters {
 
-    public static DateTimeFormatter jodaOutputFormatterWithSecondsAndOptionalTZ = new DateTimeFormatterBuilder()
-            .append(ISODateTimeFormat.dateHourMinuteSecond())
-            .appendTimeZoneOffset("Z", true, 2, 4)
-            .toFormatter();
 
     public static java.time.format.DateTimeFormatter formatter =
             new java.time.format.DateTimeFormatterBuilder()

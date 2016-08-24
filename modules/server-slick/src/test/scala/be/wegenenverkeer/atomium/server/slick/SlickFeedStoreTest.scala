@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.server.slick
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
-import org.joda.time.DateTimeUtils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 import scala.slick.driver.H2Driver
@@ -11,7 +10,7 @@ import scala.slick.driver.H2Driver
 class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
   val timeMillis = System.currentTimeMillis()
-  DateTimeUtils.setCurrentMillisFixed(timeMillis)
+
 
 
   val ENTRIES_TABLE_NAME = "my_feed_entries"
@@ -30,11 +29,6 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
     block(dal.createJdbcContext)
 
     dal.entriesTableQuery(ENTRIES_TABLE_NAME).ddl.drop
-  }
-
-
-  override protected def afterAll() = {
-    DateTimeUtils.setCurrentMillisSystem()
   }
 
 

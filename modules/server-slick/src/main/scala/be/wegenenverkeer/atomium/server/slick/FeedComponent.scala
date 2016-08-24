@@ -4,7 +4,6 @@ import java.sql.Date
 import java.time.{Instant, OffsetDateTime, ZoneId}
 
 import be.wegenenverkeer.atomium.server.slick.models.{EntryModel, FeedModel}
-import org.joda.time.DateTime
 
 trait FeedComponent extends DriverComponent {
   this: DriverComponent =>

@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.japi.format;
 import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.OffsetDateTime;

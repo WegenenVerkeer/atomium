@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.client
 import be.wegenenverkeer.atomium.client.FeedEntryIterator.Implicits._
 import be.wegenenverkeer.atomium.format.{Feed, Link, Url}
 import be.wegenenverkeer.atomium.server.{Context, FeedService, MemoryFeedStore}
-import org.joda.time.DateTime
 
 import scala.util.{Success, Try}
 
