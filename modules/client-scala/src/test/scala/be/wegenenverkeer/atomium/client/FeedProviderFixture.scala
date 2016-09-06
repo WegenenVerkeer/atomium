@@ -47,8 +47,7 @@ trait FeedProviderFixture[E] {
     private def fetchLastFeed: Option[Feed[E]] = {
       val lastFeed =
         for {
-          feed <- feedService.getHeadOfFeed()
-          lastUrl <- feed.lastLink
+          lastUrl <- feedService.getHeadOfFeed().lastLink
           lastFeed <- getFeedPage(lastUrl.href)
         } yield lastFeed
       lastFeed

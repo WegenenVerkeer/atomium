@@ -9,12 +9,12 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
 
   test("empty store") {
     val feedStore = new TestFeedStore[Int, Context]()
-    feedStore.getHeadOfFeed(1) shouldBe None
-    feedStore.getHeadOfFeed(3) shouldBe None
+    feedStore.getHeadOfFeed(1).entries.size shouldBe 0
+    feedStore.getHeadOfFeed(3).entries.size shouldBe 0
     intercept[IllegalArgumentException] {
       feedStore.getHeadOfFeed(0)
     }
-    feedStore.getFeed(0, 2, forward = true) shouldBe None
+    feedStore.getFeed(0, 2, forward = true).get.entries.size shouldBe 0
     feedStore.getFeed(10, 2, forward = false) shouldBe None
     intercept[IllegalArgumentException] {
       feedStore.getFeed(10, 0, forward = false)
@@ -107,7 +107,7 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
     lastPageOfFeedWithSize5.selfLink should be (Link(Link.selfLink, Url("0/forward/5")))
 
     //since only 1 page in feed => head equals last
-    feedStore.getHeadOfFeed(5).get shouldEqual lastPageOfFeedWithSize5
+    feedStore.getHeadOfFeed(5) shouldEqual lastPageOfFeedWithSize5
 
     feedStore.getFeed(9, 5, forward = true) shouldBe None
 
@@ -139,7 +139,7 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
     firstPageOfFeedWithSize2.selfLink should be(Link(Link.selfLink, Url("8/forward/2")))
 
     //we are at the head of the feed
-    feedStore.getHeadOfFeed(2).get shouldEqual firstPageOfFeedWithSize2
+    feedStore.getHeadOfFeed(2) shouldEqual firstPageOfFeedWithSize2
 
     //moving backwards
     feedStore.getFeed(9, 2, forward =  false).get shouldEqual middlePageOfFeedWithSize2

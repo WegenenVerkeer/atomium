@@ -29,7 +29,7 @@ trait AsyncFeedStore[E, C <: Context] {
    * @return the head of the feed
    */
   def getHeadOfFeed(pageSize: Int)
-                   (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]]
+                   (implicit executionContext: ExecutionContext, context: C): Future[Feed[E]]
 
 
   /**
