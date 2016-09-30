@@ -36,20 +36,6 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val clientAkkaModule = {
-
-    val mainDeps = Seq(rxscala, play, playJson, akkaPersistence)
-    val testDeps = mainScalaTestDependencies ++ Seq(wiremock)
-
-    project("client-akka")
-      .settings(publishArtifact in Test := true)
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile", clientScalaModule % "test->test;compile->compile")
-      .aggregate(formatModule, serverModule)
-  }
-
-  //----------------------------------------------------------------
   lazy val clientScalaModule = {
 
     val mainDeps = Seq(rxscala)
@@ -196,7 +182,6 @@ object AtomiumBuild extends Build with BuildSettings {
     formatModule,
     commonPlayModule,
     commonPlay25Module,
-    clientAkkaModule,
     clientScalaModule,
     clientJavaModule,
     serverModule,
