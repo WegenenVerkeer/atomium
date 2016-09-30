@@ -1,13 +1,10 @@
 package be.wegenenverkeer.atomium.server.play
 
-import java.time.{Duration, OffsetDateTime, ZoneId}
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
-import java.util.Locale
 
 import be.wegenenverkeer.atomium.format.{Feed, Generator, Url}
-//import org.joda.time.format.DateTimeFormat
-//import org.joda.time.{DateTime, Duration}
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
 import play.api.mvc._
@@ -30,9 +27,6 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
 
   private val generator = Generator("atomium", Some(Url("http://github.com/WegenenVerkeer/atomium")), Some("0.0.1"))
-
-  val rfcFormat = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z").withLocale(Locale.ENGLISH)
-  val rfcUTCFormat = rfcFormat.withZone(ZoneId.of("Z"))
 
   /**
    * Define the PartialFunction that will map acceptable content types to FeedMarshallers.
@@ -108,7 +102,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
     logger.info("sending response: 200 Found")
     val result = Ok(payload)
-      .withHeaders(LAST_MODIFIED -> rfcUTCFormat.format(feed.updated), ETAG -> feed.calcETag)
+      .withHeaders(LAST_MODIFIED -> feed.updated.format(DateTimeFormatter.RFC_1123_DATE_TIME), ETAG -> feed.calcETag)
 
     //add extra cache headers or forbid caching
     val resultWithCacheHeader =
@@ -116,7 +110,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
         val expires = OffsetDateTime.now().plusSeconds(1000L)
         result.withHeaders(CACHE_CONTROL -> {
           "public, max-age=" + cacheTime
-        }, EXPIRES -> rfcUTCFormat.format(expires))
+        }, EXPIRES -> DateTimeFormatter.RFC_1123_DATE_TIME.format(expires))
       } else {
         result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
       }
@@ -129,14 +123,12 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
 
-    val ifNoneMatch = headers get IF_NONE_MATCH exists {
-      _ == f.calcETag
-    }
+    val ifNoneMatch = headers get IF_NONE_MATCH contains f.calcETag
 
     val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
       try {
         val updated = f.updated.`with`(ChronoField.MILLI_OF_SECOND, 0)
-        OffsetDateTime.parse(dateStr, rfcFormat).compareTo(updated) >= 0
+        OffsetDateTime.parse(dateStr, DateTimeFormatter.RFC_1123_DATE_TIME).compareTo(updated) >= 0
       }
       catch {
         case e: IllegalArgumentException =>
