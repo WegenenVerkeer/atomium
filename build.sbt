@@ -1,5 +1,3 @@
-net.virtualvoid.sbt.graph.Plugin.graphSettings
-
 site.settings
 
 site.includeScaladoc()
