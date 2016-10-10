@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
-import be.wegenenverkeer.atomium.japi.format.Feed;
-import be.wegenenverkeer.atomium.japi.format.Link;
+import be.wegenenverkeer.atomium.format.Entry;
+import be.wegenenverkeer.atomium.format.Feed;
+import be.wegenenverkeer.atomium.format.Link;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,15 +1,13 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
-import be.wegenenverkeer.atomium.japi.format.pub.AtomPubEntry;
-import be.wegenenverkeer.atomium.japi.format.pub.Control;
-import be.wegenenverkeer.atomium.japi.format.pub.Draft;
+import be.wegenenverkeer.atomium.format.pub.Control;
+import be.wegenenverkeer.atomium.format.pub.Draft;
+import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.xml.bind.*;
@@ -19,7 +17,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;

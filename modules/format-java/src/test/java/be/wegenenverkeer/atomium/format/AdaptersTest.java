@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
 import org.junit.Test;
 

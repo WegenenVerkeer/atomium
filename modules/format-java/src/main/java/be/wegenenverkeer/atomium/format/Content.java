@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.w3c.dom.Element;

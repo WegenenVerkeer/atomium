@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format.pub;
+package be.wegenenverkeer.atomium.format.pub;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

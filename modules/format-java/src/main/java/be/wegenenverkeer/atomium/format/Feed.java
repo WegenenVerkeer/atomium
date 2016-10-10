@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

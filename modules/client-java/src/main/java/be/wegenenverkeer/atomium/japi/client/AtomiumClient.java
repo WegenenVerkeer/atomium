@@ -1,9 +1,9 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
-import be.wegenenverkeer.atomium.japi.format.Feed;
-import be.wegenenverkeer.atomium.japi.format.Link;
-import be.wegenenverkeer.atomium.japi.format.OffsetDateTimeModule;
+import be.wegenenverkeer.atomium.format.Entry;
+import be.wegenenverkeer.atomium.format.Feed;
+import be.wegenenverkeer.atomium.format.Link;
+import be.wegenenverkeer.atomium.format.OffsetDateTimeModule;
 import be.wegenenverkeer.rxhttp.ClientRequest;
 import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttp.RxHttpClient;
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;

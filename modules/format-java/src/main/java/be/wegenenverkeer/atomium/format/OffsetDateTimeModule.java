@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

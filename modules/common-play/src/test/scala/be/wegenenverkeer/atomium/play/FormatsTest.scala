@@ -2,10 +2,10 @@ package be.wegenenverkeer.atomium.play
 
 import java.time.{OffsetDateTime, ZoneOffset}
 
-import be.wegenenverkeer.atomium.japi.format.Adapters
 import org.scalatest.{FunSuite, Matchers}
 import play.api.libs.json.{JsString, Json}
 import PlayJsonFormats._
+import be.wegenenverkeer.atomium.format.Adapters
 
 class FormatsTest extends FunSuite with Matchers {
 

@@ -1,8 +1,9 @@
 package be.wegenenverkeer.atomium.server
 
 import java.time.OffsetDateTime
+import java.util
 
-import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
+import be.wegenenverkeer.atomium.format._
 
 import scala.collection.mutable.ListBuffer
 
@@ -39,7 +40,7 @@ class MemoryFeedStore[T, C <: Context](feedName: String,
   }
 
   private def push(uuid: String, entry: T, timestamp: OffsetDateTime): Unit = {
-    entries append AtomEntry(uuid, timestamp, Content(entry, ""), Nil)
+    entries append new AtomEntry(uuid, timestamp, new Content(entry, ""), new util.ArrayList[Link]())
   }
 
 

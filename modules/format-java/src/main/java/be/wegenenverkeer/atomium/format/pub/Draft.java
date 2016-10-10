@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.format.pub;
+package be.wegenenverkeer.atomium.format.pub;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

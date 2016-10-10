@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.format
 
-import be.wegenenverkeer.atomium.format.pub.{AtomPubEntry, Control, DraftNo, DraftYes}
+import be.wegenenverkeer.atomium.format.pub._
 import be.wegenenverkeer.atomium.japi.format
 
 import scala.collection.JavaConverters._
@@ -10,14 +10,14 @@ object FeedConverters {
 
   implicit class Feed2JFeed[T](feed: Feed[T]) {
 
-    def asJava: format.Feed[T] = {
-      new format.Feed[T](
+    def asJava: Feed[T] = {
+      new Feed[T](
         feed.id,
         feed.base.path,
         feed.title.orNull,
         feed.generator.map(_.asJava).orNull,
         feed.updated,
-        feed.links.map(l => new format.Link(l.rel, l.href.path)).asJava,
+        feed.links.map(l => new Link(l.rel, l.href.path)).asJava,
         feed.entries.map(_.asJava).asJava
       )
     }
@@ -25,8 +25,8 @@ object FeedConverters {
 
   implicit class Generator2JGenerator(generator: Generator) {
 
-    def asJava: format.Generator = {
-      new format.Generator(
+    def asJava: Generator = {
+      new Generator(
         generator.text,
         generator.uri.map(u => u.path).orNull,
         generator.version.orNull
@@ -36,21 +36,21 @@ object FeedConverters {
 
   implicit class Entry2JEntry[T](entry: Entry[T]) {
 
-    def asJava: format.Entry[T] = {
+    def asJava: Entry[T] = {
       entry match {
-        case atomPubEntry: AtomPubEntry[T] => new format.pub.AtomPubEntry[T](
+        case atomPubEntry: AtomPubEntry[T] => new pub.AtomPubEntry[T](
           atomPubEntry.id,
           atomPubEntry.updated,
-          new format.Content[T](atomPubEntry.content.value, atomPubEntry.content.`type`),
-          atomPubEntry.links.map(l => new format.Link(l.rel, l.href.path)).asJava,
+          new Content[T](atomPubEntry.content.value, atomPubEntry.content.`type`),
+          atomPubEntry.links.map(l => new Link(l.rel, l.href.path)).asJava,
           atomPubEntry.edited,
           atomPubEntry.control.asJava
         )
-        case atomEntry: AtomEntry[T]       => new format.AtomEntry[T](
+        case atomEntry: AtomEntry[T]       => new AtomEntry[T](
           atomEntry.id,
           atomEntry.updated,
-          new format.Content[T](atomEntry.content.value, atomEntry.content.`type`),
-          atomEntry.links.map(l => new format.Link(l.rel, l.href.path)).asJava
+          new Content[T](atomEntry.content.value, atomEntry.content.`type`),
+          atomEntry.links.map(l => new Link(l.rel, l.href.path)).asJava
         )
       }
     }
@@ -59,13 +59,13 @@ object FeedConverters {
 
   implicit class PubControl2JPubControl(control: Control) {
 
-    def asJava: format.pub.Control = {
-      val draft = if (control.draft == DraftYes) format.pub.Draft.YES else format.pub.Draft.NO
-      new format.pub.Control(draft)
+    def asJava: Control = {
+      val draft = if (control.draft == DraftYes) Draft.YES else pub.Draft.NO
+      new Control(draft)
     }
   }
 
-  implicit class JFeed2Feed[T](jfeed: format.Feed[T]) {
+  implicit class JFeed2Feed[T](jfeed: Feed[T]) {
 
     def asScala: Feed[T] = {
       Feed(
@@ -80,7 +80,7 @@ object FeedConverters {
     }
   }
 
-  implicit class JGenerator2OptionGenerator(jGenerator: format.Generator) {
+  implicit class JGenerator2OptionGenerator(jGenerator: Generator) {
 
     def asScalaOpt: Option[Generator] = {
       jGenerator match {
@@ -90,22 +90,22 @@ object FeedConverters {
     }
   }
 
-  implicit class JPubControl2PubControl(jControl: format.pub.Control) {
+  implicit class JPubControl2PubControl(jControl: Control) {
 
     def asScala: Control = {
-      val draft = if (jControl.getDraft == format.pub.Draft.YES) DraftYes else DraftNo
+      val draft = if (jControl.getDraft == pub.Draft.YES) DraftYes else DraftNo
       Control(draft)
     }
   }
 
 
-  implicit class JEntry2Entry[T](jEntry: format.Entry[T]) {
+  implicit class JEntry2Entry[T](jEntry: Entry[T]) {
 
     def asScala: Entry[T] = {
 
       jEntry match {
 
-        case atomPubEntry: format.pub.AtomPubEntry[T] =>
+        case atomPubEntry: AtomPubEntry[T] =>
           AtomPubEntry(
             atomPubEntry.getId,
             atomPubEntry.getUpdated,
@@ -115,7 +115,7 @@ object FeedConverters {
             atomPubEntry.getControl.asScala
           )
 
-        case atomEntry: format.AtomEntry[T] =>
+        case atomEntry: AtomEntry[T] =>
           AtomEntry(
             atomEntry.getId,
             atomEntry.getUpdated,

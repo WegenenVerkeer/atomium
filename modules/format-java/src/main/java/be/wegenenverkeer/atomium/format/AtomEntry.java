@@ -1,17 +1,16 @@
-package be.wegenenverkeer.atomium.japi.format.pub;
+package be.wegenenverkeer.atomium.format;
 
-import be.wegenenverkeer.atomium.japi.format.Adapters;
-import be.wegenenverkeer.atomium.japi.format.Content;
-import be.wegenenverkeer.atomium.japi.format.Entry;
-import be.wegenenverkeer.atomium.japi.format.Link;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AtomPubEntry<T> extends Entry<T> {
+@XmlAccessorType(XmlAccessType.NONE)
+public final class AtomEntry<T> extends Entry<T> {
 
     @XmlElement
     @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
@@ -25,30 +24,29 @@ public class AtomPubEntry<T> extends Entry<T> {
     private List<Link> links = new ArrayList<>();
 
 
-    @XmlElement(namespace = "http://www.w3.org/2007/app")
-    @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
-    private OffsetDateTime edited;
-
-    @XmlElement(namespace = "http://www.w3.org/2007/app")
-    private Control control;
-
-
     /**
      * no arg constructor, needed for JAXB and/or Jackson POJO support
      */
     @SuppressWarnings("unused")
-    private AtomPubEntry() {
+    private AtomEntry() {
 
     }
 
-    public AtomPubEntry(String id, OffsetDateTime updated, Content<T> content, List<Link> links, OffsetDateTime edited, Control control) {
+    public AtomEntry(String id, Content<T> content) {
+        this(id, content, new ArrayList<>());
+    }
+
+    public AtomEntry(String id, Content<T> content, List<Link> links) {
+        this(id, OffsetDateTime.now(), content, links);
+    }
+
+    public AtomEntry(String id, OffsetDateTime updated, Content<T> content, List<Link> links) {
         this.id = id;
         this.updated = updated;
         this.content = content;
         this.links = links;
-        this.edited = edited;
-        this.control = control;
     }
+
 
     public String getId() {
         return id;
@@ -82,35 +80,18 @@ public class AtomPubEntry<T> extends Entry<T> {
         this.links = links;
     }
 
-    public OffsetDateTime getEdited() {
-        return edited;
-    }
-
-    public void setEdited(OffsetDateTime edited) {
-        this.edited = edited;
-    }
-
-    public Control getControl() {
-        return control;
-    }
-
-    public void setControl(Control control) {
-        this.control = control;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AtomPubEntry<?> that = (AtomPubEntry<?>) o;
+        AtomEntry<?> atomEntry = (AtomEntry<?>) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (updated != null ? !updated.equals(that.updated) : that.updated != null) return false;
-        if (content != null ? !content.equals(that.content) : that.content != null) return false;
-        if (links != null ? !links.equals(that.links) : that.links != null) return false;
-        if (edited != null ? !edited.equals(that.edited) : that.edited != null) return false;
-        return !(control != null ? !control.equals(that.control) : that.control != null);
+        if (id != null ? !id.equals(atomEntry.id) : atomEntry.id != null) return false;
+        if (updated != null ? !updated.equals(atomEntry.updated) : atomEntry.updated != null) return false;
+        if (content != null ? !content.equals(atomEntry.content) : atomEntry.content != null) return false;
+        return !(links != null ? !links.equals(atomEntry.links) : atomEntry.links != null);
+
     }
 
     @Override
@@ -119,20 +100,16 @@ public class AtomPubEntry<T> extends Entry<T> {
         result = 31 * result + (updated != null ? updated.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
         result = 31 * result + (links != null ? links.hashCode() : 0);
-        result = 31 * result + (edited != null ? edited.hashCode() : 0);
-        result = 31 * result + (control != null ? control.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "AtomPubEntry{" +
+        return "AtomEntry{" +
                 "id='" + id + '\'' +
                 ", updated=" + updated +
                 ", content=" + content +
                 ", links=" + links +
-                ", edited=" + edited +
-                ", control=" + control +
-                "} ";
+                '}';
     }
 }

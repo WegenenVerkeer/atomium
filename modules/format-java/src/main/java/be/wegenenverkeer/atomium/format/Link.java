@@ -1,11 +1,19 @@
-package be.wegenenverkeer.atomium.japi.format;
+package be.wegenenverkeer.atomium.format;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+
 @XmlAccessorType(XmlAccessType.NONE)
 public final class Link {
+
+    static final public String FIRST = "first";
+    static final public String LAST = "last";
+    static final public String NEXT = "next";
+    static final public String PREVIOUS = "previous";
+    static final public String SELF = "self";
+    static final public String COLLECTION = "collection";
 
     @XmlAttribute
     private String rel;

@@ -2,7 +2,7 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atomium.japi.format.{Feed => JFeed}
+import be.wegenenverkeer.atomium.format.Feed
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.server.play.{FeedSupport, JaxbFeedMarshaller, PlayJsonFeedMarshaller}
 import be.wegenenverkeer.atomium.server.{Context, FeedService}
@@ -25,7 +25,7 @@ class EventController() extends Controller with FeedSupport[Event] {
   import controllers.EventFormat._
 
   //jaxb marshaller
-  implicit val jaxbContext = JAXBContext.newInstance(classOf[JFeed[Event]], classOf[Event])
+  implicit val jaxbContext = JAXBContext.newInstance(classOf[Feed[Event]], classOf[Event])
 
   override def marshallers = {
     case Accepts.Xml()  => JaxbFeedMarshaller[Event]()
