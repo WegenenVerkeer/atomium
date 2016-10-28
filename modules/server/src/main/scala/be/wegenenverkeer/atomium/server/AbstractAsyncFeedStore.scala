@@ -33,14 +33,14 @@ abstract class AbstractAsyncFeedStore[E, C <: Context](feedName: String,
     val allowedFuture: Future[Boolean] = for {
       max          <- maxId
       lowerEntries <- getNumberOfEntriesLowerThan(start, forward)
-    } yield start <= max && lowerEntries % pageSize == 0
+    } yield start == 0 || (start <= max && lowerEntries % pageSize == 0)
 
 
     for {
       allowed <- allowedFuture
       entries <- if (allowed) { getFeedEntries(start, pageSize + 2, forward) } else { Future.successful(List.empty) }
       min     <- minId
-    } yield processFeedEntries(start, min, pageSize, forward, entries)
+    } yield Some(processFeedEntries(start, min, pageSize, forward, entries))
 
   }
 
@@ -52,7 +52,7 @@ abstract class AbstractAsyncFeedStore[E, C <: Context](feedName: String,
    * @return the head of the feed
    */
   override def getHeadOfFeed(pageSize: Int)
-                            (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]] = {
+                            (implicit executionContext: ExecutionContext, context: C): Future[Feed[E]] = {
 
     require(pageSize > 0, "page size must be greater than 0")
 
@@ -61,7 +61,7 @@ abstract class AbstractAsyncFeedStore[E, C <: Context](feedName: String,
       entries         <- getMostRecentFeedEntries(pageSize + 1)
       numberOfEntries <- if (entries.nonEmpty) getNumberOfEntriesLowerThan(entries.head.sequenceNr) else Future.successful(0L)
       min             <- minId
-    } yield if (entries.nonEmpty) processHeadFeedEntries(numberOfEntries, min, pageSize, entries) else None
+    } yield processHeadFeedEntries(numberOfEntries, min, pageSize, entries)
 
   }
 

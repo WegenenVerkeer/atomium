@@ -40,7 +40,7 @@ trait FeedStoreTestSupport extends Matchers {
     feedPage.entries.map(_.content.value) shouldEqual reverseSortedList(2 * pageSize, pageSize + minId + 1)
 
     //head of feed = first page containing newest entries
-    feedStore.getHeadOfFeed(pageSize).get shouldEqual feedPage
+    feedStore.getHeadOfFeed(pageSize) shouldEqual feedPage
 
     //navigate backwards
     feedStore.getFeed(minId + pageSize + 1, pageSize, forward = false).get shouldEqual lastPage
@@ -58,7 +58,7 @@ trait FeedStoreTestSupport extends Matchers {
     newFirstPage.nextLink.map(_.href) should be(Some(Url(s"${minId + 2 * pageSize + 1}/backward/$pageSize")))
 
     //head of feed = first page containing newest entries
-    feedStore.getHeadOfFeed(pageSize).get shouldEqual newFirstPage
+    feedStore.getHeadOfFeed(pageSize) shouldEqual newFirstPage
 
     //old first page should be complete now
     val middlePage = feedStore.getFeed(minId + pageSize, pageSize, forward = true).get

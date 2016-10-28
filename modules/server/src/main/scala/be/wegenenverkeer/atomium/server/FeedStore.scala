@@ -25,7 +25,7 @@ trait FeedStore[E, C <: Context] {
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  def getHeadOfFeed(pageSize: Int)(implicit context: C): Option[Feed[E]]
+  def getHeadOfFeed(pageSize: Int)(implicit context: C): Feed[E]
 
   /**
    * push a list of entries to the feed

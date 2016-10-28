@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.server
 import java.util.UUID
 
 import be.wegenenverkeer.atomium.format.{Feed, Entry, Url, Link}
+import org.joda.time.DateTime
 
 trait FeedStoreSupport[E] {
 
@@ -14,29 +15,27 @@ trait FeedStoreSupport[E] {
    * @param entries the entries to include in the feed
    * @param previousEntryId the previous entry's id or None if we are at the head of the feed
    * @param nextEntryId the next entry's id or None if we are at the tail of the feed (last page)
-   * @return a page feed or None
+   * @return a page feed, possibly empty
    */
   def toFeed(pageSize: Int,
              minId: Long,
              entries: List[FeedStoreSupport[E]#FeedEntry],
              previousEntryId: Option[Long],
              nextEntryId: Option[Long])
-            (implicit feedParams: FeedParams): Option[Feed[E]] = {
+            (implicit feedParams: FeedParams): Feed[E] = {
 
-    for {
-      entries <- Some(entries); if entries.nonEmpty
-    } yield Feed[E](
+    Feed[E](
       id = feedParams.feedName,
       base = feedParams.baseUrl,
       title = feedParams.title,
-      updated = entries.head.entry.updated,
+      updated = entries.headOption.map(_.entry.updated).getOrElse(new DateTime()),
       links = List(Link(Link.selfLink, feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true)),
         Link(Link.lastLink, feedLink(minId, pageSize, forward = true))) ++
-        nextEntryId.map { _ =>
-          link(Link.nextLink, entries.last.sequenceNr, pageSize, forward = false)
+        nextEntryId.flatMap(_ => entries.lastOption).map { last =>
+          link(Link.nextLink, last.sequenceNr, pageSize, forward = false)
         } ++
-        previousEntryId.map { _ =>
-          link(Link.previousLink, entries.head.sequenceNr, pageSize, forward = true)
+        previousEntryId.flatMap(_ => entries.headOption).map { head =>
+          link(Link.previousLink, head.sequenceNr, pageSize, forward = true)
         },
       entries = entries.map(_.entry)
     )
@@ -92,7 +91,7 @@ trait FeedStoreSupport[E] {
   }
 
   def processFeedEntries(start: Long, minId: Long, pageSize: Int, forward: Boolean, entries: List[FeedStoreSupport[E]#FeedEntry])
-                        (implicit feedParams: FeedParams): Option[Feed[E]] = {
+                        (implicit feedParams: FeedParams): Feed[E] = {
     if (entries.nonEmpty) {
       val result = if (forward) {
         processForwardEntries(start, pageSize, entries)
@@ -100,8 +99,9 @@ trait FeedStoreSupport[E] {
         processBackwardEntries(start, pageSize, entries)
       }
       toFeed(pageSize, minId, result.feedEntries, result.previousSequenceNr, result.nextSequenceNr)
-    } else
-      None
+    } else {
+      toFeed(pageSize, minId, Nil, None, None)
+    }
   }
 
   //we possibly need to return less entries to keep paging consistent => paging from tail to head or vice versa

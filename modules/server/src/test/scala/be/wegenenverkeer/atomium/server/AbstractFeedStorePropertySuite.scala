@@ -25,7 +25,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with Generat
 
   test("head of non-empty feed is correct") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
+      val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
       head.complete shouldBe false
       head.entries.size should be > 0
       head.entries.size should be <= pageSize
@@ -55,7 +55,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with Generat
 
   test("navigate from head to tail") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
+      var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
       page.entries.size should be > 0
       page.entries.size should be <= pageSize
       while (page.nextLink != None) {
