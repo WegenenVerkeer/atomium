@@ -26,15 +26,6 @@ object AtomiumBuild extends Build with BuildSettings {
 
   }
 
-
-  //----------------------------------------------------------------
-  lazy val formatModule =
-    project("format")
-      .settings(libraryDependencies ++= mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule)
-
-
   //----------------------------------------------------------------
   lazy val clientScalaModule = {
 
@@ -45,8 +36,8 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
-      .aggregate(formatModule, serverModule)
+      .dependsOn(javaFormatModule, serverModule, clientJavaModule % "test->test;compile->compile")
+      .aggregate(javaFormatModule, serverModule)
   }
 
   //----------------------------------------------------------------
@@ -72,8 +63,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("common-play")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule)
-      .aggregate(formatModule)
+      .dependsOn(javaFormatModule)
   }
 
   //----------------------------------------------------------------
@@ -88,8 +78,7 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
       .settings(crossScalaVersions := Seq("2.11.8"))    
-      .dependsOn(formatModule)
-      .aggregate(formatModule)
+      .dependsOn(javaFormatModule)
   }
 
   //----------------------------------------------------------------
@@ -97,7 +86,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule)
+      .dependsOn(javaFormatModule)
 
 
   //----------------------------------------------------------------
@@ -179,7 +168,6 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val main = mainProject(
     javaFormatModule,
-    formatModule,
     commonPlayModule,
     commonPlay25Module,
     clientScalaModule,
