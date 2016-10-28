@@ -68,7 +68,7 @@ class FeedService[E, C <: Context](entriesPerPage: Int, feedStore: FeedStore[E, 
    * @param context the context, which is required for feed stores
    * @return the head of the feed. This is the first page containing the most recent entries
    */
-  def getHeadOfFeed()(implicit context: C): Option[Feed[E]] = {
+  def getHeadOfFeed()(implicit context: C): Feed[E] = {
     feedStore.getHeadOfFeed(entriesPerPage)
   }
 

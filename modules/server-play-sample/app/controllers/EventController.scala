@@ -36,7 +36,7 @@ class EventController() extends Controller with FeedSupport[Event] {
    * @return the head of the page
    */
   def headOfFeed() = {
-    processFeedPage(feedService.getHeadOfFeed())
+    processFeedPage(Some(feedService.getHeadOfFeed()))
   }
 
   /**

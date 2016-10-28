@@ -72,7 +72,7 @@ class AsyncFeedService[E, C <: Context](entriesPerPage: Int, feedStore: AsyncFee
    * @return the head of the feed. This is the first page containing the most recent entries
    */
   def getHeadOfFeed()
-                   (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]] = {
+                   (implicit executionContext: ExecutionContext, context: C): Future[Feed[E]] = {
     feedStore.getHeadOfFeed(entriesPerPage)
   }
 

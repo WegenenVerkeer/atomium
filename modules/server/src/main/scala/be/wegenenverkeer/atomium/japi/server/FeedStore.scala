@@ -29,7 +29,7 @@ abstract class FeedStore[E, C <: Context](feedName: String, title: Option[String
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  def getHeadOfFeed(pageSize: Int, context: C): Option[format.Feed[E]] =
+  def getHeadOfFeed(pageSize: Int, context: C): format.Feed[E] =
     underlying.getHeadOfFeed(pageSize)(context)
 
   /**

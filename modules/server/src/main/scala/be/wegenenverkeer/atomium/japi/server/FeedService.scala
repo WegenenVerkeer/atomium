@@ -26,7 +26,7 @@ class FeedService[E, C <: Context](entriesPerPage: Integer, feedStore: FeedStore
     override def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[format.Feed[E]] =
       feedStore.getFeed(startSequenceNr, count, forward, context)
 
-    override def getHeadOfFeed(pageSize: Int)(implicit context: C): Option[format.Feed[E]] =
+    override def getHeadOfFeed(pageSize: Int)(implicit context: C): format.Feed[E] =
       feedStore.getHeadOfFeed(pageSize, context)
 
     override def push(entries: Iterable[E])(implicit context: C): Unit =

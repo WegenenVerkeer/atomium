@@ -24,17 +24,17 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    * @return the feed page or `None` if the page is not found
    */
   override def getFeed(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
-    require(pageSize > 0)
+    require(pageSize > 0, "page size must be greater than 0")
     val allowed =
       if (forward)
-        start < maxId && getNumberOfEntriesLowerThan(start) % pageSize == 0
+        start == 0 || (start < maxId && getNumberOfEntriesLowerThan(start) % pageSize == 0)
       else
-        start <= maxId && getNumberOfEntriesLowerThan(start, inclusive = false) % pageSize == 0
+        start > 1 && start <= maxId && getNumberOfEntriesLowerThan(start, inclusive = false) % pageSize == 0
 
     if (allowed) {
       // retrieve two entries more then requested and start is inclusive in next call
       // this is done to determine if there is a next and/or previous entry relative to the requested page
-      processFeedEntries(start, minId, pageSize, forward, getFeedEntries(start, pageSize + 2, forward))
+      Some(processFeedEntries(start, minId, pageSize, forward, getFeedEntries(start, pageSize + 2, forward)))
     } else {
       None
     }
@@ -45,7 +45,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  override def getHeadOfFeed(pageSize: Int)(implicit context: C): Option[Feed[E]] = {
+  override def getHeadOfFeed(pageSize: Int)(implicit context: C): Feed[E] = {
 
     require(pageSize > 0, "page size must be greater than 0")
 
@@ -55,7 +55,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
     if (entries.nonEmpty) {
       processHeadFeedEntries(getNumberOfEntriesLowerThan(entries.head.sequenceNr), minId, pageSize, entries)
     } else {
-      None
+      processHeadFeedEntries(0, minId, pageSize, entries)
     }
   }
 

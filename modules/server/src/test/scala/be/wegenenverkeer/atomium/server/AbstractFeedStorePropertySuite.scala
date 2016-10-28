@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}
 
-class AbstractFeedStorePropertySuite extends FunSuite with Matchers  with FeedStoreTestSupport with GeneratorDrivenPropertyChecks {
+class AbstractFeedStorePropertySuite extends FunSuite with Matchers with FeedStoreTestSupport with GeneratorDrivenPropertyChecks {
 
   private implicit val context: Context = new Context {}
 
@@ -25,7 +25,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers  with FeedSt
 
   test("head of non-empty feed is correct") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
+      val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
       head.complete shouldBe false
       head.getEntries.size should be > 0
       head.getEntries.size should be <= pageSize
@@ -51,7 +51,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers  with FeedSt
     getPath(url.getPath)
   }
 
-  def getPath(url: String):(Long, Int, Boolean) = {
+  def getPath(url: String): (Long, Int, Boolean) = {
     val path = url.split("/")
     val forward = path(1) == "forward"
     (path(0).toLong, path(2).toInt, forward)
@@ -59,7 +59,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers  with FeedSt
 
   test("navigate from head to tail") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize).get
+      var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
       page.getEntries.size should be > 0
       page.getEntries.size should be <= pageSize
       while (page.nextLink.asScala != None) {

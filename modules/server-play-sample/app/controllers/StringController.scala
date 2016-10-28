@@ -34,7 +34,7 @@ class StringController() extends Controller with FeedSupport[String] {
    * @return the head of the feed
    */
   def headOfFeed() = {
-    processFeedPage(Future.successful(feedService.getHeadOfFeed()))
+    processFeedPage(Future.successful(Some(feedService.getHeadOfFeed())))
   }
 
   /**
