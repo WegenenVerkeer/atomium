@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.server.mongo
 
 import java.time.{OffsetDateTime, ZoneId}
+import java.util
 
-import be.wegenenverkeer.atomium.format.jaxb.Adapters
 import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.mongo.MongoFeedStore.Keys
@@ -114,9 +114,9 @@ class MongoFeedStore[E](feedName: String,
   protected def dbObject2FeedEntry(dbo: DBObject): FeedEntry = {
     val entryDbo = dbo.as[DBObject](Keys.Content)
     FeedEntry(dbo.as[Long](Keys._Id),
-      AtomEntry(id = dbo.as[String](Keys.Uuid),
-        updated = dbo.as[OffsetDateTime](Keys.Timestamp),
-        content = Content(deser(entryDbo), ""), Nil))
+      new AtomEntry[E](dbo.as[String](Keys.Uuid),
+        dbo.as[OffsetDateTime](Keys.Timestamp),
+         new Content[E](deser(entryDbo), ""), new util.ArrayList()))
   }
 
   /**

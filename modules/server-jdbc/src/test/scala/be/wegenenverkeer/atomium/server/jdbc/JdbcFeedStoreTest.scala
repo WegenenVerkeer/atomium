@@ -19,7 +19,7 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
     feedStore.push(List("1"))
     val entries = feedStore.getFeedEntries(0, 1, ascending = true)
     entries.size should be(1)
-    entries(0).entry.content.value should be("1")
+    entries.head.entry.getContent.getValue should be("1")
   }
 
   /**
@@ -42,7 +42,7 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
     feedStore.push("4")
     val entries2 = feedStore.getFeedEntries(0, 10, ascending = true)
     entries2.size should be(1)
-    entries2(0).sequenceNr should be(4)
+    entries2.head.sequenceNr should be(4)
   }
 
   test("getFeed returns correct page of the feed") { (feedStore, context) =>
@@ -82,7 +82,7 @@ class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers
       Some("title"),
       ENTRIES_TABLE_NAME,
       identity, identity,
-      Url("http://www.example.org/feeds")
+      new Url("http://www.example.org/feeds")
     )
 
 

@@ -40,7 +40,7 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
       ENTRIES_TABLE_NAME,
       ser = s => s,
       deser = s => s,
-      url = Url("http://www.example.org/feeds")
+      url = new Url("http://www.example.org/feeds")
     )
   }
 
@@ -80,7 +80,7 @@ class SlickFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matcher
     val entries = feedStore.getFeedEntries(0, 2, ascending = true)
     entries.size should be(1)
     entries(0).sequenceNr should be(3)
-    feedStore.getFeed(0, 2, forward = true).get.entries.size should be(1)
+    feedStore.getFeed(0, 2, forward = true).get.getEntries.size should be(1)
   }
 
 }

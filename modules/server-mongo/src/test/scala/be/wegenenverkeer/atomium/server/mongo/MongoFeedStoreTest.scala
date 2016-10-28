@@ -103,7 +103,7 @@ class MongoFeedStoreTest
     feedInfoCollectionName = "feed_info",
     ser = i => MongoDBObject("value" -> i),
     deser = dbo => dbo.as[T]("value"),
-    url = Url("http://www.example.org")
+    url = new Url("http://www.example.org")
   )
 
 

@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server.jdbc
 
 import java.time.OffsetDateTime
 
-import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 
 abstract class AbstractJdbcFeedStore[E](feedName: String,
@@ -101,7 +101,7 @@ abstract class AbstractJdbcFeedStore[E](feedName: String,
   private[this] def toFeedEntry(entry: EntryDbModel): FeedEntry = {
     FeedEntry(
       entry.sequenceNo.get,
-      AtomEntry(entry.uuid, entry.timestamp, Content(deser(entry.value), ""), Nil)
+      new AtomEntry[E](entry.uuid, entry.timestamp, new Content[E](deser(entry.value), ""))
     )
   }
 

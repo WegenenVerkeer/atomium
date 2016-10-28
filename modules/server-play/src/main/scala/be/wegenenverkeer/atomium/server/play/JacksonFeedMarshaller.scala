@@ -1,7 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
 import be.wegenenverkeer.atomium.format.Feed
-import be.wegenenverkeer.atomium.format.FeedConverters._
 import be.wegenenverkeer.atomium.play.JacksonSupport
 import com.fasterxml.jackson.databind.ObjectWriter
 import play.api.http.MimeTypes
@@ -21,8 +20,7 @@ case class JacksonFeedMarshaller[T](contentType: String = MimeTypes.JSON)(implic
 
   /** Serializes a `Feed` to JSON format */
   override def marshall(feed: Feed[T]): (ContentType, Array[Byte]) = {
-    val toJavaEventFeed = (feed: Feed[T]) => feed.asJava
-    val xmlMarshaller = toJavaEventFeed andThen JacksonSupport.jacksonMarshaller
+    val xmlMarshaller: Feed[T] => Array[Byte] =  JacksonSupport.jacksonMarshaller
     (contentType, xmlMarshaller(feed))
   }
 }

@@ -2,9 +2,14 @@ package be.wegenenverkeer.atomium.format;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @XmlRootElement(namespace = "http://www.w3.org/2005/Atom", name = "feed")
 @XmlType(propOrder = {"base", "id", "title", "generator", "updated", "links", "entries"})
@@ -108,6 +113,70 @@ public final class Feed<T> {
 
     public void setEntries(List<Entry<T>> entries) {
         this.entries = entries;
+    }
+
+
+    public Optional<Link> findLinkByName(String relName) {
+        return links.stream()
+                .filter(l -> l.getRel().equals(relName))
+                .findFirst();
+    }
+
+   public Link selfLink() {
+       return findLinkByName(Link.SELF).get();// safe, since invariant is checked in constructor
+   }
+
+   public Optional<Link> nextLink() {
+       return findLinkByName(Link.NEXT);
+   }
+
+   public Optional<Link> firstLink() {
+       return findLinkByName(Link.FIRST);
+   }
+
+    public Optional<Link> previousLink() {
+        return findLinkByName(Link.PREVIOUS);
+    }
+
+    public Optional<Link> lastLink(){
+        return findLinkByName(Link.LAST);
+    }
+
+    public Optional<Link> collectionLink() {
+        return findLinkByName(Link.COLLECTION);
+    }
+
+    /**
+     * A Feed page is complete (and won't change anymore), if there is a 'previous' link.
+     *
+     * @return true iff the feed page is completed, and won't change anymore.
+     */
+    public boolean complete() {
+        return previousLink().isPresent();
+    }
+
+    public String calcETag() {
+        try {
+            MessageDigest message = MessageDigest.getInstance("MD5");
+            String utf = "UTF-8";
+            updateMessage(message, this.base);
+            updateMessage(message, this.id);
+            links.stream().forEach(link ->
+                    updateMessage(message, link.toString())
+            );
+            return new BigInteger(1, message.digest()).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            // then don't return ETag
+            return "";
+        }
+    }
+
+    private void updateMessage(MessageDigest digest, String el) {
+        try {
+            digest.update(el.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            // don't update
+        }
     }
 
     @Override

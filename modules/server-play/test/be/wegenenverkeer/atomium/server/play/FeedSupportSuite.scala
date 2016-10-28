@@ -22,7 +22,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
   val incompleteFeed: Feed[String] = new Feed("id",
     Url("http://example.com"), None, None, new DateTime(0), List(Link(Link.selfLink, Url("foo"))), List())
 
-  val completeFeed: Feed[String] = incompleteFeed.copy(links = Link(Link.previousLink, Url("prev")) :: incompleteFeed.links)
+  val completeFeed: Feed[String] = incompleteFeed.copy(links = Link(Link.previousLink, Url("prev")) :: incompleteFeed.getLinks)
 
   test("processing a None should return Not-Found") {
     val result: Future[Result] = new FeedSupport[Nothing]() {
@@ -73,7 +73,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
     val request = FakeRequest().withHeaders(HeaderNames.IF_NONE_MATCH -> incompleteFeed.calcETag)
     val changedFeed = incompleteFeed.copy(entries = AtomEntry[String]("id",
       new DateTime(),
-      new Content[String]("foo", ""), List()) :: incompleteFeed.entries)
+      new Content[String]("foo", ""), List()) :: incompleteFeed.getEntries)
     val result: Future[Result] = feedSupport processFeedPage Some(changedFeed) apply request
     status(result) shouldBe OK
   }

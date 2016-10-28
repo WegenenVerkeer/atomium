@@ -26,7 +26,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
 
-  private val generator = Generator("atomium", Some(Url("http://github.com/WegenenVerkeer/atomium")), Some("0.0.1"))
+  private val generator = new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1")
 
   /**
    * Define the PartialFunction that will map acceptable content types to FeedMarshallers.
@@ -82,8 +82,8 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           NotModified
         } else {
           //add generator
-          val feed = f.copy(generator = Some(generator))
-          render(buildRenders(feed))
+          f.setGenerator(generator)
+          render(buildRenders(f))
         }
       case None    =>
         logger.info("sending response: 404 Not-Found")
@@ -102,7 +102,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
     logger.info("sending response: 200 Found")
     val result = Ok(payload)
-      .withHeaders(LAST_MODIFIED -> feed.updated.format(DateTimeFormatter.RFC_1123_DATE_TIME), ETAG -> feed.calcETag)
+      .withHeaders(LAST_MODIFIED -> feed.getUpdated().format(DateTimeFormatter.RFC_1123_DATE_TIME), ETAG -> feed.calcETag)
 
     //add extra cache headers or forbid caching
     val resultWithCacheHeader =
@@ -118,16 +118,16 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     resultWithCacheHeader.as(contentType)
   }
 
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 15:00:00 => modified => false
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 10:00:00 => not modified => true
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 12:00:00 => not modified => true
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 15:00:00 => modified => false
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 10:00:00 => not modified => true
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: Feed[T], headers: Headers): Boolean = {
 
     val ifNoneMatch = headers get IF_NONE_MATCH contains f.calcETag
 
     val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
       try {
-        val updated = f.updated.`with`(ChronoField.MILLI_OF_SECOND, 0)
+        val updated = f.getUpdated.`with`(ChronoField.MILLI_OF_SECOND, 0)
         OffsetDateTime.parse(dateStr, DateTimeFormatter.RFC_1123_DATE_TIME).compareTo(updated) >= 0
       }
       catch {

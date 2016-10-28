@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.format.jaxb
+package be.wegenenverkeer.atomium.play.jaxb
 
 import java.lang.{Double => JDouble, Integer => JInteger, Long => JLong}
 import javax.xml.bind.annotation.adapters.XmlAdapter

@@ -9,7 +9,7 @@ import scala.collection.immutable.TreeMap
 class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
   "test_store",
   None,
-  Url("http://www.example.org/testfeed")) {
+  new Url("http://www.example.org/testfeed")) {
 
   var skip = 0
   var nextSequenceNum = 0L
@@ -23,7 +23,7 @@ class TestFeedStore[T, C <: Context] extends AbstractFeedStore[T, C](
   override def push(entries: Iterable[T])(implicit context: C): Unit = {
     entries foreach { e =>
       nextSequenceNum += (skip + 1)
-      entriesMap += (nextSequenceNum -> AtomEntry("id", OffsetDateTime.now(), Content(e, ""), Nil))
+      entriesMap += (nextSequenceNum -> new AtomEntry("id", OffsetDateTime.now(), new Content(e, "")))
     }
     sequenceNumbersToSkipForPush(0)
   }

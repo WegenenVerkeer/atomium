@@ -40,6 +40,10 @@ public final class AtomEntry<T> extends Entry<T> {
         this(id, OffsetDateTime.now(), content, links);
     }
 
+    public AtomEntry(String id, OffsetDateTime updated, Content<T> content) {
+        this(id, updated, content, new ArrayList<>());
+    }
+
     public AtomEntry(String id, OffsetDateTime updated, Content<T> content, List<Link> links) {
         this.id = id;
         this.updated = updated;

@@ -128,7 +128,7 @@ public class AtomPubEntry<T> extends Entry<T> {
     public String toString() {
         return "AtomPubEntry{" +
                 "id='" + id + '\'' +
-                ", updated=" + updated +
+                ", getUpdated=" + updated +
                 ", content=" + content +
                 ", links=" + links +
                 ", edited=" + edited +

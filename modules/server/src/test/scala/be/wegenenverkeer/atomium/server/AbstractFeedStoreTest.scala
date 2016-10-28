@@ -2,6 +2,7 @@ package be.wegenenverkeer.atomium.server
 
 import be.wegenenverkeer.atomium.format.{Url, Link}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
+import scala.collection.JavaConverters._
 
 class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
@@ -100,11 +101,11 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
     //move forwards with pageSize 5 from tail
     val lastPageOfFeedWithSize5 = feedStore.getFeed(0, 5, forward = true).get
     lastPageOfFeedWithSize5.complete shouldBe false //there is no previous feed page (yet)
-    lastPageOfFeedWithSize5.entries.size should be(5)
-    lastPageOfFeedWithSize5.entries.map( _.content.value ) should be(List(5, 4, 3, 2, 1))
-    lastPageOfFeedWithSize5.previousLink shouldBe None
-    lastPageOfFeedWithSize5.nextLink shouldBe None
-    lastPageOfFeedWithSize5.selfLink should be (Link(Link.selfLink, Url("0/forward/5")))
+    lastPageOfFeedWithSize5.getEntries.size should be(5)
+    lastPageOfFeedWithSize5.getEntries.asScala.map( _.getContent.getValue ) should be(List(5, 4, 3, 2, 1))
+    lastPageOfFeedWithSize5.previousLink.asScala shouldBe None
+    lastPageOfFeedWithSize5.nextLink.asScala shouldBe None
+    lastPageOfFeedWithSize5.selfLink shouldBe (new Link(Link.SELF, "0/forward/5"))
 
     //since only 1 page in feed => head equals last
     feedStore.getHeadOfFeed(5).get shouldEqual lastPageOfFeedWithSize5
@@ -114,29 +115,29 @@ class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matc
     //move forwards with pageSize 2 from tail
     val lastPageOfFeedWithSize2 = feedStore.getFeed(0, 2, forward = true).get
     lastPageOfFeedWithSize2.complete shouldBe true
-    lastPageOfFeedWithSize2.entries.size should be(2)
-    lastPageOfFeedWithSize2.entries.map( _.content.value ) should be(List(2, 1))
-    lastPageOfFeedWithSize2.previousLink should be(Some(Link(Link.previousLink, Url("3/forward/2"))))
-    lastPageOfFeedWithSize2.nextLink shouldBe None
-    lastPageOfFeedWithSize2.selfLink should be(Link(Link.selfLink, Url("0/forward/2")))
+    lastPageOfFeedWithSize2.getEntries.size should be(2)
+    lastPageOfFeedWithSize2.getEntries.asScala.map( _.getContent.getValue ) should be(List(2, 1))
+    lastPageOfFeedWithSize2.previousLink.asScala should be(Some(new Link(Link.PREVIOUS, "3/forward/2")))
+    lastPageOfFeedWithSize2.nextLink.asScala shouldBe None
+    lastPageOfFeedWithSize2.selfLink should be( new Link(Link.SELF, "0/forward/2"))
 
     //moving forward => previous page
     val middlePageOfFeedWithSize2 = feedStore.getFeed(3, 2, forward = true).get
     middlePageOfFeedWithSize2.complete shouldBe true
-    middlePageOfFeedWithSize2.entries.size should be(2)
-    middlePageOfFeedWithSize2.entries.map( _.content.value ) should be(List(4, 3))
-    middlePageOfFeedWithSize2.previousLink should be(Some(Link(Link.previousLink, Url("8/forward/2"))))
-    middlePageOfFeedWithSize2.nextLink should be(Some(Link(Link.nextLink, Url("4/backward/2"))))
-    middlePageOfFeedWithSize2.selfLink should be(Link(Link.selfLink, Url("3/forward/2")))
+    middlePageOfFeedWithSize2.getEntries.size should be(2)
+    middlePageOfFeedWithSize2.getEntries.asScala.map( _.getContent.getValue ) should be(List(4, 3))
+    middlePageOfFeedWithSize2.previousLink.asScala should be(Some(new Link(Link.PREVIOUS, "8/forward/2")))
+    middlePageOfFeedWithSize2.nextLink.asScala should be(Some(new Link(Link.NEXT, "4/backward/2")))
+    middlePageOfFeedWithSize2.selfLink should be(new Link(Link.SELF, "3/forward/2"))
 
     //moving forward => previous page
     val firstPageOfFeedWithSize2 = feedStore.getFeed(8, 2, forward = true).get
     firstPageOfFeedWithSize2.complete shouldBe false
-    firstPageOfFeedWithSize2.entries.size should be(1)
-    firstPageOfFeedWithSize2.entries.map( _.content.value ) should be(List(5))
-    firstPageOfFeedWithSize2.previousLink shouldBe None
-    firstPageOfFeedWithSize2.nextLink should be(Some(Link(Link.nextLink, Url("9/backward/2"))))
-    firstPageOfFeedWithSize2.selfLink should be(Link(Link.selfLink, Url("8/forward/2")))
+    firstPageOfFeedWithSize2.getEntries.size should be(1)
+    firstPageOfFeedWithSize2.getEntries.asScala.map( _.getContent.getValue ) should be(List(5))
+    firstPageOfFeedWithSize2.previousLink.asScala shouldBe None
+    firstPageOfFeedWithSize2.nextLink.asScala should be(Some(new Link(Link.NEXT, "9/backward/2")))
+    firstPageOfFeedWithSize2.selfLink should be(new Link(Link.SELF, "8/forward/2"))
 
     //we are at the head of the feed
     feedStore.getHeadOfFeed(2).get shouldEqual firstPageOfFeedWithSize2

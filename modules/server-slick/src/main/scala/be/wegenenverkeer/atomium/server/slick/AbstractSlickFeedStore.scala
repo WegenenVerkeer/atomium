@@ -94,7 +94,8 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
    */
   private[this] def toFeedEntry: (feedComponent.EntryTable#TableElementType) => FeedEntry = { dbEntry =>
     FeedEntry(dbEntry.id.get,
-      AtomEntry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
+      new AtomEntry[E](dbEntry.uuid, dbEntry.timestamp, new Content(deser(dbEntry.value), ""))
+    )
   }
 
   /**

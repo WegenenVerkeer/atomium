@@ -2,8 +2,9 @@ package controllers
 
 import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlRootElement}
 
-import be.wegenenverkeer.atomium.format.jaxb.{xmlElement, xmlAttribute, xmlTypeAdapter}
-import be.wegenenverkeer.atomium.format.jaxb.Adapters.StringOptionAdapter
+import be.wegenenverkeer.atomium.play.jaxb.Adapters.StringOptionAdapter
+import be.wegenenverkeer.atomium.play.jaxb.{xmlAttribute, xmlElement, xmlTypeAdapter}
+
 import play.api.libs.json._
 
 object EventFormat {

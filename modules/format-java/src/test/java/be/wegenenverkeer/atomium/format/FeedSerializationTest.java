@@ -117,7 +117,7 @@ public class FeedSerializationTest {
         String xml = marshalToXml(feed);
         Feed feedFromXml = unmarshalFromXml(xml);
         Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<>(jaxbContext, Integer.class));
-        assertEquals("different updated on xml:", feed.getUpdated(), feedFromXml.getUpdated());
+        assertEquals("different getUpdated on xml:", feed.getUpdated(), feedFromXml.getUpdated());
         feedFromXml.setUpdated(feed.getUpdated());
         assertEquals(feed, feedFromXml);
     }
@@ -125,7 +125,7 @@ public class FeedSerializationTest {
     private void checkJson(Feed feed, TypeReference typeReference) throws IOException {
         String json = marshalToJson(feed);
         Feed feedFromJson = unmarshalFromJson(json, typeReference);
-        assertEquals("different updated on json:", feed.getUpdated(), feedFromJson.getUpdated());
+        assertEquals("different getUpdated on json:", feed.getUpdated(), feedFromJson.getUpdated());
         feedFromJson.setUpdated(feed.getUpdated());
         assertEquals(feed, feedFromJson);
     }
