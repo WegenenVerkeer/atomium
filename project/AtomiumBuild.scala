@@ -36,8 +36,8 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule, serverModule, clientJavaModule % "test->test;compile->compile")
-      .aggregate(javaFormatModule, serverModule)
+      .dependsOn(javaFormatModule, clientJavaModule % "test->test;compile->compile")
+      .aggregate(javaFormatModule)
   }
 
   //----------------------------------------------------------------
@@ -88,18 +88,6 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(javaFormatModule)
 
-
-  //----------------------------------------------------------------
-  lazy val serverMongoModule = {
-
-    val mainDeps = Seq(mongoJavaDriver, casbah)
-    val testDeps = Seq(embededMongo) ++ mainScalaTestDependencies
-
-    project("server-mongo")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile")
-  }
 
 
   //----------------------------------------------------------------
@@ -173,7 +161,6 @@ object AtomiumBuild extends Build with BuildSettings {
     clientScalaModule,
     clientJavaModule,
     serverModule,
-    serverMongoModule,
     serverSlickModule,
     serverJdbcModule,
     serverPlayModule,
