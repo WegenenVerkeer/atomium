@@ -23,7 +23,7 @@ public class Adapters {
 
     public static java.time.format.DateTimeFormatter datetimeParser =
             new java.time.format.DateTimeFormatterBuilder()
-                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]"))
                     .optionalStart()
                     .appendPattern("XXXX")
                     .optionalEnd()

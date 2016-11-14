@@ -44,7 +44,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val clientJavaModule = {
 
     val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
-    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, jfakerMockito, junitInterface)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
@@ -89,6 +89,18 @@ object AtomiumBuild extends Build with BuildSettings {
       .dependsOn(javaFormatModule)
 
 
+  //----------------------------------------------------------------
+  lazy val serverSpringModule = {
+
+    val mainDeps = Seq(slf4j, lombok, springContext, springTx, jaxRsApi, restEasy)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
+
+    project("server-spring")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings( autoScalaLibrary := false )
+      .settings(crossPaths := false)
+      .dependsOn(javaFormatModule)
+  }
 
   //----------------------------------------------------------------
   lazy val serverSlickModule = {
@@ -161,6 +173,7 @@ object AtomiumBuild extends Build with BuildSettings {
     clientScalaModule,
     clientJavaModule,
     serverModule,
+    serverSpringModule,
     serverSlickModule,
     serverJdbcModule,
     serverPlayModule,

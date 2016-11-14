@@ -36,17 +36,20 @@ object Dependencies {
 
 
   // java deps
-  val junit             = "junit"                           %   "junit"                   % "4.11"    % "test"
-  val junitInterface    = "com.novocode"                    %   "junit-interface"         % "0.11"    % "test->default"
-  val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"        % "2.4.3"
-  val jacksonJavaTime   = "com.fasterxml.jackson.datatype" %    "jackson-datatype-jsr310" % "2.4.3"
-  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"       % "0.4.0"
-
+  val junit             = "junit"                           %   "junit"                    % "4.11"    % "test"
+  val junitInterface    = "com.novocode"                    %   "junit-interface"          % "0.11"    % "test->default"
+  val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"         % "2.4.3"
+  val jacksonJavaTime   = "com.fasterxml.jackson.datatype" %    "jackson-datatype-jsr310"  % "2.4.3"
+  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"        % "0.4.0"
+  val lombok            = "org.projectlombok"               %   "lombok"                   % "1.16.10" % "provided"
+  val springContext     = "org.springframework"             %   "spring-context"           % "4.2.0.RELEASE"
+  val springTx          = "org.springframework"             %   "spring-tx"                % "4.2.0.RELEASE"
+  val jaxRsApi          = "org.jboss.spec.javax.ws.rs"      %   "jboss-jaxrs-api_2.0_spec" % "1.0.0.Final"
+  val restEasy          = "org.jboss.resteasy"              %   "resteasy-jaxrs"           % "3.0.19.Final" % "provided"
 
   val slf4j             = "org.slf4j"                       %   "slf4j-api"               % "1.7.6"
   val mockitoCore       = "org.mockito"                     %   "mockito-core"            % "1.9.5"   % "test"
   val assertJ           = "org.assertj"                     %   "assertj-core"            % "1.5.0"   % "test"
-  val jfakerMockito     = "be.eliwan"                       %   "jfaker-mockito"          % "0.1"     % "test"
   val commonsIo         = "commons-io"                      %   "commons-io"              % "2.4"     % "test"
 
 

@@ -131,6 +131,7 @@ public class AtomiumClient {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new OffsetDateTimeModule());
             objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
             for (Module module : modules) {
