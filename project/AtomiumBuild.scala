@@ -89,18 +89,6 @@ object AtomiumBuild extends Build with BuildSettings {
       .dependsOn(javaFormatModule)
 
 
-  //----------------------------------------------------------------
-  lazy val serverMongoModule = {
-
-    val mainDeps = Seq(mongoJavaDriver, casbah)
-    val testDeps = Seq(embededMongo) ++ mainScalaTestDependencies
-
-    project("server-mongo")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile")
-  }
-
 
   //----------------------------------------------------------------
   lazy val serverSlickModule = {
@@ -173,7 +161,6 @@ object AtomiumBuild extends Build with BuildSettings {
     clientScalaModule,
     clientJavaModule,
     serverModule,
-    serverMongoModule,
     serverSlickModule,
     serverJdbcModule,
     serverPlayModule,
