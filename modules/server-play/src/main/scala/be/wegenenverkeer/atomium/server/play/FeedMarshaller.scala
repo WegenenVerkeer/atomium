@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
-import be.wegenenverkeer.atomium.format.FeedPage
+import be.wegenenverkeer.atomium.api.FeedPage
 
 trait FeedMarshaller[T] {
 

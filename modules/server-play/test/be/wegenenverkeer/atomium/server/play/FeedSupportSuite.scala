@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import org.joda.time.{DateTime, DateTimeUtils}

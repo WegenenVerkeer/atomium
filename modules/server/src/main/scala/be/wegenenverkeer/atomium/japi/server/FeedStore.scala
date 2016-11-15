@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.server
 
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.format
-import be.wegenenverkeer.atomium.format.FeedPage
 import be.wegenenverkeer.atomium.server.Context
 
 /**

@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.server.spring;
 
 import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.FeedPage;
+import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Rule;
@@ -102,7 +102,7 @@ public class AtomiumServiceHelperTest {
         Response actualResponse = helper.getFeed(testFeedProvider, 0, request, true);
 
         assertThat(actualResponse.getStatus()).isEqualTo(SC_OK); // echte response
-        verify(mapper, times(1)).writeValueAsString(any()); // nieuwe feed schrijven
+        verify(mapper, times(1)).encode(any()); // nieuwe feed schrijven
     }
 
     @Test
@@ -125,7 +125,7 @@ public class AtomiumServiceHelperTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
         verify(responseBuilder, times(1)).build();
-        verify(mapper, never()).writeValueAsString(any()); // geen nieuwe feed schrijven
+        verify(mapper, never()).encode(any()); // geen nieuwe feed schrijven
     }
 
     @Test
@@ -279,8 +279,7 @@ public class AtomiumServiceHelperTest {
         testFeedProvider.setEntriesForPage(lijst);
 
         Response response = helper.getFeed(testFeedProvider, page, request, false);
-        return mapper.readValue(response.getEntity().toString(), new TypeReference<FeedPage<TestFeedEntryTo>>() {
-        });
+        return mapper.decode(response.getEntity().toString());
     }
 
     private List<TestFeedEntry> maakTestFeedEntries(int testPageSize) {

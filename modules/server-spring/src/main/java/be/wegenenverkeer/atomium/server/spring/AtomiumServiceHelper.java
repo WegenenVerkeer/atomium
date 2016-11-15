@@ -1,5 +1,9 @@
 package be.wegenenverkeer.atomium.server.spring;
 
+import be.wegenenverkeer.atomium.api.AtomiumEncodeException;
+import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.FeedPage;
+import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.format.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +33,7 @@ public class AtomiumServiceHelper {
     private int cacheDuration;
 
     @Autowired
-    private ObjectMapper mapper;
+    private FeedPageCodec<?, String> encoder;
 
     /**
      * Update atom volgnummers (in aparte transactie).
@@ -108,13 +112,13 @@ public class AtomiumServiceHelper {
 
         // response opbouwen
         try {
-            rb = Response.ok(mapper.writeValueAsString(feedPage));
+            rb = Response.ok(((FeedPageCodec<T,String>)encoder).encode(feedPage));
             if (!isCurrent && pageComplete) {
                 rb.cacheControl(cc); // cache result enkel als pagina volledig en niet via de "recent" URL opgeroepen. Zie figuur 7-2 in Rest In Practice.
             }
             rb.tag(etag);
             return rb.build();
-        } catch (JsonProcessingException jpe) {
+        } catch (AtomiumEncodeException jpe) {
             throw new AtomiumServerException("Kan stream niet converteren naar JSON.", jpe);
         }
     }

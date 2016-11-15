@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.japi.server
 
 import java.lang.{Boolean => JBoolean, Long => JLong}
 
-import be.wegenenverkeer.atomium.format.FeedPage
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.server.Context
 import be.wegenenverkeer.atomium.{format, server}
 

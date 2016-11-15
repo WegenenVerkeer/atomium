@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
-import be.wegenenverkeer.atomium.format.FeedPage
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.play.PlayJsonSupport
 import play.api.http.MimeTypes
 import play.api.libs.json.Writes

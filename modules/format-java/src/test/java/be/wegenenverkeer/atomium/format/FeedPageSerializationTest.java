@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atomium.format;
 
+import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.pub.Control;
 import be.wegenenverkeer.atomium.format.pub.Draft;
 import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;

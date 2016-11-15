@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server.play
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atomium.format.FeedPage
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.play.JaxbSupport
 import play.api.http.MimeTypes
 

@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.server.slick
 import java.time.OffsetDateTime
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
 

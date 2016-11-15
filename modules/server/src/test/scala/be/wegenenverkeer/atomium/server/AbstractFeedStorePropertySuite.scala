@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{FeedPage, Link, Url}
+import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.format.{Link, Url}
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}

@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.play
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
+import be.wegenenverkeer.atomium.api.{Entry, FeedPage}
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.format.pub._
 import play.api.libs.functional.syntax._

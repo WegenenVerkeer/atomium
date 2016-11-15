@@ -2,7 +2,7 @@ package controllers
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atomium.format.FeedPage
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.server.play.{FeedSupport, JaxbFeedMarshaller, PlayJsonFeedMarshaller}
 import be.wegenenverkeer.atomium.server.{Context, FeedService}

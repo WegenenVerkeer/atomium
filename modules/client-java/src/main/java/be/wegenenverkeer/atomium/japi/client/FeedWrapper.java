@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.format.Entry;
-import be.wegenenverkeer.atomium.format.FeedPage;
+import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 
 import java.util.Collections;

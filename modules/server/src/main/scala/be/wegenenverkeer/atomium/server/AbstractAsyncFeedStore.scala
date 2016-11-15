@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{FeedPage, Url}
+import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.format.Url
 
 import scala.concurrent.{ExecutionContext, Future}
 

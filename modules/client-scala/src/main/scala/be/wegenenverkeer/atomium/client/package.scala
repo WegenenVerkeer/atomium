@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium
 
-import be.wegenenverkeer.atomium.format.FeedPage
+
+import be.wegenenverkeer.atomium.api.FeedPage
 
 import scala.util.Try
 

@@ -1,4 +1,8 @@
-package be.wegenenverkeer.atomium.format;
+package be.wegenenverkeer.atomium.api;
+
+import be.wegenenverkeer.atomium.format.Adapters;
+import be.wegenenverkeer.atomium.format.Generator;
+import be.wegenenverkeer.atomium.format.Link;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
