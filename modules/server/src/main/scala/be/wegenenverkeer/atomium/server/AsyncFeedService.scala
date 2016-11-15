@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.format.FeedPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -58,7 +58,7 @@ class AsyncFeedService[E, C <: Context](entriesPerPage: Int, feedStore: AsyncFee
    *         atom clients should navigate using the links in the atom feed
    */
   def getFeedPage(startSequenceNr: Long, pageSize: Int, forward: Boolean)
-                 (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]] = {
+                 (implicit executionContext: ExecutionContext, context: C): Future[Option[FeedPage[E]]] = {
     if (pageSize == entriesPerPage) {
       feedStore.getFeed(startSequenceNr, pageSize, forward)
     } else {
@@ -72,7 +72,7 @@ class AsyncFeedService[E, C <: Context](entriesPerPage: Int, feedStore: AsyncFee
    * @return the head of the feed. This is the first page containing the most recent entries
    */
   def getHeadOfFeed()
-                   (implicit executionContext: ExecutionContext, context: C): Future[Feed[E]] = {
+                   (implicit executionContext: ExecutionContext, context: C): Future[FeedPage[E]] = {
     feedStore.getHeadOfFeed(entriesPerPage)
   }
 

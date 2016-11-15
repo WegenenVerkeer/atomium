@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.format.FeedPage
 
 trait FeedMarshaller[T] {
 
@@ -12,6 +12,6 @@ trait FeedMarshaller[T] {
    *
    * @return a tuple of `ContentType` (ie: String) indicating the serialized format and an `Array[Byte]` containing the serialized `Feed`.
    */
-  def marshall(feed: Feed[T]): (ContentType, Array[Byte])
+  def marshall(feed: FeedPage[T]): (ContentType, Array[Byte])
 
 }

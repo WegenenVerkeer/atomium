@@ -14,21 +14,21 @@ import java.util.Optional;
 @XmlRootElement(namespace = "http://www.w3.org/2005/Atom", name = "feed")
 @XmlType(propOrder = {"base", "id", "title", "generator", "updated", "links", "entries"})
 @XmlAccessorType(XmlAccessType.NONE)
-public final class Feed<T> {
+public final class FeedPage<T> {
 
     /**
      * no arg constructor, needed for JAXB and/or Jackson POJO support
      */
-    public Feed() {
+    public FeedPage() {
     }
 
-    public Feed(String id, String base, String title, Generator generator, OffsetDateTime updated) {
+    public FeedPage(String id, String base, String title, Generator generator, OffsetDateTime updated) {
         this(id, base, title, generator, updated, new ArrayList<>(), new ArrayList<>());
     }
 
 
-    public Feed(String id, String base, String title, Generator generator,
-                OffsetDateTime updated, List<Link> links, List<Entry<T>> entries) {
+    public FeedPage(String id, String base, String title, Generator generator,
+                    OffsetDateTime updated, List<Link> links, List<Entry<T>> entries) {
         this.id = id;
         this.base = base;
         this.title = title;
@@ -184,15 +184,15 @@ public final class Feed<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Feed feed = (Feed) o;
-        if (base == null && feed.base != null) return false;
-        if (base != null && !base.equals(feed.base)) return false;
-        if (entries != null ? !entries.equals(feed.entries) : feed.entries != null) return false;
-        if (generator != null ? !generator.equals(feed.generator) : feed.generator != null) return false;
-        if (!id.equals(feed.id)) return false;
-        if (links != null ? !links.equals(feed.links) : feed.links != null) return false;
-        if (title != null ? !title.equals(feed.title) : feed.title != null) return false;
-        if (updated != null ? !updated.equals(feed.updated) : feed.updated != null) return false;
+        FeedPage feedPage = (FeedPage) o;
+        if (base == null && feedPage.base != null) return false;
+        if (base != null && !base.equals(feedPage.base)) return false;
+        if (entries != null ? !entries.equals(feedPage.entries) : feedPage.entries != null) return false;
+        if (generator != null ? !generator.equals(feedPage.generator) : feedPage.generator != null) return false;
+        if (!id.equals(feedPage.id)) return false;
+        if (links != null ? !links.equals(feedPage.links) : feedPage.links != null) return false;
+        if (title != null ? !title.equals(feedPage.title) : feedPage.title != null) return false;
+        if (updated != null ? !updated.equals(feedPage.updated) : feedPage.updated != null) return false;
 
         return true;
     }

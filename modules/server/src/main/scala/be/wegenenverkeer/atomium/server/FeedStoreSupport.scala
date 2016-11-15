@@ -26,13 +26,13 @@ trait FeedStoreSupport[E] {
              entries: List[FeedStoreSupport[E]#FeedEntry],
              previousEntryId: Option[Long],
              nextEntryId: Option[Long])
-            (implicit feedParams: FeedParams): Feed[E] = {
+            (implicit feedParams: FeedParams): FeedPage[E] = {
     val selfLink = new Link(Link.SELF, feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true))
     val lastlink = new Link(Link.LAST, feedLink(minId, pageSize, forward = true))
     val nextLink = nextEntryId.map { _ => link(Link.NEXT, entries.last.sequenceNr, pageSize, forward = false) }.toList
     val prevLink = previousEntryId.map { _ => link(Link.PREVIOUS, entries.head.sequenceNr, pageSize, forward = true) }.toList
     val links = List(selfLink, lastlink) ++ prevLink ++ nextLink
-    new Feed[E](
+    new FeedPage[E](
       feedParams.feedName,
       feedParams.baseUrl.getPath,
       feedParams.title.getOrElse("<no title>"),
@@ -93,7 +93,7 @@ trait FeedStoreSupport[E] {
   }
 
   def processFeedEntries(start: Long, minId: Long, pageSize: Int, forward: Boolean, entries: List[FeedStoreSupport[E]#FeedEntry])
-                        (implicit feedParams: FeedParams): Feed[E] = {
+                        (implicit feedParams: FeedParams): FeedPage[E] = {
     if (entries.nonEmpty) {
       val result = if (forward) {
         processForwardEntries(start, pageSize, entries)

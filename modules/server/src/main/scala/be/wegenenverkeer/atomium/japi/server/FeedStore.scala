@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.japi.server
 
 import be.wegenenverkeer.atomium.format
+import be.wegenenverkeer.atomium.format.FeedPage
 import be.wegenenverkeer.atomium.server.Context
 
 /**
@@ -21,7 +22,7 @@ abstract class FeedStore[E, C <: Context](feedName: String, title: Option[String
    *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(startSequenceNr: Long, pageSize: Int, forward: Boolean, context: C): Option[format.Feed[E]] =
+  def getFeed(startSequenceNr: Long, pageSize: Int, forward: Boolean, context: C): Option[FeedPage[E]] =
     underlying.getFeed(startSequenceNr, pageSize, forward)(context)
 
   /**
@@ -29,7 +30,7 @@ abstract class FeedStore[E, C <: Context](feedName: String, title: Option[String
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  def getHeadOfFeed(pageSize: Int, context: C): format.Feed[E] =
+  def getHeadOfFeed(pageSize: Int, context: C): FeedPage[E] =
     underlying.getHeadOfFeed(pageSize)(context)
 
   /**

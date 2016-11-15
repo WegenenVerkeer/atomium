@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Feed, Link, Url}
+import be.wegenenverkeer.atomium.format.{FeedPage, Link, Url}
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FunSuite, Matchers}
@@ -25,7 +25,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with FeedSto
 
   test("head of non-empty feed is correct") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      val head: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
+      val head: FeedPage[Int] = feedStore.getHeadOfFeed(pageSize)
       head.complete shouldBe false
       head.getEntries.size should be > 0
       head.getEntries.size should be <= pageSize
@@ -36,7 +36,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with FeedSto
 
   test("last page of non-empty feed is correct") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      val lastPage: Feed[Int] = feedStore.getFeed(0, pageSize, forward = true).get
+      val lastPage: FeedPage[Int] = feedStore.getFeed(0, pageSize, forward = true).get
       lastPage.getEntries.size should be > 0
       lastPage.getEntries.size should be <= pageSize
       lastPage.selfLink shouldEqual new Link(Link.SELF, s"0/forward/$pageSize")
@@ -59,7 +59,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with FeedSto
 
   test("navigate from head to tail") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      var page: Feed[Int] = feedStore.getHeadOfFeed(pageSize)
+      var page: FeedPage[Int] = feedStore.getHeadOfFeed(pageSize)
       page.getEntries.size should be > 0
       page.getEntries.size should be <= pageSize
       while (page.nextLink.asScala != None) {
@@ -80,7 +80,7 @@ class AbstractFeedStorePropertySuite extends FunSuite with Matchers with FeedSto
 
   test("navigate from tail to head") {
     forAll(validFeedStores, validPageSizes) { (feedStore: FeedStore[Int, Context], pageSize: Int) =>
-      var page: Feed[Int] = feedStore.getFeed(0, pageSize, forward = true).get
+      var page: FeedPage[Int] = feedStore.getFeed(0, pageSize, forward = true).get
       page.getEntries.size should be > 0
       while (page.previousLink.asScala != None) {
         page.getEntries.size shouldEqual pageSize

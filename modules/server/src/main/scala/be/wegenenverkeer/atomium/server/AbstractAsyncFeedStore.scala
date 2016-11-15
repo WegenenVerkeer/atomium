@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Feed, Url}
+import be.wegenenverkeer.atomium.format.{FeedPage, Url}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -27,7 +27,7 @@ abstract class AbstractAsyncFeedStore[E, C <: Context](feedName: String,
    * @return the feed page or `Future.failed` if the page is not found
    */
   override def getFeed(start: Long, pageSize: Int, forward: Boolean)
-                      (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]] = {
+                      (implicit executionContext: ExecutionContext, context: C): Future[Option[FeedPage[E]]] = {
     require(pageSize > 0)
 
     val allowedFuture: Future[Boolean] = for {
@@ -52,7 +52,7 @@ abstract class AbstractAsyncFeedStore[E, C <: Context](feedName: String,
    * @return the head of the feed
    */
   override def getHeadOfFeed(pageSize: Int)
-                            (implicit executionContext: ExecutionContext, context: C): Future[Feed[E]] = {
+                            (implicit executionContext: ExecutionContext, context: C): Future[FeedPage[E]] = {
 
     require(pageSize > 0, "page size must be greater than 0")
 

@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import be.wegenenverkeer.atomium.format.Entry;
-import be.wegenenverkeer.atomium.format.Feed;
+import be.wegenenverkeer.atomium.format.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 
 import java.util.Collections;
@@ -18,8 +18,8 @@ class FeedWrapper<T> {
     final Optional<String> etag;
 
 
-    public FeedWrapper(Feed<T> feed, Optional<String> etag) {
-        this(feed.getLinks(), feed.getEntries(), etag);
+    public FeedWrapper(FeedPage<T> feedPage, Optional<String> etag) {
+        this(feedPage.getLinks(), feedPage.getEntries(), etag);
         Collections.reverse(entries);
     }
 

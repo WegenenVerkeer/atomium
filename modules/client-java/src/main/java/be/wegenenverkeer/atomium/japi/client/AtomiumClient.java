@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import be.wegenenverkeer.atomium.format.Entry;
-import be.wegenenverkeer.atomium.format.Feed;
+import be.wegenenverkeer.atomium.format.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 import be.wegenenverkeer.atomium.format.OffsetDateTimeModule;
 import be.wegenenverkeer.rxhttp.ClientRequest;
@@ -109,9 +109,9 @@ public class AtomiumClient {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
             this.objectMapper = configureObjectMapper(modules);
-            this.javaType = objectMapper.getTypeFactory().constructParametricType(Feed.class, entryTypeMarker);
+            this.javaType = objectMapper.getTypeFactory().constructParametricType(FeedPage.class, entryTypeMarker);
             try {
-                jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, entryTypeMarker);
+                jaxbContext = JAXBContext.newInstance(FeedPage.class, Link.class, entryTypeMarker);
             } catch (JAXBException e) {
                 throw new IllegalStateException(e);
             }
@@ -373,9 +373,9 @@ public class AtomiumClient {
                 }
                 Optional<String> newETag = resp.getHeader("ETag");
                 if (isJson(resp.getContentType())) {
-                    return new FeedWrapper<>((Feed<E>) unmarshalJson(resp.getResponseBody()), newETag);
+                    return new FeedWrapper<>((FeedPage<E>) unmarshalJson(resp.getResponseBody()), newETag);
                 } else {
-                    return new FeedWrapper<>((Feed<E>) unmarshalXml(resp.getResponseBody()), newETag);
+                    return new FeedWrapper<>((FeedPage<E>) unmarshalXml(resp.getResponseBody()), newETag);
                 }
             });
         }
@@ -385,9 +385,9 @@ public class AtomiumClient {
             return rxHttpClient.executeToCompletion(request, resp -> {
                         FeedWrapper<?> fw = null;
                         if (isJson(resp.getContentType())) {
-                            fw = new FeedWrapper<>((Feed<?>) unmarshalJson(resp.getResponseBody()), Optional.empty());
+                            fw = new FeedWrapper<>((FeedPage<?>) unmarshalJson(resp.getResponseBody()), Optional.empty());
                         } else {
-                            fw = new FeedWrapper<>((Feed<?>) unmarshalXml(resp.getResponseBody()), Optional.empty());
+                            fw = new FeedWrapper<>((FeedPage<?>) unmarshalXml(resp.getResponseBody()), Optional.empty());
                         }
                         return fw.getLastHref();
                     }

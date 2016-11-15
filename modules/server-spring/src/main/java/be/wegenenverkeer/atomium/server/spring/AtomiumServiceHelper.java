@@ -77,7 +77,7 @@ public class AtomiumServiceHelper {
         }
 
         // feed bouwen
-        Feed<T> feed = new Feed<>(
+        FeedPage<T> feedPage = new FeedPage<>(
                 feedProvider.getFeedName(),
                 feedProvider.getFeedUrl(),
                 feedProvider.getFeedName(),
@@ -91,28 +91,24 @@ public class AtomiumServiceHelper {
                 .map(entry -> toAtomEntry(entry, feedProvider))
                 .collect(toList());
 
-        feed.setEntries(entries);
+        feedPage.setEntries(entries);
 
         List<Link> links = new ArrayList<>();
         links.add(new Link("last", "/0/" + feedProvider.getPageSize()));
         if (page >= 1) {
-            // volgens "REST in Practice" moet next en previous omgekeerd, voor atomium moet het in deze volgorde
             links.add(new Link("next", "/" + (page - 1) + '/' + feedProvider.getPageSize()));
         }
         if (pageComplete) {
-            // volgens "REST in Practice" moet next en previous omgekeerd, voor atomium moet het in deze volgorde
             links.add(new Link("previous", "/" + (page + 1) + '/' + feedProvider.getPageSize()));
-
-            // we hebben 1 element teveel opgehaald om een db call te besparen, maar die moet niet meegestuurd worden in deze page
-            feed.getEntries().remove(0);
+            feedPage.getEntries().remove(0);
         }
 
         links.add(new Link("self", pageUrl));
-        feed.setLinks(links);
+        feedPage.setLinks(links);
 
         // response opbouwen
         try {
-            rb = Response.ok(mapper.writeValueAsString(feed));
+            rb = Response.ok(mapper.writeValueAsString(feedPage));
             if (!isCurrent && pageComplete) {
                 rb.cacheControl(cc); // cache result enkel als pagina volledig en niet via de "recent" URL opgeroepen. Zie figuur 7-2 in Rest In Practice.
             }

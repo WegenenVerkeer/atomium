@@ -1,11 +1,9 @@
 package be.wegenenverkeer.atomium.server.spring;
 
 import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.Feed;
+import be.wegenenverkeer.atomium.format.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -15,9 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import java.time.OffsetDateTime;
@@ -166,14 +162,14 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void feedWordtOpgebouwd_metadata() throws Exception {
-        Feed<TestFeedEntryTo> feed = getFeed(volledigeLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(volledigeLijst);
 
-        assertThat(feed.getId()).isEqualTo(TEST_FEED_NAME);
-        assertThat(feed.getBase()).isEqualTo(TEST_FEED_URL);
-        assertThat(feed.getTitle()).isEqualTo(TEST_FEED_NAME);
-        assertThat(feed.getGenerator().getText()).isEqualTo("DistrictCenter");
-        assertThat(feed.getGenerator().getUri()).isEqualTo(TEST_FEED_URL);
-        assertThat(feed.getGenerator().getVersion()).isEqualTo("1.0");
+        assertThat(feedPage.getId()).isEqualTo(TEST_FEED_NAME);
+        assertThat(feedPage.getBase()).isEqualTo(TEST_FEED_URL);
+        assertThat(feedPage.getTitle()).isEqualTo(TEST_FEED_NAME);
+        assertThat(feedPage.getGenerator().getText()).isEqualTo("DistrictCenter");
+        assertThat(feedPage.getGenerator().getUri()).isEqualTo(TEST_FEED_URL);
+        assertThat(feedPage.getGenerator().getVersion()).isEqualTo("1.0");
     }
 
     @Test
@@ -181,13 +177,13 @@ public class AtomiumServiceHelperTest {
         List<TestFeedEntry> teTestenLijst = new ArrayList<>(onvolledigeLijst);
         int teTestenLijstSize = teTestenLijst.size();
 
-        Feed<TestFeedEntryTo> feed = getFeed(teTestenLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(teTestenLijst);
 
         String[] expectedIds = teTestenLijst.stream()
                 .map(entry -> "urn:id:" + entry.getId())
                 .toArray(String[]::new);
 
-        assertThat(feed.getEntries()).hasSize(teTestenLijstSize).extracting("id").containsExactly(expectedIds);
+        assertThat(feedPage.getEntries()).hasSize(teTestenLijstSize).extracting("id").containsExactly(expectedIds);
     }
 
     @Test
@@ -197,65 +193,65 @@ public class AtomiumServiceHelperTest {
         List<TestFeedEntry> teTestenLijst = new ArrayList<>(volledigeLijst);
         int teTestenLijstSize = teTestenLijst.size();
 
-        Feed<TestFeedEntryTo> feed = getFeed(teTestenLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(teTestenLijst);
 
         String[] expectedIds = teTestenLijst.subList(1, teTestenLijst.size())
                 .stream()
                 .map(entry -> "urn:id:" + entry.getId())
                 .toArray(String[]::new);
 
-        assertThat(feed.getEntries()).hasSize(teTestenLijstSize - 1).extracting("id").containsExactly(expectedIds);
+        assertThat(feedPage.getEntries()).hasSize(teTestenLijstSize - 1).extracting("id").containsExactly(expectedIds);
     }
 
     @Test
     public void feedWordtOpgebouwd_volledigePageIsVolledigeLijstMinDeLaatste() throws Exception {
         // de code gaat er van uit dat je een page + 1 geeft, dat is een efficiente manier om te weten of de page volledig is
         // als je immers page size + 1 items krijgt weet je dat er nog elementen volgen
-        Feed<TestFeedEntryTo> feed = getFeed(volledigeLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(volledigeLijst);
 
         List<TestFeedEntry> lijstClone = new ArrayList<>(volledigeLijst);
         String[] expectedIds = lijstClone.subList(1, lijstClone.size()).stream()
                 .map(entry -> "urn:id:" + entry.getId())
                 .toArray(String[]::new);
 
-        assertThat(feed.getEntries()).hasSize(volledigeLijst.size() - 1).extracting("id").containsExactly(expectedIds);
+        assertThat(feedPage.getEntries()).hasSize(volledigeLijst.size() - 1).extracting("id").containsExactly(expectedIds);
     }
 
     @Test
     public void feedWordtOpgebouwd_linksVoorEenVolledigePage0() throws Exception {
-        Feed<TestFeedEntryTo> feed = getFeed(volledigeLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(volledigeLijst);
 
-        assertThat(feed.getLinks()).isNotEmpty();
-        assertThat(feed.getLinks()).extracting("rel").containsExactly("last", "previous", "self");
+        assertThat(feedPage.getLinks()).isNotEmpty();
+        assertThat(feedPage.getLinks()).extracting("rel").containsExactly("last", "previous", "self");
 
-        assertThat(getLink(feed.getLinks(), "self").getHref()).isEqualTo("/0/2");
-        assertThat(getLink(feed.getLinks(), "last").getHref()).isEqualTo("/0/2");
-        assertThat(getLink(feed.getLinks(), "previous").getHref()).isEqualTo("/1/2");  // previous is de volgende pagina :-/
+        assertThat(getLink(feedPage.getLinks(), "self").getHref()).isEqualTo("/0/2");
+        assertThat(getLink(feedPage.getLinks(), "last").getHref()).isEqualTo("/0/2");
+        assertThat(getLink(feedPage.getLinks(), "previous").getHref()).isEqualTo("/1/2");  // previous is de volgende pagina :-/
     }
 
 
     @Test
     public void feedWordtOpgebouwd_linksVoorEenVolledigePage1() throws Exception {
-        Feed<TestFeedEntryTo> feed = getFeed(volledigeLijst, 1);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(volledigeLijst, 1);
 
-        assertThat(feed.getLinks()).isNotEmpty();
-        assertThat(feed.getLinks()).extracting("rel").containsExactly("last", "next", "previous", "self");
+        assertThat(feedPage.getLinks()).isNotEmpty();
+        assertThat(feedPage.getLinks()).extracting("rel").containsExactly("last", "next", "previous", "self");
 
-        assertThat(getLink(feed.getLinks(), "self").getHref()).isEqualTo("/1/2");
-        assertThat(getLink(feed.getLinks(), "last").getHref()).isEqualTo("/0/2");
-        assertThat(getLink(feed.getLinks(), "next").getHref()).isEqualTo("/0/2"); // next is de vorige pagina :-/
-        assertThat(getLink(feed.getLinks(), "previous").getHref()).isEqualTo("/2/2");  // previous is de volgende pagina :-/
+        assertThat(getLink(feedPage.getLinks(), "self").getHref()).isEqualTo("/1/2");
+        assertThat(getLink(feedPage.getLinks(), "last").getHref()).isEqualTo("/0/2");
+        assertThat(getLink(feedPage.getLinks(), "next").getHref()).isEqualTo("/0/2"); // next is de vorige pagina :-/
+        assertThat(getLink(feedPage.getLinks(), "previous").getHref()).isEqualTo("/2/2");  // previous is de volgende pagina :-/
     }
 
     @Test
     public void feedWordtOpgebouwd_linksVoorEenOnvolledigePage() throws Exception {
-        Feed<TestFeedEntryTo> feed = getFeed(onvolledigeLijst);
+        FeedPage<TestFeedEntryTo> feedPage = getFeed(onvolledigeLijst);
 
-        assertThat(feed.getLinks()).isNotEmpty();
-        assertThat(feed.getLinks()).extracting("rel").containsExactly("last", "self");
+        assertThat(feedPage.getLinks()).isNotEmpty();
+        assertThat(feedPage.getLinks()).extracting("rel").containsExactly("last", "self");
 
-        assertThat(getLink(feed.getLinks(), "self").getHref()).isEqualTo("/0/2");
-        assertThat(getLink(feed.getLinks(), "last").getHref()).isEqualTo("/0/2");
+        assertThat(getLink(feedPage.getLinks(), "self").getHref()).isEqualTo("/0/2");
+        assertThat(getLink(feedPage.getLinks(), "last").getHref()).isEqualTo("/0/2");
     }
 
     @Test
@@ -274,16 +270,16 @@ public class AtomiumServiceHelperTest {
         return link.get();
     }
 
-    private Feed<TestFeedEntryTo> getFeed(List<TestFeedEntry> lijst) throws Exception {
+    private FeedPage<TestFeedEntryTo> getFeed(List<TestFeedEntry> lijst) throws Exception {
         return getFeed(lijst, 0);
     }
 
-    private Feed<TestFeedEntryTo> getFeed(List<TestFeedEntry> lijst, int page) throws Exception {
+    private FeedPage<TestFeedEntryTo> getFeed(List<TestFeedEntry> lijst, int page) throws Exception {
         TestFeedProvider testFeedProvider = new TestFeedProvider();
         testFeedProvider.setEntriesForPage(lijst);
 
         Response response = helper.getFeed(testFeedProvider, page, request, false);
-        return mapper.readValue(response.getEntity().toString(), new TypeReference<Feed<TestFeedEntryTo>>() {
+        return mapper.readValue(response.getEntity().toString(), new TypeReference<FeedPage<TestFeedEntryTo>>() {
         });
     }
 

@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server.play
 
 import javax.xml.bind.JAXBContext
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.format.FeedPage
 import be.wegenenverkeer.atomium.play.JaxbSupport
 import play.api.http.MimeTypes
 
@@ -16,8 +16,8 @@ import play.api.http.MimeTypes
 case class JaxbFeedMarshaller[T](contentType: String = MimeTypes.XML)(implicit jaxbContext: JAXBContext) extends FeedMarshaller[T] {
 
   /** Serializes a `Feed` to XML format */
-  override def marshall(feed: Feed[T]): (ContentType, Array[Byte]) = {
-    val xmlMarshaller : Feed[T] => Array[Byte]= JaxbSupport.jaxbMarshaller
+  override def marshall(feed: FeedPage[T]): (ContentType, Array[Byte]) = {
+    val xmlMarshaller : FeedPage[T] => Array[Byte]= JaxbSupport.jaxbMarshaller
     (contentType, xmlMarshaller(feed))
   }
 }

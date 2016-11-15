@@ -6,7 +6,7 @@ import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
-class JdbcFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class JdbcFeedPageStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
 
   val ENTRIES_TABLE_NAME = "my_feed_entries"

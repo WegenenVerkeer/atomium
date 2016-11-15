@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.japi.server
 
 import java.lang.{Boolean => JBoolean, Long => JLong}
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.format.FeedPage
 import be.wegenenverkeer.atomium.server.Context
 import be.wegenenverkeer.atomium.{format, server}
 
@@ -23,10 +23,10 @@ class FeedService[E, C <: Context](entriesPerPage: Integer, feedStore: FeedStore
 
   /** A Scala FeedStore wrapping the java `feedStore` passed as argument */
   private val underlyingFeedStore = new server.FeedStore[E, C] {
-    override def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[format.Feed[E]] =
+    override def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[FeedPage[E]] =
       feedStore.getFeed(startSequenceNr, count, forward, context)
 
-    override def getHeadOfFeed(pageSize: Int)(implicit context: C): format.Feed[E] =
+    override def getHeadOfFeed(pageSize: Int)(implicit context: C): FeedPage[E] =
       feedStore.getHeadOfFeed(pageSize, context)
 
     override def push(entries: Iterable[E])(implicit context: C): Unit =
@@ -62,7 +62,7 @@ class FeedService[E, C <: Context](entriesPerPage: Integer, feedStore: FeedStore
    * @param count the number of entries
    * @return the feed page
    */
-  def getFeed(start: JLong, count: Integer, forward: JBoolean): Option[Feed[E]] =
+  def getFeed(start: JLong, count: Integer, forward: JBoolean): Option[FeedPage[E]] =
     underlying.getFeedPage(start, count, forward)(context)
 
 }
