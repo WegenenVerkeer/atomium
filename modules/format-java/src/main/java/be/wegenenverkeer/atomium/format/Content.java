@@ -14,11 +14,11 @@ import java.util.Objects;
 public final class Content<T> {
 
     private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<>();
+
     @XmlAttribute(name="type")
     private String type;
-    @XmlAnyElement(lax = true) @XmlMixed @JsonIgnore
-    private List objects = new ArrayList();
-    @XmlTransient
+
+    @XmlElement
     private T value;
 
     public Content() {}
@@ -26,22 +26,7 @@ public final class Content<T> {
     @SuppressWarnings("unchecked")
     public Content(T value, String type) {
         this.type = type;
-        objects.add(value);
-        if (value.getClass().isAnnotationPresent(XmlRootElement.class) || value instanceof String) {
-            this.value = value;
-        } else if (value instanceof JAXBElement) {
-            this.value = ((JAXBElement<T>) value).getValue();
-        } else {
-            this.value = value;
-        }
-    }
-
-    public static void setJAXBElementUnmarshaller(JAXBElementUnmarshaller jaxbElementUnmarshaller) {
-        Content.jaxbElementUnmarshallerThreadLocal.set(jaxbElementUnmarshaller);
-    }
-
-    public static void resetJAXBElementUnmarshaller() {
-        Content.jaxbElementUnmarshallerThreadLocal.remove();
+        this.value = value;
     }
 
     public String getType() {
@@ -64,37 +49,8 @@ public final class Content<T> {
     }
 
     public T getValue() {
-        if (value == null) {
-            value = getValueFromObjects();
-        }
         return value;
     }
-
-    @SuppressWarnings("unchecked")
-    private T getValueFromObjects() {
-        StringBuilder buffer = new StringBuilder();
-        for (Object o : objects) {
-            buffer.append(o.toString());
-            if (o.getClass().isAnnotationPresent(XmlRootElement.class)) {
-                //xmlRootElements are already unmarshaled correctly
-                return (T) o;
-            } else if (o instanceof JAXBElement) {
-                //get the value out of the JAXBElement wrapper
-                return (T) ((JAXBElement) o).getValue();
-            } else if (o instanceof Element) {
-                if (jaxbElementUnmarshallerThreadLocal.get() != null) {
-                    try {
-                        return (T) jaxbElementUnmarshallerThreadLocal.get().unmarshalValue(((Element) o));
-                    } catch (JAXBException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return (T) o;
-            }
-        }
-        return (T) buffer.toString();
-    }
-
 
     public String toString() {
         return String.format("Content(type=%s, value=%s)", type, getValue());
