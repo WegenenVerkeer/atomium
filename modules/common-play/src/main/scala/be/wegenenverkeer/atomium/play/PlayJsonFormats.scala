@@ -26,7 +26,7 @@ object PlayJsonFormats {
     Format[OffsetDateTime](
       Reads.DefaultZonedDateTimeReads.map( _.toOffsetDateTime),
       Writes.temporalWrites[OffsetDateTime, DateTimeFormatter](
-        Adapters.formatter)
+        TimestampFormat.WRITE_FORMAT)
     )
 
   implicit val urlFormat = new Format[Url] {

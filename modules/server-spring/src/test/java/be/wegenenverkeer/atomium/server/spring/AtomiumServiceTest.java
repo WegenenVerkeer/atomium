@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 
@@ -80,7 +81,7 @@ public class AtomiumServiceTest {
         when(mockFeedProvider.totalNumberOfEntries()).thenReturn(Double.valueOf(PAGE_SIZE * factor).longValue());
         when(mockFeedProvider.getPageSize()).thenReturn(PAGE_SIZE);
 
-        atomiumService.getCurrentFeed(mockFeedProvider, request);
+        Response resp = atomiumService.getCurrentFeed(mockFeedProvider, request);
 
         verify(helper, times(1)).sync(mockFeedProvider);
         verify(helper, times(1)).getFeed(mockFeedProvider, atomiumService.detemineMostRecentPage(mockFeedProvider), request, true);
