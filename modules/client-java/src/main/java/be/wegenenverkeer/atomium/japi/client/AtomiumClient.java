@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.japi.client;
 import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
-import be.wegenenverkeer.atomium.format.JAXBCodec;
+import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.atomium.format.JacksonJSONCodec;
 import be.wegenenverkeer.atomium.format.OffsetDateTimeModule;
 import be.wegenenverkeer.rxhttp.ClientRequest;
@@ -108,7 +108,7 @@ public class AtomiumClient {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
             this.jsonCodec = new JacksonJSONCodec<E>(entryTypeMarker);
-            this.xmlCodec = new JAXBCodec<E>(entryTypeMarker);
+            this.xmlCodec = new JaxbCodec<E>(entryTypeMarker);
         }
 
         public FeedObservableBuilder<E> withRetry(RetryStrategy strategy) {

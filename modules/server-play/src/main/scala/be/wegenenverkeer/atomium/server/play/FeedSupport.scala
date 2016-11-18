@@ -4,7 +4,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
-import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
 import be.wegenenverkeer.atomium.format.{Generator, Url}
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
@@ -55,7 +55,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    *
    * @return `PartialFunction[MediaRange, FeedMarshaller]`
    */
-  def marshallers: PartialFunction[MediaRange, FeedMarshaller[T]]
+  def marshallers: PartialFunction[MediaRange, FeedPageCodec[T, Array[Byte]]]
 
   private def buildRenders(feed: FeedPage[T]): PartialFunction[MediaRange, Result] =
     new PartialFunction[MediaRange, Result] {
@@ -96,10 +96,10 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     processFeedPage(Future.successful(page))
   }
 
-  private def marshall(feedMarshaller: FeedMarshaller[T], feed: FeedPage[T]): Result = {
+  private def marshall(codec: FeedPageCodec[T, Array[Byte]], feed: FeedPage[T]): Result = {
     //marshall feed and add Last-Modified header
 
-    val (contentType, payload) = feedMarshaller.marshall(feed)
+    val (contentType, payload) = (codec.getMimeType, codec.encode(feed))
 
     logger.info("sending response: 200 Found")
     val result = Ok(payload)

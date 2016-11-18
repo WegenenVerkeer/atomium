@@ -17,11 +17,11 @@ import java.io.Writer;
 /**
  * Created by Karel Maesen, Geovise BVBA on 15/11/16.
  */
-public class JAXBCodec<T> implements FeedPageCodec<T,String> {
+public class JaxbCodec<T> implements FeedPageCodec<T,String> {
 
     private final JAXBContext jaxbContext;
 
-    public JAXBCodec(Class<T> entryTypeMarker) {
+    public JaxbCodec(Class<T> entryTypeMarker) {
         try {
             jaxbContext = JAXBContext.newInstance(FeedPage.class, Link.class, entryTypeMarker);
         } catch (JAXBException e) {
