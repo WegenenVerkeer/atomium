@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.format.pub;
 
 import be.wegenenverkeer.atomium.format.Adapters;
 import be.wegenenverkeer.atomium.format.Content;
-import be.wegenenverkeer.atomium.format.Entry;
+import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.format.Link;
 
 import javax.xml.bind.annotation.XmlElement;

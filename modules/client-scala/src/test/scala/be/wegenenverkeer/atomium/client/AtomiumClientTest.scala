@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.client
 import java.util.concurrent.TimeUnit
 import javax.xml.bind.annotation._
 
+import be.wegenenverkeer.atomium.api.Entry
 import be.wegenenverkeer.atomium.japi
 import be.wegenenverkeer.atomium.japi.client.FeedEntry
 import com.github.tomakehurst.wiremock.WireMockServer
@@ -10,7 +11,6 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import be.wegenenverkeer.atomium.client.ImplicitConversions._
-import be.wegenenverkeer.atomium.format.Entry
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
 import rx.lang.scala._
 import rx.observers.TestSubscriber

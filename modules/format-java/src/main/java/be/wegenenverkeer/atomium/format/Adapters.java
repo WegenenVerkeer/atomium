@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.format;
 
+import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.format.pub.Control;
 import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;
 
@@ -15,34 +16,16 @@ import java.util.List;
 public class Adapters {
 
 
-    public static java.time.format.DateTimeFormatter formatter =
-            new java.time.format.DateTimeFormatterBuilder()
-                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
-                    .appendPattern("XXXXX")
-                    .toFormatter();
-
-    public static java.time.format.DateTimeFormatter datetimeParser =
-            new java.time.format.DateTimeFormatterBuilder()
-                    .append(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]"))
-                    .optionalStart()
-                    .appendPattern("XXXX")
-                    .optionalEnd()
-                    .optionalStart()
-                    .appendPattern("XXX")
-                    .optionalEnd()
-                    .toFormatter();
-
-
     public static class AtomDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
 
         @Override
         public OffsetDateTime unmarshal(String v) throws Exception {
-            return OffsetDateTime.parse(v, datetimeParser);
+            return TimestampFormat.parse(v);
         }
 
         @Override
         public String marshal(OffsetDateTime v) throws Exception {
-            return formatter.format(v);
+            return TimestampFormat.format(v);
         }
     }
 

@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atomium.format;
 
+import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.pub.Control;
 import be.wegenenverkeer.atomium.format.pub.Draft;
 import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;
@@ -25,7 +27,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class FeedSerializationTest {
+public class FeedPageSerializationTest {
 
     static OffsetDateTime dateTime = ZonedDateTime.now().with(ChronoField.MILLI_OF_SECOND, 0).toOffsetDateTime();
     private JAXBContext jaxbContext;
@@ -40,7 +42,7 @@ public class FeedSerializationTest {
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
-        jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, Customer.class);
+        jaxbContext = JAXBContext.newInstance(FeedPage.class, Link.class, Customer.class);
     }
 
     @Test
@@ -54,9 +56,9 @@ public class FeedSerializationTest {
         // json text will be quoted in json not in xml
         builder.addEntry(new AtomEntry<>("id4", dateTime, new Content<>("{'foo': 'bar'}", "application/json"), new ArrayList<>()));
 
-        checkJson(builder.feed, new TypeReference<Feed<String>>() {
+        checkJson(builder.feedPage, new TypeReference<FeedPage<String>>() {
         });
-        checkXml(builder.feed);
+        checkXml(builder.feedPage);
     }
 
     @Test
@@ -65,8 +67,8 @@ public class FeedSerializationTest {
         FeedBuilder<Customer> builder = FeedBuilder.customerFeed();
         builder.addEntry(new AtomEntry<>("id", dateTime, new Content<>(customer, "application/xml"), new ArrayList<>()));
 
-        checkXml(builder.feed);
-        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        checkXml(builder.feedPage);
+        checkJson(builder.feedPage, new TypeReference<FeedPage<Customer>>() {
         });
     }
 
@@ -94,8 +96,8 @@ public class FeedSerializationTest {
                         new Control(Draft.NO)
                 )
         );
-        checkXml(builder.feed);
-        checkJson(builder.feed, new TypeReference<Feed<Customer>>() {
+        checkXml(builder.feedPage);
+        checkJson(builder.feedPage, new TypeReference<FeedPage<Customer>>() {
         });
     }
 
@@ -108,48 +110,48 @@ public class FeedSerializationTest {
         JAXBElement<Integer> jaxbElement2 = new JAXBElement<>(new QName("http://www.w3.org/2001/XMLSchema-instance", "int"), Integer.class, 1010);
         builder.addEntry(new AtomEntry<>("id2", dateTime, new Content<>(jaxbElement2, "application/xml"), new ArrayList<>()));
 
-        checkJson(builder.feed, new TypeReference<Feed<Integer>>() {
+        checkJson(builder.feedPage, new TypeReference<FeedPage<Integer>>() {
         });
-        checkXml(builder.feed);
+        checkXml(builder.feedPage);
     }
 
-    private void checkXml(Feed feed) throws JAXBException {
-        String xml = marshalToXml(feed);
-        Feed feedFromXml = unmarshalFromXml(xml);
+    private void checkXml(FeedPage feedPage) throws JAXBException {
+        String xml = marshalToXml(feedPage);
+        FeedPage feedPageFromXml = unmarshalFromXml(xml);
         Content.setJAXBElementUnmarshaller(new JAXBElementUnmarshaller<>(jaxbContext, Integer.class));
-        assertEquals("different getUpdated on xml:", feed.getUpdated(), feedFromXml.getUpdated());
-        feedFromXml.setUpdated(feed.getUpdated());
-        assertEquals(feed, feedFromXml);
+        assertEquals("different getUpdated on xml:", feedPage.getUpdated(), feedPageFromXml.getUpdated());
+        feedPageFromXml.setUpdated(feedPage.getUpdated());
+        assertEquals(feedPage, feedPageFromXml);
     }
 
-    private void checkJson(Feed feed, TypeReference typeReference) throws IOException {
-        String json = marshalToJson(feed);
-        Feed feedFromJson = unmarshalFromJson(json, typeReference);
-        assertEquals("different getUpdated on json:", feed.getUpdated(), feedFromJson.getUpdated());
-        feedFromJson.setUpdated(feed.getUpdated());
-        assertEquals(feed, feedFromJson);
+    private void checkJson(FeedPage feedPage, TypeReference typeReference) throws IOException {
+        String json = marshalToJson(feedPage);
+        FeedPage feedPageFromJson = unmarshalFromJson(json, typeReference);
+        assertEquals("different getUpdated on json:", feedPage.getUpdated(), feedPageFromJson.getUpdated());
+        feedPageFromJson.setUpdated(feedPage.getUpdated());
+        assertEquals(feedPage, feedPageFromJson);
     }
 
-    private String marshalToJson(Feed feed) throws IOException {
+    private String marshalToJson(FeedPage feedPage) throws IOException {
         StringWriter writer = new StringWriter();
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, feed);
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, feedPage);
         return writer.toString();
     }
 
-    private String marshalToXml(Feed feed) throws JAXBException {
+    private String marshalToXml(FeedPage feedPage) throws JAXBException {
         StringWriter writer = new StringWriter();
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(feed, writer);
+        marshaller.marshal(feedPage, writer);
         return writer.toString();
     }
 
-    private Feed unmarshalFromXml(String xml) throws JAXBException {
+    private FeedPage unmarshalFromXml(String xml) throws JAXBException {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (Feed) unmarshaller.unmarshal(new StringReader(xml));
+        return (FeedPage) unmarshaller.unmarshal(new StringReader(xml));
     }
 
-    private Feed unmarshalFromJson(String json, TypeReference typeReference) throws IOException {
+    private FeedPage unmarshalFromJson(String json, TypeReference typeReference) throws IOException {
         return objectMapper.readValue(new StringReader(json), typeReference);
     }
 
@@ -200,27 +202,27 @@ public class FeedSerializationTest {
     }
 
     private static class FeedBuilder<T> {
-        private final Feed<T> feed;
+        private final FeedPage<T> feedPage;
 
-        FeedBuilder(Feed<T> feed) {
-            this.feed = feed;
+        FeedBuilder(FeedPage<T> feedPage) {
+            this.feedPage = feedPage;
         }
 
         public static FeedBuilder<String> stringFeed() {
-            Feed<String> feed = new Feed<>(
+            FeedPage<String> feedPage = new FeedPage<>(
                     "urn:id:" + UUID.randomUUID().toString(),
                     "http://www.example.org",
                     "strings of life",
                     null,
                     dateTime
             );
-            feed.getLinks().add(new Link("self", "foo"));
-            return new FeedBuilder<>(feed);
+            feedPage.getLinks().add(new Link("self", "foo"));
+            return new FeedBuilder<>(feedPage);
         }
 
         public static FeedBuilder<Customer> customerFeed() {
 
-            Feed<Customer> feed = new Feed<>(
+            FeedPage<Customer> feedPage = new FeedPage<>(
                     "urn:id:" + UUID.randomUUID().toString(),
                     "http://www.example.org",
                     "customers",
@@ -228,23 +230,23 @@ public class FeedSerializationTest {
                     dateTime
             );
 
-            feed.getLinks().add(new Link("self", "foo"));
+            feedPage.getLinks().add(new Link("self", "foo"));
 
-            return new FeedBuilder<>(feed);
+            return new FeedBuilder<>(feedPage);
         }
 
         public static FeedBuilder<JAXBElement> jabxFeed() {
 
-            Feed<JAXBElement> feed = new Feed<>();
-            feed.setId("urn:id:" + UUID.randomUUID().toString());
-            feed.setUpdated(dateTime);
-            feed.getLinks().add(new Link("self", "foo"));
+            FeedPage<JAXBElement> feedPage = new FeedPage<>();
+            feedPage.setId("urn:id:" + UUID.randomUUID().toString());
+            feedPage.setUpdated(dateTime);
+            feedPage.getLinks().add(new Link("self", "foo"));
 
-            return new FeedBuilder<>(feed);
+            return new FeedBuilder<>(feedPage);
         }
 
         public FeedBuilder<T> addEntry(Entry<T> entry) {
-            feed.getEntries().add(entry);
+            feedPage.getEntries().add(entry);
             return this;
         }
     }

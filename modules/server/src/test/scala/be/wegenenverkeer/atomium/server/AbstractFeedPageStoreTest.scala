@@ -4,7 +4,7 @@ import be.wegenenverkeer.atomium.format.{Url, Link}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 import scala.collection.JavaConverters._
 
-class AbstractFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class AbstractFeedPageStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
 
   private implicit val context: Context = new Context {}
 

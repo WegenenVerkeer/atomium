@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.server.play
 
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import org.joda.time.{DateTime, DateTimeUtils}
@@ -19,10 +20,10 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
     DateTimeUtils.setCurrentMillisSystem()
   }
 
-  val incompleteFeed: Feed[String] = new Feed("id",
+  val incompleteFeed: FeedPage[String] = new FeedPage("id",
     Url("http://example.com"), None, None, new DateTime(0), List(Link(Link.selfLink, Url("foo"))), List())
 
-  val completeFeed: Feed[String] = incompleteFeed.copy(links = Link(Link.previousLink, Url("prev")) :: incompleteFeed.getLinks)
+  val completeFeed: FeedPage[String] = incompleteFeed.copy(links = Link(Link.previousLink, Url("prev")) :: incompleteFeed.getLinks)
 
   test("processing a None should return Not-Found") {
     val result: Future[Result] = new FeedSupport[Nothing]() {

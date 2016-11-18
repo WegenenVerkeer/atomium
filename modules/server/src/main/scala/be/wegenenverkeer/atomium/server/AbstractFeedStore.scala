@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.{Feed, Url}
+import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.format.Url
 
 /**
  * A feed store is responsible for the persistence of feeds.
@@ -23,7 +24,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    *                else navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  override def getFeed(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
+  override def getFeed(start: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[FeedPage[E]] = {
     require(pageSize > 0, "page size must be greater than 0")
     val allowed =
       if (forward)
@@ -45,7 +46,7 @@ abstract class AbstractFeedStore[E, C <: Context](feedName: String,
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  override def getHeadOfFeed(pageSize: Int)(implicit context: C): Feed[E] = {
+  override def getHeadOfFeed(pageSize: Int)(implicit context: C): FeedPage[E] = {
 
     require(pageSize > 0, "page size must be greater than 0")
 

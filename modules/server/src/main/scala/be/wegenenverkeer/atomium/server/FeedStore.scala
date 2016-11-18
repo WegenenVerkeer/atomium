@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.api.FeedPage
 
 /**
  * A feed store is responsible for the persistence of feeds.
@@ -18,14 +18,14 @@ trait FeedStore[E, C <: Context] {
    *                else ('backward') navigate to 'next' elements in feed (towards last page of feed)
    * @return the feed page or `None` if the page is not found
    */
-  def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[Feed[E]]
+  def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)(implicit context: C): Option[FeedPage[E]]
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
    * @param pageSize the maximum number of feed entries to return. The page could contain less entries
    * @return the head of the feed
    */
-  def getHeadOfFeed(pageSize: Int)(implicit context: C): Feed[E]
+  def getHeadOfFeed(pageSize: Int)(implicit context: C): FeedPage[E]
 
   /**
    * push a list of entries to the feed

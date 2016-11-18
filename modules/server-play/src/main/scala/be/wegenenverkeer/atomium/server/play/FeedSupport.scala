@@ -4,7 +4,8 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
-import be.wegenenverkeer.atomium.format.{Feed, Generator, Url}
+import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
+import be.wegenenverkeer.atomium.format.{Generator, Url}
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
 import play.api.mvc._
@@ -54,9 +55,9 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    *
    * @return `PartialFunction[MediaRange, FeedMarshaller]`
    */
-  def marshallers: PartialFunction[MediaRange, FeedMarshaller[T]]
+  def marshallers: PartialFunction[MediaRange, FeedPageCodec[T, Array[Byte]]]
 
-  private def buildRenders(feed: Feed[T]): PartialFunction[MediaRange, Result] = {
+  private def buildRenders(feed: FeedPage[T]): PartialFunction[MediaRange, Result] =
     new PartialFunction[MediaRange, Result] {
       override def isDefinedAt(x: MediaRange): Boolean = marshallers.isDefinedAt(x)
 
@@ -65,7 +66,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
         marshall(feedMarshaller, feed)
       }
     }
-  }
+
 
   /**
    * marshall the feed and set correct headers
@@ -73,7 +74,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    * @param codec the implicit codec
    * @return the response
    */
-  def processFeedPage(page: Future[Option[Feed[T]]])(implicit codec: Codec) = Action.async { implicit request =>
+  def processFeedPage(page: Future[Option[FeedPage[T]]])(implicit codec: Codec) = Action.async { implicit request =>
     logger.info(s"processing request: $request")
     page.map {
       case Some(f) =>
@@ -91,14 +92,14 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     }
   }
 
-  def processFeedPage(page: Option[Feed[T]])(implicit codec: Codec): Action[AnyContent] = {
+  def processFeedPage(page: Option[FeedPage[T]])(implicit codec: Codec): Action[AnyContent] = {
     processFeedPage(Future.successful(page))
   }
 
-  private def marshall(feedMarshaller: FeedMarshaller[T], feed: Feed[T]): Result = {
+  private def marshall(codec: FeedPageCodec[T, Array[Byte]], feed: FeedPage[T]): Result = {
     //marshall feed and add Last-Modified header
 
-    val (contentType, payload) = feedMarshaller.marshall(feed)
+    val (contentType, payload) = (codec.getMimeType, codec.encode(feed))
 
     logger.info("sending response: 200 Found")
     val result = Ok(payload)
@@ -121,7 +122,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 15:00:00 => modified => false
   //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 10:00:00 => not modified => true
   //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 12:00:00 => not modified => true
-  private def notModified(f: Feed[T], headers: Headers): Boolean = {
+  private def notModified(f: FeedPage[T], headers: Headers): Boolean = {
 
     val ifNoneMatch = headers get IF_NONE_MATCH contains f.calcETag
 

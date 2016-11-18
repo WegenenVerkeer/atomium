@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.Feed
+import be.wegenenverkeer.atomium.api.FeedPage
 
 /**
  * A feed service provides the following functionality:
@@ -55,7 +55,7 @@ class FeedService[E, C <: Context](entriesPerPage: Int, feedStore: FeedStore[E, 
    *         because this defeats the caching heuristics.
    *         atom clients should navigate using the links in the atom feed
    */
-  def getFeedPage(startSequenceNr: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[Feed[E]] = {
+  def getFeedPage(startSequenceNr: Long, pageSize: Int, forward: Boolean)(implicit context: C): Option[FeedPage[E]] = {
     if (pageSize == entriesPerPage) {
       feedStore.getFeed(startSequenceNr, pageSize, forward)
     } else {
@@ -68,7 +68,7 @@ class FeedService[E, C <: Context](entriesPerPage: Int, feedStore: FeedStore[E, 
    * @param context the context, which is required for feed stores
    * @return the head of the feed. This is the first page containing the most recent entries
    */
-  def getHeadOfFeed()(implicit context: C): Feed[E] = {
+  def getHeadOfFeed()(implicit context: C): FeedPage[E] = {
     feedStore.getHeadOfFeed(entriesPerPage)
   }
 

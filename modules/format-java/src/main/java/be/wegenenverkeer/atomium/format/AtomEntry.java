@@ -1,6 +1,8 @@
 package be.wegenenverkeer.atomium.format;
 
 
+import be.wegenenverkeer.atomium.api.Entry;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;

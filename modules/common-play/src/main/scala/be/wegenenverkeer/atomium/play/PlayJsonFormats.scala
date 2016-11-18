@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.play
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
+import be.wegenenverkeer.atomium.api.{Entry, FeedPage}
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.format.pub._
 import play.api.libs.functional.syntax._
@@ -25,7 +26,7 @@ object PlayJsonFormats {
     Format[OffsetDateTime](
       Reads.DefaultZonedDateTimeReads.map( _.toOffsetDateTime),
       Writes.temporalWrites[OffsetDateTime, DateTimeFormatter](
-        Adapters.formatter)
+        TimestampFormat.WRITE_FORMAT)
     )
 
   implicit val urlFormat = new Format[Url] {
@@ -144,7 +145,7 @@ object PlayJsonFormats {
     )((id, updated, content, links, edited, control) => new AtomPubEntry[T](id, updated, content, links.asJava, edited, control))
 
   // candidate for macro format
-  implicit def feedWrites[T: Writes]: Writes[Feed[T]] = (
+  implicit def feedWrites[T: Writes]: Writes[FeedPage[T]] = (
     (__ \ "id").write[String] and
       (__ \ "base").write[Url] and
       (__ \ "title").writeNullable[String] and
@@ -155,7 +156,7 @@ object PlayJsonFormats {
     )(in => (in.getId, new Url(in.getBase), Option(in.getTitle), Option(in.getGenerator), in.getUpdated,
                   in.getLinks.asScala.toList, in.getEntries.asScala.toList))
 
-  implicit def feedReads[T: Reads]: Reads[Feed[T]] = (
+  implicit def feedReads[T: Reads]: Reads[FeedPage[T]] = (
     (__ \ "id").read[String] and
       (__ \ "base").read[Url] and
       (__ \ "title").readNullable[String] and
@@ -163,6 +164,6 @@ object PlayJsonFormats {
       (__ \ "updated").read[OffsetDateTime] and
       (__ \ "links").read[List[Link]] and
       (__ \ "entries").read[List[Entry[T]]]
-    )((id, base, title, generator, updated, links, entries) => new Feed[T](id, base.getPath, title.getOrElse(""), generator.getOrElse(null), updated, links.asJava, entries.asJava))
+    )((id, base, title, generator, updated, links, entries) => new FeedPage[T](id, base.getPath, title.getOrElse(""), generator.getOrElse(null), updated, links.asJava, entries.asJava))
 
 }
