@@ -32,6 +32,11 @@ public class JacksonJSONCodec<T> implements FeedPageCodec<T,String> {
     }
 
     @Override
+    public String getMimeType() {
+        return "application/json";
+    }
+
+    @Override
     public String encode(FeedPage<T> page) {
         try {
             return mapper.writeValueAsString(page);

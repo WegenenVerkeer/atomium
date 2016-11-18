@@ -5,6 +5,7 @@ package be.wegenenverkeer.atomium.api;
  */
 public interface FeedPageCodec<T,O> {
 
+    public String getMimeType();
 
     public O encode(FeedPage<T> page);
 
