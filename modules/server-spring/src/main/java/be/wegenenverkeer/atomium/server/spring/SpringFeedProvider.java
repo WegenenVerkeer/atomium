@@ -10,7 +10,7 @@ import java.util.List;
  * @param <E> Entry waarop de feed wordt gebaseerd
  * @param <T> TO zoals deze in de feed moet verschijnen
  */
-public interface FeedProvider<E, T> {
+public interface SpringFeedProvider<E, T> {
 
     /**
      * Default page size.

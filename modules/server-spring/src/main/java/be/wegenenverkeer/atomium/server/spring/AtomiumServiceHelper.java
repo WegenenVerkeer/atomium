@@ -5,8 +5,6 @@ import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.format.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,19 +36,19 @@ public class AtomiumServiceHelper {
     /**
      * Update atom volgnummers (in aparte transactie).
      *
-     * @param feedProvider feedProvider
+     * @param springFeedProvider feedProvider
      * @param <E> Entry waarop de feed wordt gebaseerd
      * @param <T> TO zoals deze in de feed moet verschijnen
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public <E, T> void sync(FeedProvider<E, T> feedProvider) {
-        feedProvider.sync();
+    public <E, T> void sync(SpringFeedProvider<E, T> springFeedProvider) {
+        springFeedProvider.sync();
     }
 
     /**
      * Eigenlijke bepalen van de atom feed voor wijzigingen in de entries.
      *
-     * @param feedProvider entry provider
+     * @param springFeedProvider entry provider
      * @param page pagina
      * @param request request
      * @param isCurrent wordt de feed opgevraagd langs "/"?
@@ -59,16 +57,16 @@ public class AtomiumServiceHelper {
      * @return atom feed data
      */
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
-    public <E, T> Response getFeed(FeedProvider<E, T> feedProvider, long page, Request request, boolean isCurrent) {
+    public <E, T> Response getFeed(SpringFeedProvider<E, T> springFeedProvider, long page, Request request, boolean isCurrent) {
         // entries voor pagina bepalen (ééntje meer om te weten of er nog een volgende pagina is)
-        List<E> entriesForPage = feedProvider.getEntriesForPage(page);
+        List<E> entriesForPage = springFeedProvider.getEntriesForPage(page);
 
         if (entriesForPage.isEmpty()) {
             return Response.status(404).entity("Pagina " + page + " niet gevonden.").build();
         }
 
-        boolean pageComplete = entriesForPage.size() > feedProvider.getPageSize();
-        OffsetDateTime updated = feedProvider.getTimestampForEntry(entriesForPage.get(0));
+        boolean pageComplete = entriesForPage.size() > springFeedProvider.getPageSize();
+        OffsetDateTime updated = springFeedProvider.getTimestampForEntry(entriesForPage.get(0));
 
         // updated time known, check/calculate eTag
         CacheControl cc = new CacheControl();
@@ -82,28 +80,28 @@ public class AtomiumServiceHelper {
 
         // feed bouwen
         FeedPage<T> feedPage = new FeedPage<>(
-                feedProvider.getFeedName(),
-                feedProvider.getFeedUrl(),
-                feedProvider.getFeedName(),
-                new Generator(feedProvider.getProviderName(), feedProvider.getFeedUrl(), feedProvider.getProviderVersion()),
+                springFeedProvider.getFeedName(),
+                springFeedProvider.getFeedUrl(),
+                springFeedProvider.getFeedName(),
+                new Generator(springFeedProvider.getProviderName(), springFeedProvider.getFeedUrl(), springFeedProvider.getProviderVersion()),
                 updated
         );
 
-        String pageUrl = "/" + page + '/' + feedProvider.getPageSize();
+        String pageUrl = "/" + page + '/' + springFeedProvider.getPageSize();
 
         List<Entry<T>> entries = entriesForPage.stream()
-                .map(entry -> toAtomEntry(entry, feedProvider))
+                .map(entry -> toAtomEntry(entry, springFeedProvider))
                 .collect(toList());
 
         feedPage.setEntries(entries);
 
         List<Link> links = new ArrayList<>();
-        links.add(new Link("last", "/0/" + feedProvider.getPageSize()));
+        links.add(new Link("last", "/0/" + springFeedProvider.getPageSize()));
         if (page >= 1) {
-            links.add(new Link("next", "/" + (page - 1) + '/' + feedProvider.getPageSize()));
+            links.add(new Link("next", "/" + (page - 1) + '/' + springFeedProvider.getPageSize()));
         }
         if (pageComplete) {
-            links.add(new Link("previous", "/" + (page + 1) + '/' + feedProvider.getPageSize()));
+            links.add(new Link("previous", "/" + (page + 1) + '/' + springFeedProvider.getPageSize()));
             feedPage.getEntries().remove(0);
         }
 
@@ -127,16 +125,16 @@ public class AtomiumServiceHelper {
      * Entity to atom entry.
      *
      * @param entity entity
-     * @param feedProvider feedProvider
+     * @param springFeedProvider feedProvider
      * @param <E> entity type
      * @param <T> to type
      * @return entity omgezet naar een TO
      */
-    <E, T> AtomEntry<T> toAtomEntry(E entity, FeedProvider<E, T> feedProvider) {
+    <E, T> AtomEntry<T> toAtomEntry(E entity, SpringFeedProvider<E, T> springFeedProvider) {
         return new AtomEntry<>(
-                feedProvider.getUrnForEntry(entity),
-                feedProvider.getTimestampForEntry(entity),
-                new Content<>(feedProvider.toTo(entity), ""));
+                springFeedProvider.getUrnForEntry(entity),
+                springFeedProvider.getTimestampForEntry(entity),
+                new Content<>(springFeedProvider.toTo(entity), ""));
     }
 
 }

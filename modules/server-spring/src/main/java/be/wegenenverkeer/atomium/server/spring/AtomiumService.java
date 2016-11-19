@@ -20,7 +20,7 @@ public class AtomiumService {
      * <p>
      * Voordat de feed wordt opgehaald wordt "sync" opgeroepen in een aparte transactie.
      *
-     * @param feedProvider entry provider
+     * @param springFeedProvider entry provider
      * @param page pagina
      * @param count max number of items in page
      * @param request request
@@ -28,16 +28,16 @@ public class AtomiumService {
      * @param <T> TO zoals deze in de feed moet verschijnen
      * @return atom feed data
      */
-    public <E, T> Response getFeed(FeedProvider<E, T> feedProvider, long page, long count, Request request) {
+    public <E, T> Response getFeed(SpringFeedProvider<E, T> springFeedProvider, long page, long count, Request request) {
         // safeguard, als je andere page sizes gebruikt dan ingesteld in de feedProvider kan je caching issues krijgen
-        if (feedProvider.getPageSize() != count) {
+        if (springFeedProvider.getPageSize() != count) {
             throw new AtomiumServerException(String.format("Pagina grootte komt niet overeen met verwachte waarde '%d', "
-                    + "de gebruikte link werd niet gegenereerd door Atom feed.", feedProvider.getPageSize()));
+                    + "de gebruikte link werd niet gegenereerd door Atom feed.", springFeedProvider.getPageSize()));
         }
 
-        helper.sync(feedProvider);
+        helper.sync(springFeedProvider);
 
-        return helper.getFeed(feedProvider, page, request, false);
+        return helper.getFeed(springFeedProvider, page, request, false);
     }
 
     /**
@@ -47,29 +47,29 @@ public class AtomiumService {
      * <p>
      * De meest recente page wordt opgehaald.
      *
-     * @param feedProvider entry provider
+     * @param springFeedProvider entry provider
      * @param request request
      * @param <E> Entry waarop de feed wordt gebaseerd
      * @param <T> TO zoals deze in de feed moet verschijnen
      * @return atom feed data
      */
-    public <E, T> Response getCurrentFeed(FeedProvider<E, T> feedProvider, Request request) {
-        helper.sync(feedProvider);
+    public <E, T> Response getCurrentFeed(SpringFeedProvider<E, T> springFeedProvider, Request request) {
+        helper.sync(springFeedProvider);
 
-        return helper.getFeed(feedProvider, detemineMostRecentPage(feedProvider), request, true);
+        return helper.getFeed(springFeedProvider, detemineMostRecentPage(springFeedProvider), request, true);
     }
 
     /**
      * Bepaal de meest recente page
      *
-     * @param feedProvider entry provider
+     * @param springFeedProvider entry provider
      * @param <E> Entry waarop de feed wordt gebaseerd
      * @param <T> TO zoals deze in de feed moet verschijnen
      * @return meest recente page
      */
-    <E, T> long detemineMostRecentPage(FeedProvider<E, T> feedProvider) {
-        long count = feedProvider.totalNumberOfEntries();
-        long pageSize = feedProvider.getPageSize();
+    <E, T> long detemineMostRecentPage(SpringFeedProvider<E, T> springFeedProvider) {
+        long count = springFeedProvider.totalNumberOfEntries();
+        long pageSize = springFeedProvider.getPageSize();
 
         long page = count / pageSize;
 

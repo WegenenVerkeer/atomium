@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.server.spring;
 import be.wegenenverkeer.atomium.format.AtomEntry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -55,7 +54,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void sync() throws Exception {
-        TestFeedProvider testFeedProvider = mock(TestFeedProvider.class);
+        TestSpringFeedProvider testFeedProvider = mock(TestSpringFeedProvider.class);
 
         helper.sync(testFeedProvider);
 
@@ -64,7 +63,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void geenEntriesVoorPageGevonden() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(emptyList());
 
         //TODO why are execptions no longer thrown?
@@ -77,7 +76,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void etag_isDeHashVanDeTimestampVanDeEersteEntry() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(volledigeLijst);
 
         Response response = helper.getFeed(testFeedProvider, 0, request, true);
@@ -91,7 +90,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void etag_geenMatch() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(volledigeLijst);
         String hashcodeVanVoorlaatsteItem = Integer.toString(volledigeLijst.get(TEST_PAGE_SIZE - 1).getTimestamp().hashCode());
         EntityTag etag = new EntityTag(hashcodeVanVoorlaatsteItem);
@@ -107,7 +106,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void etag_match() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(volledigeLijst);
         String hashcodeVanVoorlaatsteItem = Integer.toString(volledigeLijst.get(0).getTimestamp().hashCode());
         EntityTag etag = new EntityTag(hashcodeVanVoorlaatsteItem);
@@ -130,7 +129,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void indienCurrentPage_nietGecached() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(onvolledigeLijst);
 
         Response response = helper.getFeed(testFeedProvider, 0, request, true);
@@ -140,7 +139,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void indienRecentPageNietVolledig_nietGecached() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(onvolledigeLijst);
 
         Response response = helper.getFeed(testFeedProvider, 0, request, false);
@@ -150,7 +149,7 @@ public class AtomiumServiceHelperTest {
 
     @Test
     public void indienRecentPageWelVolledig_welGecached() throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(volledigeLijst);
 
         Response response = helper.getFeed(testFeedProvider, 0, request, false);
@@ -257,7 +256,7 @@ public class AtomiumServiceHelperTest {
     @Test
     public void toAtomEntry() throws Exception {
         int id = 42;
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(onvolledigeLijst);
         AtomEntry<TestFeedEntryTo> atomEntry = helper.toAtomEntry(new TestFeedEntry(id, NOW), testFeedProvider);
 
@@ -275,7 +274,7 @@ public class AtomiumServiceHelperTest {
     }
 
     private FeedPage<TestFeedEntryTo> getFeed(List<TestFeedEntry> lijst, int page) throws Exception {
-        TestFeedProvider testFeedProvider = new TestFeedProvider();
+        TestSpringFeedProvider testFeedProvider = new TestSpringFeedProvider();
         testFeedProvider.setEntriesForPage(lijst);
 
         Response response = helper.getFeed(testFeedProvider, page, request, false);
@@ -288,7 +287,7 @@ public class AtomiumServiceHelperTest {
                 .collect(Collectors.toList());
     }
 
-    public class TestFeedProvider implements FeedProvider<TestFeedEntry, TestFeedEntryTo> {
+    public class TestSpringFeedProvider implements SpringFeedProvider<TestFeedEntry, TestFeedEntryTo> {
         private List<TestFeedEntry> entries;
 
         @Override
