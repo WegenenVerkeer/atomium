@@ -17,7 +17,7 @@ class MemoryFeedStoreTest extends FunSuite with FeedStoreTestSupport with Matche
 
   def createFeedStore(implicit context: Context) = new MemoryFeedStore[String, Context](
     feedName = "int_feed",
-    url = Url("http://www.example.org/feeds"),
+    url = new Url("http://www.example.org/feeds"),
     title = Some("Test"),
     "text/plain"
   )

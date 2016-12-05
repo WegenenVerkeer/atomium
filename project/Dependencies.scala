@@ -8,6 +8,7 @@ object Dependencies {
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
+  val rxStreams         = "org.reactivestreams"         %     "reactive-streams"             % "1.0.0"
   val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.24.0"
   val playJson          = "com.typesafe.play"           %%    "play-json"                     % playVersion
   val playWs            = "com.typesafe.play"           %%    "play-ws"                       % playVersion
@@ -39,7 +40,6 @@ object Dependencies {
   val junit             = "junit"                           %   "junit"                    % "4.11"    % "test"
   val junitInterface    = "com.novocode"                    %   "junit-interface"          % "0.11"    % "test->default"
   val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"         % "2.4.3"
-  val jacksonJavaTime   = "com.fasterxml.jackson.datatype" %    "jackson-datatype-jsr310"  % "2.4.3"
   val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"        % "0.4.0"
   val lombok            = "org.projectlombok"               %   "lombok"                   % "1.16.10" % "provided"
   val springContext     = "org.springframework"             %   "spring-context"           % "4.2.0.RELEASE"

@@ -9,11 +9,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.*;
 
 import java.io.IOException;
-import java.time.*;
-import java.time.temporal.Temporal;
+import java.time.OffsetDateTime;
 
 /**
  * This is a custom Jackson module that ensures that the Jackson Serializer/Deserializer follows the same rules as the other JSon
@@ -29,7 +27,7 @@ public class OffsetDateTimeModule extends SimpleModule {
         // first deserializer
         addDeserializer(OffsetDateTime.class, DESERIALIZER);
         // then serializers
-        addSerializer(OffsetDateTime.class, OffsetDateTimeSerializer.INSTANCE);
+        addSerializer(OffsetDateTime.class, SERIAlIZER);
     }
 
     public static final StdScalarDeserializer<OffsetDateTime> DESERIALIZER = new StdScalarDeserializer<OffsetDateTime>(OffsetDateTime.class){

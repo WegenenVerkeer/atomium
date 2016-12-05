@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.server.play
 
 import be.wegenenverkeer.atomium.format.Url
+import be.wegenenverkeer.atomium.play.PlayJsonCodec
 import be.wegenenverkeer.atomium.play.PlayJsonFormats._
 import be.wegenenverkeer.atomium.server.{Context, FeedService, MemoryFeedStore}
 import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
@@ -22,7 +23,7 @@ class FeedSupportFunctionalSuite
   //memory feed store does not require a context
   val feedStore = new MemoryFeedStore[String, Context](
     feedName,
-    Url(s"http://localhost/feeds/$feedName"),
+    new Url(s"http://localhost/feeds/$feedName"),
     None,
     "text/plain"
   )
@@ -44,7 +45,7 @@ class FeedSupportFunctionalSuite
     }
 
     override def marshallers = {
-      case Accepts.Json() => PlayJsonFeedMarshaller[String]()
+      case Accepts.Json() => new PlayJsonCodec
     }
   }
 

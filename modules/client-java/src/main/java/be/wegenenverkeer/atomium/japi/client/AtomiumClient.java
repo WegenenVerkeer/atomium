@@ -3,17 +3,12 @@ package be.wegenenverkeer.atomium.japi.client;
 import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
-import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.atomium.format.JacksonJSONCodec;
-import be.wegenenverkeer.atomium.format.OffsetDateTimeModule;
+import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.rxhttp.ClientRequest;
 import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttp.RxHttpClient;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rx.Observable;
@@ -119,19 +114,6 @@ public class AtomiumClient {
         public FeedObservableBuilder<E> withExtraHeaders(Map<String, String> headers) {
             this.extraHeaders = headers;
             return this;
-        }
-
-        private ObjectMapper configureObjectMapper(Module... modules) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new OffsetDateTimeModule());
-            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-            for (Module module : modules) {
-                objectMapper.registerModule(module);
-            }
-            return objectMapper;
         }
 
         /**

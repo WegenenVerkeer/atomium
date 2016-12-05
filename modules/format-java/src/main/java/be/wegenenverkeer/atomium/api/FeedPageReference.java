@@ -5,16 +5,10 @@ package be.wegenenverkeer.atomium.api;
  */
 public class FeedPageReference {
 
-    final private int size;
     final private int pageNum;
 
-    public FeedPageReference(int size, int pageNum) {
-        this.size = size;
+    public FeedPageReference(int pageNum) {
         this.pageNum = pageNum;
-    }
-
-    public int getPageSize(){
-        return this.size;
     }
 
     public int getPageNum(){

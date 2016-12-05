@@ -26,6 +26,10 @@ public final class FeedPage<T> {
     public FeedPage() {
     }
 
+    public FeedPage(String id, String base, String title, Generator generator) {
+        this(id, base, title, generator, OffsetDateTime.now(), new ArrayList<>(), new ArrayList<>());
+    }
+
     public FeedPage(String id, String base, String title, Generator generator, OffsetDateTime updated) {
         this(id, base, title, generator, updated, new ArrayList<>(), new ArrayList<>());
     }
