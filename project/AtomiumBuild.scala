@@ -14,12 +14,12 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val javaFormatModule = {
+  lazy val coreModule = {
 
     val mainDeps = Seq(jacksonDatabind, rxStreams)
     val testDeps = Seq(junit, junitInterface)
 
-    project("format-java")
+    project("core")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossPaths := false)
       .settings( autoScalaLibrary := false )
@@ -36,8 +36,8 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule, clientJavaModule % "test->test;compile->compile")
-      .aggregate(javaFormatModule)
+      .dependsOn(coreModule, clientJavaModule % "test->test;compile->compile")
+      .aggregate(coreModule)
   }
 
   //----------------------------------------------------------------
@@ -50,7 +50,7 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
-      .dependsOn(javaFormatModule)
+      .dependsOn(coreModule)
 
   }
 
@@ -63,7 +63,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("common-play")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule)
+      .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
@@ -72,13 +72,13 @@ object AtomiumBuild extends Build with BuildSettings {
     val mainDeps = Seq(play25, play25Json)
 
     //set source dir to source dir in commonPlayModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))     
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))
 
-    project("common-play25")          
+    project("common-play25")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
-      .settings(crossScalaVersions := Seq("2.11.8"))    
-      .dependsOn(javaFormatModule)
+      .settings(crossScalaVersions := Seq("2.11.8"))
+      .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
@@ -86,7 +86,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule)
+      .dependsOn(coreModule)
 
 
   //----------------------------------------------------------------
@@ -99,7 +99,7 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
-      .dependsOn(javaFormatModule)
+      .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
@@ -146,7 +146,7 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(playMockWs, play25Test, scalaTestPlay) ++ mainScalaTestDependencies
 
     //set source dir to source dir in serverPlaySampleModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))     
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))
 
     project("server-play25")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
@@ -167,7 +167,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
   //----------------------------------------------------------------
   lazy val main = mainProject(
-    javaFormatModule,
+    coreModule,
     commonPlayModule,
     commonPlay25Module,
     clientScalaModule,
