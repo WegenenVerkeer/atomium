@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.server.jdbc
+package be.wegenenverkeer.atomium.server.jdbc.legacy
 
 trait PostgresDialect extends Dialect {
 

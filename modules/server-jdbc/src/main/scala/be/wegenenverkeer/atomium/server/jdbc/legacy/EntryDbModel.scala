@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.server.jdbc
+package be.wegenenverkeer.atomium.server.jdbc.legacy
 
 import java.sql.ResultSet
 import java.time.{OffsetDateTime, ZoneId}

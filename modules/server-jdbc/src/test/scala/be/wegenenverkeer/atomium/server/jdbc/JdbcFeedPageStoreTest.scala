@@ -4,6 +4,7 @@ import java.sql.{Connection, DriverManager}
 
 import be.wegenenverkeer.atomium.format.Url
 import be.wegenenverkeer.atomium.server.FeedStoreTestSupport
+import be.wegenenverkeer.atomium.server.jdbc.legacy.{JdbcContext, PgJdbcFeedStore}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSuite, Matchers}
 
 class JdbcFeedPageStoreTest extends FunSuite with FeedStoreTestSupport with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
