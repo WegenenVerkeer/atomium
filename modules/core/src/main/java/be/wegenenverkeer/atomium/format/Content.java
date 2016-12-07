@@ -13,8 +13,6 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.NONE)
 public final class Content<T> {
 
-    private static final ThreadLocal<JAXBElementUnmarshaller> jaxbElementUnmarshallerThreadLocal = new ThreadLocal<>();
-
     @XmlAttribute(name="type")
     private String type;
 
