@@ -1,7 +1,9 @@
 package be.wegenenverkeer.atomium.api;
 
 import be.wegenenverkeer.atomium.format.Generator;
-import org.reactivestreams.Publisher;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 19/11/16.
@@ -23,19 +25,20 @@ public class DefaultFeedPageProvider<T> implements FeedPageProvider<T>{
     }
 
     @Override
-    public Publisher<FeedPage<T>> feedPage(FeedPageRef requestedPage) {
+    public Future<FeedPage<T>> getFeedPageAsync(FeedPageRef requestedPage) {
 
+        CompletableFuture<FeedPage<T>> futurePage = new CompletableFuture<>();
         if (requestedPage.isStrictlyMoreRecentThan(getHeadOfFeedRef())) {
-            return new ErrorPublisher(new IndexOutOfBoundsException("Page beyond head of Feed requested"));
+            futurePage.completeExceptionally(new IndexOutOfBoundsException("Requested page currently beyond head of feed"));
         }
 
         long requested = pageSize + 1;
 
         FeedPageBuilder<T> builder = new FeedPageBuilder<>(this, requestedPage.getPageNum());
 
-        EntryProcessor<T> pub = new EntryProcessor<>(requested, builder);
+        EntryToPage<T> pub = new EntryToPage<>(requested, builder, futurePage);
         store.getEntries(requestedPage.getPageNum() * pageSize, requested).subscribe(pub);
-        return pub;
+        return futurePage;
     }
 
     @Override

@@ -13,8 +13,6 @@ import java.util.concurrent.Future;
  */
 public interface FeedPageProvider<T> {
 
-    Publisher<FeedPage<T>> feedPage(FeedPageRef ref);
-
     /**
      * Return a reference to the most recent {@code FeedPage}}
      *
@@ -37,11 +35,7 @@ public interface FeedPageProvider<T> {
     Generator getFeedGenerator();
 
 
-    default Future<FeedPage<T>> getFeedPageAsync(FeedPageRef ref) {
-        CompletableFuture<FeedPage<T>> fPage = new CompletableFuture<>();
-        feedPage(ref).subscribe( new FeedPageToFutureSubscriber<>( fPage ) );
-        return fPage;
-    }
+    Future<FeedPage<T>> getFeedPageAsync(FeedPageRef ref);
 
     default FeedPage<T> getFeedPage(FeedPageRef ref) {
         try {
