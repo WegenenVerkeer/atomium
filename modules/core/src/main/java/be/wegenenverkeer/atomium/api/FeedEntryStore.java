@@ -18,6 +18,8 @@ public interface FeedEntryStore<T> {
         push(Arrays.asList(entries));
     }
 
-    Publisher<Entry<T>> getEntries(int startNum, int size);
+    Publisher<Entry<T>> getEntries(long startNum, long size);
+
+    long totalNumberOfEntries();
 
 }

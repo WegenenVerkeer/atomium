@@ -15,12 +15,14 @@ class EntryProcessor<T> implements Processor<Entry<T>, FeedPage<T>> {
 
     final private List<Entry<T>> entries;
     final private FeedPageBuilder<T> builder;
+    final private long requested;
     private Subscription storeSubscription;
 
     private FeedPageSubscription<T> subscription;
 
-    EntryProcessor(int requested, FeedPageBuilder<T> builder){
-        entries = new ArrayList<>(requested);
+    EntryProcessor(long requested, FeedPageBuilder<T> builder){
+        this.requested = requested;
+        entries = new ArrayList<>();
         this.builder = builder;
     }
 
@@ -53,7 +55,7 @@ class EntryProcessor<T> implements Processor<Entry<T>, FeedPage<T>> {
             s.onError(new RuntimeException("Already subscribed"));
         }
         subscription = new FeedPageSubscription<>(s);
-        storeSubscription.request(entries.size());
+        storeSubscription.request(this.requested);
         s.onSubscribe(subscription);
     }
 

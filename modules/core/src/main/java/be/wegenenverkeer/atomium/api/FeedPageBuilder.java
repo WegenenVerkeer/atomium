@@ -4,6 +4,7 @@ import be.wegenenverkeer.atomium.format.Link;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,13 +13,13 @@ import java.util.List;
 public class FeedPageBuilder<T> {
 
     final private FeedPageProvider<T> provider;
-    final private int page;
+    final private long page;
     private List<Entry<T>> pageEntries;
     private OffsetDateTime updated;
     private List<Link> links;
     private boolean hasPrevious;
 
-    public FeedPageBuilder(FeedPageProvider<T> provider, int pageNum) {
+    public FeedPageBuilder(FeedPageProvider<T> provider, long pageNum) {
         this.page = pageNum;
         this.provider = provider;
     }
@@ -33,6 +34,7 @@ public class FeedPageBuilder<T> {
      */
     public FeedPageBuilder<T> setEntries(List<Entry<T>> entries) {
         pageEntries = entries;
+        Collections.reverse(pageEntries);
         checkForPreviousLink();
         selectOldestForPage();
         calcUpdated();
@@ -41,8 +43,8 @@ public class FeedPageBuilder<T> {
     }
 
     private void selectOldestForPage() {
-        int leastIndex = Math.max(0, pageEntries.size() - this.provider.getPageSize());
-        pageEntries = pageEntries.subList(leastIndex, this.pageEntries.size());
+        long leastIndex = Math.max(0, pageEntries.size() - this.provider.getPageSize());
+        pageEntries = pageEntries.subList((int)leastIndex, this.pageEntries.size());
     }
 
     private void calcUpdated() {
@@ -60,10 +62,10 @@ public class FeedPageBuilder<T> {
         links.add(new Link(Link.SELF, "/" + this.page + suffix));
         links.add(new Link(Link.LAST, "/0" + suffix));
         if (page > 0) {
-            links.add(new Link(Link.NEXT, "/" + (page + 1) + suffix));
+            links.add(new Link(Link.NEXT, "/" + (page - 1) + suffix));
         }
         if (hasPrevious) {
-            links.add(new Link(Link.PREVIOUS, "/" + (page - 1) + suffix));
+            links.add(new Link(Link.PREVIOUS, "/" + (page + 1) + suffix));
         }
 
     }

@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.api;
 /**
  * Created by Karel Maesen, Geovise BVBA on 19/11/16.
  */
-public class EntryPointer extends FeedPageReference {
+public class EntryPointer extends FeedPageRef {
 
     final private int entryNum;
 

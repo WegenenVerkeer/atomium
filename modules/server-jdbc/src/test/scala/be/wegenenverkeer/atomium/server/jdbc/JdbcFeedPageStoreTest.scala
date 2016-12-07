@@ -26,8 +26,8 @@ class JdbcFeedPageStoreTest extends FunSuite with FeedStoreTestSupport with Matc
    * In this test, we check the behaviour of the feed store in the event of a failure that
    * triggers a rollback on the transaction. Remember that the feed store itself assumes
    * that transactional boundaries are managed at a higher level. The level of the
-   * transactional boundaries must be so that the atom feed storage of entries coexist
-   * within the same transaction as the domain changes these entries report.
+   * transactional boundaries must be so that the atom feed storage of received coexist
+   * within the same transaction as the domain changes these received report.
    */
   test("failed transaction should not push entry onto feed") { (feedStore, context) =>
     implicit val ctx = context

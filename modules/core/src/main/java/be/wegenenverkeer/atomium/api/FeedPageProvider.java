@@ -13,9 +13,22 @@ import java.util.concurrent.Future;
  */
 public interface FeedPageProvider<T> {
 
-    Publisher<FeedPage<T>> feedPage(FeedPageReference ref);
+    Publisher<FeedPage<T>> feedPage(FeedPageRef ref);
 
-    int getPageSize();
+    /**
+     * Return a reference to the most recent {@code FeedPage}}
+     *
+     * The head-of-feed {@Code FeedPage} can ber empty
+     *
+     * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
+     */
+    FeedPageRef getHeadOfFeedRef();
+
+    /**
+     * Returns the page size, i.e. maximum number of elements in the feed
+     * @return
+     */
+    long getPageSize();
 
     String getFeedUrl();
 
@@ -23,19 +36,30 @@ public interface FeedPageProvider<T> {
 
     Generator getFeedGenerator();
 
-    default Future<FeedPage<T>> getFeedPageAsync(FeedPageReference ref) {
+
+    default Future<FeedPage<T>> getFeedPageAsync(FeedPageRef ref) {
         CompletableFuture<FeedPage<T>> fPage = new CompletableFuture<>();
         feedPage(ref).subscribe( new FeedPageToFutureSubscriber<>( fPage ) );
         return fPage;
     }
 
-    default FeedPage<T> getFeedPage(FeedPageReference ref) {
+    default FeedPage<T> getFeedPage(FeedPageRef ref) {
         try {
             return getFeedPageAsync(ref).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            //if cause of execution exception is a runtime exception, rethrow it,
+            if ( RuntimeException.class.isAssignableFrom( e.getCause().getClass())) {
+                throw (RuntimeException) e.getCause();
+            } else {
+                //if not, first wrap in runtime exception, and rethrow
+                throw new RuntimeException(e.getCause());
+            }
         }
     }
+
+
 
 }
 

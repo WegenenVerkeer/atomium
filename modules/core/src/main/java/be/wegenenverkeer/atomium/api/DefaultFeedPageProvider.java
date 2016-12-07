@@ -10,12 +10,12 @@ public class DefaultFeedPageProvider<T> implements FeedPageProvider<T>{
 
     private final static Generator GENERATOR = new Generator("Default Feed provider", "https://github.com/WegenenVerkeer/atomium", "1.0");
     final private FeedEntryStore<T> store;
-    final private int pageSize;
+    final private long pageSize;
     final private String feedUrl;
     final private String name;
 
 
-    public DefaultFeedPageProvider(FeedEntryStore<T> store, String name, int pageSize, String feedUrl){
+    public DefaultFeedPageProvider(FeedEntryStore<T> store, String name, long pageSize, String feedUrl){
         this.store = store;
         this.pageSize = pageSize;
         this.feedUrl = feedUrl;
@@ -23,24 +23,35 @@ public class DefaultFeedPageProvider<T> implements FeedPageProvider<T>{
     }
 
     @Override
-    public Publisher<FeedPage<T>> feedPage(FeedPageReference ref) {
-        int requested = pageSize + 1;
+    public Publisher<FeedPage<T>> feedPage(FeedPageRef requestedPage) {
 
-        FeedPageBuilder<T> builder = new FeedPageBuilder<>(this, ref.getPageNum());
+        if (requestedPage.isStrictlyMoreRecentThan(getHeadOfFeedRef())) {
+            return new ErrorPublisher(new IndexOutOfBoundsException("Page beyond head of Feed requested"));
+        }
+
+        long requested = pageSize + 1;
+
+        FeedPageBuilder<T> builder = new FeedPageBuilder<>(this, requestedPage.getPageNum());
 
         EntryProcessor<T> pub = new EntryProcessor<>(requested, builder);
-        store.getEntries(ref.getPageNum() * pageSize, requested).subscribe(pub);
+        store.getEntries(requestedPage.getPageNum() * pageSize, requested).subscribe(pub);
         return pub;
     }
 
     @Override
-    public int getPageSize() {
+    public FeedPageRef getHeadOfFeedRef() {
+        long n = store.totalNumberOfEntries() / getPageSize();
+        return FeedPageRef.page(n);
+    }
+
+    @Override
+    public long getPageSize() {
         return this.pageSize;
     }
 
     @Override
     public String getFeedUrl() {
-        return this.getFeedUrl();
+        return this.feedUrl;
     }
 
     @Override

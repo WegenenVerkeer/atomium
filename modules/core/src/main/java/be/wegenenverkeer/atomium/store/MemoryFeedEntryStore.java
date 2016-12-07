@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * An in-memory store for entries, meant as implementation example, and
@@ -21,21 +22,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MemoryFeedEntryStore<T> implements FeedEntryStore<T> {
 
-    final ConcurrentSkipListMap<Integer, Entry<T>> store = new ConcurrentSkipListMap<>();
-    final AtomicInteger counter = new AtomicInteger(0);
+    final ConcurrentSkipListMap<Long, Entry<T>> store = new ConcurrentSkipListMap<>();
+    final AtomicLong counter = new AtomicLong(0);
 
     @Override
     public void push(List<Entry<T>> entries) {
-        entries.sort( (e1, e2) -> e1.getUpdated().compareTo(e2.getUpdated()));
         entries.forEach(e -> store.put(counter.getAndIncrement(), e));
     }
 
     @Override
-    public Publisher<Entry<T>> getEntries(int startNum, int size) {
+    public Publisher<Entry<T>> getEntries(long startNum, long size) {
         Collection<Entry<T>> coll = store.subMap(startNum, startNum + size).values();
         List<Entry<T>> entries = new ArrayList(coll.size());
         entries.addAll(coll);
         return toPublisher(entries);
+    }
+
+    @Override
+    public long totalNumberOfEntries() {
+        return counter.get();
     }
 
     private Publisher<Entry<T>> toPublisher(List<Entry<T>> entries) {
@@ -45,7 +50,6 @@ public class MemoryFeedEntryStore<T> implements FeedEntryStore<T> {
     //These are simplistic implementations of Reactive Streams, they are only here to not introduce a dependency on
     // a specific ReactiveStreams implementation
     static class SimpleSynchronousEntryPublisher<T>  implements Publisher<Entry<T>> {
-
         final List<Entry<T>> entries;
         SimpleSubscription subscription;
 
