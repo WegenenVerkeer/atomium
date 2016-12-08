@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,8 +41,8 @@ public class MemoryFeedEntryStore<T> implements FeedEntryStore<T> {
     }
 
     @Override
-    public long totalNumberOfEntries() {
-        return counter.get();
+    public CompletableFuture<Long> totalNumberOfEntries() {
+        return CompletableFuture.completedFuture( counter.get() );
     }
 
     private Publisher<Entry<T>> toPublisher(List<Entry<T>> entries) {

@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.api;
 import be.wegenenverkeer.atomium.format.Generator;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
 /**
@@ -25,7 +26,7 @@ public class DefaultFeedPageProvider<T> implements FeedPageProvider<T>{
     }
 
     @Override
-    public Future<FeedPage<T>> getFeedPageAsync(FeedPageRef requestedPage) {
+    public CompletableFuture<FeedPage<T>> getFeedPageAsync(FeedPageRef requestedPage) {
 
         CompletableFuture<FeedPage<T>> futurePage = new CompletableFuture<>();
         if (requestedPage.isStrictlyMoreRecentThan(getHeadOfFeedRef())) {
@@ -42,9 +43,8 @@ public class DefaultFeedPageProvider<T> implements FeedPageProvider<T>{
     }
 
     @Override
-    public FeedPageRef getHeadOfFeedRef() {
-        long n = store.totalNumberOfEntries() / getPageSize();
-        return FeedPageRef.page(n);
+    public CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync() {
+        return store.totalNumberOfEntries().thenApply( n -> FeedPageRef.page( n / getPageSize()));
     }
 
     @Override

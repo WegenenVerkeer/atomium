@@ -6,6 +6,9 @@ import org.reactivestreams.Subscriber;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 19/11/16.
@@ -20,6 +23,6 @@ public interface FeedEntryStore<T> {
 
     Publisher<Entry<T>> getEntries(long startNum, long size);
 
-    long totalNumberOfEntries();
+    CompletableFuture<Long> totalNumberOfEntries();
 
 }

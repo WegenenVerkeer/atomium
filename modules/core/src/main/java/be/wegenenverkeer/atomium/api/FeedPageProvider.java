@@ -4,8 +4,11 @@ import be.wegenenverkeer.atomium.format.Generator;
 import org.reactivestreams.Publisher;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static be.wegenenverkeer.atomium.api.ExecutionExceptionUnpacker.toRuntimeException;
 
 /**
  * Provides a single FeedPage
@@ -16,11 +19,11 @@ public interface FeedPageProvider<T> {
     /**
      * Return a reference to the most recent {@code FeedPage}}
      *
-     * The head-of-feed {@Code FeedPage} can ber empty
+     * The head-of-feed {@Code FeedPage} can be empty
      *
-     * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
+     * @return a {@code Future<FeedPageRef>} to the most recent {@code FeedPage}
      */
-    FeedPageRef getHeadOfFeedRef();
+    CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync();
 
     /**
      * Returns the page size, i.e. maximum number of elements in the feed
@@ -35,7 +38,7 @@ public interface FeedPageProvider<T> {
     Generator getFeedGenerator();
 
 
-    Future<FeedPage<T>> getFeedPageAsync(FeedPageRef ref);
+    CompletableFuture<FeedPage<T>> getFeedPageAsync(FeedPageRef ref);
 
     default FeedPage<T> getFeedPage(FeedPageRef ref) {
         try {
@@ -43,13 +46,24 @@ public interface FeedPageProvider<T> {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
-            //if cause of execution exception is a runtime exception, rethrow it,
-            if ( RuntimeException.class.isAssignableFrom( e.getCause().getClass())) {
-                throw (RuntimeException) e.getCause();
-            } else {
-                //if not, first wrap in runtime exception, and rethrow
-                throw new RuntimeException(e.getCause());
-            }
+            throw toRuntimeException(e);
+        }
+    }
+
+    /**
+     * Return a reference to the most recent {@code FeedPage}}
+     *
+     * The head-of-feed {@Code FeedPage} can be empty
+     *
+     * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
+     */
+    default FeedPageRef getHeadOfFeedRef() {
+        try {
+            return getHeadOfFeedRefAsync().get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw toRuntimeException(e);
         }
     }
 

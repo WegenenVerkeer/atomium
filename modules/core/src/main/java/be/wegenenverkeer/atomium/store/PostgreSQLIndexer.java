@@ -3,6 +3,7 @@ package be.wegenenverkeer.atomium.store;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 07/12/16.
@@ -30,11 +31,18 @@ public class PostgreSQLIndexer implements Indexer {
      * @return the highest {@code Entry} number after this indexer has run
      */
     @Override
-    public void index() throws SQLException {
+    public CompletableFuture<Boolean> index() throws SQLException {
         //TODO -- check that this connection has an "acceptable" transaction isolation
         Connection connection = store.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(indexQuery);
-        preparedStatement.executeUpdate();
+        CompletableFuture<Boolean> result = new CompletableFuture<>();
+        try {
+            preparedStatement.executeUpdate();
+            result.complete(true);
+        } catch (Throwable t) {
+            result.completeExceptionally(t);
+        }
+        return result;
     }
 
 

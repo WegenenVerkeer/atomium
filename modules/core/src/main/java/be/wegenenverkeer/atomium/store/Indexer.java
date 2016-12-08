@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.store;
 
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Indexes entries in a {@code JDBCFeedEntryStore}
@@ -14,9 +15,9 @@ public interface Indexer {
     /**
      * Runs the indexer
      *
-     * @return the highest {@code Entry} number after this indexer has run
+     * @return a Future that completes successfully when the indexing has been done
      */
-    public void index() throws SQLException;
+    public CompletableFuture<Boolean> index() throws SQLException;
 
 
 }
