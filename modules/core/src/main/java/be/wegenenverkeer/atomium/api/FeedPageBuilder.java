@@ -12,16 +12,16 @@ import java.util.List;
  */
 public class FeedPageBuilder<T> {
 
-    final private FeedPageProvider<T> provider;
+    final private FeedPageMetadata meta;
     final private long page;
     private List<Entry<T>> pageEntries;
     private OffsetDateTime updated;
     private List<Link> links;
     private boolean hasPrevious;
 
-    public FeedPageBuilder(FeedPageProvider<T> provider, long pageNum) {
+    public FeedPageBuilder(FeedPageMetadata meta, long pageNum) {
         this.page = pageNum;
-        this.provider = provider;
+        this.meta = meta;
     }
 
     /**
@@ -43,7 +43,7 @@ public class FeedPageBuilder<T> {
     }
 
     private void selectOldestForPage() {
-        long leastIndex = Math.max(0, pageEntries.size() - this.provider.getPageSize());
+        long leastIndex = Math.max(0, pageEntries.size() - this.meta.getPageSize());
         pageEntries = pageEntries.subList((int)leastIndex, this.pageEntries.size());
     }
 
@@ -52,13 +52,13 @@ public class FeedPageBuilder<T> {
     }
 
     private void checkForPreviousLink() {
-        hasPrevious = (pageEntries.size() > provider.getPageSize());
+        hasPrevious = (pageEntries.size() > this.meta.getPageSize());
     }
 
 
     private void calcLinks() {
         links = new ArrayList<>();
-        String suffix = "/" + this.provider.getPageSize();
+        String suffix = "/" + this.meta.getPageSize();
         links.add(new Link(Link.SELF, "/" + this.page + suffix));
         links.add(new Link(Link.LAST, "/0" + suffix));
         if (page > 0) {
@@ -72,10 +72,10 @@ public class FeedPageBuilder<T> {
 
     public FeedPage<T> build() {
         return new FeedPage<>(
-                this.provider.getFeedName(),
-                this.provider.getFeedUrl(),
-                this.provider.getFeedName(),
-                this.provider.getFeedGenerator(),
+                this.meta.getFeedName(),
+                this.meta.getFeedUrl(),
+                this.meta.getFeedName(),
+                this.meta.getFeedGenerator(),
                 updated,
                 links,
                 pageEntries

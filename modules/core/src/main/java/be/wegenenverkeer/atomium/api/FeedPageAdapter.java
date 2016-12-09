@@ -8,13 +8,13 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static be.wegenenverkeer.atomium.api.ExecutionExceptionUnpacker.toRuntimeException;
+import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
 
 /**
  * Provides a single FeedPage
  * Created by Karel Maesen, Geovise BVBA on 19/11/16.
  */
-public interface FeedPageProvider<T> {
+public interface FeedPageAdapter<T> {
 
     /**
      * Return a reference to the most recent {@code FeedPage}}
@@ -25,29 +25,10 @@ public interface FeedPageProvider<T> {
      */
     CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync();
 
-    /**
-     * Returns the page size, i.e. maximum number of elements in the feed
-     * @return
-     */
-    long getPageSize();
-
-    String getFeedUrl();
-
-    String getFeedName();
-
-    Generator getFeedGenerator();
-
-
     CompletableFuture<FeedPage<T>> getFeedPageAsync(FeedPageRef ref);
 
     default FeedPage<T> getFeedPage(FeedPageRef ref) {
-        try {
-            return getFeedPageAsync(ref).get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw toRuntimeException(e);
-        }
+        return runAndWait( () -> getFeedPageAsync(ref) );
     }
 
     /**
@@ -58,13 +39,7 @@ public interface FeedPageProvider<T> {
      * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
      */
     default FeedPageRef getHeadOfFeedRef() {
-        try {
-            return getHeadOfFeedRefAsync().get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw toRuntimeException(e);
-        }
+        return runAndWait(() -> getHeadOfFeedRefAsync());
     }
 
 

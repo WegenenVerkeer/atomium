@@ -12,39 +12,43 @@ public class PostgreSQLIndexer implements Indexer {
 
 
     private final String indexQuery;
-    private final JdbcFeedEntryStore store;
 
+    public PostgreSQLIndexer(JdbcEntryStoreMetadata metadata) {
 
-    public PostgreSQLIndexer(JdbcFeedEntryStore store) {
-        this.store = store;
         this.indexQuery = syncQuery(
-                store.getTableName(),
-                store.getPrimaryKeyColumnName(),
-                store.getSequenceNoColumnName(),
-                store.getPrimaryKeyColumnName());
+                metadata.getTableName(),
+                metadata.getPrimaryKeyColumnName(),
+                metadata.getSequenceNoColumnName(),
+                metadata.getPrimaryKeyColumnName());
     }
-
 
     /**
-     * Runs the indexer
+     * Indexes the Entries in a table by running prepared SQL statement
      *
-     * @return the highest {@code Entry} number after this indexer has run
+     * Ensure that this operation takes place in its own transaction.
+     *
+     * @param connection
+     * @return
+     * @throws SQLException
      */
-    @Override
-    public CompletableFuture<Boolean> index() throws SQLException {
-        //TODO -- check that this connection has an "acceptable" transaction isolation
-        Connection connection = store.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(indexQuery);
-        CompletableFuture<Boolean> result = new CompletableFuture<>();
+    public boolean index(Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = null;
         try {
+            preparedStatement = connection.prepareStatement(indexQuery);
             preparedStatement.executeUpdate();
-            result.complete(true);
-        } catch (Throwable t) {
-            result.completeExceptionally(t);
+            return true;
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    // ignore, nothing we can do
+                }
+            }
         }
-        return result;
     }
-
 
     /**
      * Bouw de SQL query die gebruikt kan worden om een volgnummer veld te zetten voor een tabel met events.
@@ -103,4 +107,5 @@ public class PostgreSQLIndexer implements Indexer {
                 .replace("${idField}", idField)
                 .replace("${order-by}", orderBy);
     }
+
 }

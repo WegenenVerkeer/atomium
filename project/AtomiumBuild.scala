@@ -16,7 +16,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val coreModule = {
 
-    val mainDeps = Seq(jacksonDatabind, rxStreams)
+    val mainDeps = Seq(jacksonDatabind)
     val testDeps = Seq(junit, junitInterface)
 
     project("core")
