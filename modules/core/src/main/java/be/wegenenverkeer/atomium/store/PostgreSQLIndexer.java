@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.store;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 07/12/16.

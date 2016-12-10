@@ -38,10 +38,12 @@ public class TestMemoryFeedEntryStore {
 
         Stream<Integer> intStream = (IntStream.range(0, 11)).boxed();
         List<Integer> expected = intStream.collect(Collectors.toList());
-        assertEquals(expected, received);
+        Stream<Integer> receivedIdsStream = received.stream().map(e -> Integer.parseInt(e.getId()));
+        List<Integer> receivedIds = receivedIdsStream.collect(Collectors.toList());
+        assertEquals(expected, receivedIds);
 
     }
-    
+
 
 
 }

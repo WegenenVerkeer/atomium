@@ -1,6 +1,9 @@
 package be.wegenenverkeer.atomium.format;
 
-import be.wegenenverkeer.atomium.api.*;
+import be.wegenenverkeer.atomium.api.AtomiumDecodeException;
+import be.wegenenverkeer.atomium.api.AtomiumEncodeException;
+import be.wegenenverkeer.atomium.api.FeedPage;
+import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,7 +11,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import java.io.IOException;
 import java.util.TimeZone;
 
 /**

@@ -2,7 +2,6 @@ package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Entry;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**

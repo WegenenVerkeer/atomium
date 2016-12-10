@@ -1,12 +1,6 @@
 package be.wegenenverkeer.atomium.api;
 
-import be.wegenenverkeer.atomium.format.Generator;
-import org.reactivestreams.Publisher;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
 

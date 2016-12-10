@@ -5,9 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static be.wegenenverkeer.atomium.api.FeedPageRef.page;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 05/12/16.
@@ -20,7 +18,7 @@ public class TestDefaultFeedPageAdapter {
 
     @Before
     public void before() {
-        this.fixture = new StoreFixture();
+        this.fixture = new StoreFixture<>();
         this.fixture.loadEntries(20, "test string");
     }
 
@@ -71,7 +69,7 @@ public class TestDefaultFeedPageAdapter {
 
     @Test
     public void testHeadOfEmptyFeedIsAcceptable(){
-        this.fixture = new StoreFixture();
+        this.fixture = new StoreFixture<>();
         FeedPageAdapter<String> provider = new DefaultFeedPageAdapter<>(this.fixture.store, meta);
         FeedPageRef head = provider.getHeadOfFeedRef();
         FeedPage<String> page = provider.getFeedPage(head);
