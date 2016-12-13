@@ -17,7 +17,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val coreModule = {
 
     val mainDeps = Seq(jacksonDatabind)
-    val testDeps = Seq(junit, junitInterface)
+    val testDeps = Seq(junit, junitInterface, postgresdriver)
 
     project("core")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)

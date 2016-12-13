@@ -16,43 +16,12 @@ import java.util.TimeZone;
 /**
  * Created by Karel Maesen, Geovise BVBA on 15/11/16.
  */
-public class JacksonJSONCodec<T> implements FeedPageCodec<T,String> {
+public class JacksonJSONCodec<T> extends JacksonCodec<FeedPage<T>> implements FeedPageCodec<T,String>   {
 
-    final private ObjectMapper mapper;
-    final private JavaType javaType;
 
     public JacksonJSONCodec(Class<T> entryTypeMarker){
-        ObjectMapper m =  new ObjectMapper();
-        m.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        m.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        m.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        m.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
-        m.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        m.registerModule(new OffsetDateTimeModule());
-        this.mapper = m;
+        super();
         this.javaType = this.mapper.getTypeFactory().constructParametricType(FeedPage.class, entryTypeMarker);
     }
 
-    @Override
-    public String getMimeType() {
-        return "application/json";
-    }
-
-    @Override
-    public String encode(FeedPage<T> page) {
-        try {
-            return mapper.writeValueAsString(page);
-        } catch (JsonProcessingException e) {
-            throw new AtomiumEncodeException(e.getMessage(),e);
-        }
-    }
-
-    @Override
-    public FeedPage<T> decode(String encoded) {
-        try {
-            return mapper.readValue(encoded, javaType);
-        } catch(Exception e) {
-            throw new AtomiumDecodeException(e.getMessage(), e);
-        }
-    }
 }

@@ -95,7 +95,7 @@ public class PgJdbcDialect implements JdbcDialect {
                     + meta.getSequenceNoColumnName() + " INT, "
                     + meta.getIdColumnName() + " VARCHAR(60), "
                     + meta.getUpdatedColumnName() + " TIMESTAMP, "
-                    + meta.getEntryValueColumnName() + " JSON )";
+                    + meta.getEntryValueColumnName() + " TEXT )";
 
             @Override
             public Boolean execute() throws SQLException {
@@ -152,7 +152,7 @@ public class PgJdbcDialect implements JdbcDialect {
     }
 
     @Override
-    public <T> JdbcSaveEntryOp createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws SQLException {
+    public <T> JdbcSaveEntryOp<T> createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws SQLException {
 
         final String sql = "insert into " + meta.getTableName() +
                 "(" + meta.getIdColumnName() + "," + meta.getUpdatedColumnName() + "," +
