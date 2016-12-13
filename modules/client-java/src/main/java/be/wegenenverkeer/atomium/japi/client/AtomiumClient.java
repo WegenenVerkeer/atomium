@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.japi.client;
 import be.wegenenverkeer.atomium.api.Entry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
-import be.wegenenverkeer.atomium.format.JacksonJSONCodec;
+import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
 import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.rxhttp.ClientRequest;
 import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
@@ -102,7 +102,7 @@ public class AtomiumClient {
         FeedObservableBuilder(String feedPath, Class<E> entryTypeMarker, RxHttpClient rxClient, Module... modules) {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
-            this.jsonCodec = new JacksonJSONCodec<E>(entryTypeMarker);
+            this.jsonCodec = new JacksonFeedPageCodec<E>(entryTypeMarker);
             this.xmlCodec = new JaxbCodec<E>(entryTypeMarker);
         }
 

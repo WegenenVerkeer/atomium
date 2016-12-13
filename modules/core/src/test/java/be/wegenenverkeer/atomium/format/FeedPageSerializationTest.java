@@ -6,14 +6,10 @@ import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;
 import be.wegenenverkeer.atomium.format.pub.Control;
 import be.wegenenverkeer.atomium.format.pub.Draft;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -28,9 +24,9 @@ public class FeedPageSerializationTest {
 
     private Customer customer = new Customer("cname", 666);
     private FeedPageCodec<Customer, String> jaxbCustomerCodec = new JaxbCodec<>(Customer.class);
-    private FeedPageCodec<Customer, String> jsonCustomerCodec = new JacksonJSONCodec<>(Customer.class);
+    private FeedPageCodec<Customer, String> jsonCustomerCodec = new JacksonFeedPageCodec<>(Customer.class);
     private FeedPageCodec<String, String> jaxbStringCodec = new JaxbCodec<>(String.class);
-    private FeedPageCodec<String, String> jsonStringCodec = new JacksonJSONCodec<>(String.class);
+    private FeedPageCodec<String, String> jsonStringCodec = new JacksonFeedPageCodec<>(String.class);
 
 
     @Test

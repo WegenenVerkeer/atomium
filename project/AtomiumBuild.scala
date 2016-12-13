@@ -22,6 +22,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("core")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossPaths := false)
+      .settings(fork := true) //need to fork because of problem with registering JDBC Driver on repeated test invocation.
       .settings( autoScalaLibrary := false )
 
   }
