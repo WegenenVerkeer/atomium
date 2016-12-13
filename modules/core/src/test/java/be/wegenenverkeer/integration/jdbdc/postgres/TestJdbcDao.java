@@ -2,12 +2,11 @@ package be.wegenenverkeer.integration.jdbdc.postgres;
 
 import be.wegenenverkeer.atomium.api.Codec;
 import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.FeedEntryDao;
+import be.wegenenverkeer.atomium.api.EntryDao;
 import be.wegenenverkeer.atomium.format.AtomEntry;
 import be.wegenenverkeer.atomium.format.Content;
 import be.wegenenverkeer.atomium.format.JacksonCodec;
-import be.wegenenverkeer.atomium.store.DefaultPgJdbcFeedEntryStore;
-import be.wegenenverkeer.atomium.store.JdbcFeedEntryDaoFactory;
+import be.wegenenverkeer.atomium.store.PostgresEntryStore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class TestJdbcDao extends AbstractIntegrationTest {
 
     Codec<Event, String> codec = new JacksonCodec<>(Event.class);
-    DefaultPgJdbcFeedEntryStore<Event> store = new DefaultPgJdbcFeedEntryStore<>(metadata, codec);
+    PostgresEntryStore<Event> store = new PostgresEntryStore<>(metadata, codec);
 
     @Override
     boolean withTableCreation() {
@@ -35,7 +34,7 @@ public class TestJdbcDao extends AbstractIntegrationTest {
     public void writingEvents() throws SQLException {
         List<Entry<Event>> entries = new ArrayList<Entry<Event>>();
         try (Connection conn = mkConnection(TEST_SCHEMA)) {
-            FeedEntryDao<Event> dao = store.createDao(conn);
+            EntryDao<Event> dao = store.createDao(conn);
             entries.add(new AtomEntry<Event>("0", new Content<>(new Event("test 0"), "")));
             entries.add(new AtomEntry<Event>("1", new Content<>(new Event("test 1"), "")));
             entries.add(new AtomEntry<Event>("2", new Content<>(new Event("test 2"), "")));
@@ -44,7 +43,7 @@ public class TestJdbcDao extends AbstractIntegrationTest {
         }
 
         try (Connection conn = mkConnection(TEST_SCHEMA)) {
-            FeedEntryDao<Event> dao = store.createDao(conn);
+            EntryDao<Event> dao = store.createDao(conn);
             List<Entry<Event>> list = dao.getEntries(0, 5);
             assertTrue(list.isEmpty());
         }

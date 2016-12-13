@@ -2,13 +2,14 @@ package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Entry;
 
-import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 10/12/16.
  */
-public interface JdbcSaveEntryOp<T> extends JdbcOp<Boolean> {
+public interface GetEntriesOp<T> extends  JdbcOp<List<Entry<T>>> {
 
-    public void set(Entry<T> entry) throws SQLException;
+
+    void setRange(long startNum, long size);
 
 }

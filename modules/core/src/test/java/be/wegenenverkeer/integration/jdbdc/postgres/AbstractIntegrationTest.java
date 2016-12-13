@@ -1,9 +1,9 @@
 package be.wegenenverkeer.integration.jdbdc.postgres;
 
-import be.wegenenverkeer.atomium.store.JdbcCreateTablesOp;
+import be.wegenenverkeer.atomium.store.CreateTablesOp;
 import be.wegenenverkeer.atomium.store.JdbcDialect;
 import be.wegenenverkeer.atomium.store.JdbcEntryStoreMetadata;
-import be.wegenenverkeer.atomium.store.PgJdbcDialect;
+import be.wegenenverkeer.atomium.store.PostgresDialect;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,7 +29,7 @@ public abstract class AbstractIntegrationTest {
     static final Logger LOG = LoggerFactory.getLogger("chapters.introduction.HelloWorld1");
 
     static Driver postgresDriver;
-    static JdbcDialect dialect = PgJdbcDialect.INSTANCE;
+    static JdbcDialect dialect = PostgresDialect.INSTANCE;
     static String databaseUrl = "jdbc:postgresql://localhost/atomium_test";
 
     JdbcEntryStoreMetadata metadata = new JdbcEntryStoreMetadata("events", "event_id", "updated", "id", "seqno", "json");
@@ -51,7 +51,7 @@ public abstract class AbstractIntegrationTest {
     public void createSchemaAndTable() {
         doSql(String.format("CREATE SCHEMA IF NOT EXISTS %s", TEST_SCHEMA));
         if (withTableCreation()) {
-            try (Connection conn = mkConnection(TEST_SCHEMA); JdbcCreateTablesOp op = dialect.createEntryTable(conn, metadata)) {
+            try (Connection conn = mkConnection(TEST_SCHEMA); CreateTablesOp op = dialect.createEntryTable(conn, metadata)) {
                 op.execute();
             } catch (SQLException e) {
                 throw new RuntimeException(e);

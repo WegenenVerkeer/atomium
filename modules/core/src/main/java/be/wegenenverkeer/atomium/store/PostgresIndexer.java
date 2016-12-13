@@ -7,12 +7,12 @@ import java.sql.SQLException;
 /**
  * Created by Karel Maesen, Geovise BVBA on 07/12/16.
  */
-public class PostgreSQLIndexer implements Indexer {
+public class PostgresIndexer implements Indexer {
 
 
     private final String indexQuery;
 
-    public PostgreSQLIndexer(JdbcEntryStoreMetadata metadata) {
+    public PostgresIndexer(JdbcEntryStoreMetadata metadata) {
 
         this.indexQuery = syncQuery(
                 metadata.getTableName(),

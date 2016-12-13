@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.EntryDao;
 import be.wegenenverkeer.atomium.format.AtomEntry;
 import be.wegenenverkeer.atomium.format.Content;
 
@@ -12,11 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StoreFixture<T> {
 
     private AtomicInteger counter = new AtomicInteger(0);
-    final public MemoryFeedEntryStore<T> store;
+    final public EntryDao<T> store;
 
 
     public StoreFixture() {
-        this.store = new MemoryFeedEntryStore<>();
+        this.store = new MemoryEntryStore<>();
     }
 
     public void loadEntries(int num, T value){

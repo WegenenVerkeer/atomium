@@ -9,6 +9,19 @@ public interface JdbcOp<R> extends AutoCloseable {
 
     public R execute() throws SQLException;
 
-    public void close();
+    default void close(){
+        //when there is no resource field, do nothing
+    }
+
+    default void close(AutoCloseable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Throwable t) {
+                //do nothing
+            }
+        }
+    }
+
 
 }

@@ -3,7 +3,6 @@ package be.wegenenverkeer.atomium.format;
 import be.wegenenverkeer.atomium.api.AtomiumDecodeException;
 import be.wegenenverkeer.atomium.api.AtomiumEncodeException;
 import be.wegenenverkeer.atomium.api.Codec;
-import be.wegenenverkeer.atomium.api.FeedPage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

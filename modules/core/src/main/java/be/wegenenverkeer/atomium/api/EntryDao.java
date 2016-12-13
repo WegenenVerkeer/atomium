@@ -11,7 +11,7 @@ import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
  *
  * @param <T> entry value type*
  */
-public interface FeedEntryDao<T> {
+public interface EntryDao<T> {
 
     CompletableFuture<Boolean> pushAsync(List<Entry<T>> entries);
 

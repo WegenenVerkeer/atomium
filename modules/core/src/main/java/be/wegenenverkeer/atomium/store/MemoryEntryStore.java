@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.FeedEntryDao;
+import be.wegenenverkeer.atomium.api.EntryDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * Created by Karel Maesen, Geovise BVBA on 05/12/16.
  */
-public class MemoryFeedEntryStore<T> implements FeedEntryDao<T> {
+public class MemoryEntryStore<T> implements EntryDao<T> {
 
     final private ConcurrentSkipListMap<Long, Entry<T>> store = new ConcurrentSkipListMap<>();
     final private AtomicLong counter = new AtomicLong(0);

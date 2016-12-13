@@ -10,13 +10,13 @@ import java.sql.SQLException;
  */
 public interface JdbcDialect {
 
-    public JdbcTotalSizeOp createTotalSizeOp(Connection conn, JdbcEntryStoreMetadata meta);
+    public TotalSizeOp createTotalSizeOp(Connection conn, JdbcEntryStoreMetadata meta);
 
-    public <T> JdbcSaveEntryOp<T> createSaveEntryOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta) throws SQLException;
+    public <T> SaveEntryOp<T> createSaveEntryOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta) throws SQLException;
 
-    public <T> JdbcGetEntriesOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
+    public <T> GetEntriesOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
 
-    public JdbcCreateTablesOp createEntryTable(Connection conn, JdbcEntryStoreMetadata meta);
+    public CreateTablesOp createEntryTable(Connection conn, JdbcEntryStoreMetadata meta);
 
 
 }

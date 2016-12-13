@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Codec;
 import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.FeedEntryDao;
+import be.wegenenverkeer.atomium.api.EntryDao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by Karel Maesen, Geovise BVBA on 09/12/16.
  */
-public interface JdbcFeedEntryDaoFactory<T> {
+public interface JdbcEntryDaoFactory<T> {
 
     public Codec<T, String> getEntryValueCodec();
 
@@ -21,8 +21,8 @@ public interface JdbcFeedEntryDaoFactory<T> {
 
     public JdbcDialect getDialect();
 
-    default public FeedEntryDao<T> createDao(Connection conn) {
-        return new JdbcFeedEntryDao<>(conn, getEntryValueCodec(), getJdbcEntryStoreMetadata(), getDialect());
+    default public EntryDao<T> createDao(Connection conn) {
+        return new JdbcEntryDao<>(conn, getEntryValueCodec(), getJdbcEntryStoreMetadata(), getDialect());
     }
 }
 
@@ -31,14 +31,14 @@ public interface JdbcFeedEntryDaoFactory<T> {
  *
  * @param <T>
  */
-class JdbcFeedEntryDao<T> implements FeedEntryDao<T> {
+class JdbcEntryDao<T> implements EntryDao<T> {
 
     final private Connection conn;
     final private Codec<T, String> codec;
     final private JdbcEntryStoreMetadata metadata;
     final private JdbcDialect dialect;
 
-    JdbcFeedEntryDao(Connection c, Codec<T, String> codec, JdbcEntryStoreMetadata metadata, JdbcDialect dialect) {
+    JdbcEntryDao(Connection c, Codec<T, String> codec, JdbcEntryStoreMetadata metadata, JdbcDialect dialect) {
         this.conn = c;
         this.codec = codec;
         this.metadata = metadata;
@@ -48,9 +48,7 @@ class JdbcFeedEntryDao<T> implements FeedEntryDao<T> {
 
     @Override
     public boolean push(List<Entry<T>> entries) {
-        JdbcSaveEntryOp op = null;
-        try {
-            op = dialect.createSaveEntryOp(conn, codec, metadata);
+        try (SaveEntryOp op = dialect.createSaveEntryOp(conn, codec, metadata) ){
             for (Entry<T> entry : entries) {
                 op.set(entry);
                 op.execute();
@@ -58,10 +56,6 @@ class JdbcFeedEntryDao<T> implements FeedEntryDao<T> {
             return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally { //clean up
-            if (op != null) {
-                op.close();
-            }
         }
     }
 
@@ -72,7 +66,7 @@ class JdbcFeedEntryDao<T> implements FeedEntryDao<T> {
 
     @Override
     public List<Entry<T>> getEntries(long startNum, long size) {
-        JdbcGetEntriesOp<T> getEntriesOp = dialect.createGetEntriesOp(conn, codec, metadata);
+        GetEntriesOp<T> getEntriesOp = dialect.createGetEntriesOp(conn, codec, metadata);
         getEntriesOp.setRange(startNum, size);
         return runOp( getEntriesOp );
     }
