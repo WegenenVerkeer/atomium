@@ -31,7 +31,8 @@ public class DefaultPgJdbcFeedEntryStore<T> implements JdbcFeedEntryDaoFactory<T
 
     public List<Entry<T>> indexAndRetrieve(Connection conn, long startNum, long size) throws SQLException {
         if (conn.getAutoCommit()) throw new IllegalArgumentException("This method requires auto-commit mode on the connection");
-        FeedEntryDao<T> dao = this.createDao(conn);
+        index(conn);
+        FeedEntryDao<T> dao = createDao(conn);
         return dao.getEntries(startNum, size);
     }
 

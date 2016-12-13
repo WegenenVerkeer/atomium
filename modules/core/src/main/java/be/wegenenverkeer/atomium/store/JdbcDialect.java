@@ -16,5 +16,7 @@ public interface JdbcDialect {
 
     public <T> JdbcGetEntriesOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
 
+    public JdbcCreateTablesOp createEntryTable(Connection conn, JdbcEntryStoreMetadata meta);
+
 
 }

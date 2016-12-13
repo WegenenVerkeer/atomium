@@ -84,6 +84,36 @@ public class PgJdbcDialect implements JdbcDialect {
         };
     }
 
+    @Override
+    public JdbcCreateTablesOp createEntryTable(final Connection conn, final JdbcEntryStoreMetadata meta) {
+        return new JdbcCreateTablesOp() {
+
+            private Statement stmt = null;
+
+            final String sql = "CREATE TABLE IF NOT EXISTS " + meta.getTableName() + " ( "
+                    + meta.getPrimaryKeyColumnName() + " SERIAL primary key, "
+                    + meta.getSequenceNoColumnName() + " INT, "
+                    + meta.getIdColumnName() + " VARCHAR(60), "
+                    + meta.getUpdatedColumnName() + " TIMESTAMP, "
+                    + meta.getEntryValueColumnName() + " JSON )";
+
+            @Override
+            public Boolean execute() throws SQLException {
+                stmt = conn.createStatement();
+                return stmt.execute(sql);
+            }
+
+            @Override
+            public void close() {
+                try{
+                    if (stmt != null) stmt.close();
+                } catch (SQLException e) {
+                    // do nothing
+                }
+            }
+        };
+    }
+
 
     @Override
     public JdbcTotalSizeOp createTotalSizeOp(final Connection conn, final JdbcEntryStoreMetadata meta)  {
