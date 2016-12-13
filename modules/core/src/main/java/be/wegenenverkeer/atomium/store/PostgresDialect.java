@@ -19,6 +19,18 @@ public class PostgresDialect implements JdbcDialect {
 
     public static final PostgresDialect INSTANCE = new PostgresDialect();
 
+    final public static String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS %s ( "
+            + " %s SERIAL primary key, "
+            + " %s INT, "
+            +  "%s VARCHAR(60), "
+            + " %s TIMESTAMP, "
+            + " %s TEXT )";
+
+    final public static String INSERT_STATEMENT = "INSERT INTO %s ( %s, %s, %s) VALUES (?, ?, ?)";
+
+    final public static String MAX_SEQNO_STATEMENT = "SELECT MAX( %s ) FROM %s";
+
+    final public static String SELECT_STATEMENT = "SELECT %s, %s, %s FROM %s WHERE %s >= ? ORDER BY %s LIMIT ?";
 
     @Override
     public <T> GetEntriesOp createGetEntriesOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) {
@@ -33,14 +45,13 @@ public class PostgresDialect implements JdbcDialect {
                 this.size = size;
             }
 
-            final String sql = "select "
-                    + meta.getIdColumnName() + ", "
-                    + meta.getEntryValueColumnName() + ", "
-                    + meta.getUpdatedColumnName()
-                    + " FROM " + meta.getTableName()
-                    + " WHERE " + meta.getSequenceNoColumnName() + ">= ?"
-                    + " ORDER BY " + meta.getSequenceNoColumnName()
-                    + " LIMIT ?";
+            final String sql = String.format( SELECT_STATEMENT,
+                    meta.getIdColumnName(),
+                    meta.getEntryValueColumnName(),
+                    meta.getUpdatedColumnName(),
+                    meta.getTableName(),
+                    meta.getSequenceNoColumnName(),
+                    meta.getSequenceNoColumnName());
 
 
             @Override
@@ -68,12 +79,14 @@ public class PostgresDialect implements JdbcDialect {
     @Override
     public CreateTablesOp createEntryTable(final Connection conn, final JdbcEntryStoreMetadata meta) {
         return new CreateTablesOp() {
-            final String sql = "CREATE TABLE IF NOT EXISTS " + meta.getTableName() + " ( "
-                    + meta.getPrimaryKeyColumnName() + " SERIAL primary key, "
-                    + meta.getSequenceNoColumnName() + " INT, "
-                    + meta.getIdColumnName() + " VARCHAR(60), "
-                    + meta.getUpdatedColumnName() + " TIMESTAMP, "
-                    + meta.getEntryValueColumnName() + " TEXT )";
+
+            String sql = String.format(CREATE_TABLE_SQL,
+                    meta.getTableName(),
+                    meta.getPrimaryKeyColumnName(),
+                    meta.getSequenceNoColumnName(),
+                    meta.getIdColumnName(),
+                    meta.getUpdatedColumnName(),
+                    meta.getEntryValueColumnName());
 
             @Override
             public Boolean execute() throws SQLException {
@@ -87,7 +100,7 @@ public class PostgresDialect implements JdbcDialect {
 
     @Override
     public TotalSizeOp createTotalSizeOp(final Connection conn, final JdbcEntryStoreMetadata meta) {
-        final String sql = "select max(" + meta.getSequenceNoColumnName() + ") FROM " + meta.getTableName();
+        final String sql = String.format( MAX_SEQNO_STATEMENT, meta.getSequenceNoColumnName(), meta.getTableName()) ;
         return new TotalSizeOp() {
 
             @Override
@@ -108,10 +121,7 @@ public class PostgresDialect implements JdbcDialect {
     public <T> SaveEntryOp<T> createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws
             SQLException {
 
-        final String sql = "insert into " + meta.getTableName() +
-                "(" + meta.getIdColumnName() + "," + meta.getUpdatedColumnName() + "," +
-                meta.getEntryValueColumnName() + ") " +
-                "values(?, ?, ?)";
+        final String sql = String.format(INSERT_STATEMENT, meta.getTableName(), meta.getIdColumnName(), meta.getUpdatedColumnName(), meta.getEntryValueColumnName());
 
         final PreparedStatement stmt = conn.prepareStatement(sql);
 
