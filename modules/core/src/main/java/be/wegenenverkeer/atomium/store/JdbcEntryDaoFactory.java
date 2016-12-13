@@ -11,17 +11,19 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * A factory for {@code EntryDao}s
+ *
  * Created by Karel Maesen, Geovise BVBA on 09/12/16.
  */
 public interface JdbcEntryDaoFactory<T> {
 
-    public Codec<T, String> getEntryValueCodec();
+    Codec<T, String> getEntryValueCodec();
 
     JdbcEntryStoreMetadata getJdbcEntryStoreMetadata();
 
-    public JdbcDialect getDialect();
+    JdbcDialect getDialect();
 
-    default public EntryDao<T> createDao(Connection conn) {
+    default EntryDao<T> createDao(Connection conn) {
         return new JdbcEntryDao<>(conn, getEntryValueCodec(), getJdbcEntryStoreMetadata(), getDialect());
     }
 }
@@ -48,7 +50,7 @@ class JdbcEntryDao<T> implements EntryDao<T> {
 
     @Override
     public boolean push(List<Entry<T>> entries) {
-        try (SaveEntryOp op = dialect.createSaveEntryOp(conn, codec, metadata) ){
+        try (SaveEntryOp<T> op = dialect.createSaveEntryOp(conn, codec, metadata) ){
             for (Entry<T> entry : entries) {
                 op.set(entry);
                 op.execute();
@@ -85,6 +87,9 @@ class JdbcEntryDao<T> implements EntryDao<T> {
             if (op != null) op.close();
         }
     }
+
+    // Derived Asynchronous implementations
+    // we use CompletableFuture#supplyAsync() in order to have thrown (SQL)Exceptions handled correctly, i.e. by completing  a Future exceptionally
 
     @Override
     public CompletableFuture<Boolean> pushAsync(final Entry<T> entry) {
