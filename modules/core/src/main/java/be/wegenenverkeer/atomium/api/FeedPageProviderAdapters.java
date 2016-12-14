@@ -8,7 +8,7 @@ import java.util.concurrent.CompletionStage;
  */
 public class FeedPageProviderAdapters {
 
-    static <T> FeedPageProvider<T> adapt(EventDao<T> dao, FeedPageMetadata meta) {
+    static <T> FeedPageProvider<T> adapt(EventDao<T> dao, FeedMetadata meta) {
         return new DaoBackedFeeedPageProvider<>(dao, meta);
     }
 
@@ -16,10 +16,10 @@ public class FeedPageProviderAdapters {
     static class DaoBackedFeeedPageProvider<T> implements FeedPageProvider<T> {
 
         final private EventDao<T> eventDao;
-        final private FeedPageMetadata metadata;
+        final private FeedMetadata metadata;
 
 
-        DaoBackedFeeedPageProvider(EventDao<T> dao, FeedPageMetadata meta) {
+        DaoBackedFeeedPageProvider(EventDao<T> dao, FeedMetadata meta) {
             this.eventDao = dao;
             this.metadata = meta;
         }

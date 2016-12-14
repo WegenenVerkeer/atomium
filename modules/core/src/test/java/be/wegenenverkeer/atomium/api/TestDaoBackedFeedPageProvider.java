@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class TestDaoBackedFeedPageProvider {
 
     StoreFixture<String> fixture;
-    FeedPageMetadata meta = new FeedPageMetadata(10 , "http://localhost/feeds/test", "Feed name") ;
+    FeedMetadata meta = new FeedMetadata(10 , "http://localhost/feeds/test", "Feed name") ;
     FeedPageProvider<String> provider;
 
     @Before

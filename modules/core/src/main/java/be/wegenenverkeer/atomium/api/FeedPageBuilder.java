@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
  */
 public class FeedPageBuilder<T> {
 
-    final private FeedPageMetadata meta;
+    final private FeedMetadata meta;
     final private long page;
     private List<Event<T>> events;
     private OffsetDateTime updated;
     private List<Link> links;
     private boolean hasPrevious;
 
-    public FeedPageBuilder(FeedPageMetadata meta, long pageNum) {
+    public FeedPageBuilder(FeedMetadata meta, long pageNum) {
         this.page = pageNum;
         this.meta = meta;
     }
