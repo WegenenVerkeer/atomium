@@ -1,10 +1,9 @@
 package be.wegenenverkeer.atomium.store;
 
-import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.EntryDao;
-import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.Content;
+import be.wegenenverkeer.atomium.api.Event;
+import be.wegenenverkeer.atomium.api.EventDao;
 
+import java.time.OffsetDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -13,11 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StoreFixture<T> {
 
     private AtomicInteger counter = new AtomicInteger(0);
-    final public EntryDao<T> store;
+    final public EventDao<T> store;
 
 
     public StoreFixture() {
-        this.store = new MemoryEntryStore<>();
+        this.store = new MemoryEventStore<>();
     }
 
     public void loadEntries(int num, T value){
@@ -26,7 +25,7 @@ public class StoreFixture<T> {
         }
     }
 
-    public Entry<T> mkEntry(T val){
-        return new AtomEntry<T>( Integer.toString(counter.getAndIncrement()) , new Content<T>(val, ""));
+    public Event<T> mkEntry(T val){
+        return Event.make( Integer.toString(counter.getAndIncrement()) , val, OffsetDateTime.now());
     }
 }

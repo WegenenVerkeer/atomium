@@ -1,7 +1,6 @@
 package be.wegenenverkeer.atomium.api;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
 

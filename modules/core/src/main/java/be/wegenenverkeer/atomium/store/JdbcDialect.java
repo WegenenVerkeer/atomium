@@ -1,15 +1,9 @@
 package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Codec;
-import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.Content;
 
-import java.sql.*;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 10/12/16.
@@ -17,13 +11,13 @@ import java.util.List;
 public interface JdbcDialect {
 
 
-    <T> GetEntriesOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
+    <T> GetEventsOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
 
     CreateTablesOp createEntryTable(Connection conn, JdbcEntryStoreMetadata meta);
 
     TotalSizeOp createTotalSizeOp(Connection conn, JdbcEntryStoreMetadata meta);
 
-    <T> SaveEntryOp<T> createSaveEntryOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta) throws
+    <T> SaveEventOp<T> createSaveEntryOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta) throws
             SQLException;
 
     IndexOp createIndexOp(Connection conn, JdbcEntryStoreMetadata meta);

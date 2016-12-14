@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Indexes entries in a {@code JDBCFeedEntryStore}
+ * Indexes events in a {@code JDBCFeedEntryStore}
  *
  * An {@code Indexer} will map entries in order on a (gapless) sequence 0...n with 0 the first registered Entry
  *

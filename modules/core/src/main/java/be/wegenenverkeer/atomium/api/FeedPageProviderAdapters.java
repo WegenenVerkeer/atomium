@@ -8,19 +8,19 @@ import java.util.concurrent.CompletionStage;
  */
 public class FeedPageProviderAdapters {
 
-    static <T> FeedPageProvider<T> adapt(EntryDao<T> dao, FeedPageMetadata meta) {
+    static <T> FeedPageProvider<T> adapt(EventDao<T> dao, FeedPageMetadata meta) {
         return new DaoBackedFeeedPageProvider<>(dao, meta);
     }
 
 
     static class DaoBackedFeeedPageProvider<T> implements FeedPageProvider<T> {
 
-        final private EntryDao<T> entryDao;
+        final private EventDao<T> eventDao;
         final private FeedPageMetadata metadata;
 
 
-        DaoBackedFeeedPageProvider(EntryDao<T> dao, FeedPageMetadata meta) {
-            this.entryDao = dao;
+        DaoBackedFeeedPageProvider(EventDao<T> dao, FeedPageMetadata meta) {
+            this.eventDao = dao;
             this.metadata = meta;
         }
 
@@ -49,14 +49,14 @@ public class FeedPageProviderAdapters {
 
             FeedPageBuilder<T> builder = new FeedPageBuilder<>(this.metadata, requestedPage.getPageNum());
 
-            return entryDao.getEntriesAsync(requestedPage.getPageNum() * pageSize, requested)
-                    .thenApply(entries -> builder.setEntries(entries).build());
+            return eventDao.getEventsAsync(requestedPage.getPageNum() * pageSize, requested)
+                    .thenApply(entries -> builder.setEvents(entries).build());
 
         }
 
         @Override
         public CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync() {
-            return entryDao.totalNumberOfEntriesAsync().thenApply(n -> FeedPageRef.page(n / metadata.getPageSize()));
+            return eventDao.totalNumberOfEventsAsync().thenApply(n -> FeedPageRef.page(n / metadata.getPageSize()));
         }
 
     }

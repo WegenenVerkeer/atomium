@@ -1,9 +1,7 @@
 package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Codec;
-import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.Content;
+import be.wegenenverkeer.atomium.api.Event;
 
 import java.sql.*;
 import java.time.OffsetDateTime;
@@ -41,18 +39,18 @@ public class PostgresDialect implements JdbcDialect {
      * Gebruik van deze query voorkomt tussenvoegen van events en zorgt dat de events in verschillende thread kunnen geproduceerd worden.
      * <p>
      * Deze query is gebouwd om atomic te zijn. De query bestaat uit 2 delen:
-            * 1) eerst worden de nieuwe atom_entries berekend via een common table expression.
+     * 1) eerst worden de nieuwe atom_entries berekend via een common table expression.
      * In Postgres kan dat via het WITH statement.
-            * https://www.postgresql.org/docs/current/static/queries-with.html
-            * <p>
+     * https://www.postgresql.org/docs/current/static/queries-with.html
+     * <p>
      * * Bepaal eerst de huidige hoogste waarde van de bestaande atom entries. Dat wordt opgeslagen als max_atom_entry
      * * Bepaal dan de lijst van items die nog geen atom_entry hebben, en orden die
      * * Vervolgens bereken je voor die lijst de nieuwe atom_entry waarde
      * <p>
      * 2) dan wordt deze table gebruikt om ook effectief de tabel te updaten. In Postgres kan dat handig
      * via UPDATE ... FROM:
-            * https://www.postgresql.org/docs/current/static/sql-update.html
-    */
+     * https://www.postgresql.org/docs/current/static/sql-update.html
+     */
     final private static String INDEX_STATEMENT =
             "WITH\n"
                     + "    max_atom_entry -- max bepalen, basis voor zetten volgnummer, -1 als nog niet gezet zodat teller bij 0 begint\n"
@@ -84,7 +82,7 @@ public class PostgresDialect implements JdbcDialect {
 
 
     @Override
-    public <T> GetEntriesOp<T> createGetEntriesOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) {
+    public <T> GetEventsOp<T> createGetEntriesOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) {
 
         final String sql = String.format(SELECT_STATEMENT,
                 meta.getIdColumnName(),
@@ -94,7 +92,7 @@ public class PostgresDialect implements JdbcDialect {
                 meta.getSequenceNoColumnName(),
                 meta.getSequenceNoColumnName());
 
-        return new GetEntriesOp<T>() {
+        return new GetEventsOp<T>() {
             private long startNum;
             private long size;
 
@@ -105,18 +103,18 @@ public class PostgresDialect implements JdbcDialect {
             }
 
             @Override
-            public List<Entry<T>> execute() throws SQLException {
+            public List<Event<T>> execute() throws SQLException {
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setLong(1, startNum);
                     stmt.setLong(2, size);
                     try (ResultSet res = stmt.executeQuery()) {
-                        List<Entry<T>> entries = new ArrayList<>();
+                        List<Event<T>> entries = new ArrayList<>();
                         while (res.next()) {
                             String id = res.getString(1);
                             String jsonEntityVal = res.getString(2);
                             OffsetDateTime updated = (res.getTimestamp(3).toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime());
-                            Content<T> content = new Content<>(codec.decode(jsonEntityVal), "");
-                            entries.add(new AtomEntry<>(id, updated, content));
+                            T val = codec.decode(jsonEntityVal);
+                            entries.add(Event.make(id, val, updated));
                         }
                         return entries;
                     }
@@ -160,7 +158,7 @@ public class PostgresDialect implements JdbcDialect {
     }
 
     @Override
-    public <T> SaveEntryOp<T> createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws
+    public <T> SaveEventOp<T> createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws
             SQLException {
 
         final String sql = String.format(INSERT_STATEMENT,
@@ -171,13 +169,13 @@ public class PostgresDialect implements JdbcDialect {
 
         final PreparedStatement stmt = conn.prepareStatement(sql);
 
-        return new SaveEntryOp<T>() {
+        return new SaveEventOp<T>() {
 
             @Override
-            public void set(Entry<T> entry) throws SQLException {
-                stmt.setString(1, entry.getId());
-                stmt.setTimestamp(2, new Timestamp(entry.getUpdated().toInstant().toEpochMilli()));
-                stmt.setString(3, codec.encode(entry.getContent().getValue()));
+            public void set(Event<T> ev) throws SQLException {
+                stmt.setString(1, ev.getId());
+                stmt.setTimestamp(2, new Timestamp(ev.getUpdated().toInstant().toEpochMilli()));
+                stmt.setString(3, codec.encode(ev.getValue()));
             }
 
             @Override
@@ -201,7 +199,7 @@ public class PostgresDialect implements JdbcDialect {
                 .replace("${order-by}", meta.getPrimaryKeyColumnName());
 
         return () -> {
-            try ( Statement stmt = conn.createStatement()) {
+            try (Statement stmt = conn.createStatement()) {
                 return stmt.execute(sql);
             }
         };

@@ -1,11 +1,13 @@
 package be.wegenenverkeer.atomium.api;
 
+import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.format.Link;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 05/12/16.
@@ -14,7 +16,7 @@ public class FeedPageBuilder<T> {
 
     final private FeedPageMetadata meta;
     final private long page;
-    private List<Entry<T>> pageEntries;
+    private List<Event<T>> events;
     private OffsetDateTime updated;
     private List<Link> links;
     private boolean hasPrevious;
@@ -25,16 +27,16 @@ public class FeedPageBuilder<T> {
     }
 
     /**
-     * Pass the entries for the page, orderd from most recent to least recent
+     * Pass the events for the page, orderd from most recent to least recent
      * <p>
-     * <p>For purposes of determining links, there are usually more entries passsed. We take pageSize of the oldest</p>
+     * <p>For purposes of determining links, there are usually more events passsed. We take pageSize of the oldest</p>
      *
-     * @param entries a list of entries
+     * @param events a list of events
      * @return
      */
-    public FeedPageBuilder<T> setEntries(List<Entry<T>> entries) {
-        pageEntries = entries;
-        Collections.reverse(pageEntries);
+    public FeedPageBuilder<T> setEvents(List<Event<T>> events) {
+        this.events = events;
+        Collections.reverse(this.events);
         checkForPreviousLink();
         selectOldestForPage();
         calcUpdated();
@@ -43,16 +45,16 @@ public class FeedPageBuilder<T> {
     }
 
     private void selectOldestForPage() {
-        long leastIndex = Math.max(0, pageEntries.size() - this.meta.getPageSize());
-        pageEntries = pageEntries.subList((int)leastIndex, this.pageEntries.size());
+        long leastIndex = Math.max(0, events.size() - this.meta.getPageSize());
+        events = events.subList((int)leastIndex, this.events.size());
     }
 
     private void calcUpdated() {
-        updated = pageEntries.isEmpty() ? OffsetDateTime.now() : pageEntries.get(0).getUpdated();
+        updated = events.isEmpty() ? OffsetDateTime.now() : events.get(0).getUpdated();
     }
 
     private void checkForPreviousLink() {
-        hasPrevious = (pageEntries.size() > this.meta.getPageSize());
+        hasPrevious = (events.size() > this.meta.getPageSize());
     }
 
 
@@ -71,6 +73,7 @@ public class FeedPageBuilder<T> {
     }
 
     public FeedPage<T> build() {
+        List<Entry<T>> pageEntries = events.stream().map(Event::toAtomEntry).collect(Collectors.toList());
         return new FeedPage<>(
                 this.meta.getFeedName(),
                 this.meta.getFeedUrl(),

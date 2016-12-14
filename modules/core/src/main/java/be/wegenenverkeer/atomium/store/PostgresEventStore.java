@@ -1,8 +1,8 @@
 package be.wegenenverkeer.atomium.store;
 
 import be.wegenenverkeer.atomium.api.Codec;
-import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.EntryDao;
+import be.wegenenverkeer.atomium.api.Event;
+import be.wegenenverkeer.atomium.api.EventDao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by Karel Maesen, Geovise BVBA on 08/12/16.
  */
-public class PostgresEntryStore<T> implements JdbcEntryDaoFactory<T> {
+public class PostgresEventStore<T> implements JdbcEventDaoFactory<T> {
 
 
     private final Indexer indexer;
@@ -20,7 +20,7 @@ public class PostgresEntryStore<T> implements JdbcEntryDaoFactory<T> {
     private final JdbcDialect dialect = PostgresDialect.INSTANCE;
 
 
-    public PostgresEntryStore(JdbcEntryStoreMetadata meta, Codec<T, String> codec) {
+    public PostgresEventStore(JdbcEntryStoreMetadata meta, Codec<T, String> codec) {
         this.meta = meta;
         this.codec = codec;
         this.indexer = new Indexer(dialect, meta);
@@ -30,11 +30,11 @@ public class PostgresEntryStore<T> implements JdbcEntryDaoFactory<T> {
         this.indexer.index(conn);
     }
 
-    public List<Entry<T>> indexAndRetrieve(Connection conn, long startNum, long size) throws SQLException {
+    public List<Event<T>> indexAndRetrieve(Connection conn, long startNum, long size) throws SQLException {
         if (!conn.getAutoCommit()) throw new IllegalArgumentException("This method requires auto-commit mode on the connection");
         index(conn);
-        EntryDao<T> dao = createDao(conn);
-        return dao.getEntries(startNum, size);
+        EventDao<T> dao = createDao(conn);
+        return dao.getEvents(startNum, size);
     }
 
     @Override

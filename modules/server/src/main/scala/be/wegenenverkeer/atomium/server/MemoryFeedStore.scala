@@ -3,8 +3,7 @@ package be.wegenenverkeer.atomium.server
 import java.time.OffsetDateTime
 import java.util
 
-import be.wegenenverkeer.atomium.api.Entry
-import be.wegenenverkeer.atomium.format._
+import be.wegenenverkeer.atomium.format.{Entry, _}
 
 import scala.collection.mutable.ListBuffer
 

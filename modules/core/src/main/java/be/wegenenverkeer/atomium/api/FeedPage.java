@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.api;
 
 import be.wegenenverkeer.atomium.format.Adapters;
+import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.format.Generator;
 import be.wegenenverkeer.atomium.format.Link;
 

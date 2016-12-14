@@ -2,8 +2,7 @@ package be.wegenenverkeer.atomium.server
 
 import java.time.OffsetDateTime
 
-import be.wegenenverkeer.atomium.api.Entry
-import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Entry, Url}
 
 import scala.collection.immutable.TreeMap
 

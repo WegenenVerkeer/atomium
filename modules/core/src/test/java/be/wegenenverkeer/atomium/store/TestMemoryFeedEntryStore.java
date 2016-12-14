@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.store;
 
-import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.api.Event;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +10,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 05/12/16.
@@ -31,7 +30,7 @@ public class TestMemoryFeedEntryStore {
     public void testMemoryFeedStore(){
         fixture.loadEntries(1000, "Test value");
 
-        List<Entry<String>> received = fixture.store.getEntries(0, 11);
+        List<Event<String>> received = fixture.store.getEvents(0, 11);
 
         assertEquals(11, received.size());
 

@@ -1,9 +1,5 @@
-package be.wegenenverkeer.atomium.api;
+package be.wegenenverkeer.atomium.format;
 
-import be.wegenenverkeer.atomium.format.Adapters;
-import be.wegenenverkeer.atomium.format.AtomEntry;
-import be.wegenenverkeer.atomium.format.Content;
-import be.wegenenverkeer.atomium.format.Link;
 import be.wegenenverkeer.atomium.format.pub.AtomPubEntry;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

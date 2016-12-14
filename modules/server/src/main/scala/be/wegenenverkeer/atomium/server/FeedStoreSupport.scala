@@ -3,7 +3,7 @@ package be.wegenenverkeer.atomium.server
 import java.time.OffsetDateTime
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.api.{Entry, FeedPage}
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.format.{Link, _}
 
 import scala.collection.JavaConverters._

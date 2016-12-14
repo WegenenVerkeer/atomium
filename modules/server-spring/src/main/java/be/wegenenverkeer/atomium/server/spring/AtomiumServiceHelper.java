@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.server.spring;
 
 import be.wegenenverkeer.atomium.api.AtomiumEncodeException;
-import be.wegenenverkeer.atomium.api.Entry;
+import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.format.*;

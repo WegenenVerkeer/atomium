@@ -1,10 +1,9 @@
 package be.wegenenverkeer.atomium.api;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static be.wegenenverkeer.atomium.api.FeedPageRef.page;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**

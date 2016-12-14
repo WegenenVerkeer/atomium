@@ -2,7 +2,7 @@ package be.wegenenverkeer.atomium.server.play
 
 import java.time.OffsetDateTime
 
-import be.wegenenverkeer.atomium.api.{Entry, FeedPage}
+import be.wegenenverkeer.atomium.api.FeedPage
 import be.wegenenverkeer.atomium.format._
 import be.wegenenverkeer.atomium.play.PlayJsonCodec
 import org.joda.time.{DateTime, DateTimeUtils}
@@ -79,7 +79,7 @@ class FeedSupportSuite extends FunSuite with Matchers with OptionValues with Bef
 //    val request = FakeRequest().withHeaders(HeaderNames.IF_NONE_MATCH -> incompleteFeed.calcETag)
 //    val changedFeed = incompleteFeed.copy(entries = AtomEntry[String]("id",
 //      new DateTime(),
-//      new Content[String]("foo", ""), List()) :: incompleteFeed.getEntries)
+//      new Content[String]("foo", ""), List()) :: incompleteFeed.getEvents)
 //    val result: Future[Result] = feedSupport processFeedPage Some(changedFeed) apply request
 //    status(result) shouldBe OK
 //  }
