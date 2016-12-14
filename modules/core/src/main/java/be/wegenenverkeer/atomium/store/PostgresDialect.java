@@ -82,7 +82,7 @@ public class PostgresDialect implements JdbcDialect {
 
 
     @Override
-    public <T> GetEventsOp<T> createGetEntriesOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) {
+    public <T> GetEventsOp<T> mkGetEventsOp(final Connection conn, final Codec<T, String> codec, final JdbcEventStoreMetadata meta) {
 
         final String sql = String.format(SELECT_STATEMENT,
                 meta.getIdColumnName(),
@@ -125,7 +125,7 @@ public class PostgresDialect implements JdbcDialect {
     }
 
     @Override
-    public CreateTablesOp createEntryTable(final Connection conn, final JdbcEntryStoreMetadata meta) {
+    public CreateEventTableOp mkCreateEventTableOp(final Connection conn, final JdbcEventStoreMetadata meta) {
 
         final String sql = String.format(CREATE_TABLE_SQL,
                 meta.getTableName(),
@@ -144,7 +144,7 @@ public class PostgresDialect implements JdbcDialect {
 
 
     @Override
-    public TotalSizeOp createTotalSizeOp(final Connection conn, final JdbcEntryStoreMetadata meta) {
+    public TotalSizeOp mkTotalSizeOp(final Connection conn, final JdbcEventStoreMetadata meta) {
         final String sql = String.format(MAX_SEQNO_STATEMENT, meta.getSequenceNoColumnName(), meta.getTableName());
         return () -> {
             try (Statement stmt = conn.createStatement();
@@ -158,7 +158,7 @@ public class PostgresDialect implements JdbcDialect {
     }
 
     @Override
-    public <T> SaveEventOp<T> createSaveEntryOp(final Connection conn, final Codec<T, String> codec, final JdbcEntryStoreMetadata meta) throws
+    public <T> SaveEventOp<T> mkSaveEventOp(final Connection conn, final Codec<T, String> codec, final JdbcEventStoreMetadata meta) throws
             SQLException {
 
         final String sql = String.format(INSERT_STATEMENT,
@@ -191,7 +191,7 @@ public class PostgresDialect implements JdbcDialect {
     }
 
     @Override
-    public IndexOp createIndexOp(final Connection conn, final JdbcEntryStoreMetadata meta) {
+    public IndexOp mkIndexOp(final Connection conn, final JdbcEventStoreMetadata meta) {
         final String sql = INDEX_STATEMENT
                 .replace("${table}", meta.getTableName())
                 .replace("${sequence-field}", meta.getSequenceNoColumnName())

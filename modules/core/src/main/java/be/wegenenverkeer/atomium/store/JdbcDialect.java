@@ -11,14 +11,14 @@ import java.sql.SQLException;
 public interface JdbcDialect {
 
 
-    <T> GetEventsOp<T> createGetEntriesOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta);
+    <T> GetEventsOp<T> mkGetEventsOp(Connection conn, Codec<T, String> codec, JdbcEventStoreMetadata meta);
 
-    CreateTablesOp createEntryTable(Connection conn, JdbcEntryStoreMetadata meta);
+    CreateEventTableOp mkCreateEventTableOp(Connection conn, JdbcEventStoreMetadata meta);
 
-    TotalSizeOp createTotalSizeOp(Connection conn, JdbcEntryStoreMetadata meta);
+    TotalSizeOp mkTotalSizeOp(Connection conn, JdbcEventStoreMetadata meta);
 
-    <T> SaveEventOp<T> createSaveEntryOp(Connection conn, Codec<T, String> codec, JdbcEntryStoreMetadata meta) throws
+    <T> SaveEventOp<T> mkSaveEventOp(Connection conn, Codec<T, String> codec, JdbcEventStoreMetadata meta) throws
             SQLException;
 
-    IndexOp createIndexOp(Connection conn, JdbcEntryStoreMetadata meta);
+    IndexOp mkIndexOp(Connection conn, JdbcEventStoreMetadata meta);
 }

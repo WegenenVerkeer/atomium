@@ -5,7 +5,7 @@ package be.wegenenverkeer.atomium.store;
  * <p>
  * Created by Karel Maesen, Geovise BVBA on 07/12/16.
  */
-public class JdbcEntryStoreMetadata {
+public class JdbcEventStoreMetadata {
 
     private final String tableName;
     private final String idColumnName;
@@ -14,7 +14,7 @@ public class JdbcEntryStoreMetadata {
     private final String sequenceNoColumnName;
     private final String entryValColumnName;
 
-    public JdbcEntryStoreMetadata(String tableName, String idColumnName, String updatedColumnName, String primaryKeyColumnName, String sequenceNoColumnName, String entryValColumnName) {
+    public JdbcEventStoreMetadata(String tableName, String idColumnName, String updatedColumnName, String primaryKeyColumnName, String sequenceNoColumnName, String entryValColumnName) {
         this.tableName = tableName;
         this.idColumnName = idColumnName;
         this.updatedColumnName = updatedColumnName;

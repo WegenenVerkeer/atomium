@@ -16,11 +16,11 @@ public class PostgresEventStore<T> implements JdbcEventDaoFactory<T> {
 
     private final Indexer indexer;
     private final Codec<T, String> codec;
-    private final JdbcEntryStoreMetadata meta;
+    private final JdbcEventStoreMetadata meta;
     private final JdbcDialect dialect = PostgresDialect.INSTANCE;
 
 
-    public PostgresEventStore(JdbcEntryStoreMetadata meta, Codec<T, String> codec) {
+    public PostgresEventStore(JdbcEventStoreMetadata meta, Codec<T, String> codec) {
         this.meta = meta;
         this.codec = codec;
         this.indexer = new Indexer(dialect, meta);
@@ -43,7 +43,7 @@ public class PostgresEventStore<T> implements JdbcEventDaoFactory<T> {
     }
 
     @Override
-    public JdbcEntryStoreMetadata getJdbcEntryStoreMetadata() {
+    public JdbcEventStoreMetadata getJdbcEntryStoreMetadata() {
         return this.meta;
     }
 

@@ -1,6 +1,6 @@
 package be.wegenenverkeer.integration.jdbdc.postgres;
 
-import be.wegenenverkeer.atomium.store.CreateTablesOp;
+import be.wegenenverkeer.atomium.store.CreateEventTableOp;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -13,7 +13,7 @@ public class TestCreateEventTable extends AbstractIntegrationTest {
 
     @Test
     public void testCreate() {
-        try (Connection conn = mkConnection(TEST_SCHEMA); CreateTablesOp op = dialect.createEntryTable(conn, metadata)) {
+        try (Connection conn = mkConnection(TEST_SCHEMA); CreateEventTableOp op = dialect.mkCreateEventTableOp(conn, metadata)) {
             op.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -17,7 +17,7 @@ public interface JdbcEventDaoFactory<T> {
 
     Codec<T, String> getEntryValueCodec();
 
-    JdbcEntryStoreMetadata getJdbcEntryStoreMetadata();
+    JdbcEventStoreMetadata getJdbcEntryStoreMetadata();
 
     JdbcDialect getDialect();
 
@@ -44,10 +44,10 @@ class JdbcEventDao<T> implements EventDao<T> {
 
     final private Connection conn;
     final private Codec<T, String> codec;
-    final private JdbcEntryStoreMetadata metadata;
+    final private JdbcEventStoreMetadata metadata;
     final private JdbcDialect dialect;
 
-    JdbcEventDao(Connection c, Codec<T, String> codec, JdbcEntryStoreMetadata metadata, JdbcDialect dialect) {
+    JdbcEventDao(Connection c, Codec<T, String> codec, JdbcEventStoreMetadata metadata, JdbcDialect dialect) {
         this.conn = c;
         this.codec = codec;
         this.metadata = metadata;
@@ -57,7 +57,7 @@ class JdbcEventDao<T> implements EventDao<T> {
 
     @Override
     public boolean push(List<Event<T>> events) {
-        try (SaveEventOp<T> op = dialect.createSaveEntryOp(conn, codec, metadata) ){
+        try (SaveEventOp<T> op = dialect.mkSaveEventOp(conn, codec, metadata) ){
             for (Event<T> event : events) {
                 op.set(event);
                 op.execute();
@@ -75,14 +75,14 @@ class JdbcEventDao<T> implements EventDao<T> {
 
     @Override
     public List<Event<T>> getEvents(long startNum, long size) {
-        GetEventsOp<T> getEventsOp = dialect.createGetEntriesOp(conn, codec, metadata);
+        GetEventsOp<T> getEventsOp = dialect.mkGetEventsOp(conn, codec, metadata);
         getEventsOp.setRange(startNum, size);
         return runOp(getEventsOp);
     }
 
     @Override
     public Long totalNumberOfEvents() {
-        return runOp(dialect.createTotalSizeOp(conn, metadata));
+        return runOp(dialect.mkTotalSizeOp(conn, metadata));
     }
 
     private <R> R runOp(JdbcOp<R> op) {

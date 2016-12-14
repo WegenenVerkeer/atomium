@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
 
 /**
- * Writes {@code Entry}s to a store
+ * Writes {@code Event}s to a store
  * <p>
  * Created by Karel Maesen, Geovise BVBA on 14/12/16.
  */
