@@ -4,23 +4,24 @@ import be.wegenenverkeer.atomium.store.StoreFixture;
 import org.junit.Before;
 import org.junit.Test;
 
+import static be.wegenenverkeer.atomium.api.FeedPageProviderAdapters.adapt;
 import static be.wegenenverkeer.atomium.api.FeedPageRef.page;
 import static org.junit.Assert.*;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 05/12/16.
  */
-public class TestDefaultFeedPageAdapter {
+public class TestDaoBackedFeedPageProvider {
 
     StoreFixture<String> fixture;
     FeedPageMetadata meta = new FeedPageMetadata(10 , "http://localhost/feeds/test", "Feed name") ;
-    FeedPageAdapter<String> provider;
+    FeedPageProvider<String> provider;
 
     @Before
     public void before() {
         this.fixture = new StoreFixture<>();
         this.fixture.loadEntries(20, "test string");
-        this.provider = FeedPageAdapter.adapt(this.fixture.store, meta);
+        this.provider = adapt(this.fixture.store, meta);
     }
 
     @Test
@@ -66,7 +67,7 @@ public class TestDefaultFeedPageAdapter {
     @Test
     public void testHeadOfEmptyFeedIsAcceptable(){
         this.fixture = new StoreFixture<>();
-        FeedPageAdapter<String> provider = FeedPageAdapter.adapt(this.fixture.store, meta);
+        FeedPageProvider<String> provider = adapt(this.fixture.store, meta);
         FeedPageRef head = provider.getHeadOfFeedRef();
         FeedPage<String> page = provider.getFeedPage(head);
         assertEquals(0, page.getEntries().size());
@@ -76,7 +77,7 @@ public class TestDefaultFeedPageAdapter {
     
     @Test(expected = IndexOutOfBoundsException.class)
     public void testRequestBeyondHeadOfFeed(){
-        FeedPageAdapter<String> provider = FeedPageAdapter.adapt(this.fixture.store, meta);
+        FeedPageProvider<String> provider = adapt(this.fixture.store, meta);
         provider.getFeedPage(page(3));
     }
 

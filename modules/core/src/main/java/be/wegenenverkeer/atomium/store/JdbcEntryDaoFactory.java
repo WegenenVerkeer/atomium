@@ -1,8 +1,6 @@
 package be.wegenenverkeer.atomium.store;
 
-import be.wegenenverkeer.atomium.api.Codec;
-import be.wegenenverkeer.atomium.api.Entry;
-import be.wegenenverkeer.atomium.api.EntryDao;
+import be.wegenenverkeer.atomium.api.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,6 +24,15 @@ public interface JdbcEntryDaoFactory<T> {
     default EntryDao<T> createDao(Connection conn) {
         return new JdbcEntryDao<>(conn, getEntryValueCodec(), getJdbcEntryStoreMetadata(), getDialect());
     }
+
+    default EntryReader<T> createReader(Connection conn) {
+        return createDao(conn);
+    }
+
+    default EntryWriter<T> createWriter(Connection conn) {
+        return createDao(conn);
+    }
+
 }
 
 /**

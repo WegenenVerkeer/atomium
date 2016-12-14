@@ -17,12 +17,13 @@ public class PostgresEntryStore<T> implements JdbcEntryDaoFactory<T> {
     private final Indexer indexer;
     private final Codec<T, String> codec;
     private final JdbcEntryStoreMetadata meta;
+    private final JdbcDialect dialect = PostgresDialect.INSTANCE;
 
 
     public PostgresEntryStore(JdbcEntryStoreMetadata meta, Codec<T, String> codec) {
         this.meta = meta;
         this.codec = codec;
-        this.indexer = new PostgresIndexer(meta);
+        this.indexer = new Indexer(dialect, meta);
     }
 
     public void index(Connection conn) throws SQLException {
@@ -48,7 +49,7 @@ public class PostgresEntryStore<T> implements JdbcEntryDaoFactory<T> {
 
     @Override
     public JdbcDialect getDialect() {
-        return PostgresDialect.INSTANCE;
+        return dialect;
     }
 
 }

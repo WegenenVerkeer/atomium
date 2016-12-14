@@ -11,32 +11,6 @@ import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
  *
  * @param <T> entry value type*
  */
-public interface EntryDao<T> {
-
-    CompletableFuture<Boolean> pushAsync(List<Entry<T>> entries);
-
-    CompletableFuture<List<Entry<T>>> getEntriesAsync(long startNum, long size);
-
-    CompletableFuture<Long> totalNumberOfEntriesAsync() ;
-
-    default CompletableFuture<Boolean> pushAsync(Entry<T> entry) {
-        return pushAsync(Collections.singletonList(entry));
-    }
-
-    default boolean push(List<Entry<T>> entries) {
-        return runAndWait( () -> pushAsync(entries) );
-    }
-
-    default boolean push(Entry<T> entry) {
-        return push(Collections.singletonList(entry));
-    }
-
-    default List<Entry<T>> getEntries(long startNum, long size) {
-        return runAndWait(() -> getEntriesAsync(startNum, size));
-    }
-
-    default Long totalNumberOfEntries() {
-        return runAndWait(() -> totalNumberOfEntriesAsync());
-    }
+public interface EntryDao<T> extends EntryWriter<T>, EntryReader<T> {
 
 }

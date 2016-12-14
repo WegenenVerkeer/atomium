@@ -13,7 +13,18 @@ import java.sql.SQLException;
  *
  * Created by Karel Maesen, Geovise BVBA on 07/12/16.
  */
-public interface Indexer {
+public class Indexer {
 
-    public boolean index(Connection conn) throws SQLException;
+    final private JdbcDialect dialect;
+    final private JdbcEntryStoreMetadata meta;
+    Indexer(JdbcDialect dialect, JdbcEntryStoreMetadata metadata){
+        this.dialect = dialect;
+        this.meta = metadata;
+    }
+
+    public boolean index(Connection conn) throws SQLException {
+        try (IndexOp op = dialect.createIndexOp(conn, this.meta)) {
+            return op.execute();
+        }
+    }
 }
