@@ -19,7 +19,7 @@ public class PostgresDialect implements JdbcDialect {
 
     public static final PostgresDialect INSTANCE = new PostgresDialect();
 
-    final private static String CREATE_TABLE_SQL = "CREATE TABLE IF NOT EXISTS %s ( "
+    final private static String CREATE_TABLE_SQL = "CREATE TABLE %s ( "
             + " %s SERIAL primary key, "
             + " %s INT, "
             + "%s VARCHAR(60), "
