@@ -14,9 +14,11 @@ services:
 - mongodb
 - postgresql
 
+addons:
+  postgresql: "9.4"
+
 before_script:
   - psql -c 'create database atomium_test;' -U postgres
-  - psql -c 'create schema ATTEST;' -U postgres -d atomium_test
 
 cache:
   directories:
