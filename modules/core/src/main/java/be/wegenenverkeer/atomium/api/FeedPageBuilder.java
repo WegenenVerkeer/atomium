@@ -28,11 +28,11 @@ public class FeedPageBuilder<T> {
 
     /**
      * Pass the events for the page, orderd from most recent to least recent
-     * <p>
+     *
      * <p>For purposes of determining links, there are usually more events passsed. We take pageSize of the oldest</p>
      *
      * @param events a list of events
-     * @return
+     * @return this
      */
     public FeedPageBuilder<T> setEvents(List<Event<T>> events) {
         this.events = events;

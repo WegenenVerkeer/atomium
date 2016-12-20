@@ -55,7 +55,7 @@ public class JdbcEventStoreMetadata {
      * <p>
      * The primary key column needs to be determined by a sequence and will determine the order of entries
      *
-     * @return
+     * @return the name of the primary key column
      */
     public String getPrimaryKeyColumnName(){
         return this.primaryKeyColumnName;
@@ -65,9 +65,9 @@ public class JdbcEventStoreMetadata {
      * Returns the name of the column for the entry sequence number
      * <p>
      * The order of entries as determined by primary key must be the same as the order as determined by the sequence number.
-     * The sequence number must range from 0..< total number of entries -1 >
+     * The sequence number must range from 0 to the total number of entries -1
      *
-     * @return
+     * @return the name of the column for the entry sequence number
      */
     public String getSequenceNoColumnName(){
         return this.sequenceNoColumnName;

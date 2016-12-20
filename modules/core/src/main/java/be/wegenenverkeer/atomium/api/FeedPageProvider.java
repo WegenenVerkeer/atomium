@@ -13,7 +13,7 @@ public interface FeedPageProvider<T> {
     /**
      * Return a reference to the most recent {@code FeedPage}}
      *
-     * The head-of-feed {@Code FeedPage} can be empty
+     * The head-of-feed {@code FeedPage} can be empty
      *
      * @return a {@code Future<FeedPageRef>} to the most recent {@code FeedPage}
      */
@@ -28,7 +28,7 @@ public interface FeedPageProvider<T> {
     /**
      * Return a reference to the most recent {@code FeedPage}}
      *
-     * The head-of-feed {@Code FeedPage} can be empty
+     * The head-of-feed {@code FeedPage} can be empty
      *
      * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
      */
