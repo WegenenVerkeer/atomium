@@ -1,7 +1,6 @@
 package be.wegenenverkeer.atomium.api;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.List;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 14/12/16.
@@ -24,41 +23,38 @@ public class FeedPageProviderAdapters {
             this.metadata = meta;
         }
 
-        @Override
-        public CompletableFuture<FeedPage<T>> getFeedPageAsync(FeedPageRef requestedPage) {
-
-
-            return getHeadOfFeedRefAsync().thenCompose(headOfFeed -> {
-                if (requestedPage.isStrictlyMoreRecentThan(headOfFeed)) {
-                    return indexOutOfBound();
-                } else return mkFeedPage(requestedPage);
-            });
-
-        }
-
-        private CompletionStage<FeedPage<T>> indexOutOfBound() {
-            CompletableFuture<FeedPage<T>> result = new CompletableFuture<>();
-            result.completeExceptionally(new IndexOutOfBoundsException("Requested page currently beyond head of feed"));
-            return result;
-        }
-
-        private CompletableFuture<FeedPage<T>> mkFeedPage(FeedPageRef requestedPage) {
+        private FeedPage<T> mkFeedPage(FeedPageRef requestedPage) {
 
             long pageSize = metadata.getPageSize();
             long requested = pageSize + 1;
 
             FeedPageBuilder<T> builder = new FeedPageBuilder<>(this.metadata, requestedPage.getPageNum());
 
-            return eventDao.getEventsAsync(requestedPage.getPageNum() * pageSize, requested)
-                    .thenApply(entries -> builder.setEvents(entries).build());
+            List<Event<T>> events = eventDao.getEvents(requestedPage.getPageNum() * pageSize, requested);
+            return builder.setEvents(events).build();
 
         }
 
         @Override
-        public CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync() {
-            return eventDao.totalNumberOfEventsAsync().thenApply(n -> FeedPageRef.page(n / metadata.getPageSize()));
+        public FeedPage<T> getFeedPage(FeedPageRef ref) {
+            FeedPageRef headOfFeed = getHeadOfFeedRef();
+            if (ref.isStrictlyMoreRecentThan(headOfFeed)) {
+                throw new IndexOutOfBoundsException("Requested page currently beyond head of feed");
+            }
+            return mkFeedPage(ref);
         }
 
+        /**
+         * Return a reference to the most recent {@code FeedPage}}
+         * <p>
+         * The head-of-feed {@code FeedPage} can be empty
+         *
+         * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
+         */
+        @Override
+        public FeedPageRef getHeadOfFeedRef() {
+            return FeedPageRef.page(eventDao.totalNumberOfEvents() / metadata.getPageSize());
+        }
     }
 
 

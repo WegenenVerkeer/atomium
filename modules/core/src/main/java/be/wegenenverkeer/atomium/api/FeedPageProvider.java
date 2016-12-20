@@ -1,29 +1,13 @@
 package be.wegenenverkeer.atomium.api;
 
-import java.util.concurrent.CompletableFuture;
-
-import static be.wegenenverkeer.atomium.api.AsyncToSync.runAndWait;
-
 /**
  * Provides a single FeedPage
  * Created by Karel Maesen, Geovise BVBA on 19/11/16.
  */
 public interface FeedPageProvider<T> {
 
-    /**
-     * Return a reference to the most recent {@code FeedPage}}
-     *
-     * The head-of-feed {@code FeedPage} can be empty
-     *
-     * @return a {@code Future<FeedPageRef>} to the most recent {@code FeedPage}
-     */
-    CompletableFuture<FeedPageRef> getHeadOfFeedRefAsync();
 
-    CompletableFuture<FeedPage<T>> getFeedPageAsync(FeedPageRef ref);
-
-    default FeedPage<T> getFeedPage(FeedPageRef ref) {
-        return runAndWait( () -> getFeedPageAsync(ref) );
-    }
+    FeedPage<T> getFeedPage(FeedPageRef ref);
 
     /**
      * Return a reference to the most recent {@code FeedPage}}
@@ -32,9 +16,7 @@ public interface FeedPageProvider<T> {
      *
      * @return a {@code FeedPageRef} to the most recent {@code FeedPage}
      */
-    default FeedPageRef getHeadOfFeedRef() {
-        return runAndWait(() -> getHeadOfFeedRefAsync());
-    }
+    FeedPageRef getHeadOfFeedRef();
 
 
 }

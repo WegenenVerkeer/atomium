@@ -5,8 +5,8 @@ import be.wegenenverkeer.atomium.api.EventDao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,30 +23,28 @@ public class MemoryEventStore<T> implements EventDao<T> {
 
 
     @Override
-    public CompletableFuture<Boolean> pushAsync(List<Event<T>> events) {
-        return CompletableFuture.completedFuture(this.push(events));
-    }
-
-    @Override
     public boolean push(List<Event<T>> entries) {
         entries.forEach(e -> store.put(counter.getAndIncrement(), e));
         return true;
     }
 
     @Override
-    public CompletableFuture<List<Event<T>>> getEventsAsync(long startNum, long size) {
-        Collection<Event<T>> coll = store.subMap(startNum, startNum + size).values();
-        List<Event<T>> entries = new ArrayList<>(coll.size());
-        entries.addAll(coll);
-        return CompletableFuture.completedFuture(entries);
+    public boolean push(Event<T> event) {
+        return this.push(Collections.singletonList(event));
     }
 
     @Override
-    public CompletableFuture<Long> totalNumberOfEventsAsync() {
-        return CompletableFuture.completedFuture(counter.get());
+    public List<Event<T>> getEvents(long startNum, long size) {
+        Collection<Event<T>> coll = store.subMap(startNum, startNum + size).values();
+        List<Event<T>> entries = new ArrayList<>(coll.size());
+        entries.addAll(coll);
+        return entries;
     }
 
-
+    @Override
+    public Long totalNumberOfEvents() {
+        return counter.get();
+    }
 }
 
 

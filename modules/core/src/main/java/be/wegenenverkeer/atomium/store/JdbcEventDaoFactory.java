@@ -95,29 +95,5 @@ class JdbcEventDao<T> implements EventDao<T> {
         }
     }
 
-    // Derived Asynchronous implementations
-    // we use CompletableFuture#supplyAsync() in order to have thrown (SQL)Exceptions handled correctly, i.e. by completing  a Future exceptionally
-
-    @Override
-    public CompletableFuture<Boolean> pushAsync(final Event<T> entry) {
-        return CompletableFuture.supplyAsync(() -> push(entry));
-    }
-
-
-    @Override
-    public CompletableFuture<Boolean> pushAsync(final List<Event<T>> entries) {
-        return CompletableFuture.supplyAsync((() -> push(entries)));
-    }
-
-    @Override
-    public CompletableFuture<List<Event<T>>> getEventsAsync(final long startNum, final long size) {
-        return CompletableFuture.supplyAsync((() -> getEvents(startNum, size)));
-    }
-
-    @Override
-    public CompletableFuture<Long> totalNumberOfEventsAsync() {
-        return CompletableFuture.supplyAsync((this::totalNumberOfEvents));
-    }
-
 
 }
