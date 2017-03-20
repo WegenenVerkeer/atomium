@@ -36,7 +36,6 @@ object AtomiumBuild extends Build with BuildSettings {
     project("client-scala")
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(coreModule, clientJavaModule % "test->test;compile->compile")
       .aggregate(coreModule)
   }
@@ -77,7 +76,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("common-play25")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
-      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(coreModule)
   }
@@ -86,7 +85,6 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val serverModule =
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(coreModule)
 
 
@@ -123,7 +121,6 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-jdbc")
       .settings(libraryDependencies ++= testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile")
   }
 
@@ -151,7 +148,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-play25")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
   }

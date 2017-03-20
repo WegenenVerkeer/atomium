@@ -8,7 +8,7 @@ object Dependencies {
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
-  val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.24.0"
+  val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.26.5"
   val playJson          = "com.typesafe.play"           %%    "play-json"                     % playVersion
   val playWs            = "com.typesafe.play"           %%    "play-ws"                       % playVersion
   val play              = "com.typesafe.play"           %%    "play"                          % playVersion
@@ -25,9 +25,9 @@ object Dependencies {
   val play25Test          = "com.typesafe.play"           %%    "play-test"                     % play25Version    % "test"
 
   // test deps
-  val scalaTest         = "org.scalatest"               %%    "scalatest"               % "2.2.0"        % "test"
+  val scalaTest         = "org.scalatest"               %%    "scalatest"               % "3.0.1"        % "test"
   val scalaTestPlay     = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
-  val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.12.1"       % "test"
+  val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.13.4"       % "test"
   val embededMongo      = "com.github.simplyscala"      %%    "scalatest-embedmongo"    % "0.2.2"        % "test"
   val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"

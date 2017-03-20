@@ -124,7 +124,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: FeedPage[T], headers: Headers): Boolean = {
 
-    val ifNoneMatch = headers get IF_NONE_MATCH contains f.calcETag
+    val ifNoneMatch = headers get IF_NONE_MATCH exists ( _ ==  f.calcETag )
 
     val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
       try {
