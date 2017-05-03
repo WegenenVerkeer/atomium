@@ -34,6 +34,7 @@ public class FunctionalTest {
     public WireMockClassRule instanceRule = wireMockRule;
 
     AtomiumClient client;
+    private Observable<Long> observable;
 
     @Before
     public void before(){
@@ -138,5 +139,74 @@ public class FunctionalTest {
         }
     }
 
+
+    //member variable
+    private boolean failing = false;
+
+    /**
+     * This examples demonstrates who to use retryWhen for retrying the processing of events in case of process failure.
+     *
+     * Experimentation with very large failures revealed that the retryWhen operator does not grow the stack (in contrast to the
+     * onErrorResumeNext operator)
+     */
+    @Test
+    public void testRetryWhen() {
+
+        //mutable state that simulates the database
+        final PersistentState initState = new PersistentState("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10");
+
+        Observable<FeedEntry<Event>> observable =
+                Observable.just( initState ) // start with reading the state
+                .flatMap(state -> {
+                    System.out.println("Initing from " + state.toString());
+                    return client.feed("/feeds/events", Event.class)
+                            .observeFrom(state.lastSeenId, state.lastSeenPage, 1000);
+                })
+                .doOnNext( entry -> {
+                    //process the event
+                    //but every other attempt fails - simulate very unreliable commmunication or processing
+                    if (failing) {
+                        failing = false;
+                        System.out.println("Failing:   " + entry.getEntry().getId());
+                        throw new RuntimeException();
+                    } else {
+                        failing = true; // fail next time
+                    }
+                    System.out.println( "Processing " + entry.getEntry().getId());
+                    // and remember the last seen position
+                    initState.lastSeenId = entry.getEntry().getId();
+                    initState.lastSeenPage = entry.getSelfHref();
+                })
+                .retryWhen(errors ->  // retry on error should ensure that the whole observable is restarted, which is includes restarting from the PersistentState
+                        errors.zipWith(Observable.range(1, 3000), (n, i) -> i)
+                        .flatMap(i -> {
+                            System.out.println("Retrying on attempt " + i);
+                            return Observable.timer(2, TimeUnit.MILLISECONDS);
+                }));
+
+
+        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
+
+        //We only take 10 examples to make the point
+        observable.take(10).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        subscriber.assertNoErrors();
+        assertEquals(10, subscriber.getOnNextEvents().size());
+    }
+
+    static class PersistentState {
+        String lastSeenId;
+        String lastSeenPage;
+
+        PersistentState(String id, String page){
+            lastSeenId = id;
+            lastSeenPage = page;
+        }
+
+        public String toString(){
+            return "id: " + lastSeenId + " on page: " + lastSeenPage;
+        }
+    }
 }
 

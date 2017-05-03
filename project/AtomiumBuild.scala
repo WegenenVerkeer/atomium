@@ -1,5 +1,6 @@
 import play.sbt.Play.autoImport._
 import play.sbt.PlayScala
+import Dependencies._
 import sbt.Keys._
 import sbt._
 
@@ -13,39 +14,17 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val javaFormatModule = {
+  lazy val coreModule = {
 
-    val mainDeps = Seq(jacksonDatabind, jacksonJoda)
-    val testDeps = Seq(junit)
+    val mainDeps = Seq(jacksonDatabind)
+    val testDeps = Seq(junit, junitInterface, postgresdriver)
 
-    project("format-java")
+    project("core")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
+      .settings(fork := true) //need to fork because of problem with registering JDBC Driver on repeated test invocation.
+      .settings( autoScalaLibrary := false )
 
-  }
-
-
-  //----------------------------------------------------------------
-  lazy val formatModule =
-    project("format")
-      .settings(libraryDependencies ++= mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(javaFormatModule)
-
-
-  //----------------------------------------------------------------
-  lazy val clientAkkaModule = {
-
-    val mainDeps = Seq(rxscala, play, playJson, akkaPersistence)
-    val testDeps = mainScalaTestDependencies ++ Seq(wiremock)
-
-    project("client-akka")
-      .settings(publishArtifact in Test := true)
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile", clientScalaModule % "test->test;compile->compile")
-      .aggregate(formatModule, serverModule)
   }
 
   //----------------------------------------------------------------
@@ -57,22 +36,21 @@ object AtomiumBuild extends Build with BuildSettings {
     project("client-scala")
       .settings(publishArtifact in Test := true)
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule, serverModule, clientJavaModule % "test->test;compile->compile")
-      .aggregate(formatModule, serverModule)
+      .dependsOn(coreModule, clientJavaModule % "test->test;compile->compile")
+      .aggregate(coreModule)
   }
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
 
     val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
-    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, jfakerMockito, junitInterface)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings( autoScalaLibrary := false )
       .settings(crossPaths := false)
-      .dependsOn(javaFormatModule)
+      .dependsOn(coreModule)
 
   }
 
@@ -85,8 +63,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("common-play")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule)
-      .aggregate(formatModule)
+      .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
@@ -95,36 +72,34 @@ object AtomiumBuild extends Build with BuildSettings {
     val mainDeps = Seq(play25, play25Json)
 
     //set source dir to source dir in commonPlayModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))     
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))
 
-    project("common-play25")          
+    project("common-play25")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
-      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
-      .settings(crossScalaVersions := Seq("2.11.8"))    
-      .dependsOn(formatModule)
-      .aggregate(formatModule)
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
+      .settings(crossScalaVersions := Seq("2.11.8"))
+      .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
   lazy val serverModule =
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(formatModule)
+      .dependsOn(coreModule)
 
 
   //----------------------------------------------------------------
-  lazy val serverMongoModule = {
+  lazy val serverSpringModule = {
 
-    val mainDeps = Seq(mongoJavaDriver, casbah)
-    val testDeps = Seq(embededMongo) ++ mainScalaTestDependencies
+    val mainDeps = Seq(slf4j, lombok, springContext, springTx, jaxRsApi, restEasy)
+    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
 
-    project("server-mongo")
+    project("server-spring")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile")
+      .settings( autoScalaLibrary := false )
+      .settings(crossPaths := false)
+      .dependsOn(coreModule)
   }
-
 
   //----------------------------------------------------------------
   lazy val serverSlickModule = {
@@ -146,7 +121,6 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-jdbc")
       .settings(libraryDependencies ++= testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile")
   }
 
@@ -170,11 +144,11 @@ object AtomiumBuild extends Build with BuildSettings {
     val testDeps = Seq(playMockWs, play25Test, scalaTestPlay) ++ mainScalaTestDependencies
 
     //set source dir to source dir in serverPlaySampleModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))     
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))
 
     project("server-play25")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( unmanagedSourceDirectories in Compile <<= sourceDir )
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
   }
@@ -191,15 +165,13 @@ object AtomiumBuild extends Build with BuildSettings {
 
   //----------------------------------------------------------------
   lazy val main = mainProject(
-    javaFormatModule,
-    formatModule,
+    coreModule,
     commonPlayModule,
     commonPlay25Module,
-    clientAkkaModule,
     clientScalaModule,
     clientJavaModule,
     serverModule,
-    serverMongoModule,
+    serverSpringModule,
     serverSlickModule,
     serverJdbcModule,
     serverPlayModule,

@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Link;
+import be.wegenenverkeer.atomium.format.Link;
 
 import java.util.ArrayList;
 import java.util.List;

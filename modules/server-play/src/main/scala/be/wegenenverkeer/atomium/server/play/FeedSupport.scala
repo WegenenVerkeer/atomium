@@ -1,10 +1,11 @@
 package be.wegenenverkeer.atomium.server.play
 
-import java.util.Locale
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 
-import be.wegenenverkeer.atomium.format.{Feed, Generator, Url}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, Duration}
+import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
+import be.wegenenverkeer.atomium.format.{Generator, Url}
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
 import play.api.mvc._
@@ -26,10 +27,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
 
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
 
-  private val generator = Generator("atomium", Some(Url("http://github.com/WegenenVerkeer/atomium")), Some("0.0.1"))
-
-  val rfcFormat = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss z").withLocale(Locale.ENGLISH)
-  val rfcUTCFormat = rfcFormat.withZoneUTC()
+  private val generator = new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1")
 
   /**
    * Define the PartialFunction that will map acceptable content types to FeedMarshallers.
@@ -57,9 +55,9 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    *
    * @return `PartialFunction[MediaRange, FeedMarshaller]`
    */
-  def marshallers: PartialFunction[MediaRange, FeedMarshaller[T]]
+  def marshallers: PartialFunction[MediaRange, FeedPageCodec[T, Array[Byte]]]
 
-  private def buildRenders(feed: Feed[T]): PartialFunction[MediaRange, Result] = {
+  private def buildRenders(feed: FeedPage[T]): PartialFunction[MediaRange, Result] =
     new PartialFunction[MediaRange, Result] {
       override def isDefinedAt(x: MediaRange): Boolean = marshallers.isDefinedAt(x)
 
@@ -68,7 +66,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
         marshall(feedMarshaller, feed)
       }
     }
-  }
+
 
   /**
    * marshall the feed and set correct headers
@@ -76,7 +74,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    * @param codec the implicit codec
    * @return the response
    */
-  def processFeedPage(page: Future[Option[Feed[T]]])(implicit codec: Codec) = Action.async { implicit request =>
+  def processFeedPage(page: Future[Option[FeedPage[T]]])(implicit codec: Codec) = Action.async { implicit request =>
     logger.info(s"processing request: $request")
     page.map {
       case Some(f) =>
@@ -85,8 +83,8 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           NotModified
         } else {
           //add generator
-          val feed = f.copy(generator = Some(generator))
-          render(buildRenders(feed))
+          f.setGenerator(generator)
+          render(buildRenders(f))
         }
       case None    =>
         logger.info("sending response: 404 Not-Found")
@@ -94,26 +92,26 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     }
   }
 
-  def processFeedPage(page: Option[Feed[T]])(implicit codec: Codec): Action[AnyContent] = {
+  def processFeedPage(page: Option[FeedPage[T]])(implicit codec: Codec): Action[AnyContent] = {
     processFeedPage(Future.successful(page))
   }
 
-  private def marshall(feedMarshaller: FeedMarshaller[T], feed: Feed[T]): Result = {
+  private def marshall(codec: FeedPageCodec[T, Array[Byte]], feed: FeedPage[T]): Result = {
     //marshall feed and add Last-Modified header
 
-    val (contentType, payload) = feedMarshaller.marshall(feed)
+    val (contentType, payload) = (codec.getMimeType, codec.encode(feed))
 
     logger.info("sending response: 200 Found")
     val result = Ok(payload)
-      .withHeaders(LAST_MODIFIED -> rfcUTCFormat.print(feed.updated.toDateTime), ETAG -> feed.calcETag)
+      .withHeaders(LAST_MODIFIED -> feed.getUpdated().format(DateTimeFormatter.RFC_1123_DATE_TIME), ETAG -> feed.calcETag)
 
     //add extra cache headers or forbid caching
     val resultWithCacheHeader =
       if (feed.complete()) {
-        val expires = new DateTime().withDurationAdded(new Duration(cacheTime * 1000L), 1)
+        val expires = OffsetDateTime.now().plusSeconds(1000L)
         result.withHeaders(CACHE_CONTROL -> {
           "public, max-age=" + cacheTime
-        }, EXPIRES -> rfcUTCFormat.print(expires))
+        }, EXPIRES -> DateTimeFormatter.RFC_1123_DATE_TIME.format(expires))
       } else {
         result.withHeaders(CACHE_CONTROL -> "public, max-age=0, no-cache, must-revalidate")
       }
@@ -121,18 +119,17 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
     resultWithCacheHeader.as(contentType)
   }
 
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 15:00:00 => modified => false
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 10:00:00 => not modified => true
-  //if modified since 02-11-2014 12:00:00 and updated on 02-11-2014 12:00:00 => not modified => true
-  private def notModified(f: Feed[T], headers: Headers): Boolean = {
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 15:00:00 => modified => false
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 10:00:00 => not modified => true
+  //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 12:00:00 => not modified => true
+  private def notModified(f: FeedPage[T], headers: Headers): Boolean = {
 
-    val ifNoneMatch = headers get IF_NONE_MATCH exists {
-      _ == f.calcETag
-    }
+    val ifNoneMatch = headers get IF_NONE_MATCH exists ( _ ==  f.calcETag )
 
     val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
       try {
-        rfcFormat.parseDateTime(dateStr).toDate.getTime >= f.updated.withMillisOfSecond(0).toDate.getTime
+        val updated = f.getUpdated.`with`(ChronoField.MILLI_OF_SECOND, 0)
+        OffsetDateTime.parse(dateStr, DateTimeFormatter.RFC_1123_DATE_TIME).compareTo(updated) >= 0
       }
       catch {
         case e: IllegalArgumentException =>

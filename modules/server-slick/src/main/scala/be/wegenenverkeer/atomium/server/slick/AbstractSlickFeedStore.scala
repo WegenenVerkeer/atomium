@@ -1,11 +1,11 @@
 package be.wegenenverkeer.atomium.server.slick
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{AtomEntry, Url, Content, Entry}
+import be.wegenenverkeer.atomium.format.{AtomEntry, Content, Url}
 import be.wegenenverkeer.atomium.server.AbstractFeedStore
 import be.wegenenverkeer.atomium.server.slick.models.EntryModel
-import org.joda.time.DateTime
 
 /**
  * An [[AbstractFeedStore]] implementation that stores feeds and pages in a SQL database.
@@ -53,7 +53,7 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
 
   override def push(entries: Iterable[E])(implicit context: SlickJdbcContext): Unit = {
     implicit val session = context.session
-    val timestamp: DateTime = new DateTime()
+    val timestamp = OffsetDateTime.now()
     entries foreach { entry =>
       getEntryTableQuery += EntryModel(None, UUID.randomUUID().toString, ser(entry), timestamp)
     }
@@ -61,7 +61,7 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
 
   override def push(uuid: String, entry: E)(implicit context: SlickJdbcContext): Unit = {
     implicit val session = context.session
-    val timestamp: DateTime = new DateTime()
+    val timestamp = OffsetDateTime.now()
     getEntryTableQuery += EntryModel(None, uuid, ser(entry), timestamp)
   }
 
@@ -94,7 +94,8 @@ abstract class AbstractSlickFeedStore[E](feedName: String,
    */
   private[this] def toFeedEntry: (feedComponent.EntryTable#TableElementType) => FeedEntry = { dbEntry =>
     FeedEntry(dbEntry.id.get,
-      AtomEntry(dbEntry.uuid, dbEntry.timestamp, Content(deser(dbEntry.value), ""), Nil))
+      new AtomEntry[E](dbEntry.uuid, dbEntry.timestamp, new Content(deser(dbEntry.value), ""))
+    )
   }
 
   /**

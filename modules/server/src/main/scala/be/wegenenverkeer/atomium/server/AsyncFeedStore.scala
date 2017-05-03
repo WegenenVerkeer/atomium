@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.server
 
-import be.wegenenverkeer.atomium.format.Feed
+
+import be.wegenenverkeer.atomium.api.FeedPage
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -21,7 +22,7 @@ trait AsyncFeedStore[E, C <: Context] {
    * @return the feed page or `None` if the page is not found
    */
   def getFeed(startSequenceNr: Long, count: Int, forward: Boolean)
-             (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]]
+             (implicit executionContext: ExecutionContext, context: C): Future[Option[FeedPage[E]]]
 
   /**
    * Retrieves the head of the feed. This is the first page containing the most recent entries
@@ -29,7 +30,7 @@ trait AsyncFeedStore[E, C <: Context] {
    * @return the head of the feed
    */
   def getHeadOfFeed(pageSize: Int)
-                   (implicit executionContext: ExecutionContext, context: C): Future[Option[Feed[E]]]
+                   (implicit executionContext: ExecutionContext, context: C): Future[FeedPage[E]]
 
 
   /**

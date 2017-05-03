@@ -1,44 +1,46 @@
 package be.wegenenverkeer.atomium.server
 
+import java.time.OffsetDateTime
 import java.util.UUID
 
-import be.wegenenverkeer.atomium.format.{Feed, Entry, Url, Link}
+import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.format.{Link, _}
+
+import scala.collection.JavaConverters._
 
 trait FeedStoreSupport[E] {
+
+  val generator = new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1")
 
   case class FeedParams(feedName: String, baseUrl: Url, title: Option[String])
 
   /**
-   *
-   * @param pageSize the desired feed page size
-   * @param entries the entries to include in the feed
-   * @param previousEntryId the previous entry's id or None if we are at the head of the feed
-   * @param nextEntryId the next entry's id or None if we are at the tail of the feed (last page)
-   * @return a page feed or None
-   */
+    *
+    * @param pageSize        the desired feed page size
+    * @param entries         the entries to include in the feed
+    * @param previousEntryId the previous entry's id or None if we are at the head of the feed
+    * @param nextEntryId     the next entry's id or None if we are at the tail of the feed (last page)
+    * @return a page feed, possibly empty
+    */
   def toFeed(pageSize: Int,
              minId: Long,
              entries: List[FeedStoreSupport[E]#FeedEntry],
              previousEntryId: Option[Long],
              nextEntryId: Option[Long])
-            (implicit feedParams: FeedParams): Option[Feed[E]] = {
-
-    for {
-      entries <- Some(entries); if entries.nonEmpty
-    } yield Feed[E](
-      id = feedParams.feedName,
-      base = feedParams.baseUrl,
-      title = feedParams.title,
-      updated = entries.head.entry.updated,
-      links = List(Link(Link.selfLink, feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true)),
-        Link(Link.lastLink, feedLink(minId, pageSize, forward = true))) ++
-        nextEntryId.map { _ =>
-          link(Link.nextLink, entries.last.sequenceNr, pageSize, forward = false)
-        } ++
-        previousEntryId.map { _ =>
-          link(Link.previousLink, entries.head.sequenceNr, pageSize, forward = true)
-        },
-      entries = entries.map(_.entry)
+            (implicit feedParams: FeedParams): FeedPage[E] = {
+    val selfLink = new Link(Link.SELF, feedLink(nextEntryId.getOrElse(minId), pageSize, forward = true))
+    val lastlink = new Link(Link.LAST, feedLink(minId, pageSize, forward = true))
+    val nextLink = nextEntryId.map { _ => link(Link.NEXT, entries.last.sequenceNr, pageSize, forward = false) }.toList
+    val prevLink = previousEntryId.map { _ => link(Link.PREVIOUS, entries.head.sequenceNr, pageSize, forward = true) }.toList
+    val links = List(selfLink, lastlink) ++ prevLink ++ nextLink
+    new FeedPage[E](
+      feedParams.feedName,
+      feedParams.baseUrl.getPath,
+      feedParams.title.getOrElse("<no title>"),
+      generator,
+      entries.headOption.map(_.entry.getUpdated).getOrElse(OffsetDateTime.now()),
+      links.asJava,
+      entries.map(_.entry).asJava
     )
   }
 
@@ -92,7 +94,7 @@ trait FeedStoreSupport[E] {
   }
 
   def processFeedEntries(start: Long, minId: Long, pageSize: Int, forward: Boolean, entries: List[FeedStoreSupport[E]#FeedEntry])
-                        (implicit feedParams: FeedParams): Option[Feed[E]] = {
+                        (implicit feedParams: FeedParams): FeedPage[E] = {
     if (entries.nonEmpty) {
       val result = if (forward) {
         processForwardEntries(start, pageSize, entries)
@@ -100,40 +102,40 @@ trait FeedStoreSupport[E] {
         processBackwardEntries(start, pageSize, entries)
       }
       toFeed(pageSize, minId, result.feedEntries, result.previousSequenceNr, result.nextSequenceNr)
-    } else
-      None
+    } else {
+      toFeed(pageSize, minId, Nil, None, None)
+    }
   }
 
   //we possibly need to return less entries to keep paging consistent => paging from tail to head or vice versa
   //must return the same pages in order to have efficient caching
   def processHeadFeedEntries(numberOfEntriesLower: Long, minId: Long, pageSize: Int, entries: List[FeedStoreSupport[E]#FeedEntry])
-                            (implicit feedParams: FeedParams)= {
+                            (implicit feedParams: FeedParams) = {
     val n = (numberOfEntriesLower % pageSize).toInt
     val limit = if (n == 0) pageSize else n
 
     toFeed(pageSize, minId, entries.take(limit), None, entries.drop(limit) match {
-      case Nil => None
+      case Nil    => None
       case h :: _ => Some(h.sequenceNr)
     })
 
   }
 
 
-
   def getNextLink(id: Long, count: Int, next: Option[Long]): Option[Link] = {
     next.map { _ =>
-      link(Link.nextLink, id, count, forward = false)
+      link(Link.NEXT, id, count, forward = false)
     }
   }
 
   def getPreviousLink(id: Long, count: Int, previous: Option[Long]): Option[Link] = {
     previous.map { _ =>
-      link(Link.previousLink, id, count, forward = true)
+      link(Link.PREVIOUS, id, count, forward = true)
     }
   }
 
   protected def link(l: String, start: Long, pageSize: Int, forward: Boolean): Link = {
-    Link(l, feedLink(start, pageSize, forward))
+    new Link(l, feedLink(start, pageSize, forward))
   }
 
   protected def generateEntryID(): String = {
@@ -141,23 +143,23 @@ trait FeedStoreSupport[E] {
   }
 
   /**
-   * Creates a link to a feed page.
-   *
-   * @param startId the starting entry's id (non inclusive)
-   * @param count the number of entries in the page
-   * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
-   *                else navigate to 'next' elements in feed (towards last page of feed)
-   * @return the URL
-   */
-  protected def feedLink(startId:Long, count: Int, forward: Boolean): Url = {
+    * Creates a link to a feed page.
+    *
+    * @param startId the starting entry's id (non inclusive)
+    * @param count   the number of entries in the page
+    * @param forward if true navigate to 'previous' elements in feed (towards head of feed)
+    *                else navigate to 'next' elements in feed (towards last page of feed)
+    * @return the URL
+    */
+  protected def feedLink(startId: Long, count: Int, forward: Boolean): String = {
     val direction = if (forward) "forward" else "backward"
-    Url(startId.toString) / direction / count.toString
+    new Url(startId.toString).add(direction).add(count.toString).getPath
   }
 
   case class FeedEntry(sequenceNr: Long, entry: Entry[E])
 
   case class ProcessedFeedEntries(previousSequenceNr: Option[Long],
-                                                feedEntries: List[FeedStoreSupport[E]#FeedEntry],
-                                                nextSequenceNr: Option[Long])
+                                  feedEntries: List[FeedStoreSupport[E]#FeedEntry],
+                                  nextSequenceNr: Option[Long])
 
 }

@@ -1,9 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
-import be.wegenenverkeer.atomium.japi.format.Feed;
-
-import java.util.Optional;
+import be.wegenenverkeer.atomium.format.Entry;
 
 /**
  * An Entry in the feed, as returned by the {@code AtomiumClient}.

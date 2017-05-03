@@ -1,20 +1,16 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.format.Entry;
-import be.wegenenverkeer.atomium.japi.format.Feed;
-import be.wegenenverkeer.atomium.japi.format.Link;
+import be.wegenenverkeer.atomium.format.Entry;
+import be.wegenenverkeer.atomium.api.FeedPage;
+import be.wegenenverkeer.atomium.api.FeedPageCodec;
+import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
+import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.rxhttp.ClientRequest;
 import be.wegenenverkeer.rxhttp.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttp.RxHttpClient;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
@@ -24,10 +20,6 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.MultipleAssignmentSubscription;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -88,10 +80,9 @@ public class AtomiumClient {
      */
     public static class FeedObservableBuilder<E> {
         private final RxHttpClient rxHttpClient;
-        private final JAXBContext jaxbContext;
-        private final ObjectMapper objectMapper;
+        private final FeedPageCodec<E, String> jsonCodec;
+        private final FeedPageCodec<E, String> xmlCodec;
         private final String feedName;
-        private final JavaType javaType;
         private Map<String, String> extraHeaders = Collections.emptyMap();
         private RetryStrategy retryStrategy= (n, t) -> {
             if (t instanceof RuntimeException) {
@@ -111,13 +102,8 @@ public class AtomiumClient {
         FeedObservableBuilder(String feedPath, Class<E> entryTypeMarker, RxHttpClient rxClient, Module... modules) {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
-            this.objectMapper = configureObjectMapper(modules);
-            this.javaType = objectMapper.getTypeFactory().constructParametricType(Feed.class, entryTypeMarker);
-            try {
-                jaxbContext = JAXBContext.newInstance(Feed.class, Link.class, entryTypeMarker);
-            } catch (JAXBException e) {
-                throw new IllegalStateException(e);
-            }
+            this.jsonCodec = new JacksonFeedPageCodec<E>(entryTypeMarker);
+            this.xmlCodec = new JaxbCodec<E>(entryTypeMarker);
         }
 
         public FeedObservableBuilder<E> withRetry(RetryStrategy strategy) {
@@ -128,18 +114,6 @@ public class AtomiumClient {
         public FeedObservableBuilder<E> withExtraHeaders(Map<String, String> headers) {
             this.extraHeaders = headers;
             return this;
-        }
-
-        private ObjectMapper configureObjectMapper(Module... modules) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JodaModule());
-            objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            objectMapper.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-            for (Module module : modules) {
-                objectMapper.registerModule(module);
-            }
-            return objectMapper;
         }
 
         /**
@@ -375,9 +349,9 @@ public class AtomiumClient {
                 }
                 Optional<String> newETag = resp.getHeader("ETag");
                 if (isJson(resp.getContentType())) {
-                    return new FeedWrapper<>((Feed<E>) unmarshalJson(resp.getResponseBody()), newETag);
+                    return new FeedWrapper<>((FeedPage<E>) jsonCodec.decode(resp.getResponseBody()), newETag);
                 } else {
-                    return new FeedWrapper<>((Feed<E>) unmarshalXml(resp.getResponseBody()), newETag);
+                    return new FeedWrapper<>( xmlCodec.decode(resp.getResponseBody()), newETag);
                 }
             });
         }
@@ -387,9 +361,9 @@ public class AtomiumClient {
             return rxHttpClient.executeToCompletion(request, resp -> {
                         FeedWrapper<?> fw = null;
                         if (isJson(resp.getContentType())) {
-                            fw = new FeedWrapper<>((Feed<?>) unmarshalJson(resp.getResponseBody()), Optional.empty());
+                            fw = new FeedWrapper<>( jsonCodec.decode(resp.getResponseBody()), Optional.empty());
                         } else {
-                            fw = new FeedWrapper<>((Feed<?>) unmarshalXml(resp.getResponseBody()), Optional.empty());
+                            fw = new FeedWrapper<>( xmlCodec.decode(resp.getResponseBody()), Optional.empty());
                         }
                         return fw.getLastHref();
                     }
@@ -420,22 +394,6 @@ public class AtomiumClient {
             return ct.contains("json") || ct.contains("JSON");
         }
 
-
-        private Object unmarshalXml(String str) {
-            try {
-                return jaxbContext.createUnmarshaller().unmarshal(new InputSource(new StringReader(str)));
-            } catch (JAXBException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        private Object unmarshalJson(String str) {
-            try {
-                return objectMapper.readValue(str, javaType);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
     }
 

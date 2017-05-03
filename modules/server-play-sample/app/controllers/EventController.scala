@@ -1,18 +1,16 @@
 package controllers
 
-import javax.xml.bind.JAXBContext
-
-import be.wegenenverkeer.atomium.japi.format.{Feed => JFeed}
-import be.wegenenverkeer.atomium.play.PlayJsonFormats._
-import be.wegenenverkeer.atomium.server.play.{FeedSupport, JaxbFeedMarshaller, PlayJsonFeedMarshaller}
-import be.wegenenverkeer.atomium.server.{Context, FeedService}
+import be.wegenenverkeer.atomium.api.FeedPage
+import be.wegenenverkeer.atomium.format.JaxbCodec
+import be.wegenenverkeer.atomium.play.{PlayJaxbCodec, PlayJsonCodec}
+import be.wegenenverkeer.atomium.server.Context
+import be.wegenenverkeer.atomium.server.play.FeedSupport
 import play.api.mvc.Controller
 
 /**
  * This controller serves pages of a feed containing {{Event}}.
  * It registers both a Play json marshaller and a Jaxb xml marshaller
  * and thus supports content negotiation and can support both xml or json responses
- * @param feedService the feedService used for retrieving feed pages
  */
 class EventController() extends Controller with FeedSupport[Event] {
 
@@ -24,19 +22,17 @@ class EventController() extends Controller with FeedSupport[Event] {
 
   import controllers.EventFormat._
 
-  //jaxb marshaller
-  implicit val jaxbContext = JAXBContext.newInstance(classOf[JFeed[Event]], classOf[Event])
 
   override def marshallers = {
-    case Accepts.Xml()  => JaxbFeedMarshaller[Event]()
-    case Accepts.Json() => PlayJsonFeedMarshaller[Event]()
+    case Accepts.Xml()  => PlayJaxbCodec(classOf[Event])
+    case Accepts.Json() => PlayJsonCodec()
   }
 
   /**
    * @return the head of the page
    */
   def headOfFeed() = {
-    processFeedPage(feedService.getHeadOfFeed())
+    processFeedPage(Some(feedService.getHeadOfFeed()))
   }
 
   /**
