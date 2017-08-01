@@ -5,6 +5,7 @@ object Dependencies {
 
   val playVersion = "2.4.2"
   val play25Version = "2.5.4"
+  val play26Version = "2.6.2"
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
@@ -24,9 +25,16 @@ object Dependencies {
   val play25              = "com.typesafe.play"           %%    "play"                          % play25Version
   val play25Test          = "com.typesafe.play"           %%    "play-test"                     % play25Version    % "test"
 
+  //play26 deps
+  val play26Json          = "com.typesafe.play"           %%    "play-json"                     % play26Version
+  val play26Ws            = "com.typesafe.play"           %%    "play-ws"                       % play26Version
+  val play26              = "com.typesafe.play"           %%    "play"                          % play26Version
+  val play26Test          = "com.typesafe.play"           %%    "play-test"                     % play26Version    % "test"
+
   // test deps
   val scalaTest         = "org.scalatest"               %%    "scalatest"               % "3.0.1"        % "test"
   val scalaTestPlay     = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
+  val scalaTestPlay26   = "org.scalatestplus.play"      %%    "scalatestplus-play"      % "3.1.1"        % "test"
   val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.13.4"       % "test"
   val embededMongo      = "com.github.simplyscala"      %%    "scalatest-embedmongo"    % "0.2.2"        % "test"
   val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"

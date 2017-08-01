@@ -82,6 +82,21 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
   //----------------------------------------------------------------
+  lazy val commonPlay26Module = {
+
+    val mainDeps = Seq(play26, play26Json)
+
+    //set source dir to source dir in commonPlayModule
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))
+
+    project("common-play26")
+      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
+      .settings(crossScalaVersions := Seq("2.11.8", "2.12.3"))
+      .dependsOn(coreModule)
+  }
+
+  //----------------------------------------------------------------
   lazy val serverModule =
     project("server")
       .settings(libraryDependencies ++= mainScalaTestDependencies)
@@ -154,6 +169,19 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
   //----------------------------------------------------------------
+  lazy val serverPlay26Module = {
+
+    val mainDeps = Seq()
+    val testDeps = Seq(play26Test, scalaTestPlay26) ++ mainScalaTestDependencies
+
+    project("server-play26")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+      .settings(crossScalaVersions := Seq("2.11.8", "2.12.3"))
+      .dependsOn(serverModule % "test->test;compile->compile", commonPlay26Module)
+  }
+
+
+  //----------------------------------------------------------------
   lazy val serverPlaySampleModule = {
 
     project("server-play-sample")
@@ -168,6 +196,7 @@ object AtomiumBuild extends Build with BuildSettings {
     coreModule,
     commonPlayModule,
     commonPlay25Module,
+    commonPlay26Module,
     clientScalaModule,
     clientJavaModule,
     serverModule,
@@ -176,6 +205,7 @@ object AtomiumBuild extends Build with BuildSettings {
     serverJdbcModule,
     serverPlayModule,
     serverPlay25Module,
+    serverPlay26Module,
     serverPlaySampleModule
   )
 }
