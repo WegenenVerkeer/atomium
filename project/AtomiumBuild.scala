@@ -176,7 +176,7 @@ object AtomiumBuild extends Build with BuildSettings {
 
     project("server-play26")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.11.8", "2.12.3"))
+      .settings(crossScalaVersions := Seq("2.12.3", "2.11.8"))
       .dependsOn(serverModule % "test->test;compile->compile", commonPlay26Module)
   }
 
