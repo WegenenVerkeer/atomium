@@ -1,5 +1,5 @@
 val snapshotSuffix = "-SNAPSHOT"
 
-version in ThisBuild := "1.1.0" //+ snapshotSuffix
+version in ThisBuild := "1.2.0" + snapshotSuffix
 
 isSnapshot := version.value.endsWith(snapshotSuffix)
