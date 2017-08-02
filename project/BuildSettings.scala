@@ -31,7 +31,7 @@ trait BuildSettings {
   private def projectSettings() = {
 
     val projectSettings = Seq(
-      crossScalaVersions := Seq("2.10.4", "2.12.1", "2.11.8"),
+      crossScalaVersions := Seq("2.10.4", "2.12.3", "2.11.8"),
       scalaVersion := crossScalaVersions.value.last,
       parallelExecution := false,
       publishArtifact in Test := true,
