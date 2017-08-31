@@ -149,7 +149,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
+      .dependsOn(commonPlayModule)
   }
 
   //----------------------------------------------------------------
@@ -165,7 +165,7 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
+      .dependsOn(commonPlay25Module)
   }
 
   //----------------------------------------------------------------
@@ -177,7 +177,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play26")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.12.3", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlay26Module)
+      .dependsOn(commonPlay26Module)
   }
 
 
