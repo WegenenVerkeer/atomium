@@ -13,11 +13,6 @@ object Dependencies {
   val playJson          = "com.typesafe.play"           %%    "play-json"                     % playVersion
   val playWs            = "com.typesafe.play"           %%    "play-ws"                       % playVersion
   val play              = "com.typesafe.play"           %%    "play"                          % playVersion
-  val mongoJavaDriver   = "org.mongodb"                 %     "mongo-java-driver"             % "2.0"
-  val casbah            = "org.mongodb"                 %%    "casbah"                        % "2.8.0"
-  val slick             = "com.typesafe.slick"          %%    "slick"                         % "2.1.0"
-  val slickPostgres     = "com.github.tminglei"         %%    "slick-pg"                      % "0.7.0"
-  val akkaPersistence   = "com.typesafe.akka"           %%    "akka-persistence-experimental" % "2.3.12"
 
   //play25 deps
   val play25Json          = "com.typesafe.play"           %%    "play-json"                     % play25Version
@@ -36,7 +31,6 @@ object Dependencies {
   val scalaTestPlay     = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
   val scalaTestPlay26   = "org.scalatestplus.play"      %%    "scalatestplus-play"      % "3.1.1"        % "test"
   val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.13.4"       % "test"
-  val embededMongo      = "com.github.simplyscala"      %%    "scalatest-embedmongo"    % "0.2.2"        % "test"
   val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
   val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
