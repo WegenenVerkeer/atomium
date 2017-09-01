@@ -11,18 +11,15 @@ object Dependencies {
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
   val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.26.5"
   val playJson          = "com.typesafe.play"           %%    "play-json"                     % playVersion
-  val playWs            = "com.typesafe.play"           %%    "play-ws"                       % playVersion
   val play              = "com.typesafe.play"           %%    "play"                          % playVersion
 
   //play25 deps
   val play25Json          = "com.typesafe.play"           %%    "play-json"                     % play25Version
-  val play25Ws            = "com.typesafe.play"           %%    "play-ws"                       % play25Version
   val play25              = "com.typesafe.play"           %%    "play"                          % play25Version
   val play25Test          = "com.typesafe.play"           %%    "play-test"                     % play25Version    % "test"
 
   //play26 deps
   val play26Json          = "com.typesafe.play"           %%    "play-json"                     % play26Version
-  val play26Ws            = "com.typesafe.play"           %%    "play-ws"                       % play26Version
   val play26              = "com.typesafe.play"           %%    "play"                          % play26Version
   val play26Test          = "com.typesafe.play"           %%    "play-test"                     % play26Version    % "test"
 
@@ -31,11 +28,9 @@ object Dependencies {
   val scalaTestPlay     = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
   val scalaTestPlay26   = "org.scalatestplus.play"      %%    "scalatestplus-play"      % "3.1.1"        % "test"
   val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.13.4"       % "test"
-  val h2database        = "com.h2database"              %     "h2"                      % "1.0.60"       % "test"
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
   val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
   val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.57"         % "test"
-  val postgresdriver    = "org.postgresql"              %     "postgresql"              % "9.4-1200-jdbc41" % "test"
 
   // java deps
   val junit             = "junit"                           %   "junit"                    % "4.11"    % "test"
