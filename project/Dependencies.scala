@@ -41,7 +41,7 @@ object Dependencies {
   val junit             = "junit"                           %   "junit"                    % "4.11"    % "test"
   val junitInterface    = "com.novocode"                    %   "junit-interface"          % "0.11"    % "test->default"
   val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"         % "2.4.3"
-  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"        % "0.4.0"
+  val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient-java"        % "0.5.2"
   val lombok            = "org.projectlombok"               %   "lombok"                   % "1.16.10" % "provided"
   val springContext     = "org.springframework"             %   "spring-context"           % "4.2.0.RELEASE"
   val springTx          = "org.springframework"             %   "spring-tx"                % "4.2.0.RELEASE"
