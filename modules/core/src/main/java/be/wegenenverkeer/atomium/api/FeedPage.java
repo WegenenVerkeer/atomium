@@ -170,8 +170,15 @@ public final class FeedPage<T> {
             String utf = "UTF-8";
             updateMessage(message, this.base);
             updateMessage(message, this.id);
+            updateMessage(message, this.updated.toString());
             links.stream().forEach(link ->
                     updateMessage(message, link.toString())
+            );
+            entries.stream().forEach(entry -> {
+                        updateMessage(message, entry.getId());
+                        updateMessage(message, entry.getUpdated().toString());
+                        return;
+                    }
             );
             return new BigInteger(1, message.digest()).toString(16);
         } catch (NoSuchAlgorithmException e) {
