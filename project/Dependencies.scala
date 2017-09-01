@@ -31,6 +31,7 @@ object Dependencies {
   val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
   val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
   val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.57"         % "test"
+  val postgresdriver    = "org.postgresql"              %     "postgresql"              % "9.4-1200-jdbc41" % "test"
 
   // java deps
   val junit             = "junit"                           %   "junit"                    % "4.11"    % "test"
