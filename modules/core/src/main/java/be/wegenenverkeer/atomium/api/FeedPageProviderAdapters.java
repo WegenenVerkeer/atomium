@@ -14,11 +14,11 @@ public class FeedPageProviderAdapters {
 
     static class DaoBackedFeeedPageProvider<T> implements FeedPageProvider<T> {
 
-        final private EventDao<T> eventDao;
+        final private EventReader<T> eventDao;
         final private FeedMetadata metadata;
 
 
-        DaoBackedFeeedPageProvider(EventDao<T> dao, FeedMetadata meta) {
+        DaoBackedFeeedPageProvider(EventReader<T> dao, FeedMetadata meta) {
             this.eventDao = dao;
             this.metadata = meta;
         }
