@@ -68,17 +68,17 @@ public class PostgresDialect implements JdbcDialect {
                     + "    to_update -- lijst met wijzigingen opbouwen\n"
                     + "  AS (\n"
                     + "      SELECT\n"
-                    + "        id,\n"
+                    + "        ${idField},\n"
                     + "        (row_number()\n"
                     + "        OVER ()) + max_atom_entry new_value\n"
                     + "      FROM to_number\n"
-                    + "      ORDER BY id ASC\n"
+                    + "      ORDER BY ${idField} ASC\n"
                     + "  )\n"
                     + "-- wijzigingen toepassen\n"
                     + "UPDATE ${table}\n"
                     + "SET ${sequence-field} = to_update.new_value\n"
                     + "FROM to_update\n"
-                    + "WHERE ${table}.id = to_update.id;";
+                    + "WHERE ${table}.${idField} = to_update.${idField};";
 
 
     @Override
