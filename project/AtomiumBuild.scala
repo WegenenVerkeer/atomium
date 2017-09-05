@@ -96,12 +96,6 @@ object AtomiumBuild extends Build with BuildSettings {
       .dependsOn(coreModule)
   }
 
-  //----------------------------------------------------------------
-  lazy val serverModule =
-    project("server")
-      .settings(libraryDependencies ++= mainScalaTestDependencies)
-      .dependsOn(coreModule)
-
 
   //----------------------------------------------------------------
   lazy val serverSpringModule = {
@@ -116,28 +110,6 @@ object AtomiumBuild extends Build with BuildSettings {
       .dependsOn(coreModule)
   }
 
-  //----------------------------------------------------------------
-  lazy val serverSlickModule = {
-
-    val mainDeps = Seq(slick, slickPostgres)
-    val testDeps = Seq(h2database) ++ mainScalaTestDependencies
-
-    project("server-slick")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile")
-  }
-
-
-  //----------------------------------------------------------------
-  lazy val serverJdbcModule = {
-
-    val testDeps = Seq(h2database) ++ mainScalaTestDependencies
-
-    project("server-jdbc")
-      .settings(libraryDependencies ++= testDeps)
-      .dependsOn(serverModule % "test->test;compile->compile")
-  }
 
 
   //----------------------------------------------------------------
@@ -149,7 +121,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlayModule)
+      .dependsOn(commonPlayModule)
   }
 
   //----------------------------------------------------------------
@@ -165,7 +137,7 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlay25Module)
+      .dependsOn(commonPlay25Module)
   }
 
   //----------------------------------------------------------------
@@ -177,17 +149,7 @@ object AtomiumBuild extends Build with BuildSettings {
     project("server-play26")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.12.3", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", commonPlay26Module)
-  }
-
-
-  //----------------------------------------------------------------
-  lazy val serverPlaySampleModule = {
-
-    project("server-play-sample")
-      .enablePlugins(PlayScala)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(serverModule % "test->test;compile->compile", serverPlayModule)
+      .dependsOn(commonPlay26Module)
   }
 
 
@@ -199,13 +161,9 @@ object AtomiumBuild extends Build with BuildSettings {
     commonPlay26Module,
     clientScalaModule,
     clientJavaModule,
-    serverModule,
     serverSpringModule,
-    serverSlickModule,
-    serverJdbcModule,
     serverPlayModule,
     serverPlay25Module,
-    serverPlay26Module,
-    serverPlaySampleModule
+    serverPlay26Module
   )
 }

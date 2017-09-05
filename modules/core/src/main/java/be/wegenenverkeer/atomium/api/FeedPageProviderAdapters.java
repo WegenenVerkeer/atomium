@@ -7,19 +7,21 @@ import java.util.List;
  */
 public class FeedPageProviderAdapters {
 
-    public static <T> FeedPageProvider<T> adapt(EventDao<T> dao, FeedMetadata meta) {
-        return new DaoBackedFeeedPageProvider<>(dao, meta);
+    public static <T> FeedPageProvider<T> adapt(EventReader<T> eventReader, FeedMetadata meta) {
+
+        return new DaoBackedFeeedPageProvider<>(eventReader, meta);
+
     }
 
 
     static class DaoBackedFeeedPageProvider<T> implements FeedPageProvider<T> {
 
-        final private EventDao<T> eventDao;
+        final private EventReader<T> eventReader;
         final private FeedMetadata metadata;
 
 
-        DaoBackedFeeedPageProvider(EventDao<T> dao, FeedMetadata meta) {
-            this.eventDao = dao;
+        DaoBackedFeeedPageProvider(EventReader<T> dao, FeedMetadata meta) {
+            this.eventReader = dao;
             this.metadata = meta;
         }
 
@@ -30,7 +32,7 @@ public class FeedPageProviderAdapters {
 
             FeedPageBuilder<T> builder = new FeedPageBuilder<>(this.metadata, requestedPage.getPageNum());
 
-            List<Event<T>> events = eventDao.getEvents(requestedPage.getPageNum() * pageSize, requested);
+            List<Event<T>> events = eventReader.getEvents(requestedPage.getPageNum() * pageSize, requested);
             return builder.setEvents(events).build();
 
         }
@@ -53,7 +55,7 @@ public class FeedPageProviderAdapters {
          */
         @Override
         public FeedPageRef getHeadOfFeedRef() {
-            return FeedPageRef.page(eventDao.totalNumberOfEvents() / metadata.getPageSize());
+            return FeedPageRef.page(eventReader.totalNumberOfEvents() / metadata.getPageSize());
         }
     }
 
