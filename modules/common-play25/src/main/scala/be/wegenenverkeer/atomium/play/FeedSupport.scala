@@ -1,17 +1,17 @@
-package be.wegenenverkeer.atomium.server.play
+package be.wegenenverkeer.atomium.play
 
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
 import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
-import be.wegenenverkeer.atomium.format.{Generator, Url}
+import be.wegenenverkeer.atomium.format.Generator
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 
 import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 /**
  * trait supporting serving of feed pages:

@@ -3,15 +3,12 @@ import sbt._
 
 object Dependencies {
 
-  val playVersion = "2.4.2"
   val play25Version = "2.5.4"
   val play26Version = "2.6.2"
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
   val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.26.5"
-  val playJson          = "com.typesafe.play"           %%    "play-json"                     % playVersion
-  val play              = "com.typesafe.play"           %%    "play"                          % playVersion
 
   //play25 deps
   val play25Json          = "com.typesafe.play"           %%    "play-json"                     % play25Version
@@ -25,11 +22,8 @@ object Dependencies {
 
   // test deps
   val scalaTest         = "org.scalatest"               %%    "scalatest"               % "3.0.1"        % "test"
-  val scalaTestPlay     = "org.scalatestplus"           %%    "play"                    % "1.2.0"        % "test"
   val scalaTestPlay26   = "org.scalatestplus.play"      %%    "scalatestplus-play"      % "3.1.1"        % "test"
   val scalaCheck        = "org.scalacheck"              %%    "scalacheck"              % "1.13.4"       % "test"
-  val playMockWs        = "de.leanovate.play-mockws"    %%    "play-mockws"             % "0.12"         % "test"
-  val playTest          = "com.typesafe.play"           %%    "play-test"               % playVersion    % "test"
   val wiremock          = "com.github.tomakehurst"      %     "wiremock"                % "1.57"         % "test"
   val postgresdriver    = "org.postgresql"              %     "postgresql"              % "9.4-1200-jdbc41" % "test"
 
