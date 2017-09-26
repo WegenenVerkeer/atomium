@@ -21,7 +21,7 @@ public class AtomPubEntry<T> extends Entry<T> {
     @XmlElement
     private Content<T> content;
 
-    @XmlElement(name = "link")
+    @XmlElement
     private List<Link> links = new ArrayList<>();
 
 
