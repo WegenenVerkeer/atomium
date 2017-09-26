@@ -62,10 +62,10 @@ public final class FeedPage<T> {
     @XmlElement @XmlJavaTypeAdapter(Adapters.AtomDateTimeAdapter.class)
     private OffsetDateTime updated;
 
-    @XmlElement
+    @XmlElement(name = "link")
     private List<Link> links = new ArrayList<>();
 
-    @XmlElement
+    @XmlElement(name = "entry")
     private List<Entry<T>> entries = new ArrayList<>();
 
     public String getId() {
