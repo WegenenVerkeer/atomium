@@ -4,6 +4,8 @@ import be.wegenenverkeer.atomium.format.Adapters;
 import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.format.Generator;
 import be.wegenenverkeer.atomium.format.Link;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @XmlRootElement(namespace = "http://www.w3.org/2005/Atom", name = "feed")
+@JsonPropertyOrder({"id", "base", "title", "generator", "updated", "links", "entries"})
 @XmlType(propOrder = {"base", "id", "title", "generator", "updated", "links", "entries"})
 @XmlAccessorType(XmlAccessType.NONE)
 public final class FeedPage<T> {
@@ -63,9 +66,11 @@ public final class FeedPage<T> {
     private OffsetDateTime updated;
 
     @XmlElement(name = "link")
+    @JsonProperty("links")
     private List<Link> links = new ArrayList<>();
 
     @XmlElement(name = "entry")
+    @JsonProperty("entries")
     private List<Entry<T>> entries = new ArrayList<>();
 
     public String getId() {

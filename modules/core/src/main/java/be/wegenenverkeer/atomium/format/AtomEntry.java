@@ -1,6 +1,8 @@
 package be.wegenenverkeer.atomium.format;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -21,6 +23,7 @@ public final class AtomEntry<T> extends Entry<T> {
     private Content<T> content;
 
     @XmlElement(name = "link")
+    @JsonProperty("links")
     private List<Link> links = new ArrayList<>();
 
 

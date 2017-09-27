@@ -1,5 +1,7 @@
 package be.wegenenverkeer.atomium.format;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -9,6 +11,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Generator {
 
     @XmlValue
+    @JsonProperty("text")
     private String text;
 
     @XmlAttribute
