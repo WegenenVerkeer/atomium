@@ -8,7 +8,7 @@ import play.api.libs.json.{Format, Json}
   * @param entryFormat the Format for the Entry
   * @tparam E The type of the Entry
   */
-case class PlayJsonEntryCodec[E](implicit val entryFormat: Format[E]) extends Codec[E, String] {
+case class PlayJsonEntryCodec[E]()(implicit val entryFormat: Format[E]) extends Codec[E, String] {
 
   override def getMimeType: String = "application/json"
 

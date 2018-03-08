@@ -6,7 +6,7 @@ import play.api.libs.json.{Format, Json}
 /**
   * Created by Karel Maesen, Geovise BVBA on 18/11/16.
   */
-case class PlayJsonCodec[E](implicit val entryFormat: Format[E]) extends FeedPageCodec[E, Array[Byte]] {
+case class PlayJsonCodec[E]()(implicit val entryFormat: Format[E]) extends FeedPageCodec[E, Array[Byte]] {
 
   import PlayJsonFormats._
 
