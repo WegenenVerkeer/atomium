@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.play
 
-import java.lang.{Double => JDouble, Integer => JInteger, Long => JLong}
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import javax.xml.bind.annotation.{XmlAttribute, XmlElement, XmlElementRef, XmlValue}
 
