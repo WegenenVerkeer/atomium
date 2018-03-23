@@ -24,13 +24,13 @@ public class PostgresDialect implements JdbcDialect {
             + " %s INT, "
             + "%s VARCHAR(60), "
             + " %s TIMESTAMP, "
-            + " %s TEXT )";
+            + " %s %s )";
 
-    final private static String INSERT_STATEMENT = "INSERT INTO %s ( %s, %s, %s) VALUES (?, ?, ?)";
+    final private static String INSERT_STATEMENT = "INSERT INTO %s ( %s, %s, %s) VALUES (?, ?, CAST(? AS %s))";
 
     final private static String MAX_SEQNO_STATEMENT = "SELECT MAX( %s ) FROM %s";
 
-    final private static String SELECT_STATEMENT = "SELECT %s, %s, %s FROM %s WHERE %s >= ? ORDER BY %s LIMIT ?";
+    final private static String SELECT_STATEMENT = "SELECT %s, CAST(%s AS TEXT), %s FROM %s WHERE %s >= ? ORDER BY %s LIMIT ?";
 
     //TODO -- translate to English
     /**
@@ -133,7 +133,8 @@ public class PostgresDialect implements JdbcDialect {
                 meta.getSequenceNoColumnName(),
                 meta.getIdColumnName(),
                 meta.getUpdatedColumnName(),
-                meta.getEntryValueColumnName());
+                meta.getEntryValueColumnName(),
+                meta.getEntryValColumnType());
 
         return () -> {
             try (Statement stmt = conn.createStatement()) {
@@ -165,7 +166,8 @@ public class PostgresDialect implements JdbcDialect {
                 meta.getTableName(),
                 meta.getIdColumnName(),
                 meta.getUpdatedColumnName(),
-                meta.getEntryValueColumnName());
+                meta.getEntryValueColumnName(),
+                meta.getEntryValColumnType());
 
         final PreparedStatement stmt = conn.prepareStatement(sql);
 

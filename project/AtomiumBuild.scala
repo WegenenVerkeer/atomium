@@ -43,8 +43,8 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
 
-    val mainDeps = Seq(slf4j, commonsIo, rxhttpclient)
-    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
+    val mainDeps = Seq(slf4j, rxhttpclient)
+    val testDeps = Seq(junit, wiremock, junitInterface)
 
     project("client-java")
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
@@ -56,40 +56,26 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val commonPlayModule = {
-
-    val mainDeps = Seq(play, playJson)
-
-    project("common-play")
-      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(coreModule)
-  }
-
-  //----------------------------------------------------------------
-  lazy val commonPlay25Module = {
+  lazy val play25Module = {
 
     val mainDeps = Seq(play25, play25Json)
+    val testDeps = Seq(play25Test) ++ mainScalaTestDependencies
 
-    //set source dir to source dir in commonPlayModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))
-
-    project("common-play25")
-      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
-      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
+    project("play25")
+      .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossScalaVersions := Seq("2.11.8"))
       .dependsOn(coreModule)
   }
 
   //----------------------------------------------------------------
-  lazy val commonPlay26Module = {
+  lazy val play26Module = {
 
     val mainDeps = Seq(play26, play26Json)
 
     //set source dir to source dir in commonPlayModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/common-play/src/main/scala"))
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/play25/src/main/scala", b / "modules/play26/src/main/scala"))
 
-    project("common-play26")
+    project("play26")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
       .settings(crossScalaVersions := Seq("2.11.8", "2.12.3"))
@@ -97,73 +83,13 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
 
-  //----------------------------------------------------------------
-  lazy val serverSpringModule = {
-
-    val mainDeps = Seq(slf4j, lombok, springContext, springTx, jaxRsApi, restEasy)
-    val testDeps = Seq(junit, wiremock, mockitoCore, assertJ, junitInterface)
-
-    project("server-spring")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( autoScalaLibrary := false )
-      .settings(crossPaths := false)
-      .dependsOn(coreModule)
-  }
-
-
-
-  //----------------------------------------------------------------
-  lazy val serverPlayModule = {
-
-    val mainDeps = Seq(filters)
-    val testDeps = Seq(playMockWs, playTest, scalaTestPlay) ++ mainScalaTestDependencies
-
-    project("server-play")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.10.4", "2.11.8"))
-      .dependsOn(commonPlayModule)
-  }
-
-  //----------------------------------------------------------------
-  lazy val serverPlay25Module = {
-
-    val mainDeps = Seq()
-    val testDeps = Seq(playMockWs, play25Test, scalaTestPlay) ++ mainScalaTestDependencies
-
-    //set source dir to source dir in serverPlaySampleModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/server-play/src/main/scala"))
-
-    project("server-play25")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
-      .settings(crossScalaVersions := Seq("2.11.8"))
-      .dependsOn(commonPlay25Module)
-  }
-
-  //----------------------------------------------------------------
-  lazy val serverPlay26Module = {
-
-    val mainDeps = Seq()
-    val testDeps = Seq(play26Test, scalaTestPlay26) ++ mainScalaTestDependencies
-
-    project("server-play26")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.12.3", "2.11.8"))
-      .dependsOn(commonPlay26Module)
-  }
-
 
   //----------------------------------------------------------------
   lazy val main = mainProject(
     coreModule,
-    commonPlayModule,
-    commonPlay25Module,
-    commonPlay26Module,
+    play25Module,
+    play26Module,
     clientScalaModule,
-    clientJavaModule,
-    serverSpringModule,
-    serverPlayModule,
-    serverPlay25Module,
-    serverPlay26Module
+    clientJavaModule
   )
 }

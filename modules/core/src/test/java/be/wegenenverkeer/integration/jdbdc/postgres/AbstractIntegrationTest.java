@@ -32,7 +32,16 @@ public abstract class AbstractIntegrationTest {
     static JdbcDialect dialect = PostgresDialect.INSTANCE;
     static String databaseUrl = "jdbc:postgresql://localhost/atomium_test";
 
-    JdbcEventStoreMetadata metadata = new JdbcEventStoreMetadata("events", "event_id", "updated", "id", "seqno", "json");
+    JdbcEventStoreMetadata metadata =
+            new JdbcEventStoreMetadata(
+                    "events",
+                    "event_id",
+                    "updated",
+                    "id",
+                    "seqno",
+                    "json",
+                    "jsonb"
+            );
 
     boolean withTableCreation(){
         return false;
