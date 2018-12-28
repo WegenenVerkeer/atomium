@@ -87,8 +87,8 @@ object PlayJsonFormats {
 
   implicit def contentReads[T: Reads]: Reads[Content[T]] = (
     (__ \ "value").read[T] and
-      (__ \ "type").read[String]
-    )((value, `type`) => new Content[T](value, `type`))
+      (__ \ "type").readNullable[String]
+    )((value, `type`) => new Content[T](value, `type`.getOrElse("")))
 
   implicit def entryWrites[T: Writes]: Writes[Entry[T]] = new Writes[Entry[T]] {
 
@@ -132,17 +132,17 @@ object PlayJsonFormats {
     (__ \ "id").read[String] and
       (__ \ "updated").read[OffsetDateTime] and
       (__ \ "content").read[Content[T]] and
-      (__ \ "links").read[List[Link]]
-    )((id, updated, content, links) => new AtomEntry[T](id, updated, content, links.asJava))
+      (__ \ "links").readNullable[List[Link]]
+    )((id, updated, content, links) => new AtomEntry[T](id, updated, content, links.getOrElse(Nil).asJava))
 
   implicit def atomPubEntryReads[T: Reads]: Reads[AtomPubEntry[T]] = (
     (__ \ "id").read[String] and
       (__ \ "updated").read[OffsetDateTime] and
       (__ \ "content").read[Content[T]] and
-      (__ \ "links").read[List[Link]] and
+      (__ \ "links").readNullable[List[Link]] and
       (__ \ "edited").read[OffsetDateTime] and
       (__ \ "control").read[Control]
-    )((id, updated, content, links, edited, control) => new AtomPubEntry[T](id, updated, content, links.asJava, edited, control))
+    )((id, updated, content, links, edited, control) => new AtomPubEntry[T](id, updated, content, links.getOrElse(Nil).asJava, edited, control))
 
   // candidate for macro format
   implicit def feedWrites[T: Writes]: Writes[FeedPage[T]] = (
@@ -164,6 +164,6 @@ object PlayJsonFormats {
       (__ \ "updated").read[OffsetDateTime] and
       (__ \ "links").read[List[Link]] and
       (__ \ "entries").read[List[Entry[T]]]
-    )((id, base, title, generator, updated, links, entries) => new FeedPage[T](id, base.getPath, title.getOrElse(""), generator.getOrElse(null), updated, links.asJava, entries.asJava))
+    )((id, base, title, generator, updated, links, entries) => new FeedPage[T](id, base.getPath, title.getOrElse(""), generator.orNull, updated, links.asJava, entries.asJava))
 
 }
