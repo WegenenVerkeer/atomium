@@ -103,6 +103,7 @@ public class AtomiumClient {
             this.rxHttpClient = rxClient;
             this.feedName = feedPath;
             this.jsonCodec = new JacksonFeedPageCodec<E>(entryTypeMarker);
+            ((JacksonFeedPageCodec<E>) this.jsonCodec).registerModules(modules);
             this.xmlCodec = new JaxbCodec<E>(entryTypeMarker);
         }
 
