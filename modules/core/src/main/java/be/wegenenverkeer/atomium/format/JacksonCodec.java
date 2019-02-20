@@ -33,6 +33,10 @@ public class JacksonCodec<T> implements Codec<T, String> {
         this.mapper = m;
     }
 
+    public void registerModules(Module... modules) {
+        this.mapper.registerModules(modules);
+    }
+
     @Override
     public String getMimeType() {
         return "application/json";
