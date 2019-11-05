@@ -1,5 +1,10 @@
 language: scala
 
+dist: xenial
+
+java:
+- openjdk8
+
 scala:
 - 2.11.5
 
