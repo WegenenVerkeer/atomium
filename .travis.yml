@@ -7,9 +7,6 @@ script: sbt clean +test
 
 sudo: false
 
-jdk:
-- oraclejdk8
-
 services:
 - postgresql
 
@@ -28,8 +25,6 @@ notifications:
   email:
     recipients:
     - karel@geovise.com
-    - peter.rigole@atomicbits.io
-    - peter.mortier@gmail.com
 
 env:
   global:
