@@ -18,7 +18,7 @@ import scala.concurrent.Future
  * sets ETag and Last-Modified response headers and responds with Not-Modified if needed to reduce bandwidth
  * supports content-negotiation and responds with either JSON or XML depending on registered marshallers
  *
- * @tparam T the type of the feed entries²
+ * @tparam T the type of the feed entries
  */
 trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors {
 

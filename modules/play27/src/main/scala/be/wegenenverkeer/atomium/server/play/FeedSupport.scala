@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.play
+package be.wegenenverkeer.atomium.server.play
 
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -8,7 +8,6 @@ import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
 import be.wegenenverkeer.atomium.format.Generator
 import org.slf4j.LoggerFactory
 import play.api.http.{HeaderNames, MediaRange}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -23,37 +22,29 @@ import scala.concurrent.Future
  */
 trait FeedSupport[T] extends Results with HeaderNames with Rendering with AcceptExtractors {
 
+  def actionBuilder: ActionBuilder[Request, AnyContent]
+  implicit def executionContext: scala.concurrent.ExecutionContext
+
   private val logger = LoggerFactory.getLogger(getClass)
 
   private val cacheTime = 60 * 60 * 24 * 365 //365 days, 1 year (approximately)
 
-  private val generator = new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "0.0.1")
+  private val generator = new Generator("atomium", "http://github.com/WegenenVerkeer/atomium", "1.0.0")
 
   /**
-   * Define the PartialFunction that will map acceptable content types to FeedMarshallers.
+   * Define the PartialFunction that will map acceptable content types to FeedPageCodec.
    *
    *
    * For instance:
    * {{{
    *   // supports XML and JSON and used predefined FeedMarshallers
    *   override def marshallers = {
-   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]()
-   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]()
+   *     case Accepts.Xml()  => PlayJaxbCodec[String]()
+   *     case Accepts.Json() => PlayJsonCodec[String]()
    *   }
    * }}}
    *
-   * or in case a specifc content types is need...
-   *
-   * {{{
-   *   // supports XML and JSON and used predefined FeedMarshallers
-   *   override def marshallers = {
-   *     case Accepts.Xml()  => JaxbFeedMarshaller[String]("application/my-api-v1.0+xml")
-   *     case Accepts.Json() => PlayJsonFeedMarshaller[String]("application/my-api-v1.0+json")
-   *   }
-   * }}}
-   *
-   *
-   * @return `PartialFunction[MediaRange, FeedMarshaller]`
+   * @return `PartialFunction[MediaRange, FeedPageCodec]`
    */
   def marshallers: PartialFunction[MediaRange, FeedPageCodec[T, Array[Byte]]]
 
@@ -74,7 +65,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
    * @param codec the implicit codec
    * @return the response
    */
-  def processFeedPage(page: Future[Option[FeedPage[T]]])(implicit codec: Codec) = Action.async { implicit request =>
+  def processFeedPage(page: Future[Option[FeedPage[T]]])(implicit codec: Codec) = actionBuilder.async { implicit request =>
     logger.info(s"processing request: $request")
     page.map {
       case Some(f) =>

@@ -5,20 +5,21 @@ object Dependencies {
 
   val play25Version = "2.5.4"
   val play26Version = "2.6.2"
+  val play27Version = "2.7.3"
 
   // main deps
   val logback           = "ch.qos.logback"              %     "logback-classic"               % "1.1.1"
   val rxscala           = "io.reactivex"                %%    "rxscala"                       % "0.26.5"
 
-  //play25 deps
-  val play25Json          = "com.typesafe.play"           %%    "play-json"                     % play25Version
-  val play25              = "com.typesafe.play"           %%    "play"                          % play25Version
-  val play25Test          = "com.typesafe.play"           %%    "play-test"                     % play25Version    % "test"
-
   //play26 deps
   val play26Json          = "com.typesafe.play"           %%    "play-json"                     % play26Version
   val play26              = "com.typesafe.play"           %%    "play"                          % play26Version
   val play26Test          = "com.typesafe.play"           %%    "play-test"                     % play26Version    % "test"
+
+  //play27 deps
+  val play27Json          = "com.typesafe.play"           %%    "play-json"                     % "2.7.1"
+  val play27              = "com.typesafe.play"           %%    "play"                          % play27Version
+  val play27Test          = "com.typesafe.play"           %%    "play-test"                     % play27Version    % "test"
 
   // test deps
   val scalaTest         = "org.scalatest"               %%    "scalatest"               % "3.0.1"        % "test"
