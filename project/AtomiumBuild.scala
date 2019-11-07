@@ -56,24 +56,12 @@ object AtomiumBuild extends Build with BuildSettings {
 
 
   //----------------------------------------------------------------
-  lazy val play25Module = {
-
-    val mainDeps = Seq(play25, play25Json)
-    val testDeps = Seq(play25Test) ++ mainScalaTestDependencies
-
-    project("play25")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.11.8"))
-      .dependsOn(coreModule)
-  }
-
-  //----------------------------------------------------------------
   lazy val play26Module = {
 
     val mainDeps = Seq(play26, play26Json)
 
     //set source dir to source dir in commonPlayModule
-    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/play25/src/main/scala", b / "modules/play26/src/main/scala"))
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/play2X/src/main/scala", b / "modules/play26/src/main/scala"))
 
     project("play26")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
@@ -83,12 +71,28 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
 
+  //----------------------------------------------------------------
+  lazy val play27Module = {
+
+    val mainDeps = Seq(play27, play27Json)
+
+    //set source dir to source dir in commonPlayModule
+    val sourceDir = (baseDirectory in ThisBuild)( b => Seq( b / "modules/play2X/src/main/scala", b / "modules/play27/src/main/scala"))
+
+    project("play27")
+      .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
+      .settings( unmanagedSourceDirectories in Compile := sourceDir.value )
+      .settings(crossScalaVersions := Seq("2.12.3"))
+      .dependsOn(coreModule)
+  }
+
+
 
   //----------------------------------------------------------------
   lazy val main = mainProject(
     coreModule,
-    play25Module,
     play26Module,
+    play27Module,
     clientScalaModule,
     clientJavaModule
   )
