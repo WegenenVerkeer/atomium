@@ -31,8 +31,8 @@ trait BuildSettings {
   private def projectSettings() = {
 
     val projectSettings = Seq(
-      crossScalaVersions := Seq("2.12.3", "2.11.8"),
-      scalaVersion := crossScalaVersions.value.last,
+      crossScalaVersions := Seq("2.12.8", "2.13.2"),
+      scalaVersion := "2.12.8",
       parallelExecution := false,
       publishArtifact in Test := true,
       resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",

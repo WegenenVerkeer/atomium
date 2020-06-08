@@ -30,7 +30,7 @@ public abstract class AbstractIntegrationTest {
 
     static Driver postgresDriver;
     static JdbcDialect dialect = PostgresDialect.INSTANCE;
-    static String databaseUrl = "jdbc:postgresql://localhost/atomium_test";
+    static String databaseUrl = "jdbc:postgresql://localhost:5555/atomium_test";
 
     JdbcEventStoreMetadata metadata =
             new JdbcEventStoreMetadata(

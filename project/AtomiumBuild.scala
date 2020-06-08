@@ -55,17 +55,17 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
 
-  //----------------------------------------------------------------
-  lazy val play25Module = {
-
-    val mainDeps = Seq(play25, play25Json)
-    val testDeps = Seq(play25Test) ++ mainScalaTestDependencies
-
-    project("play25")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(crossScalaVersions := Seq("2.11.8"))
-      .dependsOn(coreModule)
-  }
+//  //----------------------------------------------------------------
+//  lazy val play25Module = {
+//
+//    val mainDeps = Seq(play25, play25Json)
+//    val testDeps = Seq(play25Test) ++ mainScalaTestDependencies
+//
+//    project("play25")
+//      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+//      .settings(crossScalaVersions := Seq("2.11.8"))
+//      .dependsOn(coreModule)
+//  }
 
   //----------------------------------------------------------------
   lazy val play26Module = {
@@ -87,7 +87,6 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val main = mainProject(
     coreModule,
-    play25Module,
     play26Module,
     clientScalaModule,
     clientJavaModule

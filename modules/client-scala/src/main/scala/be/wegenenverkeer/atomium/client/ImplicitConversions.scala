@@ -4,7 +4,7 @@ import java.lang
 import java.util.function.{BiFunction => JBiFunction}
 
 import be.wegenenverkeer.atomium.japi.client.{AtomiumClient => JAtomiumClient, FeedEntry, RetryStrategy => JRetryStrategy}
-import be.wegenenverkeer.atomium.japi.client.AtomiumClient.{FeedObservableBuilder => JFeedObservableBuilder}
+import be.wegenenverkeer.atomium.japi.client.AtomiumClient.{AtomiumFeed => JFeedObservableBuilder}
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
 

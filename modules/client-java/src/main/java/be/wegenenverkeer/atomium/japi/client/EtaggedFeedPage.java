@@ -11,19 +11,19 @@ import java.util.Optional;
 /**
  * Created by Karel Maesen, Geovise BVBA on 24/03/15.
  */
-class FeedWrapper<T> {
+class EtaggedFeedPage<T> {
 
     final private List<Link> links;
     final private List<Entry<T>> entries;
     final Optional<String> etag;
 
 
-    public FeedWrapper(FeedPage<T> feedPage, Optional<String> etag) {
+    public EtaggedFeedPage(FeedPage<T> feedPage, Optional<String> etag) {
         this(feedPage.getLinks(), feedPage.getEntries(), etag);
         Collections.reverse(entries);
     }
 
-    public FeedWrapper(List<Link> links, List<Entry<T>> entries, Optional<String> etag) {
+    public EtaggedFeedPage(List<Link> links, List<Entry<T>> entries, Optional<String> etag) {
         this.links = links;
         this.entries = entries;
         this.etag = etag;
