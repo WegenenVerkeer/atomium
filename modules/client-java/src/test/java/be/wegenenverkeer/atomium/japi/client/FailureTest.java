@@ -3,14 +3,15 @@ package be.wegenenverkeer.atomium.japi.client;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import org.junit.*;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 20/08/15.
@@ -48,20 +49,11 @@ public class FailureTest {
 
     @Test
     public void testReceivingAnError() {
-        Observable<FeedEntry<Event>> observable = client.feed("/noselflinkfeed", Event.class).observeFromNowOn(100)
-                .take(10);
-
-        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-
-        observable.subscribe(subscriber);
-
-        subscriber.awaitTerminalEvent(5, TimeUnit.SECONDS);
-
-        assertEquals(1, subscriber.getOnErrorEvents().size());
-        Throwable receivedError = subscriber.getOnErrorEvents().get(0);
-        assertEquals(IllegalStateException.class, receivedError.getClass());
-
-
+        client.feed("/noselflinkfeed", Event.class).observeFromNowOn(100)
+                .take(10)
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertError(IllegalStateException.class);
     }
 
 }

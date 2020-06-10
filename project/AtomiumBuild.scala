@@ -10,7 +10,7 @@ object AtomiumBuild extends Build with BuildSettings {
   import Dependencies._
 
 
-  javacOptions in Global ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint", "-Xdoclint:none")
+  javacOptions in Global ++= Seq("-source", "11", "-target", "1.8", "-Xlint", "-Xdoclint:none")
 
 
   //----------------------------------------------------------------

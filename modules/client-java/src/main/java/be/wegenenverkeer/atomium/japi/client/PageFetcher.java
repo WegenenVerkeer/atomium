@@ -43,15 +43,15 @@ class PageFetcher<E> {
 
     private ClientRequest buildConditionalGet(String url, Optional<String> etag) {
         ClientRequestBuilder builder = rxHttpClient.requestBuilder().setMethod("GET");
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            builder.addHeader(header.getKey(), header.getValue());
+
+        if (headers != null) {
+            headers.forEach(builder::addHeader);
         }
+
         String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(feedName, url);
         builder.setUrlRelativetoBase(relative);
 
-        if (etag.isPresent()) {
-            builder.addHeader("If-None-Match", etag.get());
-        }
+        etag.ifPresent(s -> builder.addHeader("If-None-Match", s));
 
         return builder.build();
     }

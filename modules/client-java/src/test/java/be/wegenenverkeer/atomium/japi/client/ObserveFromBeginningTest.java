@@ -4,8 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.*;
-import rx.Observable;
-import rx.observers.TestSubscriber;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,25 +48,25 @@ public class ObserveFromBeginningTest {
 
 
 
-    @Test
-    public void testSubscribingToObservableFromBeginning(){
-        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFromBeginning(1000);
-
-        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-
-        observable.take(3).subscribe(subscriber);
-
-        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
-
-        subscriber.assertNoErrors();
-
-        //we should have received entries with the self link 0/forward/0
-        List<FeedEntry<Event>> onNextEvents = subscriber.getOnNextEvents();
-        FeedEntry<Event> firstEntry = onNextEvents.get(0);
-        assertEquals("0/forward/10", firstEntry.getSelfHref());
-        assertEquals("urn:uuid:83aee39f-923d-451e-8ec4-d6333ba8999d", firstEntry.getEntry().getId());
-
-    }
+//    @Test
+//    public void testSubscribingToObservableFromBeginning(){
+//        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFromBeginning(1000);
+//
+//        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
+//
+//        observable.take(3).subscribe(subscriber);
+//
+//        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
+//
+//        subscriber.assertNoErrors();
+//
+//        //we should have received entries with the self link 0/forward/0
+//        List<FeedEntry<Event>> onNextEvents = subscriber.getOnNextEvents();
+//        FeedEntry<Event> firstEntry = onNextEvents.get(0);
+//        assertEquals("0/forward/10", firstEntry.getSelfHref());
+//        assertEquals("urn:uuid:83aee39f-923d-451e-8ec4-d6333ba8999d", firstEntry.getEntry().getId());
+//
+//    }
 
 
 }
