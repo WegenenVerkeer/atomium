@@ -1,23 +1,27 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.rxhttpclient.HttpClientError;
 import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.subscribers.TestSubscriber;
-import org.junit.*;
-import org.reactivestreams.Subscription;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -25,12 +29,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class FunctionalTest {
 
-    private final static SingleRootFileSource WIREMOCK_MAPPINGS = new SingleRootFileSource
-            ("modules/client-java/src/test/resources/basis-scenario");
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("basis-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
-            wireMockConfig().fileSource(WIREMOCK_MAPPINGS)
+            wireMockConfig()
+                    .fileSource(WIREMOCK_MAPPINGS)
+                    .notifier(new Slf4jNotifier(true))
     );
 
     @Rule
@@ -96,13 +101,11 @@ public class FunctionalTest {
                 .observeFrom("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10", 1000)
                 .take(2)
                 .test()
-                .awaitDone(30, TimeUnit.SECONDS)
+                .awaitCount(2)
                 .assertNoErrors()
                 .values();
 
-        for (FeedEntry<Event> entry : events) {
-            assertEquals("20/forward/10", entry.getSelfHref());
-        }
+        events.forEach(entry -> assertEquals("20/forward/10", entry.getSelfHref()));
     }
 
 
@@ -153,7 +156,7 @@ public class FunctionalTest {
         //We only take 10 examples to make the point
         observable.take(10)
                 .test()
-                .awaitDone(10, TimeUnit.SECONDS)
+                .awaitCount(10)
                 .assertNoErrors()
                 .assertValueCount(10);
     }

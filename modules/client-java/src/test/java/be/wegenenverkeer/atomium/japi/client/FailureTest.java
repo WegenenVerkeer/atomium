@@ -1,7 +1,10 @@
 package be.wegenenverkeer.atomium.japi.client;
 
+import be.wegenenverkeer.rxhttpclient.HttpClientError;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.After;
 import org.junit.Before;
@@ -18,12 +21,13 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
  */
 public class FailureTest {
 
-    private final static SingleRootFileSource WIREMOCK_MAPPINGS =
-            new SingleRootFileSource("modules/client-java/src/test/resources/no-self-link-scenario");
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("no-self-link-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
-            wireMockConfig().fileSource(WIREMOCK_MAPPINGS)
+            wireMockConfig()
+                    .fileSource(WIREMOCK_MAPPINGS)
+                    .notifier(new Slf4jNotifier(true))
     );
 
     @Rule

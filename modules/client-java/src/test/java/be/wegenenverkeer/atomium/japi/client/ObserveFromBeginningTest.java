@@ -1,15 +1,15 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import org.junit.*;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 26/08/15.
@@ -17,8 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class ObserveFromBeginningTest {
 
 
-    private final static SingleRootFileSource WIREMOCK_MAPPINGS = new SingleRootFileSource
-            ("modules/client-java/src/test/resources/from-beginning-scenario");
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
@@ -31,7 +30,7 @@ public class ObserveFromBeginningTest {
     AtomiumClient client;
 
     @Before
-    public void before(){
+    public void before() {
         client = new AtomiumClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
                 .setAcceptJson()
@@ -45,7 +44,6 @@ public class ObserveFromBeginningTest {
     public void after() {
         client.close();
     }
-
 
 
 //    @Test

@@ -1,21 +1,21 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
+import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import org.junit.*;
-
-import java.util.concurrent.TimeUnit;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 28/10/15.
  */
 public class RetryStrategyTest {
 
-    private final static SingleRootFileSource WIREMOCK_MAPPINGS = new SingleRootFileSource
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource
             ("modules/client-java/src/test/resources/retry-scenario");
 
     @ClassRule
