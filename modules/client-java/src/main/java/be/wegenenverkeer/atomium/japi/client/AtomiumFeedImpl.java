@@ -14,7 +14,10 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     private final static Logger logger = LoggerFactory.getLogger(AtomiumFeedImpl.class);
     private final PageFetcher<E> pageFetcher;
 
-    private RetryStrategy retryStrategy;
+    private RetryStrategy retryStrategy = (count, exception) -> {
+        throw new FeedFetchException("Problem fetching page", exception);
+    };
+
     private int retryCount = 0;
 
     AtomiumFeedImpl(PageFetcher<E> pageFetcher) {
@@ -47,13 +50,10 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     private Flowable<FeedEntry<E>> fetchEntries(String pageUrl, Optional<String> eTag) {
         return fetchPage(pageUrl, eTag)
                 .toFlowable()
-                .flatMap(page ->
-                        this.parseEntries(page)
-                                .concatWith(Flowable.just("")
-                                        .delay(pageFetcher.getPollingInterval().toMillis(), TimeUnit.MILLISECONDS)
-                                        .doOnNext(delay -> logger.debug("Waited {}ms to fetch more entries.", pageFetcher.getPollingInterval().toMillis()))
-                                        .flatMap(delay -> fetchEntries(previousOrSelfHref(page), page.getEtag()))
-                                )
+                .flatMap(page -> this.parseEntries(page).concatWith(Flowable.just("")
+                        .delay(pageFetcher.getPollingInterval().toMillis(), TimeUnit.MILLISECONDS)
+                        .doOnNext(delay -> logger.debug("Waited {}ms to fetch more entries.", pageFetcher.getPollingInterval().toMillis()))
+                        .flatMap(delay -> fetchEntries(previousOrSelfHref(page), page.getEtag())))
                 );
     }
 
@@ -62,17 +62,11 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     }
 
     private Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
-        Single<CachedFeedPage<E>> pageSingle = pageFetcher.fetch(pageUrl, eTag);
-
-        if (retryStrategy != null) {
-            return pageSingle.retryWhen(throwableFlowable ->
-                    throwableFlowable
-                            .map(throwable -> retryStrategy.apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
-                            .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
-            );
-        } else {
-            return pageSingle;
-        }
+        return pageFetcher.fetch(pageUrl, eTag)
+                .retryWhen(throwableFlowable -> throwableFlowable
+                        .map(throwable -> retryStrategy.apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
+                        .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
+                );
     }
 
     private Flowable<FeedEntry<E>> parseEntries(CachedFeedPage<E> page) {
