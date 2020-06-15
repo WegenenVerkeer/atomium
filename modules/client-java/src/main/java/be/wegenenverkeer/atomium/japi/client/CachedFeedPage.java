@@ -17,7 +17,6 @@ class CachedFeedPage<T> {
     final private List<Entry<T>> entries;
     final Optional<String> etag;
 
-
     public CachedFeedPage(FeedPage<T> feedPage, Optional<String> etag) {
         this(feedPage.getLinks(), feedPage.getEntries(), etag);
         Collections.reverse(entries);

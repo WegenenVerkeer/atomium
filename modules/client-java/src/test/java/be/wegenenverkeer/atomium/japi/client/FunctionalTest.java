@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.reactivex.rxjava3.core.Flowable;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -58,13 +59,18 @@ public class FunctionalTest {
 
     @Test
     public void testSubscribingToObservable() {
+        String entryId = "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a";
+        String secondEntryId = "urn:uuid:e9b01f20-e294-4900-9cd2-484b25e07dc3";
+
         client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
-                .take(20) // TODO stopt na 1 page, kan dat?
+                .from(entryId, "20/forward/10")
+                .take(20)
                 .test()
                 .awaitCount(20)
                 .assertNoErrors()
                 .assertValueCount(20)
+                .assertValueAt(0, event -> event.getEntry().getId().equals(entryId))
+                .assertValueAt(1, event -> event.getEntry().getId().equals(secondEntryId))
                 .assertComplete();
     }
 
