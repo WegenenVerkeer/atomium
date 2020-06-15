@@ -28,17 +28,17 @@ object AtomiumBuild extends Build with BuildSettings {
   }
 
   //----------------------------------------------------------------
-  lazy val clientScalaModule = {
-
-    val mainDeps = Seq(rxscala)
-    val testDeps = mainScalaTestDependencies ++ Seq(wiremock)
-
-    project("client-scala")
-      .settings(publishArtifact in Test := true)
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .dependsOn(coreModule, clientJavaModule % "test->test;compile->compile")
-      .aggregate(coreModule)
-  }
+//  lazy val clientScalaModule = {
+//
+//    val mainDeps = Seq(rxscala)
+//    val testDeps = mainScalaTestDependencies ++ Seq(wiremock)
+//
+//    project("client-scala")
+//      .settings(publishArtifact in Test := true)
+//      .settings(libraryDependencies ++= mainDeps ++ testDeps)
+//      .dependsOn(coreModule, clientJavaModule % "test->test;compile->compile")
+//      .aggregate(coreModule)
+//  }
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
@@ -88,7 +88,7 @@ object AtomiumBuild extends Build with BuildSettings {
   lazy val main = mainProject(
     coreModule,
     play26Module,
-    clientScalaModule,
+//    clientScalaModule,
     clientJavaModule
   )
 }
