@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
+import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
@@ -7,16 +8,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-/**
- * Created by Karel Maesen, Geovise BVBA on 28/10/15.
- */
 public class RetryStrategyTest {
 
-    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource
-            ("modules/client-java/src/test/resources/retry-scenario");
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("retry-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
@@ -26,15 +26,10 @@ public class RetryStrategyTest {
     @Rule
     public WireMockClassRule instanceRule = wireMockRule;
 
-    AtomiumClient client;
+    private AtomiumClient client;
 
     @Before
     public void before() {
-        client = new AtomiumClient.Builder()
-                .setBaseUrl("http://localhost:8080/")
-                .setAcceptJson()
-                .build();
-
         //reset WireMock so it will serve the events feed
         WireMock.resetToDefault();
     }
@@ -44,65 +39,61 @@ public class RetryStrategyTest {
         client.close();
     }
 
+    @Test
+    public void testNoRetryStrategy() {
+        client = new RxHttpAtomiumClient.Builder()
+                .setBaseUrl("http://localhost:8080/")
+                .setAcceptJson()
+                .build();
 
-//    @Test
-//    public void testNoRetryStrategy() {
-//        client.feed("/feeds/events", Event.class)
-//                .observeFromBeginning(1000);
-//
-//        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-//
-//        observable.subscribe(subscriber);
-//
-//        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
-//
-//        assertEquals(1, subscriber.getOnErrorEvents().size());
-//    }
+        client.feed("/feeds/events", Event.class)
+                .fromBeginning()
+                .test()
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertError(FeedFetchException.class);
+    }
 
-//
-//    @Test
-//    public void testRetryStrategyOneRetries() {
-//
-//        Observable<FeedEntry<Event>> observable = client
-//                .feed("/feeds/events", Event.class)
-//                .withRetry((n, t) -> {
-//                    if (n < 2) {
-//                        return 2*n*1000L;
-//                    } else throw new RuntimeException(t);
-//                })
-//                .observeFromBeginning(1000);
-//
-//        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-//
-//        observable.subscribe(subscriber);
-//
-//        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
-//
-//        assertEquals(1, subscriber.getOnErrorEvents().size());
-//
-//    }
-//
-//    @Test
-//    public void testRetryStrategyThreeRetries() {
-//
-//        Observable<FeedEntry<Event>> observable = client
-//                .feed("/feeds/events", Event.class)
-//                .withRetry((n, t) -> {
-//                    if (n < 3) {
-//                        return 2*n*1000L;
-//                    } else throw new RuntimeException(t);
-//                })
-//                .observeFromBeginning(1000).take(25);
-//
-//        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-//
-//        observable.subscribe(subscriber);
-//
-//        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
-//
-//        subscriber.assertNoErrors();
-//        assertEquals(25, subscriber.getOnNextEvents().size());
-//
-//    }
+    @Test
+    public void testRetryStrategyOneRetries() {
+        client = new RxHttpAtomiumClient.Builder()
+                .setBaseUrl("http://localhost:8080/")
+                .setAcceptJson()
+                .setRetryStrategy((n, t) -> {
+                    if (n < 2) {
+                        return 2 * n * 1000L;
+                    } else {
+                        throw new RuntimeException(t);
+                    }
+                })
+                .build();
 
+        client.feed("/feeds/events", Event.class)
+                .fromBeginning()
+                .test()
+                .awaitDone(60, TimeUnit.SECONDS)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void testRetryStrategyThreeRetries() {
+        client = new RxHttpAtomiumClient.Builder()
+                .setBaseUrl("http://localhost:8080/")
+                .setAcceptJson()
+                .setRetryStrategy((n, t) -> {
+                    if (n < 3) {
+                        return 2 * n * 1000L;
+                    } else {
+                        throw new RuntimeException(t);
+                    }
+                })
+                .build();
+
+        client
+                .feed("/feeds/events", Event.class)
+                .fromBeginning()
+                .take(25)
+                .test()
+                .awaitDone(60, TimeUnit.SECONDS)
+                .assertNoErrors();
+    }
 }

@@ -20,7 +20,7 @@ import rx.observers.TestSubscriber
  *
  * Created by Karel Maesen, Geovise BVBA on 16/04/15.
  */
-class AtomiumClientTest extends FlatSpec with Matchers  with WithWireMock {
+class RxHttpAtomiumClientTest extends FlatSpec with Matchers  with WithWireMock {
 
   def fileSource = "modules/client-java/src/test/resources/basis-scenario"
 

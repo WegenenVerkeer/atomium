@@ -11,19 +11,19 @@ import java.util.Optional;
 /**
  * Created by Karel Maesen, Geovise BVBA on 24/03/15.
  */
-class EtaggedFeedPage<T> {
+class CachedFeedPage<T> {
 
     final private List<Link> links;
     final private List<Entry<T>> entries;
     final Optional<String> etag;
 
 
-    public EtaggedFeedPage(FeedPage<T> feedPage, Optional<String> etag) {
+    public CachedFeedPage(FeedPage<T> feedPage, Optional<String> etag) {
         this(feedPage.getLinks(), feedPage.getEntries(), etag);
         Collections.reverse(entries);
     }
 
-    public EtaggedFeedPage(List<Link> links, List<Entry<T>> entries, Optional<String> etag) {
+    public CachedFeedPage(List<Link> links, List<Entry<T>> entries, Optional<String> etag) {
         this.links = links;
         this.entries = entries;
         this.etag = etag;
@@ -96,7 +96,4 @@ class EtaggedFeedPage<T> {
     public List<Entry<T>> getEntries() {
         return this.entries;
     }
-
-
-
 }

@@ -2,20 +2,19 @@ package be.wegenenverkeer.atomium.japi.client;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
-import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.Test;
+
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.Assert.assertEquals;
 
-/**
- * Created by Karel Maesen, Geovise BVBA on 26/08/15.
- */
 public class ObserveFromBeginningTest {
-
 
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
 
@@ -27,11 +26,11 @@ public class ObserveFromBeginningTest {
     @Rule
     public WireMockClassRule instanceRule = wireMockRule;
 
-    AtomiumClient client;
+    private AtomiumClient client;
 
     @Before
     public void before() {
-        client = new AtomiumClient.Builder()
+        client = new RxHttpAtomiumClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
                 .setAcceptJson()
                 .build();
@@ -45,26 +44,20 @@ public class ObserveFromBeginningTest {
         client.close();
     }
 
+    @Test
+    public void testSubscribingToObservableFromBeginning(){
+        List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
+                .fromBeginning()
+                .take(3)
+                .test()
+                .awaitCount(3)
+                .assertNoErrors()
+                .assertValueCount(3)
+                .values();
 
-//    @Test
-//    public void testSubscribingToObservableFromBeginning(){
-//        Observable<FeedEntry<Event>> observable = client.feed("/feeds/events", Event.class).observeFromBeginning(1000);
-//
-//        TestSubscriber<FeedEntry<Event>> subscriber = new TestSubscriber<>();
-//
-//        observable.take(3).subscribe(subscriber);
-//
-//        subscriber.awaitTerminalEvent(60, TimeUnit.SECONDS);
-//
-//        subscriber.assertNoErrors();
-//
-//        //we should have received entries with the self link 0/forward/0
-//        List<FeedEntry<Event>> onNextEvents = subscriber.getOnNextEvents();
-//        FeedEntry<Event> firstEntry = onNextEvents.get(0);
-//        assertEquals("0/forward/10", firstEntry.getSelfHref());
-//        assertEquals("urn:uuid:83aee39f-923d-451e-8ec4-d6333ba8999d", firstEntry.getEntry().getId());
-//
-//    }
-
-
+        //we should have received entries with the self link 0/forward/0
+        FeedEntry<Event> firstEntry = entries.get(0);
+        assertEquals("0/forward/10", firstEntry.getSelfHref());
+        assertEquals("urn:uuid:83aee39f-923d-451e-8ec4-d6333ba8999d", firstEntry.getEntry().getId());
+    }
 }

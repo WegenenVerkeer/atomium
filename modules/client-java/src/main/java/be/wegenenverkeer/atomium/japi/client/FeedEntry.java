@@ -15,7 +15,7 @@ public class FeedEntry<E> {
     private final String selfHref;
 
     //we pass in the complete feedwrapper so that it's easy to extend with other links if necessary
-    protected FeedEntry(Entry<E> entry, EtaggedFeedPage<E> feed){
+    protected FeedEntry(Entry<E> entry, CachedFeedPage<E> feed){
         this.entry = entry;
         this.selfHref = feed.getSelfHref();
     }

@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.client
 
 import be.wegenenverkeer.atomium.japi
+import be.wegenenverkeer.atomium.japi.client.RxHttpAtomiumClient
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -27,13 +28,13 @@ trait WithWireMock extends BeforeAndAfterAll {
   lazy val server = new WireMockServer(wireMockConfig.port(port).fileSource(mappings))
 
 
-  def mkClientAcceptingXml = new japi.client.AtomiumClient.Builder()
+  def mkClientAcceptingXml = new RxHttpAtomiumClient.Builder()
     .setBaseUrl(s"http://localhost:$port/")
     .setAcceptXml()
     .build
     .asScala
 
-  def mkClientAcceptingJson = new japi.client.AtomiumClient.Builder()
+  def mkClientAcceptingJson = new RxHttpAtomiumClient.Builder()
     .setBaseUrl(s"http://localhost:$port/")
     .setAcceptJson()
     .build
