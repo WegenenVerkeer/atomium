@@ -14,6 +14,9 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     private final static Logger logger = LoggerFactory.getLogger(AtomiumFeedImpl.class);
     private final PageFetcher<E> pageFetcher;
 
+    private RetryStrategy retryStrategy;
+    private int retryCount = 0;
+
     AtomiumFeedImpl(PageFetcher<E> pageFetcher) {
         this.pageFetcher = pageFetcher;
     }
@@ -35,6 +38,12 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
                 .flatMap(lastPage -> fetchEntries(lastPage.getLastHref(), Optional.empty()));
     }
 
+    @Override
+    public AtomiumFeed<E> withRetry(RetryStrategy retryStrategy) {
+        this.retryStrategy = retryStrategy;
+        return this;
+    }
+
     private Flowable<FeedEntry<E>> fetchEntries(String pageUrl, Optional<String> eTag) {
         return fetchPage(pageUrl, eTag)
                 .toFlowable()
@@ -53,7 +62,17 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     }
 
     private Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
-        return pageFetcher.fetch(pageUrl, eTag);
+        Single<CachedFeedPage<E>> pageSingle = pageFetcher.fetch(pageUrl, eTag);
+
+        if (retryStrategy != null) {
+            return pageSingle.retryWhen(throwableFlowable ->
+                    throwableFlowable
+                            .map(throwable -> retryStrategy.apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
+                            .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
+            );
+        } else {
+            return pageSingle;
+        }
     }
 
     private Flowable<FeedEntry<E>> parseEntries(CachedFeedPage<E> page) {

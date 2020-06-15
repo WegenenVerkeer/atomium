@@ -1,7 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import java.time.Duration;
-
 public interface AtomiumClient {
 
     /**

@@ -26,7 +26,6 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final FeedPageCodec<E, String> jsonCodec;
     private final FeedPageCodec<E, String> xmlCodec;
     private final RxHttpPageFetcherConfiguration<E> config;
-    private int retryCount = 0;
 
     RxHttpPageFetcher(RxHttpPageFetcherConfiguration<E> config) {
         this.config = config;
@@ -40,14 +39,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     @Override
     public Single<CachedFeedPage<E>> fetch(String pageUrl, Optional<String> etag) {
         ClientRequest request = buildRequest(pageUrl, etag);
-        return Single.fromPublisher(
-                config.getRxHttpClient()
-                        .executeToCompletion(request, resp -> parseResponse(resp, etag))
-        ).retryWhen(throwableFlowable ->
-                throwableFlowable
-                        .map(throwable -> config.getRetryStrategy().apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
-                        .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
-        );
+        return Single.fromPublisher(config.getRxHttpClient().executeToCompletion(request, resp -> parseResponse(resp, etag)));
     }
 
     @Override
@@ -76,6 +68,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         return builder.build();
     }
+
 
     CachedFeedPage<E> parseResponse(ServerResponse resp, Optional<String> etag) {
         if (resp.getStatusCode() == 304) {

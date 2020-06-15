@@ -9,5 +9,4 @@ public class FeedProcessingException extends RuntimeException {
         this.entryId = entryId;
     }
 
-
 }

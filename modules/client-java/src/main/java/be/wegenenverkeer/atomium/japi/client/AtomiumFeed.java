@@ -43,4 +43,6 @@ public interface AtomiumFeed<E> {
      * @return a "cold" {@link Flowable}
      */
     Flowable<FeedEntry<E>> fromBeginning();
+
+    AtomiumFeed<E> withRetry(RetryStrategy retryStrategy);
 }

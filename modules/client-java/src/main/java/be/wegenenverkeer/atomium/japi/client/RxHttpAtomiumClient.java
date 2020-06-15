@@ -56,7 +56,6 @@ public class RxHttpAtomiumClient implements AtomiumClient {
         configuration.setExtraHeaders(extraHeaders);
         configuration.setExtraModules(extraModules);
         configuration.setEntryTypeMarker(entryTypeMarker);
-        configuration.setRetryStrategy(retryStrategy);
         configuration.setFeedUrl(feedUrl);
         configuration.setPollingInterval(pollingInterval);
         return new RxHttpPageFetcher<>(configuration);
@@ -130,10 +129,6 @@ public class RxHttpAtomiumClient implements AtomiumClient {
 
         public Builder setPollingInterval(Duration pollingInterval) {
             this.pollingInterval = pollingInterval;
-            return this;
-        }
-        public Builder setRetryStrategy(RetryStrategy retryStrategy) {
-            this.retryStrategy = retryStrategy;
             return this;
         }
     }

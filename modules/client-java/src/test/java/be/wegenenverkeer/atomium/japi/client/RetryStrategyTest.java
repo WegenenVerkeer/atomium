@@ -30,6 +30,11 @@ public class RetryStrategyTest {
 
     @Before
     public void before() {
+        client = new RxHttpAtomiumClient.Builder()
+                .setBaseUrl("http://localhost:8080/")
+                .setAcceptJson()
+                .build();
+
         //reset WireMock so it will serve the events feed
         WireMock.resetToDefault();
     }
@@ -41,11 +46,6 @@ public class RetryStrategyTest {
 
     @Test
     public void testNoRetryStrategy() {
-        client = new RxHttpAtomiumClient.Builder()
-                .setBaseUrl("http://localhost:8080/")
-                .setAcceptJson()
-                .build();
-
         client.feed("/feeds/events", Event.class)
                 .fromBeginning()
                 .test()
@@ -55,19 +55,14 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyOneRetries() {
-        client = new RxHttpAtomiumClient.Builder()
-                .setBaseUrl("http://localhost:8080/")
-                .setAcceptJson()
-                .setRetryStrategy((n, t) -> {
+        client.feed("/feeds/events", Event.class)
+                .withRetry((n, t) -> {
                     if (n < 2) {
                         return 2 * n * 1000L;
                     } else {
                         throw new RuntimeException(t);
                     }
                 })
-                .build();
-
-        client.feed("/feeds/events", Event.class)
                 .fromBeginning()
                 .test()
                 .awaitDone(60, TimeUnit.SECONDS)
@@ -76,20 +71,15 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyThreeRetries() {
-        client = new RxHttpAtomiumClient.Builder()
-                .setBaseUrl("http://localhost:8080/")
-                .setAcceptJson()
-                .setRetryStrategy((n, t) -> {
+        client
+                .feed("/feeds/events", Event.class)
+                .withRetry((n, t) -> {
                     if (n < 3) {
                         return 2 * n * 1000L;
                     } else {
                         throw new RuntimeException(t);
                     }
                 })
-                .build();
-
-        client
-                .feed("/feeds/events", Event.class)
                 .fromBeginning()
                 .take(25)
                 .test()

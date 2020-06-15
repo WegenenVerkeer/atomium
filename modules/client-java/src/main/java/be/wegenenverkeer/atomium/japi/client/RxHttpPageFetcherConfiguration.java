@@ -15,7 +15,6 @@ public class RxHttpPageFetcherConfiguration<E> {
     private Class<E> entryTypeMarker;
     private String feedUrl;
     private Duration pollingInterval;
-    private RetryStrategy retryStrategy;
 
     public RxHttpClient getRxHttpClient() {
         return rxHttpClient;
@@ -63,13 +62,5 @@ public class RxHttpPageFetcherConfiguration<E> {
 
     public void setPollingInterval(Duration pollingInterval) {
         this.pollingInterval = pollingInterval;
-    }
-
-    public RetryStrategy getRetryStrategy() {
-        return retryStrategy;
-    }
-
-    public void setRetryStrategy(RetryStrategy retryStrategy) {
-        this.retryStrategy = retryStrategy;
     }
 }
