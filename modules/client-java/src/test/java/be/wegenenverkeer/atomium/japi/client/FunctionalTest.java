@@ -1,16 +1,14 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.observers.TestObserver;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -87,19 +85,26 @@ public class FunctionalTest {
                 .assertError(FeedFetchException.class);
     }
 
-    @Ignore("wat moest deze test aantonen?")
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
-        boolean isUnsubscribed = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
-                .test()
-                .await(100, TimeUnit.MILLISECONDS);
+        Flowable<FeedEntry<Event>> flowable = client.feed("/feeds/events", Event.class)
+                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10");
 
-        assertTrue(isUnsubscribed); // TODO wat moest deze test aantonen?
+        TestObserver<FeedEntry<Event>> subscriber = new TestObserver<>();
+        subscriber.onSubscribe(flowable.subscribe());
+
+        //let the observable emit events for 100 ms.
+        Thread.sleep(100);
+
+        subscriber.dispose();
+        assertTrue(subscriber.isDisposed());
+
+        //give the AtomiumClient to handle unsubscribe event
+        Thread.sleep(100);
     }
 
     @Test
-    public void testFeedEntryHasSelfLink() throws InterruptedException {
+    public void testFeedEntryHasSelfLink() {
         List<FeedEntry<Event>> events = client.feed("/feeds/events", Event.class)
                 .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
                 .take(2)

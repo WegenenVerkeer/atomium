@@ -1,26 +1,32 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.lang.String.format;
 
 public class RetryStrategyTest {
+    final private static Logger logger = LoggerFactory.getLogger(RetryStrategyTest.class);
 
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("retry-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
-            wireMockConfig().fileSource(WIREMOCK_MAPPINGS)
+            wireMockConfig()
+                    .fileSource(WIREMOCK_MAPPINGS)
+                    .notifier(new Slf4jNotifier(true))
     );
 
     @Rule
@@ -58,15 +64,17 @@ public class RetryStrategyTest {
         client.feed("/feeds/events", Event.class)
                 .withRetry((n, t) -> {
                     if (n < 2) {
-                        return 2 * n * 1000L;
+                        logger.info("Retry request count " + n, t);
+                        return 2 * n * 200L;
                     } else {
-                        throw new RuntimeException(t);
+                        logger.info(format("Stop retrying after %d times.", n), t);
+                        throw new IllegalStateException(t);
                     }
                 })
                 .fromBeginning()
                 .test()
                 .awaitDone(60, TimeUnit.SECONDS)
-                .assertError(RuntimeException.class);
+                .assertError(IllegalStateException.class);
     }
 
     @Test
@@ -75,9 +83,11 @@ public class RetryStrategyTest {
                 .feed("/feeds/events", Event.class)
                 .withRetry((n, t) -> {
                     if (n < 3) {
-                        return 2 * n * 1000L;
+                        logger.info(format("Retry request count %d", n), t);
+                        return 2 * n * 200L;
                     } else {
-                        throw new RuntimeException(t);
+                        logger.info(format("Stop retrying after %d times.", n), t);
+                        throw new IllegalStateException(t);
                     }
                 })
                 .fromBeginning()

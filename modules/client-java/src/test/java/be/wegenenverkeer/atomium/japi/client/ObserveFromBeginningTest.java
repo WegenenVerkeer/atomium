@@ -2,6 +2,7 @@ package be.wegenenverkeer.atomium.japi.client;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,9 @@ public class ObserveFromBeginningTest {
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
-            wireMockConfig().fileSource(WIREMOCK_MAPPINGS)
+            wireMockConfig()
+                    .fileSource(WIREMOCK_MAPPINGS)
+                    .notifier(new Slf4jNotifier(true))
     );
 
     @Rule
