@@ -43,11 +43,6 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     }
 
     @Override
-    public Duration getPollingInterval() {
-        return config.getPollingInterval();
-    }
-
-    @Override
     public void close() {
         this.config.getRxHttpClient().close();
     }

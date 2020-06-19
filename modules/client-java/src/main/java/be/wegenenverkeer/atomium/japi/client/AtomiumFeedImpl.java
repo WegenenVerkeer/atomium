@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
+    private String FIRST_PAGE = "/";
+
     private final static Logger logger = LoggerFactory.getLogger(AtomiumFeedImpl.class);
     private final PageFetcher<E> pageFetcher;
 
@@ -22,25 +24,6 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     }
 
     @Override
-    public Flowable<FeedEntry<E>> from(FeedPosition feedPosition) {
-        return fetchEntries(feedPosition, Optional.empty());
-    }
-
-    @Override
-    public Flowable<FeedEntry<E>> fromNowOn() {
-        return fetchHeadPage()
-                .toFlowable()
-                .flatMap(aPage -> fetchEntries(FeedPositions.ofMostRecentEntry(aPage), Optional.empty()));
-    }
-
-    @Override
-    public Flowable<FeedEntry<E>> fromBeginning() {
-        return fetchHeadPage()
-                .toFlowable()
-                .flatMap(aPage -> fetchEntries(FeedPositions.ofOldest(aPage), Optional.empty()));
-    }
-
-    @Override
     public AtomiumFeed<E> withRetry(RetryStrategy retryStrategy) {
         this.retryStrategy = retryStrategy;
         return this;
@@ -48,12 +31,19 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
 
     private int retryCount = 0;
 
+    @Override
+    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
+        fetchHeadPage()
+                .map(feedPositionStrategy::getNextFeedPosition)
+                .flatMap(feedPosition -> fetchEntries(feedPosition, eTag));
+    }
+
     private Flowable<FeedEntry<E>> fetchEntries(FeedPosition feedPosition, Optional<String> eTag) {
         return fetchPage(feedPosition.getPageUrl(), eTag)
                 .map(page -> ParsedFeedPage.parse(page, feedPosition))
                 .toFlowable()
                 .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()).concatWith(
-                        feedPosition.getNextFeedPosition(parsedPage.getPage(), pageFetcher.getPollingInterval())
+                        feedPosition.getNextFeedPosition(parsedPage.getPage())
                                 .toFlowable()
                                 .flatMap(nextFeedPosition -> fetchEntries(nextFeedPosition, parsedPage.getPage().getEtag()))
                         )
