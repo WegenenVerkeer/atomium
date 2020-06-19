@@ -24,7 +24,28 @@ public interface AtomiumFeed<E> {
      *                identified with the entryId argument
      * @return an Observable emitting all entries since the specified entry
      */
-    Flowable<FeedEntry<E>> from(final String entryId, final String pageUrl);
+    default Flowable<FeedEntry<E>> from(final String entryId, final String pageUrl) {
+        return from(FeedPositions.of(pageUrl, entryId));
+    }
+
+    /**
+     * Creates a "cold" {@link Flowable} that, when subscribed to, emits all entries in the feed
+     * starting from the oldest entry immediately after the specified entry.
+     * <p>When subscribed to, the observable will:</p>
+     * <ul>
+     * <li>retrieve the specified feed page</li>
+     * <li>emit all entries more recent that the specified feed entry</li>
+     * <li>follow iteratively the 'previous'-links and emits all entries on the linked-to pages until it
+     * arrives at the head of the feed (identified by not having a 'previous'-link)</li>
+     * <li>poll the feed at the specified interval (using conditional GETs) and emit all entries not yet seen</li>
+     * </ul>
+     * <p>The worker will exit only on an error condition, or on unsubscribe.</p>
+     * <p><em>Important:</em> a new and independent worker is created for each subscriber.</p>
+     *
+     * @param feedPosition feedPosition
+     * @return an Observable emitting all entries since the specified entry
+     */
+    Flowable<FeedEntry<E>> from(FeedPosition feedPosition);
 
     /**
      * Creates a "cold" {@link Flowable} that, when subscribed to, emits all entries on the feed

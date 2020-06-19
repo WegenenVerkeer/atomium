@@ -1,15 +1,17 @@
 package be.wegenenverkeer.atomium.japi.client;
 
+import be.wegenenverkeer.atomium.format.Entry;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
-import static io.reactivex.rxjava3.core.Flowable.fromIterable;
+import java.util.stream.Collectors;
 
 class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     private final static Logger logger = LoggerFactory.getLogger(AtomiumFeedImpl.class);
@@ -24,21 +26,25 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     }
 
     @Override
-    public Flowable<FeedEntry<E>> from(final String entryId, final String pageUrl) {
-        return new AtomiumFeedFetcher(entryId).fetchEntries(pageUrl, Optional.empty());
+    public Flowable<FeedEntry<E>> from(FeedPosition feedPosition) {
+        return new AtomiumFeedFetcher().fetchEntries(feedPosition, Optional.empty());
     }
 
     @Override
     public Flowable<FeedEntry<E>> fromNowOn() {
-        return new AtomiumFeedFetcher().fetchEntries(AtomiumFeed.FIRST_PAGE, Optional.empty());
+        AtomiumFeedFetcher feedFetcher = new AtomiumFeedFetcher();
+
+        return feedFetcher.fetchHeadPage()
+                .toFlowable()
+                .flatMap(aPage -> feedFetcher.fetchEntries(FeedPositions.ofMostRecentEntry(aPage), Optional.empty()));
     }
 
     @Override
     public Flowable<FeedEntry<E>> fromBeginning() {
         AtomiumFeedFetcher feedFetcher = new AtomiumFeedFetcher();
-        return feedFetcher.fetchFirstPage()
+        return feedFetcher.fetchHeadPage()
                 .toFlowable()
-                .flatMap(lastPage -> feedFetcher.fetchEntries(lastPage.getLastHref(), Optional.empty()));
+                .flatMap(aPage -> feedFetcher.fetchEntries(FeedPositions.ofBeginning(aPage), Optional.empty()));
     }
 
     @Override
@@ -48,33 +54,20 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     }
 
     private class AtomiumFeedFetcher {
-        private final Optional<String> startEntryId;
-        private boolean pruneEntries = false;
         private int retryCount = 0;
 
-        public AtomiumFeedFetcher() {
-            this(null);
-        }
-
-        public AtomiumFeedFetcher(String startEntryId) {
-            this.startEntryId = Optional.ofNullable(startEntryId);
-            this.startEntryId.ifPresent(s -> pruneEntries = true);
-        }
-
-        private Flowable<FeedEntry<E>> fetchEntries(String pageUrl, Optional<String> eTag) {
-            return fetchPage(pageUrl, eTag)
+        private Flowable<FeedEntry<E>> fetchEntries(FeedPosition feedPosition, Optional<String> eTag) {
+            return fetchPage(feedPosition.getPageUrl(), eTag)
+                    .map(page -> new ParsedFeedPage(page, feedPosition))
                     .toFlowable()
-                    .flatMap(page -> this.parseEntries(page).concatWith(Flowable.just("")
+                    .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.entries).concatWith(Flowable.just("")
                             .delay(pageFetcher.getPollingInterval().toMillis(), TimeUnit.MILLISECONDS)
                             .doOnNext(delay -> logger.debug("Waited {}ms to fetch more entries.", pageFetcher.getPollingInterval().toMillis()))
-                            .flatMap(delay -> fetchEntries(previousOrSelfHref(page), page.getEtag())))
-                    )
-                    .map(this::pruneEntries)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get);
+                            .flatMap(delay -> fetchEntries(parsedPage.getNextFeedPosition(), parsedPage.getEtag())))
+                    );
         }
 
-        private Single<CachedFeedPage<E>> fetchFirstPage() {
+        private Single<CachedFeedPage<E>> fetchHeadPage() {
             return fetchPage(AtomiumFeed.FIRST_PAGE, Optional.empty());
         }
 
@@ -85,27 +78,64 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
                             .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
                     );
         }
+    }
 
-        private Flowable<FeedEntry<E>> parseEntries(CachedFeedPage<E> page) {
-            return fromIterable(page.getEntries())
-                    .map(entry -> new FeedEntry<>(entry, page));
+    private class ParsedFeedPage {
+        private final CachedFeedPage<E> page;
+        private final FeedPosition feedPosition;
+        private List<FeedEntry<E>> entries;
+        private FeedPosition nextFeedPosition;
+
+        private ParsedFeedPage(CachedFeedPage<E> page, FeedPosition lastKnownPosition) {
+            this.page = page;
+            this.feedPosition = lastKnownPosition;
+
+            this.parse();
         }
 
-        private String previousOrSelfHref(CachedFeedPage<E> page) {
-            return page.getPreviousHref().orElseGet(page::getSelfHref);
+        public List<FeedEntry<E>> getEntries() {
+            return entries;
         }
 
-        private Optional<FeedEntry<E>> pruneEntries(FeedEntry<E> feedEntry) {
-            if (startEntryId.isPresent() && pruneEntries) {
-                if (feedEntry.getEntry().getId().equals(startEntryId.get())) {
-                    pruneEntries = false;
-                    return Optional.of(feedEntry);
+        public FeedPosition getFeedPosition() {
+            return feedPosition;
+        }
+
+        public Optional<String> getEtag() {
+            return page.getEtag();
+        }
+
+        public FeedPosition getNextFeedPosition() {
+            return nextFeedPosition;
+        }
+
+        private ParsedFeedPage parse() {
+            List<Entry<E>> entries = new ArrayList<>(page.getEntries());
+
+            if (feedPosition.getEntryId().isPresent()) {
+                if (pageHasEntry(page, feedPosition.getEntryId().get())) {
+                    logger.debug("Page {} has an entry with ID {}, so we're only emitting items since that ID", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
+                    entries = omitEntriesBeforeEntryId(entries, feedPosition.getEntryId().get());
                 } else {
-                    return Optional.empty();
+                    logger.debug("Page {} does not have an entry with ID {}, so we're emitting every item", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
                 }
-            } else {
-                return Optional.of(feedEntry);
             }
+
+            this.entries = entries.stream().map(entry -> new FeedEntry<>(entry, page)).collect(Collectors.toList());
+            this.nextFeedPosition = FeedPositions.of(page.getPreviousHref().orElseGet(page::getSelfHref), page.getLastEntryId());
+
+            return this;
+        }
+
+        private boolean pageHasEntry(CachedFeedPage<E> page, String entryId) {
+            return page.getEntries().stream().anyMatch(entry -> entry.getId().equals(entryId));
+        }
+
+        private List<Entry<E>> omitEntriesBeforeEntryId(List<Entry<E>> entries, String entryId) {
+            Collections.reverse(entries);
+            List<Entry<E>> cleanedEntries = entries.stream().takeWhile(entry -> !entry.getId().equals(entryId)).collect(Collectors.toList());
+            Collections.reverse(cleanedEntries);
+            return cleanedEntries;
         }
     }
 }

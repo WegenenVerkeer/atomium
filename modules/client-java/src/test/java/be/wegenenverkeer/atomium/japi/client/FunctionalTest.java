@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -115,7 +116,6 @@ public class FunctionalTest {
 
         events.forEach(entry -> assertEquals("20/forward/10", entry.getSelfHref()));
     }
-
 
     //member variable
     private boolean failing = false;

@@ -19,7 +19,7 @@ scalacOptions in ThisBuild := Seq(
 )
 
 
-javacOptions ++= Seq("-source", "11", "-target", "1.8", "-Xlint")
+javacOptions ++= Seq("-source", "11", "-target", "11", "-Xlint")
 
 initialize := {
   val _ = initialize.value
