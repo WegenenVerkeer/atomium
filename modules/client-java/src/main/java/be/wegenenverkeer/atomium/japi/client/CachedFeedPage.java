@@ -40,11 +40,11 @@ class CachedFeedPage<T> {
         return this.links;
     }
 
-    public Optional<String> getNewerHref() {
+    public Optional<String> getPreviousHref() {
         return getLinkHref("previous");
     }
 
-    public Optional<String> getOlderHref() {
+    public Optional<String> getNextHref() {
         return getLinkHref("next");
     }
 
