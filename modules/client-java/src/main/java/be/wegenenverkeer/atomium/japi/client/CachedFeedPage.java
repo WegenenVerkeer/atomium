@@ -40,11 +40,11 @@ class CachedFeedPage<T> {
         return this.links;
     }
 
-    public Optional<String> getPreviousHref() {
+    public Optional<String> getNewerHref() {
         return getLinkHref("previous");
     }
 
-    public Optional<String> getNextHref() {
+    public Optional<String> getOlderHref() {
         return getLinkHref("next");
     }
 
@@ -62,7 +62,7 @@ class CachedFeedPage<T> {
      * @return the rel='last' link
      * @throws IllegalStateException if the 'last' link is not present
      */
-    public String getLastHref() {
+    public String getOldestHref() {
         return getMandatoryLink("last");
     }
 

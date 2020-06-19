@@ -36,7 +36,7 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
     public Flowable<FeedEntry<E>> fromBeginning() {
         return fetchHeadPage()
                 .toFlowable()
-                .flatMap(aPage -> fetchEntries(FeedPositions.ofBeginning(aPage), Optional.empty()));
+                .flatMap(aPage -> fetchEntries(FeedPositions.ofOldest(aPage), Optional.empty()));
     }
 
     @Override

@@ -22,7 +22,7 @@ public final class FeedPositions {
         return new FeedPositionImpl(page.getSelfHref(), page.getMostRecentEntryId());
     }
 
-    public static <E> FeedPosition ofBeginning(CachedFeedPage<E> page) {
-        return new FeedPositionImpl(page.getLastHref());
+    public static <E> FeedPosition ofOldest(CachedFeedPage<E> page) {
+        return new FeedPositionImpl(page.getOldestHref());
     }
 }

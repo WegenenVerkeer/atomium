@@ -49,14 +49,14 @@ class ParsedFeedPage<E> {
         if (feedPosition.getEntryId().isPresent()) {
             if (pageHasEntry(page, feedPosition.getEntryId().get())) {
                 logger.debug("Page {} has an entry with ID {}, so we're only emitting items since that ID", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
-                entries = omitEntriesBeforeEntryId(entries, feedPosition.getEntryId().get());
+                entries = omitOlderOrEqualEntries(entries, feedPosition.getEntryId().get());
             } else {
                 logger.debug("Page {} does not have an entry with ID {}, so we're emitting every item", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
             }
         }
 
         this.entries = entries.stream().map(entry -> new FeedEntry<>(entry, page)).collect(Collectors.toList());
-        this.nextFeedPosition = FeedPositions.of(page.getPreviousHref().orElseGet(page::getSelfHref), page.getMostRecentEntryId());
+        this.nextFeedPosition = FeedPositions.of(page.getNewerHref().orElseGet(page::getSelfHref), page.getMostRecentEntryId());
 
         return this;
     }
@@ -65,7 +65,7 @@ class ParsedFeedPage<E> {
         return page.getEntries().stream().anyMatch(entry -> entry.getId().equals(entryId));
     }
 
-    private List<Entry<E>> omitEntriesBeforeEntryId(List<Entry<E>> entries, String entryId) {
+    private List<Entry<E>> omitOlderOrEqualEntries(List<Entry<E>> entries, String entryId) {
         Collections.reverse(entries);
         List<Entry<E>> cleanedEntries = entries.stream().takeWhile(entry -> !entry.getId().equals(entryId)).collect(Collectors.toList());
         Collections.reverse(cleanedEntries);
