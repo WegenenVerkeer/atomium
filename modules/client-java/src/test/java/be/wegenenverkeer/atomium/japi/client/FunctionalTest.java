@@ -58,19 +58,19 @@ public class FunctionalTest {
 
     @Test
     public void testSubscribingToObservable() {
-        String entryId = "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a";
-        String secondEntryId = "urn:uuid:e9b01f20-e294-4900-9cd2-484b25e07dc3";
+        String startEntryId = "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a";
+        String nextEntryId = "urn:uuid:e9b01f20-e294-4900-9cd2-484b25e07dc3";
 
-        client.feed("/feeds/events", Event.class)
-                .from(entryId, "20/forward/10")
+        List<FeedEntry<Event>> values = client.feed("/feeds/events", Event.class)
+                .from(startEntryId, "20/forward/10")
                 .take(20)
                 .test()
                 .awaitCount(20)
                 .assertNoErrors()
                 .assertValueCount(20)
-                .assertValueAt(0, event -> event.getEntry().getId().equals(entryId))
-                .assertValueAt(1, event -> event.getEntry().getId().equals(secondEntryId))
-                .assertComplete();
+                .values();
+
+        Assert.assertEquals(nextEntryId, values.get(0).getEntry().getId());
     }
 
     @Test
