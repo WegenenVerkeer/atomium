@@ -51,7 +51,6 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(autoScalaLibrary := false)
       .settings(crossPaths := false)
       .dependsOn(coreModule)
-
   }
 
 
