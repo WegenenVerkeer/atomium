@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
+import io.reactivex.rxjava3.core.CompletableSource;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
@@ -51,10 +52,11 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
         return fetchPage(feedPosition.getPageUrl(), eTag)
                 .map(page -> ParsedFeedPage.parse(page, feedPosition))
                 .toFlowable()
-                .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()).concatWith(Flowable.just("")
-                        .delay(pageFetcher.getPollingInterval().toMillis(), TimeUnit.MILLISECONDS)
-                        .doOnNext(delay -> logger.debug("Waited {}ms to fetch more entries.", pageFetcher.getPollingInterval().toMillis()))
-                        .flatMap(delay -> fetchEntries(parsedPage.getNextFeedPosition(), parsedPage.getEtag())))
+                .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()).concatWith(
+                        feedPosition.getNextFeedPosition(parsedPage.getPage(), pageFetcher.getPollingInterval())
+                                .toFlowable()
+                                .flatMap(nextFeedPosition -> fetchEntries(nextFeedPosition, parsedPage.getPage().getEtag()))
+                        )
                 );
     }
 

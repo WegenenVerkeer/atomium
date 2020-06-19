@@ -14,29 +14,20 @@ class ParsedFeedPage<E> {
     private final static Logger logger = LoggerFactory.getLogger(ParsedFeedPage.class);
 
     private final CachedFeedPage<E> page;
-    private final FeedPosition feedPosition;
     private List<FeedEntry<E>> entries;
-    private FeedPosition nextFeedPosition;
+    private final FeedPosition feedPosition;
 
     private ParsedFeedPage(CachedFeedPage<E> page, FeedPosition lastKnownPosition) {
         this.page = page;
         this.feedPosition = lastKnownPosition;
     }
 
+    public CachedFeedPage<E> getPage() {
+        return page;
+    }
+
     public List<FeedEntry<E>> getEntries() {
         return entries;
-    }
-
-    public FeedPosition getFeedPosition() {
-        return feedPosition;
-    }
-
-    public Optional<String> getEtag() {
-        return page.getEtag();
-    }
-
-    public FeedPosition getNextFeedPosition() {
-        return nextFeedPosition;
     }
 
     public static <E> ParsedFeedPage<E> parse(CachedFeedPage<E> page, FeedPosition lastKnownPosition) {
@@ -56,8 +47,6 @@ class ParsedFeedPage<E> {
         }
 
         this.entries = entries.stream().map(entry -> new FeedEntry<>(entry, page)).collect(Collectors.toList());
-        this.nextFeedPosition = FeedPositions.of(page.getPreviousHref().orElseGet(page::getSelfHref), page.getMostRecentEntryId());
-
         return this;
     }
 

@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BackpressureTest {
-
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("basis-scenario");
 
     @ClassRule
@@ -78,26 +77,6 @@ public class BackpressureTest {
         WireMock.verify(exactly(0), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("Accept", equalTo("application/xml")));
         WireMock.verify(exactly(0), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/40/forward/10")).withHeader("Accept", equalTo("application/xml")));
         WireMock.verify(exactly(0), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/50/forward/10")).withHeader("Accept", equalTo("application/xml")));
-    }
-
-    @Test
-    public void testProcessing_otherThread() {
-        List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
-                .concatMap(event -> Flowable.just(event)
-                        .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis()))
-                        .subscribeOn(Schedulers.newThread()))
-                .test()
-                .awaitCount(3)
-                .assertNoErrors()
-                .assertValueCount(3)
-                .values();
-
-        // all pages are queried
-        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/20/forward/10")).withHeader("Accept", equalTo("application/xml")));
-        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("Accept", equalTo("application/xml")));
-        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/40/forward/10")).withHeader("Accept", equalTo("application/xml")));
-        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/50/forward/10")).withHeader("Accept", equalTo("application/xml")));
     }
 }
 
