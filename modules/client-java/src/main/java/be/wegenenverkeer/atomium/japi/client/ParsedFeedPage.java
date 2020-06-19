@@ -56,7 +56,7 @@ class ParsedFeedPage<E> {
         }
 
         this.entries = entries.stream().map(entry -> new FeedEntry<>(entry, page)).collect(Collectors.toList());
-        this.nextFeedPosition = FeedPositions.of(page.getPreviousHref().orElseGet(page::getSelfHref), page.getLastEntryId());
+        this.nextFeedPosition = FeedPositions.of(page.getPreviousHref().orElseGet(page::getSelfHref), page.getMostRecentEntryId());
 
         return this;
     }

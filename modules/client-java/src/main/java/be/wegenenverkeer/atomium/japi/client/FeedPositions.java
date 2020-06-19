@@ -19,7 +19,7 @@ public final class FeedPositions {
     }
 
     public static <E> FeedPosition ofMostRecentEntry(CachedFeedPage<E> page) {
-        return new FeedPositionImpl(page.getSelfHref(), page.getLastEntryId());
+        return new FeedPositionImpl(page.getSelfHref(), page.getMostRecentEntryId());
     }
 
     public static <E> FeedPosition ofBeginning(CachedFeedPage<E> page) {

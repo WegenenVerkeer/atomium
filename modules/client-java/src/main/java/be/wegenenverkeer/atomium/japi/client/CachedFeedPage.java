@@ -82,7 +82,7 @@ class CachedFeedPage<T> {
         return Optional.empty();
     }
 
-    public String getLastEntryId() {
+    public String getMostRecentEntryId() {
         if (this.entries.size() >= 1)
             return this.entries.get(this.entries.size() - 1).getId();
         return "";
