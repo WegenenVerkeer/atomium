@@ -40,13 +40,12 @@ public class FunctionalTest {
     @Rule
     public WireMockClassRule instanceRule = wireMockRule;
 
-    private AtomiumClient client;
+    private RxHttpAtomiumClient client;
 
     @Before
     public void before() {
         client = new RxHttpAtomiumClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
-                .setAcceptXml()
                 .build();
 
         //reset WireMock so it will serve the events feed
@@ -63,7 +62,7 @@ public class FunctionalTest {
         String startEntryId = "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a";
         String nextEntryId = "urn:uuid:e9b01f20-e294-4900-9cd2-484b25e07dc3";
 
-        List<FeedEntry<Event>> values = client.feed("/feeds/events", Event.class)
+        List<FeedEntry<Event>> values = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", startEntryId))
                 .take(20)
                 .test()
@@ -80,7 +79,7 @@ public class FunctionalTest {
         stubFor(get(urlEqualTo("/fault/"))
                 .willReturn(aResponse().withStatus(500)));
 
-        client.feed("/fault", Event.class)
+        client.feed(client.getPageFetcherBuilder("/fault", Event.class).setAcceptXml().build())
                 .fetchEntries(fromNowOn())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
@@ -90,7 +89,7 @@ public class FunctionalTest {
 
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
-        Flowable<FeedEntry<Event>> flowable = client.feed("/feeds/events", Event.class)
+        Flowable<FeedEntry<Event>> flowable = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"));
 
         TestObserver<FeedEntry<Event>> subscriber = new TestObserver<>();
@@ -108,7 +107,7 @@ public class FunctionalTest {
 
     @Test
     public void testFeedEntryHasSelfLink() {
-        List<FeedEntry<Event>> events = client.feed("/feeds/events", Event.class)
+        List<FeedEntry<Event>> events = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .take(2)
                 .test()
@@ -137,7 +136,7 @@ public class FunctionalTest {
                 Flowable.just(initState) // start with reading the state
                         .flatMap(state -> {
                             System.out.println("Initing from " + state.toString());
-                            return client.feed("/feeds/events", Event.class)
+                            return client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
                                     .fetchEntries(from(state.lastSeenPage, state.lastSeenId));
                         })
                         .doOnNext(entry -> {

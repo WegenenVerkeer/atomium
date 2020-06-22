@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import io.reactivex.rxjava3.core.CompletableSource;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;

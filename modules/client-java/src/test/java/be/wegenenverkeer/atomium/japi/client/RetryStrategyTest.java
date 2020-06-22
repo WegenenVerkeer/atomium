@@ -33,13 +33,12 @@ public class RetryStrategyTest {
     @Rule
     public WireMockClassRule instanceRule = wireMockRule;
 
-    private AtomiumClient client;
+    private RxHttpAtomiumClient client;
 
     @Before
     public void before() {
         client = new RxHttpAtomiumClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
-                .setAcceptJson()
                 .build();
 
         //reset WireMock so it will serve the events feed
@@ -53,7 +52,7 @@ public class RetryStrategyTest {
 
     @Test
     public void testNoRetryStrategy() {
-        client.feed("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
                 .fetchEntries(fromStart())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
@@ -62,7 +61,7 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyOneRetries() {
-        client.feed("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
                 .withRetry((n, t) -> {
                     if (n < 2) {
                         logger.info("Retry request count " + n, t);
@@ -81,7 +80,7 @@ public class RetryStrategyTest {
     @Test
     public void testRetryStrategyThreeRetries() {
         client
-                .feed("/feeds/events", Event.class)
+                .feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
                 .withRetry((n, t) -> {
                     if (n < 3) {
                         logger.info(format("Retry request count %d", n), t);

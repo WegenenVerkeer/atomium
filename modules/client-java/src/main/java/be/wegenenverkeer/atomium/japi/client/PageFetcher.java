@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface PageFetcher<E> {
     Single<CachedFeedPage<E>> fetch(String url, Optional<String> etag);
     void close();
+    Class<E> getEntryTypeMarker();
 }

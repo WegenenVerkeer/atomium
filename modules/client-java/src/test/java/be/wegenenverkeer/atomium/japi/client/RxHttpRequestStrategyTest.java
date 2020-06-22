@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.rxhttpclient.HttpClientError;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
@@ -12,15 +11,17 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.from;
-import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromNowOn;
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromStart;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-public class FailureTest {
+public class RxHttpRequestStrategyTest {
 
-    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("no-self-link-scenario");
+    private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
 
     @ClassRule
     public static WireMockClassRule wireMockRule = new WireMockClassRule(
@@ -50,13 +51,18 @@ public class FailureTest {
     }
 
     @Test
-    public void testReceivingAnError() {
-        client.feed(client.getPageFetcherBuilder("/noselflinkfeed", Event.class).build())
-                .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
-                .take(10)
+    public void testAddHeaders() {
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+                .setRequestStrategy(builder -> builder.addHeader("X-FOO", "bar"))
+                .build())
+                .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
+                .take(15) // process 2 pages
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
-                .assertError(FeedFetchException.class);
-    }
+                .awaitDone(1, TimeUnit.SECONDS)
+                .assertNoErrors()
+                .assertValueCount(15)
+                .values();
 
+        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/")).withHeader("X-FOO", equalTo("bar")));
+    }
 }
