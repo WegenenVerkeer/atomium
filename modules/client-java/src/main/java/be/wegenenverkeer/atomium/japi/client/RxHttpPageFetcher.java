@@ -87,40 +87,4 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         //assume JSON
         return true;
     }
-//
-//    public static class Builder<E> {
-//        final private RxHttpPageFetcher.Builder<E> builder = new RxHttpPageFetcher.Builder<>();
-//
-//        private String baseUrl;
-//        private Class<E> entryTypeMarker;
-//        private RxHttpClient rxHttpClient;
-//        private List<Module> modules = new ArrayList<>();
-//
-//        public Builder() {
-//        }
-//
-//        public PageFetcher<E> build() {
-//            return new RxHttpPageFetcher<E>(baseUrl, entryTypeMarker, rxHttpClient, modules.toArray(new Module[0]));
-//        }
-//
-//        public RxHttpPageFetcher.Builder<E> setBaseUrl(String baseUrl) {
-//            this.builder.baseUrl = baseUrl;
-//            return this;
-//        }
-//
-//        public RxHttpPageFetcher.Builder<E> setEntryTypeMarker(Class<E> entryTypeMarker) {
-//            this.builder.entryTypeMarker = entryTypeMarker;
-//            return this;
-//        }
-//
-//        public RxHttpPageFetcher.Builder<E> setRxHttpClient(RxHttpClient rxHttpClient) {
-//            this.builder.rxHttpClient = rxHttpClient;
-//            return this;
-//        }
-//
-//        public RxHttpPageFetcher.Builder<E> addModule(Module module) {
-//            this.builder.modules.add(module);
-//            return this;
-//        }
-//    }
 }
