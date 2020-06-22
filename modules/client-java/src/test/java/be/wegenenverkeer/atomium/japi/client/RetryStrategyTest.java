@@ -1,5 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
+import be.wegenenverkeer.atomium.japi.client.rxhttpclient.RxHttpAtomiumClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;

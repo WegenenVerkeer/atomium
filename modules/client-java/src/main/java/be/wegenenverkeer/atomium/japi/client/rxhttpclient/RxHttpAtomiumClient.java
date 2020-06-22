@@ -1,5 +1,8 @@
-package be.wegenenverkeer.atomium.japi.client;
+package be.wegenenverkeer.atomium.japi.client.rxhttpclient;
 
+import be.wegenenverkeer.atomium.japi.client.AtomiumClient;
+import be.wegenenverkeer.atomium.japi.client.AtomiumFeed;
+import be.wegenenverkeer.atomium.japi.client.PageFetcher;
 import be.wegenenverkeer.rxhttpclient.RxHttpClient;
 import be.wegenenverkeer.rxhttpclient.rxjava.RxJavaHttpClient;
 
@@ -27,11 +30,11 @@ public class RxHttpAtomiumClient implements AtomiumClient {
     @Override
     public <E> AtomiumFeed<E> feed(PageFetcher<E> pageFetcher) {
         pageFetchers.add(pageFetcher);
-        return new AtomiumFeedImpl<>(pageFetcher);
+        return new AtomiumFeed<>(pageFetcher);
     }
 
     public <E> RxHttpPageFetcher.Builder<E> getPageFetcherBuilder(String feedUrl, Class<E> entityTypeMarker) {
-        return new RxHttpPageFetcher.Builder<E>(rxHttpClient, feedUrl, entityTypeMarker);
+        return new RxHttpPageFetcher.Builder<>(rxHttpClient, feedUrl, entityTypeMarker);
     }
 
     public void close() {

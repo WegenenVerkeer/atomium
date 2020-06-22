@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Created by Karel Maesen, Geovise BVBA on 24/03/15.
  */
-class CachedFeedPage<T> {
+public class CachedFeedPage<T> {
 
     final private List<Link> links;
     final private List<Entry<T>> entries;

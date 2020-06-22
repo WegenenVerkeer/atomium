@@ -1,4 +1,4 @@
-package be.wegenenverkeer.atomium.japi.client;
+package be.wegenenverkeer.atomium.japi.client.rxhttpclient;
 
 import be.wegenenverkeer.rxhttpclient.ClientRequestBuilder;
 

@@ -1,5 +1,7 @@
-package be.wegenenverkeer.atomium.japi.client;
+package be.wegenenverkeer.atomium.japi.client.rxhttpclient;
 
+import be.wegenenverkeer.atomium.japi.client.Event;
+import be.wegenenverkeer.atomium.japi.client.rxhttpclient.RxHttpAtomiumClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
@@ -11,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromStart;

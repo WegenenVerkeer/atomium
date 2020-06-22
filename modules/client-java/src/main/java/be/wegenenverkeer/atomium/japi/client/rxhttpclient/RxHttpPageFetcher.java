@@ -1,8 +1,12 @@
-package be.wegenenverkeer.atomium.japi.client;
+package be.wegenenverkeer.atomium.japi.client.rxhttpclient;
 
 import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
 import be.wegenenverkeer.atomium.format.JaxbCodec;
+import be.wegenenverkeer.atomium.japi.client.CachedFeedPage;
+import be.wegenenverkeer.atomium.japi.client.EmptyCachedFeedPage;
+import be.wegenenverkeer.atomium.japi.client.PageFetcher;
+import be.wegenenverkeer.atomium.japi.client.UrlHelper;
 import be.wegenenverkeer.rxhttpclient.ClientRequest;
 import be.wegenenverkeer.rxhttpclient.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttpclient.RxHttpClient;

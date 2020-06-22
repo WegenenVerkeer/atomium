@@ -5,7 +5,7 @@ import io.reactivex.rxjava3.core.Single;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-abstract class DefaultFeedPositionStrategy implements FeedPositionStrategy {
+public abstract class DefaultFeedPositionStrategy implements FeedPositionStrategy {
 
     private Duration pollingDelay = Duration.ofSeconds(1);
 

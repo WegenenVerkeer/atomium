@@ -1,13 +1,60 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-public interface AtomiumFeed<E> {
-    String FIRST_PAGE = "/";
+public class AtomiumFeed<E> {
+    private static String FIRST_PAGE = "/";
 
-    AtomiumFeed<E> withRetry(RetryStrategy retryStrategy);
+    private final static Logger logger = LoggerFactory.getLogger(AtomiumFeed.class);
+    private final PageFetcher<E> pageFetcher;
 
-    Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy);
+    private RetryStrategy retryStrategy = (count, exception) -> {
+        throw new FeedFetchException("Problem fetching page", exception);
+    };
+
+    public AtomiumFeed(PageFetcher<E> pageFetcher) {
+        this.pageFetcher = pageFetcher;
+    }
+
+    public AtomiumFeed<E> withRetry(RetryStrategy retryStrategy) {
+        this.retryStrategy = retryStrategy;
+        return this;
+    }
+
+    private int retryCount = 0;
+
+    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
+        return fetchHeadPage()
+                .toFlowable()
+                .flatMap(headPage -> this.fetchEntries(headPage, feedPositionStrategy, Optional.empty()));
+    }
+
+    public Flowable<FeedEntry<E>> fetchEntries(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
+        return feedPositionStrategy.getNextFeedPosition(currentPage)
+                .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag)
+                        .map(page -> ParsedFeedPage.parse(page, feedPosition))
+                )
+                .toFlowable()
+                .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()).concatWith(
+                        fetchEntries(parsedPage.getPage(), feedPositionStrategy, eTag)
+                ));
+    }
+
+    private Single<CachedFeedPage<E>> fetchHeadPage() {
+        return fetchPage(AtomiumFeed.FIRST_PAGE, Optional.empty());
+    }
+
+    private Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
+        return pageFetcher.fetch(pageUrl, eTag)
+                .retryWhen(throwableFlowable -> throwableFlowable
+                        .map(throwable -> retryStrategy.apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
+                        .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
+                );
+    }
 }

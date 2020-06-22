@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 // and public accessors for JSON
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-class Event {
+public class Event {
 
     @XmlElement
     public Double value;
