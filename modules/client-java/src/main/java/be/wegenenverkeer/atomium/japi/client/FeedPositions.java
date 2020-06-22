@@ -23,6 +23,6 @@ public final class FeedPositions {
     }
 
     public static <E> FeedPosition ofOldest(CachedFeedPage<E> page) {
-        return new FeedPosition(page.getOldestHref());
+        return new FeedPosition(page.getLastHref());
     }
 }

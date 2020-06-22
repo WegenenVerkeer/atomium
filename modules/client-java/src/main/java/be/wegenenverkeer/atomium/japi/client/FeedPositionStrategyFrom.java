@@ -1,7 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-class FeedPositionStrategyFrom extends DefaultFeedPositionStrategy {
-
+public class FeedPositionStrategyFrom extends DefaultFeedPositionStrategy {
     private final FeedPosition feedPosition;
 
     public FeedPositionStrategyFrom(FeedPosition feedPosition) {

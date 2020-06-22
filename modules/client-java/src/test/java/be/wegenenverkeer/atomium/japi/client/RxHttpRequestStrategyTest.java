@@ -1,6 +1,5 @@
-package be.wegenenverkeer.atomium.japi.client.rxhttpclient;
+package be.wegenenverkeer.atomium.japi.client;
 
-import be.wegenenverkeer.atomium.japi.client.Event;
 import be.wegenenverkeer.atomium.japi.client.rxhttpclient.RxHttpAtomiumClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;

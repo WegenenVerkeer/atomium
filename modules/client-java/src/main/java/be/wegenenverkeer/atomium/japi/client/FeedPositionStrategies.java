@@ -1,7 +1,5 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import java.util.Optional;
-
 public final class FeedPositionStrategies {
     private FeedPositionStrategies() {
     }

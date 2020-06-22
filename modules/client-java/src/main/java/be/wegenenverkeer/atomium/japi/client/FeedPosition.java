@@ -1,11 +1,6 @@
 package be.wegenenverkeer.atomium.japi.client;
 
-import io.reactivex.rxjava3.core.Single;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
-class FeedPosition {
+public class FeedPosition {
     String pageUrl;
     String entryId;
 

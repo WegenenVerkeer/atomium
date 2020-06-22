@@ -62,7 +62,7 @@ public class CachedFeedPage<T> {
      * @return the rel='last' link
      * @throws IllegalStateException if the 'last' link is not present
      */
-    public String getOldestHref() {
+    public String getLastHref() {
         return getMandatoryLink("last");
     }
 
