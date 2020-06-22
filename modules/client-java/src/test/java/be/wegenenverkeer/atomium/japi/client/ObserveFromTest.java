@@ -14,6 +14,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.from;
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromNowOn;
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromStart;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 
@@ -50,9 +53,9 @@ public class ObserveFromTest {
     }
 
     @Test
-    public void testSubscribingFromBeginning(){
+    public void testSubscribingFromBeginning() {
         List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .fromBeginning()
+                .fetchEntries(fromStart())
                 .take(15) // process 2 pages
                 .test()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -70,9 +73,9 @@ public class ObserveFromTest {
     }
 
     @Test
-    public void testSubscribingFrom_latestEntry(){
+    public void testSubscribingFrom_latestEntry() {
         List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:669c1d7b-e206-451b-97de-29767465c43c", "/")
+                .fetchEntries(from("/", "urn:uuid:669c1d7b-e206-451b-97de-29767465c43c"))
                 .take(10)
                 .test()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -83,9 +86,9 @@ public class ObserveFromTest {
     }
 
     @Test
-    public void testSubscribingFrom_midEntry_prune(){
+    public void testSubscribingFrom_midEntry_prune() {
         List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:af399659-424f-4c07-b07b-a5338c69aaf3", "/")
+                .fetchEntries(from("/", "urn:uuid:af399659-424f-4c07-b07b-a5338c69aaf3"))
                 .take(10)
                 .test()
                 .awaitDone(3, TimeUnit.SECONDS)
@@ -104,9 +107,9 @@ public class ObserveFromTest {
     }
 
     @Test
-    public void testSubscribingFromNowOn(){
+    public void testSubscribingFromNowOn() {
         List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .fromNowOn()
+                .fetchEntries(fromNowOn())
                 .take(10)
                 .test()
                 .awaitDone(3, TimeUnit.SECONDS)

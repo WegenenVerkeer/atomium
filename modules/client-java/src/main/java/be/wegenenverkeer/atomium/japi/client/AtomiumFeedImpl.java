@@ -31,23 +31,21 @@ class AtomiumFeedImpl<E> implements AtomiumFeed<E> {
 
     private int retryCount = 0;
 
-    @Override
-    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
-        fetchHeadPage()
-                .map(feedPositionStrategy::getNextFeedPosition)
-                .flatMap(feedPosition -> fetchEntries(feedPosition, eTag));
+    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
+        return fetchHeadPage()
+                .toFlowable()
+                .flatMap(headPage -> this.fetchEntries(headPage, feedPositionStrategy, Optional.empty()));
     }
 
-    private Flowable<FeedEntry<E>> fetchEntries(FeedPosition feedPosition, Optional<String> eTag) {
-        return fetchPage(feedPosition.getPageUrl(), eTag)
-                .map(page -> ParsedFeedPage.parse(page, feedPosition))
+    public Flowable<FeedEntry<E>> fetchEntries(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
+        return feedPositionStrategy.getNextFeedPosition(currentPage)
+                .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag)
+                        .map(page -> ParsedFeedPage.parse(page, feedPosition))
+                )
                 .toFlowable()
                 .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()).concatWith(
-                        feedPosition.getNextFeedPosition(parsedPage.getPage())
-                                .toFlowable()
-                                .flatMap(nextFeedPosition -> fetchEntries(nextFeedPosition, parsedPage.getPage().getEtag()))
-                        )
-                );
+                        fetchEntries(parsedPage.getPage(), feedPositionStrategy, eTag)
+                ));
     }
 
     private Single<CachedFeedPage<E>> fetchHeadPage() {

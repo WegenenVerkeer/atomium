@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromStart;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.lang.String.format;
 
@@ -53,7 +54,7 @@ public class RetryStrategyTest {
     @Test
     public void testNoRetryStrategy() {
         client.feed("/feeds/events", Event.class)
-                .fromBeginning()
+                .fetchEntries(fromStart())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertError(FeedFetchException.class);
@@ -71,7 +72,7 @@ public class RetryStrategyTest {
                         throw new IllegalStateException(t);
                     }
                 })
-                .fromBeginning()
+                .fetchEntries(fromStart())
                 .test()
                 .awaitDone(60, TimeUnit.SECONDS)
                 .assertError(IllegalStateException.class);
@@ -90,7 +91,7 @@ public class RetryStrategyTest {
                         throw new IllegalStateException(t);
                     }
                 })
-                .fromBeginning()
+                .fetchEntries(fromStart())
                 .take(25)
                 .test()
                 .awaitDone(60, TimeUnit.SECONDS)

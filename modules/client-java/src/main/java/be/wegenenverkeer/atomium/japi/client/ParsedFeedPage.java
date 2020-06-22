@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 class ParsedFeedPage<E> {
@@ -37,12 +36,12 @@ class ParsedFeedPage<E> {
     private ParsedFeedPage<E> parse() {
         List<Entry<E>> entries = new ArrayList<>(page.getEntries());
 
-        if (feedPosition.getEntryId().isPresent()) {
-            if (pageHasEntry(page, feedPosition.getEntryId().get())) {
-                logger.debug("Page {} has an entry with ID {}, so we're only emitting items since that ID", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
-                entries = omitOlderOrEqualEntries(entries, feedPosition.getEntryId().get());
+        if (feedPosition.getEntryId() != null) {
+            if (pageHasEntry(page, feedPosition.getEntryId())) {
+                logger.debug("Page {} has an entry with ID {}, so we're only emitting items since that ID", feedPosition.getPageUrl(), feedPosition.getEntryId());
+                entries = omitOlderOrEqualEntries(entries, feedPosition.getEntryId());
             } else {
-                logger.debug("Page {} does not have an entry with ID {}, so we're emitting every item", feedPosition.getPageUrl(), feedPosition.getEntryId().get());
+                logger.debug("Page {} does not have an entry with ID {}, so we're emitting every item", feedPosition.getPageUrl(), feedPosition.getEntryId());
             }
         }
 

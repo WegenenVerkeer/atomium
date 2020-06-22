@@ -16,6 +16,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.from;
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromNowOn;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -62,7 +64,7 @@ public class FunctionalTest {
         String nextEntryId = "urn:uuid:e9b01f20-e294-4900-9cd2-484b25e07dc3";
 
         List<FeedEntry<Event>> values = client.feed("/feeds/events", Event.class)
-                .from(startEntryId, "20/forward/10")
+                .fetchEntries(from("20/forward/10", startEntryId))
                 .take(20)
                 .test()
                 .awaitCount(20)
@@ -79,7 +81,7 @@ public class FunctionalTest {
                 .willReturn(aResponse().withStatus(500)));
 
         client.feed("/fault", Event.class)
-                .fromNowOn()
+                .fetchEntries(fromNowOn())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
                 .assertValueCount(0)
@@ -89,7 +91,7 @@ public class FunctionalTest {
     @Test
     public void testUnSubscribingFromObservable() throws InterruptedException {
         Flowable<FeedEntry<Event>> flowable = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10");
+                .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"));
 
         TestObserver<FeedEntry<Event>> subscriber = new TestObserver<>();
         subscriber.onSubscribe(flowable.subscribe());
@@ -107,7 +109,7 @@ public class FunctionalTest {
     @Test
     public void testFeedEntryHasSelfLink() {
         List<FeedEntry<Event>> events = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
+                .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .take(2)
                 .test()
                 .awaitCount(2)
@@ -136,7 +138,7 @@ public class FunctionalTest {
                         .flatMap(state -> {
                             System.out.println("Initing from " + state.toString());
                             return client.feed("/feeds/events", Event.class)
-                                    .from(state.lastSeenId, state.lastSeenPage);
+                                    .fetchEntries(from(state.lastSeenPage, state.lastSeenId));
                         })
                         .doOnNext(entry -> {
                             //process the event

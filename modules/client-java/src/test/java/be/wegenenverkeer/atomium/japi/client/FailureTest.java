@@ -14,6 +14,8 @@ import org.junit.Test;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.from;
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.fromNowOn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 public class FailureTest {
@@ -52,7 +54,7 @@ public class FailureTest {
     @Test
     public void testReceivingAnError() {
         client.feed("/noselflinkfeed", Event.class)
-                .fromNowOn()
+                .fetchEntries(fromNowOn())
                 .take(10)
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)

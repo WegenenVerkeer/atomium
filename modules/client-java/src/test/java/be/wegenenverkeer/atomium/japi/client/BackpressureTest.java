@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static be.wegenenverkeer.atomium.japi.client.FeedPositionStrategies.from;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -63,7 +64,7 @@ public class BackpressureTest {
     @Test
     public void testProcessing_sameThread() {
         List<FeedEntry<Event>> entries = client.feed("/feeds/events", Event.class)
-                .from("urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a", "20/forward/10")
+                .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis())))
                 .test()
