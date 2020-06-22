@@ -39,7 +39,6 @@ public class FailureTest {
         client = new RxHttpAtomiumClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
                 .setAcceptJson()
-                .setPollingInterval(Duration.ofMillis(100))
                 .build();
 
         //reset WireMock so it will serve the events feed
@@ -54,7 +53,7 @@ public class FailureTest {
     @Test
     public void testReceivingAnError() {
         client.feed("/noselflinkfeed", Event.class)
-                .fetchEntries(fromNowOn())
+                .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)

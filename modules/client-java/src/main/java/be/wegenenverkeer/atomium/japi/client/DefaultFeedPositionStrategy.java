@@ -9,8 +9,9 @@ abstract class DefaultFeedPositionStrategy implements FeedPositionStrategy {
 
     private Duration pollingDelay = Duration.ofSeconds(1);
 
-    public void setPollingDelay(Duration pollingDelay) {
+    public DefaultFeedPositionStrategy withPollingDelay(Duration pollingDelay) {
         this.pollingDelay = pollingDelay;
+        return this;
     }
 
     private boolean starting = true;

@@ -26,27 +26,23 @@ public class RxHttpAtomiumClient implements AtomiumClient {
     private final static Logger logger = LoggerFactory.getLogger(RxHttpAtomiumClient.class);
     private final List<PageFetcher<?>> pageFetchers = new ArrayList<>();
     private final RxHttpClient rxHttpClient;
-    private final Duration pollingInterval;
     private final Callable<Map<String, String>> extraHeaders;
     private final List<Module> extraModules;
-    private final RetryStrategy retryStrategy;
 
     /**
      * Creates an AtomiumClient from the specified {@code PageFetcher} instance
      */
-    RxHttpAtomiumClient(RxHttpClient rxHttpClient, Duration pollingInterval, Callable<Map<String, String>> extraHeaders, List<Module> extraModules,
-            RetryStrategy retryStrategy) {
+    RxHttpAtomiumClient(RxHttpClient rxHttpClient, Callable<Map<String, String>> extraHeaders, List<Module> extraModules) {
         this.rxHttpClient = rxHttpClient;
-        this.pollingInterval = pollingInterval;
         this.extraHeaders = extraHeaders;
         this.extraModules = extraModules;
-        this.retryStrategy = retryStrategy;
     }
 
     @Override
     public <E> AtomiumFeed<E> feed(String feedUrl, Class<E> entryTypeMarker) {
         PageFetcher<E> pageFetcher = buildPageFetcher(feedUrl, entryTypeMarker);
         pageFetchers.add(pageFetcher);
+        logger.debug("Returning feed for url {} and class {}", feedUrl, entryTypeMarker.getName());
         return new AtomiumFeedImpl<>(pageFetcher);
     }
 
@@ -57,7 +53,6 @@ public class RxHttpAtomiumClient implements AtomiumClient {
         configuration.setExtraModules(extraModules);
         configuration.setEntryTypeMarker(entryTypeMarker);
         configuration.setFeedUrl(feedUrl);
-        configuration.setPollingInterval(pollingInterval);
         return new RxHttpPageFetcher<>(configuration);
     }
 
@@ -70,9 +65,7 @@ public class RxHttpAtomiumClient implements AtomiumClient {
         private final String XML_MIME_TYPE = "application/xml";
         private String accept;
         private String baseUrl;
-        private boolean followRedirect;
-        private Duration pollingInterval = Duration.ofSeconds(1);
-        private Callable<Map<String, String>> extraHeaders = Collections::emptyMap;
+        private boolean followRedirect;private Callable<Map<String, String>> extraHeaders = Collections::emptyMap;
         private RetryStrategy retryStrategy = (count, exception) -> {
             throw new FeedFetchException("Error occured, exiting...", exception);
         };
@@ -89,7 +82,7 @@ public class RxHttpAtomiumClient implements AtomiumClient {
                     .setFollowRedirect(followRedirect)
                     .build();
 
-            return new RxHttpAtomiumClient(rxHttpClient, pollingInterval, extraHeaders, extraModules, retryStrategy);
+            return new RxHttpAtomiumClient(rxHttpClient, extraHeaders, extraModules);
         }
 
         public Builder setAccept(String accept) {
@@ -124,11 +117,6 @@ public class RxHttpAtomiumClient implements AtomiumClient {
 
         public Builder setExtraModules(List<Module> extraModules) {
             this.extraModules = extraModules;
-            return this;
-        }
-
-        public Builder setPollingInterval(Duration pollingInterval) {
-            this.pollingInterval = pollingInterval;
             return this;
         }
     }

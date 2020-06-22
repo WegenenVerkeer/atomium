@@ -14,7 +14,6 @@ public class RxHttpPageFetcherConfiguration<E> {
     private List<Module> modules;
     private Class<E> entryTypeMarker;
     private String feedUrl;
-    private Duration pollingInterval;
 
     public RxHttpClient getRxHttpClient() {
         return rxHttpClient;
@@ -54,13 +53,5 @@ public class RxHttpPageFetcherConfiguration<E> {
 
     public void setFeedUrl(String feedUrl) {
         this.feedUrl = feedUrl;
-    }
-
-    public Duration getPollingInterval() {
-        return pollingInterval;
-    }
-
-    public void setPollingInterval(Duration pollingInterval) {
-        this.pollingInterval = pollingInterval;
     }
 }

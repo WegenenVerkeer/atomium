@@ -6,15 +6,15 @@ public final class FeedPositionStrategies {
     private FeedPositionStrategies() {
     }
 
-    public static FeedPositionStrategy from(String pageUrl, String entryId) {
+    public static DefaultFeedPositionStrategy from(String pageUrl, String entryId) {
         return new FeedPositionStrategyFrom(FeedPositions.of(pageUrl, entryId));
     }
 
-    public static FeedPositionStrategy fromNowOn() {
+    public static DefaultFeedPositionStrategy fromNowOn() {
         return new FeedPositionStrategyFromNowOn();
     }
 
-    public static FeedPositionStrategy fromStart() {
+    public static DefaultFeedPositionStrategy fromStart() {
         return new FeedPositionStrategyFromStart();
     }
 }
