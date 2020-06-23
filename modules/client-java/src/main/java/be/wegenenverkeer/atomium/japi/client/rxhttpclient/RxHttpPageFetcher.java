@@ -5,7 +5,9 @@ import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
 import be.wegenenverkeer.atomium.format.JaxbCodec;
 import be.wegenenverkeer.atomium.japi.client.CachedFeedPage;
 import be.wegenenverkeer.atomium.japi.client.EmptyCachedFeedPage;
+import be.wegenenverkeer.atomium.japi.client.FeedFetchException;
 import be.wegenenverkeer.atomium.japi.client.PageFetcher;
+import be.wegenenverkeer.atomium.japi.client.RetryStrategy;
 import be.wegenenverkeer.atomium.japi.client.UrlHelper;
 import be.wegenenverkeer.rxhttpclient.ClientRequest;
 import be.wegenenverkeer.rxhttpclient.ClientRequestBuilder;
@@ -28,17 +30,20 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final FeedPageCodec<E, String> codec;
     private final RxHttpClient rxHttpClient;
     private final RxHttpRequestStrategy requestStrategy;
+    private final RetryStrategy retryStrategy;
 
     RxHttpPageFetcher(String feedUrl,
             Class<E> entryTypeMarker,
             FeedPageCodec<E, String> codec,
             RxHttpClient rxHttpClient,
-            RxHttpRequestStrategy requestStrategy) {
+            RxHttpRequestStrategy requestStrategy,
+            RetryStrategy retryStrategy) {
         this.feedUrl = feedUrl;
         this.entryTypeMarker = entryTypeMarker;
         this.codec = codec;
         this.rxHttpClient = rxHttpClient;
         this.requestStrategy = requestStrategy;
+        this.retryStrategy = retryStrategy;
     }
 
     @Override
@@ -54,7 +59,12 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
     @Override
     public Class<E> getEntryTypeMarker() {
-        return null;
+        return this.entryTypeMarker;
+    }
+
+    @Override
+    public RetryStrategy getRetryStrategy() {
+        return this.retryStrategy;
     }
 
     ClientRequest buildRequest(String pageUrl, Optional<String> etag) {
@@ -81,20 +91,14 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         return new CachedFeedPage<E>(codec.decode(response.getResponseBody()), newETag);
     }
 
-    boolean isJson(Optional<String> contentType) {
-        if (contentType.isPresent()) {
-            return contentType.map(ct -> ct.contains("json") || ct.contains("JSON")).get();
-        }
-
-        //assume JSON
-        return true;
-    }
-
     public static class Builder<E> {
         private final RxHttpClient rxHttpClient;
         private final String feedUrl;
         private final Class<E> entryTypeMarker;
         private RxHttpRequestStrategy requestStrategy = builder -> {
+        };
+        private RetryStrategy retryStrategy = (count, exception) -> {
+            throw new FeedFetchException("Problem fetching page", exception);
         };
 
         private FeedPageCodec<E, String> codec;
@@ -115,7 +119,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                     entryTypeMarker,
                     codec,
                     rxHttpClient,
-                    requestStrategy
+                    requestStrategy,
+                    retryStrategy
             );
         }
 
@@ -141,6 +146,11 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         public RxHttpPageFetcher.Builder<E> setRequestStrategy(RxHttpRequestStrategy requestStrategy) {
             this.requestStrategy = requestStrategy;
+            return this;
+        }
+
+        public RxHttpPageFetcher.Builder<E> setRetryStrategy(RetryStrategy retryStrategy) {
+            this.retryStrategy = retryStrategy;
             return this;
         }
     }

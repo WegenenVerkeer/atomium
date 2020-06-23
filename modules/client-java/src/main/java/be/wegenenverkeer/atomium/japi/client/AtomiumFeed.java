@@ -14,17 +14,8 @@ public class AtomiumFeed<E> {
     private final static Logger logger = LoggerFactory.getLogger(AtomiumFeed.class);
     private final PageFetcher<E> pageFetcher;
 
-    private RetryStrategy retryStrategy = (count, exception) -> {
-        throw new FeedFetchException("Problem fetching page", exception);
-    };
-
     public AtomiumFeed(PageFetcher<E> pageFetcher) {
         this.pageFetcher = pageFetcher;
-    }
-
-    public AtomiumFeed<E> withRetry(RetryStrategy retryStrategy) {
-        this.retryStrategy = retryStrategy;
-        return this;
     }
 
     private int retryCount = 0;
@@ -53,8 +44,9 @@ public class AtomiumFeed<E> {
     private Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
         return pageFetcher.fetch(pageUrl, eTag)
                 .retryWhen(throwableFlowable -> throwableFlowable
-                        .map(throwable -> retryStrategy.apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
+                        .map(throwable -> pageFetcher.getRetryStrategy().apply(++this.retryCount, throwable)) // TODO handle error by catching exceptions and returning Single.error
                         .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
-                );
+                )
+                .doAfterSuccess(page -> this.retryCount = 0);
     }
 }

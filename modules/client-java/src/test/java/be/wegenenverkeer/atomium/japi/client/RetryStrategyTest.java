@@ -63,16 +63,16 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyOneRetries() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
-                .withRetry((n, t) -> {
-                    if (n < 2) {
-                        logger.info("Retry request count " + n, t);
-                        return 2 * n * 200L;
-                    } else {
-                        logger.info(format("Stop retrying after %d times.", n), t);
-                        throw new IllegalStateException(t);
-                    }
-                })
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+                    .setRetryStrategy((n, t) -> {
+                        if (n < 2) {
+                            logger.info("Retry request count " + n, t);
+                            return 2 * n * 200L;
+                        } else {
+                            logger.info(format("Stop retrying after %d times.", n), t);
+                            throw new IllegalStateException(t);
+                        }
+                    }).build())
                 .fetchEntries(fromStart())
                 .test()
                 .awaitDone(60, TimeUnit.SECONDS)
@@ -81,17 +81,17 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyThreeRetries() {
-        client
-                .feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
-                .withRetry((n, t) -> {
-                    if (n < 3) {
-                        logger.info(format("Retry request count %d", n), t);
-                        return 2 * n * 200L;
-                    } else {
-                        logger.info(format("Stop retrying after %d times.", n), t);
-                        throw new IllegalStateException(t);
-                    }
-                })
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+                        .setRetryStrategy((n, t) -> {
+                            if (n < 3) {
+                                logger.info(format("Retry request count %d", n), t);
+                                return 2 * n * 200L;
+                            } else {
+                                logger.info(format("Stop retrying after %d times.", n), t);
+                                throw new IllegalStateException(t);
+                            }
+                        })
+                        .build())
                 .fetchEntries(fromStart())
                 .take(25)
                 .test()
