@@ -29,20 +29,20 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final Class<E> entryTypeMarker;
     private final FeedPageCodec<E, String> codec;
     private final RxHttpClient rxHttpClient;
-    private final RxHttpRequestStrategy requestStrategy;
+    private final ClientRequestCustomizer requestCustomizer;
     private final RetryStrategy retryStrategy;
 
     RxHttpPageFetcher(String feedUrl,
             Class<E> entryTypeMarker,
             FeedPageCodec<E, String> codec,
             RxHttpClient rxHttpClient,
-            RxHttpRequestStrategy requestStrategy,
+            ClientRequestCustomizer requestCustomizer,
             RetryStrategy retryStrategy) {
         this.feedUrl = feedUrl;
         this.entryTypeMarker = entryTypeMarker;
         this.codec = codec;
         this.rxHttpClient = rxHttpClient;
-        this.requestStrategy = requestStrategy;
+        this.requestCustomizer = requestCustomizer;
         this.retryStrategy = retryStrategy;
     }
 
@@ -76,7 +76,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         etag.ifPresent(s -> builder.addHeader("If-None-Match", s));
 
-        this.requestStrategy.apply(builder);
+        this.requestCustomizer.apply(builder);
 
         return builder.build();
     }
@@ -95,7 +95,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         private final RxHttpClient rxHttpClient;
         private final String feedUrl;
         private final Class<E> entryTypeMarker;
-        private RxHttpRequestStrategy requestStrategy = builder -> {
+        private ClientRequestCustomizer requestCustomizer = builder -> {
         };
         private RetryStrategy retryStrategy = (count, exception) -> {
             throw new FeedFetchException("Problem fetching page", exception);
@@ -119,7 +119,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                     entryTypeMarker,
                     codec,
                     rxHttpClient,
-                    requestStrategy,
+                    requestCustomizer,
                     retryStrategy
             );
         }
@@ -144,8 +144,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
             return this;
         }
 
-        public RxHttpPageFetcher.Builder<E> setRequestStrategy(RxHttpRequestStrategy requestStrategy) {
-            this.requestStrategy = requestStrategy;
+        public RxHttpPageFetcher.Builder<E> setClientRequestCustomizer(ClientRequestCustomizer requestCustomizer) {
+            this.requestCustomizer = requestCustomizer;
             return this;
         }
 

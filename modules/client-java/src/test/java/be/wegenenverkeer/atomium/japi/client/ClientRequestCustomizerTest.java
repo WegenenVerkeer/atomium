@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-public class RxHttpRequestStrategyTest {
+public class ClientRequestCustomizerTest {
 
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
 
@@ -54,7 +54,7 @@ public class RxHttpRequestStrategyTest {
     @Test
     public void testAddHeaders() {
         client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
-                .setRequestStrategy(builder -> builder.addHeader("X-FOO", "bar"))
+                .setClientRequestCustomizer(builder -> builder.addHeader("X-FOO", "bar"))
                 .build())
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
