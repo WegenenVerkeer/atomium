@@ -1,6 +1,7 @@
 package be.wegenenverkeer.atomium.japi.client;
 
 import be.wegenenverkeer.atomium.japi.client.rxhttpclient.RxHttpAtomiumClient;
+import be.wegenenverkeer.rxhttpclient.rxjava.RxJavaHttpClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
@@ -40,9 +41,9 @@ public class ObserveFromTest {
 
     @Before
     public void before() {
-        client = new RxHttpAtomiumClient.Builder()
+        client = new RxHttpAtomiumClient(new RxJavaHttpClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
-                .build();
+                .build());
 
         //reset WireMock so it will serve the events feed
         WireMock.resetToDefault();
