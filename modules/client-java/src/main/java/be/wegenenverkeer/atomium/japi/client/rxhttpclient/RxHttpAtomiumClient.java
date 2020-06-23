@@ -4,7 +4,6 @@ import be.wegenenverkeer.atomium.japi.client.AtomiumClient;
 import be.wegenenverkeer.atomium.japi.client.AtomiumFeed;
 import be.wegenenverkeer.atomium.japi.client.PageFetcher;
 import be.wegenenverkeer.rxhttpclient.RxHttpClient;
-import be.wegenenverkeer.rxhttpclient.rxjava.RxJavaHttpClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class RxHttpAtomiumClient implements AtomiumClient {
     /**
      * Creates an AtomiumClient from the specified {@code PageFetcher} instance
      */
-    RxHttpAtomiumClient(RxHttpClient rxHttpClient) {
+    public RxHttpAtomiumClient(RxHttpClient rxHttpClient) {
         this.rxHttpClient = rxHttpClient;
     }
 
@@ -39,32 +38,5 @@ public class RxHttpAtomiumClient implements AtomiumClient {
 
     public void close() {
         this.pageFetchers.forEach(PageFetcher::close);
-    }
-
-    public static class Builder {
-        private String baseUrl;
-        private boolean followRedirect;
-
-        public Builder() {
-        }
-
-        public RxHttpAtomiumClient build() {
-            RxHttpClient rxHttpClient = new RxJavaHttpClient.Builder()
-                    .setBaseUrl(baseUrl)
-                    .setFollowRedirect(followRedirect)
-                    .build();
-
-            return new RxHttpAtomiumClient(rxHttpClient);
-        }
-
-        public Builder setBaseUrl(String baseUrl) {
-            this.baseUrl = baseUrl;
-            return this;
-        }
-
-        public Builder setFollowRedirect(boolean followRedirect) {
-            this.followRedirect = followRedirect;
-            return this;
-        }
     }
 }
