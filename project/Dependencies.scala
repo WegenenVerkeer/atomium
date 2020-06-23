@@ -2,7 +2,6 @@
 import sbt._
 
 object Dependencies {
-
   val play25Version = "2.5.4"
   val play26Version = "2.6.2"
 
@@ -47,6 +46,4 @@ object Dependencies {
     scalaCheck,
     junitInterface
   )
-
-
 }

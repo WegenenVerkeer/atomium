@@ -9,6 +9,14 @@ trait BuildSettings {
 
   val projectName = "atomium"
 
+  def projectV2(moduleName: String): Project = { // hack so we can run atomium 1 and 2 together
+    Project(
+      id = projectName + "-" + moduleName + "-v2",
+      base = file("modules/" + moduleName),
+      settings = projectSettings()
+    )
+  }
+
   def project(moduleName: String): Project = {
     Project(
       id = projectName + "-" + moduleName,
@@ -16,7 +24,6 @@ trait BuildSettings {
       settings = projectSettings()
     )
   }
-
 
   def mainProject(modules: ProjectReference*): Project = {
     Project(
@@ -34,7 +41,7 @@ trait BuildSettings {
       crossScalaVersions := Seq("2.12.8", "2.13.2"),
       scalaVersion := "2.12.8",
       parallelExecution := false,
-      publishArtifact in Test := true,
+//      publishArtifact in Test := true,
       resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository",
       resolvers += Resolver.sonatypeRepo("public") ,
       resolvers += Resolver.typesafeRepo("releases"),
@@ -93,6 +100,4 @@ trait BuildSettings {
       credentials ++= publishingCredentials
     )
   }
-
-
 }

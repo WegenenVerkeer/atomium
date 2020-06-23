@@ -1,21 +1,15 @@
-import play.sbt.Play.autoImport._
-import play.sbt.PlayScala
-import Dependencies._
 import sbt.Keys._
 import sbt._
-
 
 object AtomiumBuild extends Build with BuildSettings {
 
   import Dependencies._
 
-
-  javacOptions in Global ++= Seq("-source", "11", "-target", "11", "-Xlint", "-Xdoclint:none")
+  javacOptions in Global ++= Seq("-source", "11", "-target", "11")
 
 
   //----------------------------------------------------------------
   lazy val coreModule = {
-
     val mainDeps = Seq(jacksonDatabind)
     val testDeps = Seq(junit, junitInterface, postgresdriver)
 
@@ -23,8 +17,8 @@ object AtomiumBuild extends Build with BuildSettings {
       .settings(libraryDependencies ++= mainDeps ++ testDeps)
       .settings(crossPaths := false)
       .settings(fork := true) //need to fork because of problem with registering JDBC Driver on repeated test invocation.
+      .settings(sources in (Compile, doc) := Seq()) // workaround: skip javadoc, sbt can't build them
       .settings(autoScalaLibrary := false)
-
   }
 
   //----------------------------------------------------------------
@@ -42,14 +36,16 @@ object AtomiumBuild extends Build with BuildSettings {
 
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
-
     val mainDeps = Seq(slf4j, rxhttpclient)
     val testDeps = Seq(junit, wiremock, junitInterface)
 
-    project("client-java")
-      .settings(libraryDependencies ++= mainDeps ++ testDeps)
-      .settings(autoScalaLibrary := false)
-      .settings(crossPaths := false)
+    projectV2("client-java")
+      .settings(
+        libraryDependencies ++= mainDeps ++ testDeps,
+        autoScalaLibrary := false,
+        crossPaths := false,
+        sources in (Compile, doc) := Seq() // workaround: skip javadoc, sbt can't build them
+      )
       .dependsOn(coreModule)
   }
 
