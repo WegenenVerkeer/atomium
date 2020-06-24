@@ -37,7 +37,7 @@ object AtomiumBuild extends Build with BuildSettings {
   //----------------------------------------------------------------
   lazy val clientJavaModule = {
     val mainDeps = Seq(slf4j, rxhttpclient)
-    val testDeps = Seq(junit, wiremock, junitInterface)
+    val testDeps = Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter)
 
     projectV2("client-java")
       .settings(

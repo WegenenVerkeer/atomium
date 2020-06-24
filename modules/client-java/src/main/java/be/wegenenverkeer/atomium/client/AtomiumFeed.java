@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AtomiumFeed<E> {
     private static String FIRST_PAGE = "/";
@@ -22,30 +23,54 @@ public class AtomiumFeed<E> {
 
     private int retryCount = 0;
 
+    public Flowable<FeedEntry<E>> fetchEntries2(FeedPositionStrategy feedPositionStrategy) {
+        AtomicReference<CachedFeedPage<E>> previousPage = new AtomicReference<>(null);
+        Flowable<Object> infiniteFlowable = Flowable.generate(
+                () -> 0,
+                (s, emitter) -> {
+                    emitter.onNext(0);
+                }
+        );
+        return infiniteFlowable
+                .concatMap(t -> {
+                    Single<CachedFeedPage<E>> page;
+                    if (previousPage.get() != null) {
+                        page = Single.just(previousPage.get());
+                    } else {
+                        page = fetchHeadPage();
+                    }
+                    return page.flatMap(feedPositionStrategy::getNextFeedPosition)
+                            .flatMap(feedPosition -> fetchPage(feedPosition.pageUrl, Optional.empty())
+                                    .doOnSuccess(previousPage::set)
+                                    .map(cachedFeedPage -> ParsedFeedPage.parse(cachedFeedPage, feedPosition)))
+                            .toFlowable()
+                            .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()));
+                }, 1);
+    }
+
     public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
-        return fetchHeadPage()
-                .toFlowable()
-                .flatMap(headPage -> this.fetchEntries(headPage, feedPositionStrategy, Optional.empty()));
+        return fetchEntries2(feedPositionStrategy);
+//        return fetchHeadPage()
+//                .toFlowable()
+//                .flatMap(headPage -> this.fetchEntries(headPage, feedPositionStrategy, Optional.empty()));
     }
 
     public Flowable<FeedEntry<E>> fetchEntries(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
         return feedPositionStrategy.getNextFeedPosition(currentPage)
-                .doOnEvent((feedPosition, throwable) -> logger.debug("Next feed position = {} (page {})", feedPosition.getEntryId(), feedPosition.getPageUrl()))
                 .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag)
                         .map(page -> ParsedFeedPage.parse(page, feedPosition))
                 )
-                .doOnEvent((page, throwable) -> logger.debug("Page fetched {}", page.getPage().getSelfHref()))
                 .toFlowable()
-                .flatMap(parsedPage -> Flowable
-                        .fromIterable(parsedPage.getEntries())
-                        .doOnNext(eFeedEntry -> logger.debug("Returning feed entry {} (page {})", eFeedEntry.getEntry().getId(), eFeedEntry.getSelfHref()))
-                        .concatWith(fetchEntries(parsedPage.getPage(), feedPositionStrategy, eTag)
-                ))
-                .doOnNext(eFeedEntry -> logger.debug("Returning feed entry {} (page {})", eFeedEntry.getEntry().getId(), eFeedEntry.getSelfHref()))
-                ;
+                .flatMap(parsedPage -> {
+                    Flowable<FeedEntry<E>> next = fetchEntries(parsedPage.getPage(), feedPositionStrategy, eTag);
+                    return Flowable.fromIterable(parsedPage.getEntries()).concatWith(next);
+                }, false, 1, 1);
     }
 
-
+    private Single<CachedFeedPage<E>> fetchNextPage(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
+        return feedPositionStrategy.getNextFeedPosition(currentPage)
+                .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag));
+    }
 
     private Single<CachedFeedPage<E>> fetchHeadPage() {
         return fetchPage(AtomiumFeed.FIRST_PAGE, Optional.empty());

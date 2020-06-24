@@ -32,9 +32,11 @@ object Dependencies {
   val junitInterface    = "com.novocode"                    %   "junit-interface"          % "0.11"    % "test->default"
   val jacksonDatabind   = "com.fasterxml.jackson.core"      %   "jackson-databind"         % "2.4.3"
   val rxhttpclient      = "be.wegenenverkeer"               %   "rxhttpclient"             % "2.0-RC2"
+  val reactor           = "io.projectreactor"               %   "reactor-core"             % "3.3.5.RELEASE" % "test"
+  val reactorTest       = "io.projectreactor"               %   "reactor-test"             % "3.3.3.RELEASE" % "test"
+  val reactorAdapter    = "io.projectreactor.addons"        %   "reactor-adapter"          % "3.3.3.RELEASE" % "test"
 
   val slf4j             = "org.slf4j"                       %   "slf4j-api"               % "1.7.30"
-
 
   val mainDependencies = Seq(
     logback,
