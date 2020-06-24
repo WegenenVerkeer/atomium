@@ -1,7 +1,9 @@
 package be.wegenenverkeer.atomium.client;
 
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,27 +24,38 @@ public class AtomiumFeed<E> {
     private int retryCount = 0;
 
     public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
-        // recursion breaks backpressure, so we're using a generator:
         AtomicReference<CachedFeedPage<E>> previousPage = new AtomicReference<>(null);
-        return Flowable.generate( // generate an infinite stream of zeroes (Flowable.range only goes to Integer.MAX_VALUE)
+
+        return infiniteZeroes() // recursion breaks backpressure, so we're using a generator of infinite zeroes
+                .concatMap(t -> fetchEntries(feedPositionStrategy, previousPage), 1);
+    }
+
+    private Publisher<? extends FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy, AtomicReference<CachedFeedPage<E>> previousPageRef) {
+        return getPreviousPage(previousPageRef)
+                .flatMap(previousPage -> feedPositionStrategy.getNextFeedPosition(previousPage) // get next feed position
+                        .flatMap(feedPosition -> fetchPage(feedPosition.pageUrl, previousPage.etag) // fetch entries
+                                .doOnSuccess(previousPageRef::set) // update ref so we're processing the correct page later on
+                                .map(cachedFeedPage -> ParsedFeedPage.parse(cachedFeedPage, feedPosition)))) // parse entries
+                .toFlowable()
+                .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()));
+    }
+
+    private Single<CachedFeedPage<E>> getPreviousPage(AtomicReference<CachedFeedPage<E>> previousPage) {
+        if (previousPage.get() != null) {
+            return Single.just(previousPage.get());
+        } else {
+            return fetchHeadPage();
+        }
+    }
+
+    // generate an infinite stream of zeroes (Flowable.range only goes to Integer.MAX_VALUE)
+    private Flowable<Integer> infiniteZeroes() {
+        return Flowable.generate(
                 () -> 0,
                 (s, emitter) -> {
                     emitter.onNext(0);
                 }
-            ).concatMap(t -> { // fetch the page to pass to the feed position strategy
-                    Single<CachedFeedPage<E>> page;
-                    if (previousPage.get() != null) {
-                        page = Single.just(previousPage.get());
-                    } else {
-                        page = fetchHeadPage();
-                    }
-                    return page.flatMap(eCachedFeedPage -> feedPositionStrategy.getNextFeedPosition(eCachedFeedPage) // get next feed position
-                                    .flatMap(feedPosition -> fetchPage(feedPosition.pageUrl, eCachedFeedPage.etag) // fetch entries, and parse them
-                                            .doOnSuccess(previousPage::set)
-                                            .map(cachedFeedPage -> ParsedFeedPage.parse(cachedFeedPage, feedPosition))))
-                            .toFlowable()
-                            .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()));
-                }, 1);
+            );
     }
 
     private Single<CachedFeedPage<E>> fetchHeadPage() {
