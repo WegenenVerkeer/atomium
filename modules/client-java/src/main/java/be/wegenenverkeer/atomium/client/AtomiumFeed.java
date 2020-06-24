@@ -23,7 +23,7 @@ public class AtomiumFeed<E> {
 
     private int retryCount = 0;
 
-    public Flowable<FeedEntry<E>> fetchEntries2(FeedPositionStrategy feedPositionStrategy) {
+    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
         AtomicReference<CachedFeedPage<E>> previousPage = new AtomicReference<>(null);
         Flowable<Object> infiniteFlowable = Flowable.generate(
                 () -> 0,
@@ -46,30 +46,6 @@ public class AtomiumFeed<E> {
                             .toFlowable()
                             .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()));
                 }, 1);
-    }
-
-    public Flowable<FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy) {
-        return fetchEntries2(feedPositionStrategy);
-//        return fetchHeadPage()
-//                .toFlowable()
-//                .flatMap(headPage -> this.fetchEntries(headPage, feedPositionStrategy, Optional.empty()));
-    }
-
-    public Flowable<FeedEntry<E>> fetchEntries(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
-        return feedPositionStrategy.getNextFeedPosition(currentPage)
-                .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag)
-                        .map(page -> ParsedFeedPage.parse(page, feedPosition))
-                )
-                .toFlowable()
-                .flatMap(parsedPage -> {
-                    Flowable<FeedEntry<E>> next = fetchEntries(parsedPage.getPage(), feedPositionStrategy, eTag);
-                    return Flowable.fromIterable(parsedPage.getEntries()).concatWith(next);
-                }, false, 1, 1);
-    }
-
-    private Single<CachedFeedPage<E>> fetchNextPage(CachedFeedPage<E> currentPage, FeedPositionStrategy feedPositionStrategy, Optional<String> eTag) {
-        return feedPositionStrategy.getNextFeedPosition(currentPage)
-                .flatMap(feedPosition -> fetchPage(feedPosition.getPageUrl(), eTag));
     }
 
     private Single<CachedFeedPage<E>> fetchHeadPage() {
