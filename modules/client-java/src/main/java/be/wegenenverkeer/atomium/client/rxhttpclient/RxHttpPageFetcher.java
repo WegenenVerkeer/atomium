@@ -98,7 +98,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         private ClientRequestCustomizer requestCustomizer = builder -> {
         };
         private RetryStrategy retryStrategy = (count, exception) -> {
-            throw new FeedFetchException("Problem fetching page", exception);
+            logger.info("Retry feed count {}", count);
+            return count.longValue();
         };
 
         private FeedPageCodec<E, String> codec;

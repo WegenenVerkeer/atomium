@@ -94,9 +94,28 @@ public class BackpressureTest {
     }
 
     @Test
+    public void testProcessing_otherThread_multiplePages() {
+        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
+                .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
+                .concatMap(event -> Flowable.just(event)
+                        .doOnNext(myEvent -> Thread.sleep(Duration.ofMillis(100).toMillis()))
+                        .subscribeOn(Schedulers.newThread()), 1)
+                .test()
+                .awaitDone(1100, TimeUnit.MILLISECONDS)
+                .assertNoErrors()
+                .values();
+
+        // only 1 page is queried
+        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/20/forward/10")).withHeader("Accept", equalTo("application/xml")));
+        WireMock.verify(exactly(1), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("Accept", equalTo("application/xml")));
+        WireMock.verify(exactly(0), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/40/forward/10")).withHeader("Accept", equalTo("application/xml")));
+        WireMock.verify(exactly(0), WireMock.getRequestedFor(WireMock.urlPathEqualTo("/feeds/events/50/forward/10")).withHeader("Accept", equalTo("application/xml")));
+    }
+
+    @Test
     public void testProcessing_otherThread_reactor() {
         Flowable<FeedEntry<Event>> feedEntryFlowable = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
-                .fetchEntries2(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
+                .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .doOnNext(eventFeedEntry -> {
                     LOG.info("FeedEntry0 : {}", eventFeedEntry);
                 });
