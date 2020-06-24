@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.lang.String.format;
 
 public class FailureTest {
 
@@ -51,7 +52,11 @@ public class FailureTest {
 
     @Test
     public void testReceivingAnError() {
-        client.feed(client.getPageFetcherBuilder("/noselflinkfeed", Event.class).build())
+        client.feed(client.getPageFetcherBuilder("/noselflinkfeed", Event.class)
+                .setRetryStrategy((n, t) -> {
+                     throw new FeedFetchException("Error", t);
+                })
+                .build())
                 .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()

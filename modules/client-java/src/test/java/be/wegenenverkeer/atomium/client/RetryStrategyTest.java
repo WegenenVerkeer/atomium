@@ -58,7 +58,7 @@ public class RetryStrategyTest {
                 .fetchEntries(fromStart())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
-                .assertError(FeedFetchException.class);
+                .assertNoErrors();
     }
 
     @Test

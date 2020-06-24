@@ -81,7 +81,11 @@ public class FunctionalTest {
         stubFor(get(urlEqualTo("/fault/"))
                 .willReturn(aResponse().withStatus(500)));
 
-        client.feed(client.getPageFetcherBuilder("/fault", Event.class).setAcceptXml().build())
+        client.feed(client.getPageFetcherBuilder("/fault", Event.class).setAcceptXml()
+                .setRetryStrategy((n, t) -> {
+                    throw new FeedFetchException("Error", t);
+                })
+                .build())
                 .fetchEntries(fromNowOn())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
