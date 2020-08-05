@@ -19,7 +19,8 @@ import java.util.Properties;
 /**
  * Abstract base class for integration tests against a Postgres database.
  * <p>
- * We assume that PG environment vars are suitably set when tests are run so that proper connection to the database will be establised
+ * We assume that the provided docker image (see the  docker directory) is running
+ *
  * <p>
  * Created by Karel Maesen, Geovise BVBA on 13/12/16.
  */
@@ -30,7 +31,7 @@ public abstract class AbstractIntegrationTest {
 
     static Driver postgresDriver;
     static JdbcDialect dialect = PostgresDialect.INSTANCE;
-    static String databaseUrl = "jdbc:postgresql://localhost:5555/atomium_test";
+    static String databaseUrl = "jdbc:postgresql://localhost:5555/atomium";
 
     JdbcEventStoreMetadata metadata =
             new JdbcEventStoreMetadata(
@@ -92,10 +93,12 @@ public abstract class AbstractIntegrationTest {
 
     Connection mkConnection(String schema) throws SQLException {
         Connection conn;
+        Properties props = new Properties();
+        props.put("user", "atomium");
+        props.put("password", "atomium");
         if (schema == null ) {
-            conn  = postgresDriver.connect(databaseUrl, null);
+            conn  = postgresDriver.connect(databaseUrl, props);
         } else {
-            Properties props = new Properties();
             props.put("currentSchema", schema);
             conn =  postgresDriver.connect(databaseUrl, props);
         }

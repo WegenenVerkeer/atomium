@@ -4,7 +4,9 @@ import be.wegenenverkeer.atomium.format.AtomEntry;
 import be.wegenenverkeer.atomium.format.Content;
 import be.wegenenverkeer.atomium.format.Entry;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Created by Karel Maesen, Geovise BVBA on 14/12/16.
@@ -54,8 +56,9 @@ public class Event<T> {
 
         if (!value.equals(event.value)) return false;
         if (!id.equals(event.id)) return false;
-        return updated.equals(event.updated);
-
+        //this is used because comparing events between databases may result in spurious errors if
+        //compared exactly
+        return Math.abs(Duration.between(updated, event.updated).toMillis()) < 100;
     }
 
     @Override
@@ -64,5 +67,14 @@ public class Event<T> {
         result = 31 * result + id.hashCode();
         result = 31 * result + updated.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "value=" + value +
+                ", id='" + id + '\'' +
+                ", updated=" + updated +
+                '}';
     }
 }
