@@ -3,10 +3,10 @@ language: scala
 dist: xenial
 
 jdk:
-- openjdk8
+- openjdk11
 
 scala:
-- 2.11.5
+- 2.12.8
 
 script: sbt clean +test
 
@@ -16,10 +16,10 @@ services:
 - postgresql
 
 addons:
-  postgresql: "9.4"
+  postgresql: "12"
 
 before_script:
-  - psql -c 'create database atomium_test;' -U postgres
+  - psql -c 'create database atomium;' -U postgres 
 
 cache:
   directories:
