@@ -1,11 +1,24 @@
-site.settings
+import Dependencies._
 
-site.includeScaladoc()
+val projectName = "atomium"
 
 organization in ThisBuild := "be.wegenenverkeer"
 
-crossScalaVersions := Seq("2.12.8", "2.13.2")
+javacOptions ++= Seq("-source", "11", "-target", "11", "-Xlint")
 
+initialize := {
+  val _ = initialize.value
+  if (sys.props("java.specification.version") != "11")
+    sys.error("Java 11 is required for this project.")
+}
+
+scalaVersion := "2.12.8"
+crossScalaVersions := Seq("2.12.8", "2.13.2")
+parallelExecution := false
+resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
+resolvers += Resolver.sonatypeRepo("public")
+resolvers += Resolver.typesafeRepo("releases")
+libraryDependencies ++= mainDependencies
 scalacOptions in ThisBuild := Seq(
   "-deprecation",
   "-feature",
@@ -16,11 +29,101 @@ scalacOptions in ThisBuild := Seq(
   "-language:postfixOps"
 )
 
+lazy val coreModule = {
+  val coreDeps = mainDependencies ++ Seq(jacksonDatabind, junit, junitInterface, postgresdriver)
 
-javacOptions ++= Seq("-source", "11", "-target", "11", "-Xlint")
+  Project(
+    id   = "atomium-core",
+    base = file("modules/core")
+  ).settings(libraryDependencies ++= coreDeps)
+    .settings(crossPaths := false)
+    .settings(fork := true) //need to fork because of problem with registering JDBC Driver on repeated test invocation.
+    .settings(sources in (Compile, doc) := Seq()) // workaround: skip javadoc, sbt can't build them
+    .settings(autoScalaLibrary := false)
+}
 
-initialize := {
-  val _ = initialize.value
-  if (sys.props("java.specification.version") != "11")
-    sys.error("Java 11 is required for this project.")
+lazy val clientJavaModule = Project(
+  id   = "atomium-client-v2",
+  base = file("modules/client-java")
+).settings(
+    libraryDependencies ++= Seq(slf4j, rxhttpclient) ++ Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter),
+    autoScalaLibrary := false,
+    crossPaths := false,
+    fork := true,
+    sources in (Compile, doc) := Seq() // workaround: skip javadoc, sbt can't build them
+  )
+  .dependsOn(coreModule)
+
+lazy val play26Module = Project(
+  id   = "atomium-play26",
+  base = file("modules/play26")
+).settings(libraryDependencies ++= Seq(play26, play26Json))
+  .settings(crossScalaVersions := Seq("2.12.8")) //no scala 2.13 for Play 2.6
+  .dependsOn(coreModule)
+
+lazy val main =
+  Project(
+    id   = projectName,
+    base = file(".")
+  ).settings(publishSettings)
+    .settings(publishArtifact := false)
+    .settings(libraryDependencies ++= Seq(junit, junitInterface))
+    .aggregate(
+      coreModule,
+      play26Module,
+      clientJavaModule
+    )
+
+//----------------------------------------------------------------
+// Everything related to publishing to Sonatype OSSRH
+//----------------------------------------------------------------
+
+lazy val publishSettings = {
+
+  val publishingCredentials = {
+
+    val credentials =
+      for {
+        username <- Option(System.getenv().get("SONATYPE_USERNAME"))
+        password <- Option(System.getenv().get("SONATYPE_PASSWORD"))
+      } yield Credentials(
+        "Sonatype Nexus Repository Manager",
+        "oss.sonatype.org",
+        username,
+        password
+      )
+
+    credentials.toSeq
+  }
+
+  val pomInfo = {
+    <url>https://github.com/WegenenVerkeer/atomium</url>
+      <licenses>
+        <license>
+          <name>MIT licencse</name>
+          <url>http://opensource.org/licenses/MIT</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <scm>
+        <url>git@github.com:WegenenVerkeer/atomium.git</url>
+        <connection>scm:git:git@github.com:WegenenVerkeer/atomium.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>AWV</id>
+          <name>De ontwikkelaars van AWV</name>
+          <url>http://www.wegenenverkeer.be</url>
+        </developer>
+      </developers>
+  }
+
+  Seq(
+    publishMavenStyle := true,
+    pomIncludeRepository := { _ =>
+      false
+    },
+    pomExtra := pomInfo,
+    credentials ++= publishingCredentials
+  )
 }

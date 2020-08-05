@@ -1,14 +1,13 @@
 package be.wegenenverkeer.atomium.play
 
-import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
-import play.api.libs.json.{Format, Json}
+import be.wegenenverkeer.atomium.api.{ FeedPage, FeedPageCodec }
+import be.wegenenverkeer.atomium.play.PlayJsonFormats.feedWrites
+import play.api.libs.json.{ Format, Json }
 
 /**
-  * Created by Karel Maesen, Geovise BVBA on 18/11/16.
-  */
+ * Created by Karel Maesen, Geovise BVBA on 18/11/16.
+ */
 case class PlayJsonCodec[E]()(implicit val entryFormat: Format[E]) extends FeedPageCodec[E, Array[Byte]] {
-
-  import PlayJsonFormats._
 
   override def getMimeType: String = "application/json"
 

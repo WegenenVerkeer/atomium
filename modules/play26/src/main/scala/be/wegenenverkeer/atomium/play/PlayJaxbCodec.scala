@@ -1,12 +1,12 @@
 package be.wegenenverkeer.atomium.play
 
-import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
+import be.wegenenverkeer.atomium.api.{ FeedPage, FeedPageCodec }
 import be.wegenenverkeer.atomium.format.JaxbCodec
 
 /**
-  * Created by Karel Maesen, Geovise BVBA on 18/11/16.
-  */
-case class PlayJaxbCodec[E](typeMarker : Class[E]) extends FeedPageCodec[E,Array[Byte]]{
+ * Created by Karel Maesen, Geovise BVBA on 18/11/16.
+ */
+case class PlayJaxbCodec[E](typeMarker: Class[E]) extends FeedPageCodec[E, Array[Byte]] {
 
   val delegate = new JaxbCodec(typeMarker)
 
