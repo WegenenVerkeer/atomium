@@ -10,6 +10,8 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -31,7 +33,8 @@ public abstract class AbstractIntegrationTest {
 
     static Driver postgresDriver;
     static JdbcDialect dialect = PostgresDialect.INSTANCE;
-    static String databaseUrl = "jdbc:postgresql://localhost:5555/atomium";
+    static String databaseUrl;
+    static Properties dbProps = new Properties();
 
     JdbcEventStoreMetadata metadata =
             new JdbcEventStoreMetadata(
@@ -51,8 +54,11 @@ public abstract class AbstractIntegrationTest {
     @BeforeClass
     public static void loadDriver() {
         try {
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("database.properties");
+            dbProps.load(in);
+            databaseUrl = String.format("jdbc:postgresql://%s:%s/%s", dbProps.get("host"), dbProps.get("port"), dbProps.get("database"));
             postgresDriver = java.sql.DriverManager.getDriver(databaseUrl);
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -93,14 +99,11 @@ public abstract class AbstractIntegrationTest {
 
     Connection mkConnection(String schema) throws SQLException {
         Connection conn;
-        Properties props = new Properties();
-        props.put("user", "atomium");
-        props.put("password", "atomium");
         if (schema == null ) {
-            conn  = postgresDriver.connect(databaseUrl, props);
+            conn  = postgresDriver.connect(databaseUrl, dbProps);
         } else {
-            props.put("currentSchema", schema);
-            conn =  postgresDriver.connect(databaseUrl, props);
+            dbProps.put("currentSchema", schema);
+            conn =  postgresDriver.connect(databaseUrl, dbProps);
         }
         conn.setAutoCommit(true);
         return conn;
