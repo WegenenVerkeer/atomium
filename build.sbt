@@ -4,8 +4,6 @@ site.includeScaladoc()
 
 organization in ThisBuild := "be.wegenenverkeer"
 
-//scalaVersion in ThisBuild := (crossScalaVersions  .value.lastOption.getOrElse("2.12.1")
-
 crossScalaVersions := Seq("2.12.8", "2.13.2")
 
 scalacOptions in ThisBuild := Seq(

@@ -73,7 +73,6 @@ object AtomiumBuild extends Build with BuildSettings {
     project("play26")
       .settings(libraryDependencies ++= mainDeps ++ mainScalaTestDependencies)
       .settings(unmanagedSourceDirectories in Compile := sourceDir.value)
-      .settings(crossScalaVersions := Seq("2.11.8", "2.12.3"))
       .dependsOn(coreModule)
   }
 
