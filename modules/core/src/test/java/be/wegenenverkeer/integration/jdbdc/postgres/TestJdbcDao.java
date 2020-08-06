@@ -4,7 +4,9 @@ import be.wegenenverkeer.atomium.api.Codec;
 import be.wegenenverkeer.atomium.api.Event;
 import be.wegenenverkeer.atomium.api.EventDao;
 import be.wegenenverkeer.atomium.format.JacksonCodec;
+import be.wegenenverkeer.atomium.store.CreateEventTableOp;
 import be.wegenenverkeer.atomium.store.PostgresEventStore;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -24,6 +26,14 @@ public class TestJdbcDao extends AbstractIntegrationTest {
     Codec<TestVal, String> codec = new JacksonCodec<>(TestVal.class);
     PostgresEventStore<TestVal> store = new PostgresEventStore<>(metadata, codec);
 
+    @Before
+    public void init() throws SQLException {
+        try(Connection connection = mkConnection()) {
+            CreateEventTableOp op = dialect.mkCreateEventTableOp(connection, metadata);
+            op.execute();
+        }
+    }
+
     @Override
     boolean withTableCreation() {
         return true;
@@ -31,8 +41,9 @@ public class TestJdbcDao extends AbstractIntegrationTest {
 
     @Test
     public void writingEvents() throws SQLException {
+
         List<Event<TestVal>> entries = new ArrayList<>();
-        try (Connection conn = mkConnection(TEST_SCHEMA)) {
+        try (Connection conn = mkConnection()) {
             EventDao<TestVal> dao = store.createDao(conn);
             entries.add(Event.make( "0", new TestVal("test 0"), OffsetDateTime.now()));
             entries.add(Event.make( "1", new TestVal("test 1"), OffsetDateTime.now()));
@@ -41,19 +52,19 @@ public class TestJdbcDao extends AbstractIntegrationTest {
             dao.push(entries);
         }
 
-        try (Connection conn = mkConnection(TEST_SCHEMA)) {
+        try (Connection conn = mkConnection()) {
             EventDao<TestVal> dao = store.createDao(conn);
             List<Event<TestVal>> list = dao.getEvents(0, 5);
             assertTrue(list.isEmpty());
         }
 
-        try (Connection conn = mkConnection(TEST_SCHEMA)) {
+        try (Connection conn = mkConnection()) {
             List<Event<TestVal>> list = store.indexAndRetrieve(conn, 0, 5);
             assertEquals(4, list.size());
             assertEquals(entries, list);
         }
 
-        try (Connection conn = mkConnection(TEST_SCHEMA)) {
+        try (Connection conn = mkConnection()) {
             List<Event<TestVal>> list = store.indexAndRetrieve(conn, 0, 2);
             assertEquals(2, list.size());
             assertEquals(entries.subList(0, 2), list);
