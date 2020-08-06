@@ -62,7 +62,7 @@ public class BackpressureTest {
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis())))
                 .test()
-                .awaitDone(3500, TimeUnit.MILLISECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .assertValueCount(3);
 
@@ -81,7 +81,7 @@ public class BackpressureTest {
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis()))
                         .subscribeOn(Schedulers.newThread()), 1)
                 .test()
-                .awaitDone(3, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -100,7 +100,7 @@ public class BackpressureTest {
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofMillis(100).toMillis()))
                         .subscribeOn(Schedulers.newThread()), 1)
                 .test()
-                .awaitDone(1100, TimeUnit.MILLISECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 

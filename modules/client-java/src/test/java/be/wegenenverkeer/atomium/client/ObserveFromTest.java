@@ -60,7 +60,7 @@ public class ObserveFromTest {
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .assertValueCount(15)
                 .values();
@@ -80,7 +80,7 @@ public class ObserveFromTest {
                 .fetchEntries(from("/", "urn:uuid:669c1d7b-e206-451b-97de-29767465c43c").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -93,7 +93,7 @@ public class ObserveFromTest {
                 .fetchEntries(from("/", "urn:uuid:af399659-424f-4c07-b07b-a5338c69aaf3").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -114,7 +114,7 @@ public class ObserveFromTest {
                 .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
