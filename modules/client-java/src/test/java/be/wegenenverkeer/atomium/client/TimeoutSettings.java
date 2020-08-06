@@ -1,5 +1,5 @@
 package be.wegenenverkeer.atomium.client;
 
 public abstract class TimeoutSettings {
-    final static long TIME_OUT_IN_SECS = 10;
+    final static long TIME_OUT_IN_SECS = 1;
 }

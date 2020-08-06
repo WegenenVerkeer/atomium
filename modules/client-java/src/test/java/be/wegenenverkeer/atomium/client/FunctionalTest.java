@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.from;
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
-import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -89,7 +88,7 @@ public class FunctionalTest {
                 .build())
                 .fetchEntries(fromNowOn())
                 .test()
-                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
+                .awaitDone(5, TimeUnit.SECONDS)
                 .assertValueCount(0)
                 .assertError(FeedFetchException.class);
     }
