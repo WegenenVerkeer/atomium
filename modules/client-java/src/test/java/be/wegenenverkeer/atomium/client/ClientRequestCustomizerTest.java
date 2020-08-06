@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromStart;
+import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -59,7 +60,7 @@ public class ClientRequestCustomizerTest {
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .assertValueCount(15)
                 .values();

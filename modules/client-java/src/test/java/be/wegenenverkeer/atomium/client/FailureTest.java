@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
+import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.lang.String.format;
 
@@ -60,7 +61,7 @@ public class FailureTest {
                 .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertError(FeedFetchException.class);
     }
 

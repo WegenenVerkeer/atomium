@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.from;
+import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -62,7 +63,7 @@ public class BackpressureTest {
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis())))
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .assertValueCount(3);
 
@@ -81,7 +82,7 @@ public class BackpressureTest {
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis()))
                         .subscribeOn(Schedulers.newThread()), 1)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -100,7 +101,7 @@ public class BackpressureTest {
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofMillis(100).toMillis()))
                         .subscribeOn(Schedulers.newThread()), 1)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 

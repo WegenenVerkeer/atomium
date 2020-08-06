@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromStart;
+import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.lang.String.format;
 
@@ -57,7 +58,7 @@ public class RetryStrategyTest {
         client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
                 .fetchEntries(fromStart())
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors();
     }
 
@@ -75,7 +76,7 @@ public class RetryStrategyTest {
                     }).build())
                 .fetchEntries(fromStart())
                 .test()
-                .awaitDone(60, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS * 6, TimeUnit.SECONDS)
                 .assertError(IllegalStateException.class);
     }
 
@@ -95,7 +96,7 @@ public class RetryStrategyTest {
                 .fetchEntries(fromStart())
                 .take(25)
                 .test()
-                .awaitDone(60, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS * 6, TimeUnit.SECONDS)
                 .assertNoErrors();
     }
 }

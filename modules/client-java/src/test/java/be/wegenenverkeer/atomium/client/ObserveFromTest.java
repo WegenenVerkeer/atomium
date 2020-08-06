@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.from;
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromStart;
+import static be.wegenenverkeer.atomium.client.TimeoutSettings.TIME_OUT_IN_SECS;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 
@@ -60,7 +61,7 @@ public class ObserveFromTest {
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .assertValueCount(15)
                 .values();
@@ -80,7 +81,7 @@ public class ObserveFromTest {
                 .fetchEntries(from("/", "urn:uuid:669c1d7b-e206-451b-97de-29767465c43c").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -93,7 +94,7 @@ public class ObserveFromTest {
                 .fetchEntries(from("/", "urn:uuid:af399659-424f-4c07-b07b-a5338c69aaf3").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
@@ -114,7 +115,7 @@ public class ObserveFromTest {
                 .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
-                .awaitDone(5, TimeUnit.SECONDS)
+                .awaitDone(TIME_OUT_IN_SECS, TimeUnit.SECONDS)
                 .assertNoErrors()
                 .values();
 
