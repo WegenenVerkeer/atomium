@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
+
 /**
  * Created by Karel Maesen, Geovise BVBA on 06/06/2020.
  */
@@ -49,7 +51,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     @Override
     public Single<CachedFeedPage<E>> fetch(String pageUrl, Optional<String> etag) {
         ClientRequest request = buildRequest(pageUrl, etag);
-        return Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, etag)));
+        return Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, pageUrl, etag)));
     }
 
     @Override
@@ -82,9 +84,9 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     }
 
 
-    CachedFeedPage<E> parseResponse(ServerResponse response, Optional<String> etag) {
-        if (response.getStatusCode() == 304) {
-            return new EmptyCachedFeedPage<>(etag);
+    CachedFeedPage<E> parseResponse(ServerResponse response, String pageUrl, Optional<String> etag) {
+        if (response.getStatusCode() == HTTP_NOT_MODIFIED) {
+            return new EmptyCachedFeedPage<>(pageUrl, etag);
         }
 
         Optional<String> newETag = response.getHeader("ETag");

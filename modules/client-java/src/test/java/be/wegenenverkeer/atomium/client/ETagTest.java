@@ -1,10 +1,13 @@
 package be.wegenenverkeer.atomium.client;
 
 import be.wegenenverkeer.atomium.client.rxhttpclient.RxHttpAtomiumClient;
+import be.wegenenverkeer.rxhttpclient.HTTPStatusCode;
 import be.wegenenverkeer.rxhttpclient.rxjava.RxJavaHttpClient;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.stubbing.Scenario;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -18,12 +21,15 @@ import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromStart;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.moreThan;
 import static com.github.tomakehurst.wiremock.client.WireMock.resetToDefault;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 
 public class ETagTest {
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
@@ -68,7 +74,6 @@ public class ETagTest {
                 .awaitDone(1, TimeUnit.SECONDS);
 
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match"));
-        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/30/forward/10")).withoutHeader("If-None-Match"));
         verify(moreThan(1), getRequestedFor(urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("If-None-Match", equalTo("a7efe08ab6814170156ae94cce8c4fbd")));
     }
 
@@ -87,5 +92,24 @@ public class ETagTest {
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match"));
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withoutHeader("If-None-Match"));
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/10/forward/10")).withoutHeader("If-None-Match"));
+    }
+
+    @Test
+    public void testNotModified() {
+        stubFor(get(WireMock.urlPathEqualTo("/feeds/events/30/forward/10"))
+                .willReturn(WireMock.aResponse().withStatus(HTTP_NOT_MODIFIED)));
+
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+                .setRetryStrategy((n, t) -> {
+                    throw new FeedFetchException("Error", t);
+                })
+                .build())
+                .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
+                .test()
+                .assertNoErrors()
+                .awaitDone(1, TimeUnit.SECONDS);
+
+        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match"));
+        verify(moreThan(1), getRequestedFor(urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("If-None-Match", equalTo("a7efe08ab6814170156ae94cce8c4fbd")));
     }
 }
