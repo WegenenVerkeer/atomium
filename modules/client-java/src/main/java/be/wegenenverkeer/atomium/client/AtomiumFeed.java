@@ -1,20 +1,15 @@
 package be.wegenenverkeer.atomium.client;
 
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.reactivestreams.Publisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AtomiumFeed<E> {
-    private static String FIRST_PAGE = "/";
-    private final static Logger logger = LoggerFactory.getLogger(AtomiumFeed.class);
+    private static final String FIRST_PAGE = "/";
     private final PageFetcher<E> pageFetcher;
 
     public AtomiumFeed(PageFetcher<E> pageFetcher) {
@@ -33,7 +28,7 @@ public class AtomiumFeed<E> {
     private Publisher<? extends FeedEntry<E>> fetchEntries(FeedPositionStrategy feedPositionStrategy, AtomicReference<CachedFeedPage<E>> previousPageRef) {
         return getPreviousPage(previousPageRef)
                 .flatMap(previousPage -> feedPositionStrategy.getNextFeedPosition(previousPage) // get next feed position
-                        .flatMap(feedPosition -> fetchPage(feedPosition.pageUrl, previousPage.etag) // fetch entries
+                        .flatMap(feedPosition -> fetchPage(feedPosition, previousPage) // fetch entries
                                 .doOnSuccess(previousPageRef::set) // update ref so we're processing the correct page later on
                                 .map(cachedFeedPage -> ParsedFeedPage.parse(cachedFeedPage, feedPosition)))) // parse entries
                 .toFlowable()
@@ -55,26 +50,43 @@ public class AtomiumFeed<E> {
                 (s, emitter) -> {
                     emitter.onNext(0);
                 }
-            );
+        );
     }
 
     private Single<CachedFeedPage<E>> fetchHeadPage() {
         return fetchPage(AtomiumFeed.FIRST_PAGE, Optional.empty());
     }
 
-    private Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
+    Single<CachedFeedPage<E>> fetchPage(FeedPosition feedPosition, CachedFeedPage<E> previousPage) {
+        if (feedPosition.getPageUrl().equals(previousPage.getSelfHref())) {
+            return fetchPage(feedPosition.pageUrl, previousPage.etag);
+        } else {
+            return fetchPage(feedPosition.pageUrl, Optional.empty());
+        }
+    }
+
+    Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
         return pageFetcher.fetch(pageUrl, eTag)
                 .retryWhen(throwableFlowable -> throwableFlowable
                         .flatMap(this::applyRetryStrategy)
-                        .flatMap(delay -> Flowable.just("ignored").delay(delay.longValue(), TimeUnit.MILLISECONDS))
+                        .flatMap(delay -> Flowable.just("ignored").delay(delay, TimeUnit.MILLISECONDS))
                 )
+                .map(feedPage -> clearEtagOnHeadPage(pageUrl, feedPage))
                 .doAfterSuccess(page -> this.retryCount = 0);
+    }
+
+    private CachedFeedPage<E> clearEtagOnHeadPage(String pageUrl, CachedFeedPage<E> feedPage) {
+        if (pageUrl.equals(FIRST_PAGE)) {
+            return new CachedFeedPage<>(feedPage.getLinks(), feedPage.getEntries(), Optional.empty());
+        } else {
+            return feedPage;
+        }
     }
 
     private Flowable<Long> applyRetryStrategy(Throwable throwable) {
         try {
             return Flowable.just(pageFetcher.getRetryStrategy().apply(++this.retryCount, throwable));
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             return Flowable.error(e);
         }
     }
