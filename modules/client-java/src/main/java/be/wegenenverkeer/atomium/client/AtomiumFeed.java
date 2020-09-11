@@ -71,16 +71,7 @@ public class AtomiumFeed<E> {
                         .flatMap(this::applyRetryStrategy)
                         .flatMap(delay -> Flowable.just("ignored").delay(delay, TimeUnit.MILLISECONDS))
                 )
-                .map(feedPage -> clearEtagOnHeadPage(pageUrl, feedPage))
                 .doAfterSuccess(page -> this.retryCount = 0);
-    }
-
-    private CachedFeedPage<E> clearEtagOnHeadPage(String pageUrl, CachedFeedPage<E> feedPage) {
-        if (pageUrl.equals(FIRST_PAGE)) {
-            return new CachedFeedPage<>(feedPage.getLinks(), feedPage.getEntries(), Optional.empty());
-        } else {
-            return feedPage;
-        }
     }
 
     private Flowable<Long> applyRetryStrategy(Throwable throwable) {

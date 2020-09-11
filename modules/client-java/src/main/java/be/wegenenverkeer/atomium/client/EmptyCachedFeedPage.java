@@ -1,8 +1,10 @@
 package be.wegenenverkeer.atomium.client;
 
+import be.wegenenverkeer.atomium.api.FeedPage;
 import be.wegenenverkeer.atomium.format.Link;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,14 +13,15 @@ import java.util.Optional;
  */
 public class EmptyCachedFeedPage<T> extends CachedFeedPage<T> {
 
-    public static List<Link> emptyLinks = new ArrayList<>(0);
-
-    public EmptyCachedFeedPage(Optional<String> etag) {
-        super(emptyLinks, new ArrayList<>(0), etag);
+    public EmptyCachedFeedPage(String pageUrl, Optional<String> etag) {
+        super(createLinks(pageUrl), Collections.emptyList(), etag);
     }
 
     public boolean isEmpty() {
         return true;
     }
 
+    private static List<Link> createLinks(String pageUrl) {
+        return Collections.singletonList(new Link(Link.SELF, pageUrl));
+    }
 }
