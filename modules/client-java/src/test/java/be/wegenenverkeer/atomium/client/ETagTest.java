@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromNowOn;
+import static be.wegenenverkeer.atomium.client.FeedPositionStrategies.fromStart;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -55,7 +56,7 @@ public class ETagTest {
     }
 
     @Test
-    public void testReceivingAnError() {
+    public void testClearETagOnHeadPage() {
         client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
                 .setRetryStrategy((n, t) -> {
                     throw new FeedFetchException("Error", t);
@@ -69,5 +70,22 @@ public class ETagTest {
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match"));
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/30/forward/10")).withoutHeader("If-None-Match"));
         verify(moreThan(1), getRequestedFor(urlPathEqualTo("/feeds/events/30/forward/10")).withHeader("If-None-Match", equalTo("a7efe08ab6814170156ae94cce8c4fbd")));
+    }
+
+    @Test
+    public void testNoETagsWhenChangingURLs() {
+        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+                .setRetryStrategy((n, t) -> {
+                    throw new FeedFetchException("Error", t);
+                })
+                .build())
+                .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
+                .take(30)
+                .test()
+                .awaitDone(2, TimeUnit.SECONDS);
+
+        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match"));
+        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withoutHeader("If-None-Match"));
+        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/10/forward/10")).withoutHeader("If-None-Match"));
     }
 }
