@@ -8,7 +8,6 @@ import be.wegenenverkeer.atomium.client.RetryStrategy;
 import be.wegenenverkeer.atomium.client.UrlHelper;
 import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
 import be.wegenenverkeer.atomium.format.JaxbCodec;
-import be.wegenenverkeer.atomium.client.FeedFetchException;
 import be.wegenenverkeer.rxhttpclient.ClientRequest;
 import be.wegenenverkeer.rxhttpclient.ClientRequestBuilder;
 import be.wegenenverkeer.rxhttpclient.RxHttpClient;
@@ -50,8 +49,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
     @Override
     public Single<CachedFeedPage<E>> fetch(String pageUrl, Optional<String> etag) {
-        ClientRequest request = buildRequest(pageUrl, etag);
-        return Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, pageUrl, etag)));
+        return buildRequest(pageUrl, etag)
+                .flatMap(request -> Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, pageUrl, etag))));
     }
 
     @Override
@@ -69,7 +68,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         return this.retryStrategy;
     }
 
-    ClientRequest buildRequest(String pageUrl, Optional<String> etag) {
+    Single<ClientRequest> buildRequest(String pageUrl, Optional<String> etag) {
         ClientRequestBuilder builder = rxHttpClient.requestBuilder().setMethod("GET");
         builder.addHeader("Accept", codec.getMimeType());
 
@@ -78,11 +77,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         etag.ifPresent(s -> builder.addHeader("If-None-Match", s));
 
-        this.requestCustomizer.apply(builder);
-
-        return builder.build();
+        return this.requestCustomizer.apply(builder).map(ClientRequestBuilder::build);
     }
-
 
     CachedFeedPage<E> parseResponse(ServerResponse response, String pageUrl, Optional<String> etag) {
         if (response.getStatusCode() == HTTP_NOT_MODIFIED) {
@@ -90,15 +86,14 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         }
 
         Optional<String> newETag = response.getHeader("ETag");
-        return new CachedFeedPage<E>(codec.decode(response.getResponseBody()), newETag);
+        return new CachedFeedPage<>(codec.decode(response.getResponseBody()), newETag);
     }
 
     public static class Builder<E> {
         private final RxHttpClient rxHttpClient;
         private final String feedUrl;
         private final Class<E> entryTypeMarker;
-        private ClientRequestCustomizer requestCustomizer = builder -> {
-        };
+        private ClientRequestCustomizer requestCustomizer = Single::just;
         private RetryStrategy retryStrategy = (count, exception) -> {
             logger.info("Retry feed count {}", count);
             return count.longValue();
@@ -117,7 +112,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                 setAcceptJson();
             }
 
-            return new RxHttpPageFetcher<E>(
+            return new RxHttpPageFetcher<>(
                     feedUrl,
                     entryTypeMarker,
                     codec,

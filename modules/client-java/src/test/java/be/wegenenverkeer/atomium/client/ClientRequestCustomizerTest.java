@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ClasspathFileSource;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import io.reactivex.rxjava3.core.Single;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -54,7 +55,7 @@ public class ClientRequestCustomizerTest {
     @Test
     public void testAddHeaders() {
         client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
-                .setClientRequestCustomizer(builder -> builder.addHeader("X-FOO", "bar"))
+                .setClientRequestCustomizer(builder -> Single.just(builder.addHeader("X-FOO", "bar")))
                 .build())
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
