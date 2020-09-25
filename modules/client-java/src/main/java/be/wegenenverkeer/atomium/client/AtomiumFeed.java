@@ -1,14 +1,19 @@
 package be.wegenenverkeer.atomium.client;
 
+import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AtomiumFeed<E> {
+    private final static Logger logger = LoggerFactory.getLogger(AtomiumFeed.class);
+
     private static final String FIRST_PAGE = "";
     private final PageFetcher<E> pageFetcher;
 
@@ -37,9 +42,11 @@ public class AtomiumFeed<E> {
 
     private Single<CachedFeedPage<E>> getPreviousPage(AtomicReference<CachedFeedPage<E>> previousPage) {
         if (previousPage.get() != null) {
+            logger.debug("Next fetch: url '{}' and eTag '{}'", previousPage.get().getSelfHref(), previousPage.get().etag);
             return Single.just(previousPage.get());
         } else {
-            return fetchHeadPage();
+            logger.debug("First fetch, no eTag");
+            return fetchHeadPage().map(feedPage -> new CachedFeedPage<>(feedPage.getLinks(), feedPage.getEntries(), Optional.empty()));
         }
     }
 
@@ -68,6 +75,7 @@ public class AtomiumFeed<E> {
     Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
         return pageFetcher.fetch(pageUrl, eTag)
                 .retryWhen(throwableFlowable -> throwableFlowable
+                        .doOnNext(throwable -> logger.error("Problem fetching page '{}' with eTag '{}'", pageUrl, eTag, throwable))
                         .flatMap(this::applyRetryStrategy)
                         .flatMap(delay -> Flowable.just(1).delay(delay, TimeUnit.MILLISECONDS))
                 )

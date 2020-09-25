@@ -26,6 +26,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
  */
 class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final static Logger logger = LoggerFactory.getLogger(RxHttpPageFetcher.class);
+
     private final String feedUrl;
     private final Class<E> entryTypeMarker;
     private final FeedPageCodec<E, String> codec;
@@ -48,9 +49,20 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     }
 
     @Override
-    public Single<CachedFeedPage<E>> fetch(String pageUrl, Optional<String> etag) {
-        return buildRequest(pageUrl, etag)
-                .flatMap(request -> Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, pageUrl, etag))));
+    public Single<CachedFeedPage<E>> fetch(String pageUrl, Optional<String> eTag) {
+        return buildRequest(pageUrl, eTag)
+                .doOnSuccess(request -> {
+                    if (logger.isDebugEnabled() && request != null) {
+                        logger.debug("Fetching page {} with headers {}", request.getUrl(), request.getHeaders());
+                    }
+                })
+                .flatMap(request -> Single.fromPublisher(rxHttpClient.executeToCompletion(request, resp -> parseResponse(resp, pageUrl, eTag))))
+                .doOnSuccess(feedPage -> {
+                    if (logger.isDebugEnabled() && feedPage != null) {
+                        logger.debug("Fetched page with links {}, {} entries and with eTag {}", feedPage.getLinks(), feedPage.getEntries().size(), feedPage.getEtag());
+                    }
+                })
+                .doOnError(throwable -> logger.error("Error fetching page", throwable));
     }
 
     @Override
@@ -68,23 +80,29 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         return this.retryStrategy;
     }
 
-    Single<ClientRequest> buildRequest(String pageUrl, Optional<String> etag) {
+    Single<ClientRequest> buildRequest(String pageUrl, Optional<String> eTag) {
         ClientRequestBuilder builder = rxHttpClient.requestBuilder().setMethod("GET");
         builder.addHeader("Accept", codec.getMimeType());
 
         String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(feedUrl, pageUrl);
         builder.setUrlRelativetoBase(relative);
 
-        etag.ifPresent(s -> builder.addHeader("If-None-Match", s));
+        eTag.ifPresent(s -> builder.addHeader("If-None-Match", s));
 
         return this.requestCustomizer.apply(builder).map(ClientRequestBuilder::build);
     }
 
-    CachedFeedPage<E> parseResponse(ServerResponse response, String pageUrl, Optional<String> etag) {
+    CachedFeedPage<E> parseResponse(ServerResponse response, String pageUrl, Optional<String> eTag) {
         if (response.getStatusCode() == HTTP_NOT_MODIFIED) {
-            return new EmptyCachedFeedPage<>(pageUrl, etag);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not modified, returning empty feed page");
+            }
+            return new EmptyCachedFeedPage<>(pageUrl, eTag);
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Not modified, returning empty feed page");
+        }
         Optional<String> newETag = response.getHeader("ETag");
         return new CachedFeedPage<>(codec.decode(response.getResponseBody()), newETag);
     }
