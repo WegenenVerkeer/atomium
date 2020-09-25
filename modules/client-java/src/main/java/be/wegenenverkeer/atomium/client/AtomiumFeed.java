@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AtomiumFeed<E> {
-    private static final String FIRST_PAGE = "/";
+    private static final String FIRST_PAGE = "";
     private final PageFetcher<E> pageFetcher;
 
     public AtomiumFeed(PageFetcher<E> pageFetcher) {
@@ -69,7 +69,7 @@ public class AtomiumFeed<E> {
         return pageFetcher.fetch(pageUrl, eTag)
                 .retryWhen(throwableFlowable -> throwableFlowable
                         .flatMap(this::applyRetryStrategy)
-                        .flatMap(delay -> Flowable.just("ignored").delay(delay, TimeUnit.MILLISECONDS))
+                        .flatMap(delay -> Flowable.just(1).delay(delay, TimeUnit.MILLISECONDS))
                 )
                 .doAfterSuccess(page -> this.retryCount = 0);
     }

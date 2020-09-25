@@ -31,7 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 
-public class ETagTest {
+public class StartFromNowOnTest {
     private final static ClasspathFileSource WIREMOCK_MAPPINGS = new ClasspathFileSource("from-beginning-scenario");
 
     @ClassRule
@@ -63,7 +63,7 @@ public class ETagTest {
 
     @Test
     public void testClearETagOnHeadPage() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                 .setRetryStrategy((n, t) -> {
                     throw new FeedFetchException("Error", t);
                 })
@@ -79,7 +79,7 @@ public class ETagTest {
 
     @Test
     public void testNoETagsWhenChangingURLs() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                 .setRetryStrategy((n, t) -> {
                     throw new FeedFetchException("Error", t);
                 })
@@ -99,7 +99,7 @@ public class ETagTest {
         stubFor(get(WireMock.urlPathEqualTo("/feeds/events/30/forward/10"))
                 .willReturn(WireMock.aResponse().withStatus(HTTP_NOT_MODIFIED)));
 
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                 .setRetryStrategy((n, t) -> {
                     throw new FeedFetchException("Error", t);
                 })

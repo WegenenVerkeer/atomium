@@ -54,7 +54,7 @@ public class ClientRequestCustomizerTest {
 
     @Test
     public void testAddHeaders() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                 .setClientRequestCustomizer(builder -> Single.just(builder.addHeader("X-FOO", "bar")))
                 .build())
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))

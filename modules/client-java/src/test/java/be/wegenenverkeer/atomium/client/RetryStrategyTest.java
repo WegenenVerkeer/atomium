@@ -54,7 +54,7 @@ public class RetryStrategyTest {
 
     @Test
     public void testNoRetryStrategy() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).build())
                 .fetchEntries(fromStart())
                 .test()
                 .awaitDone(5, TimeUnit.SECONDS)
@@ -63,7 +63,7 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyOneRetries() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                     .setRetryStrategy((n, t) -> {
                         if (n < 2) {
                             logger.info("Retry request count " + n, t);
@@ -81,7 +81,7 @@ public class RetryStrategyTest {
 
     @Test
     public void testRetryStrategyThreeRetries() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class)
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class)
                         .setRetryStrategy((n, t) -> {
                             if (n < 3) {
                                 logger.info(format("Retry request count %d", n), t);
