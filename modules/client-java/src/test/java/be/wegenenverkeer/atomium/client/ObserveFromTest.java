@@ -56,7 +56,7 @@ public class ObserveFromTest {
 
     @Test
     public void testSubscribingFromBeginning() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
+        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).build())
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
                 .take(15) // process 2 pages
                 .test()
@@ -76,28 +76,25 @@ public class ObserveFromTest {
 
     @Test
     public void testSubscribingFrom_latestEntry() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).build())
                 .fetchEntries(from("/", "urn:uuid:669c1d7b-e206-451b-97de-29767465c43c").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS)
                 .assertNoErrors()
-                .values();
-
-        Assert.assertEquals(0, entries.size());
+                .assertNoValues();
     }
 
     @Test
     public void testSubscribingFrom_midEntry_prune() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
+        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).build())
                 .fetchEntries(from("/", "urn:uuid:af399659-424f-4c07-b07b-a5338c69aaf3").withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS)
                 .assertNoErrors()
+                .assertValueCount(2)
                 .values();
-
-        Assert.assertEquals(2, entries.size());
 
         FeedEntry<Event> firstEntry = entries.get(0);
         assertEquals("30/forward/10", firstEntry.getSelfHref());
@@ -110,14 +107,12 @@ public class ObserveFromTest {
 
     @Test
     public void testSubscribingFromNowOn() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).build())
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).build())
                 .fetchEntries(fromNowOn().withPollingDelay(Duration.ofMillis(100)))
                 .take(10)
                 .test()
                 .awaitDone(1, TimeUnit.SECONDS)
                 .assertNoErrors()
-                .values();
-
-        Assert.assertEquals(0, entries.size());
+                .assertNoValues();
     }
 }

@@ -57,7 +57,7 @@ public class BackpressureTest {
 
     @Test
     public void testProcessing_sameThread() {
-        client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
+        client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis())))
@@ -75,7 +75,7 @@ public class BackpressureTest {
 
     @Test
     public void testProcessing_otherThread() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
+        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofSeconds(1).toMillis()))
@@ -94,7 +94,7 @@ public class BackpressureTest {
 
     @Test
     public void testProcessing_otherThread_multiplePages() {
-        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
+        List<FeedEntry<Event>> entries = client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .concatMap(event -> Flowable.just(event)
                         .doOnNext(myEvent -> Thread.sleep(Duration.ofMillis(100).toMillis()))
@@ -113,7 +113,7 @@ public class BackpressureTest {
 
     @Test
     public void testProcessing_otherThread_reactor() {
-        Flowable<FeedEntry<Event>> feedEntryFlowable = client.feed(client.getPageFetcherBuilder("/feeds/events", Event.class).setAcceptXml().build())
+        Flowable<FeedEntry<Event>> feedEntryFlowable = client.feed(client.getPageFetcherBuilder("/feeds/events/", Event.class).setAcceptXml().build())
                 .fetchEntries(from("20/forward/10", "urn:uuid:8641f2fd-e8dc-4756-acf2-3b708080ea3a"))
                 .doOnNext(eventFeedEntry -> {
                     LOG.info("FeedEntry0 : {}", eventFeedEntry);
