@@ -54,6 +54,7 @@ public class OnlyOnePageOnFeedTest {
         //reset WireMock so it will serve the events feed
         resetToDefault();
         var body = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("mini-scenario/body-0-forward-10.json"));
+        var bodyWithExtraEntry = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("mini-scenario/body-0-forward-10-next.json"));
 
         stubFor(get(urlPathEqualTo("/feeds/events/"))
                 .willReturn(WireMock
@@ -69,14 +70,28 @@ public class OnlyOnePageOnFeedTest {
                         .withHeader("ETag", "a7efe08ab6814170156ae94cce8c4fbd")
                         .withStatus(HTTPStatusCode.OK)
                         .withBody(body)
-                ));
+                ))
+                .setNewScenarioState("NO_NEW_ENTRIES");
 
         stubFor(get(urlPathEqualTo("/feeds/events/0/forward/10"))
+                .inScenario("NO_NEW_ENTRIES")
                 .withHeader("If-None-Match", matching(".*"))
                 .willReturn(WireMock
                         .aResponse()
                         .withStatus(HTTPStatusCode.NotModified)
-                ));
+                ))
+                .setNewScenarioState("ADD_NEW_ENTRY");
+
+        stubFor(get(urlPathEqualTo("/feeds/events/0/forward/10"))
+                .inScenario("ADD_NEW_ENTRY")
+                .withHeader("If-None-Match", matching(".*"))
+                .willReturn(WireMock
+                        .aResponse()
+                        .withHeader("ETag", "fuu")
+                        .withStatus(HTTPStatusCode.OK)
+                        .withBody(bodyWithExtraEntry)
+                ))
+                .setNewScenarioState("NO_NEW_ENTRIES");
     }
 
     @After
@@ -92,16 +107,16 @@ public class OnlyOnePageOnFeedTest {
                 })
                 .build())
                 .fetchEntries(fromStart().withPollingDelay(Duration.ofMillis(100)))
-                .take(100)
                 .doOnNext(eventFeedEntry -> {
                     logger.debug("event feed entry found {}", eventFeedEntry);
                 })
                 .test()
-                .awaitDone(1, TimeUnit.SECONDS)
-                .assertValueCount(10);
+                .awaitDone(2, TimeUnit.SECONDS)
+                .assertValueCount(11);
 
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/")).withoutHeader("If-None-Match")); // determine first feed position
         verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withoutHeader("If-None-Match")); // first fetch returning entries
-        verify(moreThan(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withHeader("If-None-Match", equalTo("a7efe08ab6814170156ae94cce8c4fbd"))); // next tries
+        verify(exactly(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withHeader("If-None-Match", equalTo("a7efe08ab6814170156ae94cce8c4fbd"))); // next tries
+        verify(moreThan(1), getRequestedFor(urlPathEqualTo("/feeds/events/0/forward/10")).withHeader("If-None-Match", equalTo("fuu"))); // next tries
     }
 }

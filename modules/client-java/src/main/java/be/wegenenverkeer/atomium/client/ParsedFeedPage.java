@@ -37,7 +37,9 @@ class ParsedFeedPage<E> {
         List<Entry<E>> entries = new ArrayList<>(page.getEntries());
 
         if (feedPosition.getEntryId() != null) {
-            if (pageHasEntry(page, feedPosition.getEntryId())) {
+            if (page instanceof EmptyCachedFeedPage) {
+                logger.debug("Page {} has an entry with ID {}, but was not modified", feedPosition.getPageUrl(), feedPosition.getEntryId());
+            } else if (pageHasEntry(page, feedPosition.getEntryId())) {
                 logger.debug("Page {} has an entry with ID {}, so we're only emitting items since that ID", feedPosition.getPageUrl(), feedPosition.getEntryId());
                 entries = omitOlderOrEqualEntries(entries, feedPosition.getEntryId());
             } else {

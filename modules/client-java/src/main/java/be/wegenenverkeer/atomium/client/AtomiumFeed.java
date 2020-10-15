@@ -34,10 +34,18 @@ public class AtomiumFeed<E> {
         return getPreviousPage(previousPageRef)
                 .flatMap(previousPage -> feedPositionStrategy.getNextFeedPosition(previousPage) // get next feed position
                         .flatMap(feedPosition -> fetchPage(feedPosition, previousPage) // fetch entries
-                                .doOnSuccess(previousPageRef::set) // update ref so we're processing the correct page later on
-                                .map(cachedFeedPage -> ParsedFeedPage.parse(cachedFeedPage, feedPosition)))) // parse entries
+                                .doOnSuccess(currentPage -> updatePreviousPageRef(previousPageRef, currentPage))
+                                .map(currentPage -> ParsedFeedPage.parse(currentPage, feedPosition)))) // parse entries
                 .toFlowable()
                 .flatMap(parsedPage -> Flowable.fromIterable(parsedPage.getEntries()));
+    }
+
+    private void updatePreviousPageRef(AtomicReference<CachedFeedPage<E>> previousPageRef, CachedFeedPage<E> currentPage) {
+        if ((currentPage instanceof EmptyCachedFeedPage)) {
+            return; // keep position
+        }
+
+        previousPageRef.set(currentPage); // update ref so we're processing the correct page later on
     }
 
     private Single<CachedFeedPage<E>> getPreviousPage(AtomicReference<CachedFeedPage<E>> previousPage) {
