@@ -1,6 +1,5 @@
 package be.wegenenverkeer.atomium.client;
 
-import be.wegenenverkeer.rxhttpclient.HttpServerError;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.reactivestreams.Publisher;
@@ -68,7 +67,7 @@ public class AtomiumFeed<E> {
         );
     }
 
-    private Single<CachedFeedPage<E>> fetchHeadPage() {
+    public Single<CachedFeedPage<E>> fetchHeadPage() {
         return fetchPage(AtomiumFeed.FIRST_PAGE, Optional.empty());
     }
 
@@ -80,7 +79,7 @@ public class AtomiumFeed<E> {
         }
     }
 
-    Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
+    public Single<CachedFeedPage<E>> fetchPage(String pageUrl, Optional<String> eTag) {
         return pageFetcher.fetch(pageUrl, eTag)
                 .retryWhen(throwableFlowable -> throwableFlowable
                         .doOnNext(throwable -> logger.error("Problem fetching page '{}' with eTag '{}'", pageUrl, eTag, throwable))
