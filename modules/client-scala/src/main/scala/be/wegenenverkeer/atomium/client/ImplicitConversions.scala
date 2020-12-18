@@ -3,8 +3,8 @@ package be.wegenenverkeer.atomium.client
 import java.lang
 import java.util.function.{BiFunction => JBiFunction}
 
-import be.wegenenverkeer.atomium.japi.client.{AtomiumClient => JAtomiumClient, FeedEntry, RetryStrategy => JRetryStrategy}
-import be.wegenenverkeer.atomium.japi.client.AtomiumClient.{FeedObservableBuilder => JFeedObservableBuilder}
+import be.wegenenverkeer.atomium.japi.client.{RxHttpAtomiumClient => JAtomiumClient, FeedEntry, RetryStrategy => JRetryStrategy}
+import JAtomiumClient.{AtomiumFeed => JFeedObservableBuilder}
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
 
@@ -16,7 +16,7 @@ trait RetryStrategy {
 /**
  * Scala AtomiumClient.
  *
- * @see [[be.wegenenverkeer.atomium.japi.client.AtomiumClient]]
+ * @see [[JAtomiumClient]]
  */
 class AtomiumClient(val inner: JAtomiumClient) {
 

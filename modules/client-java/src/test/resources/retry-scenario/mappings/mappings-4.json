@@ -3,7 +3,7 @@
   "requiredScenarioState": "Error2",
   "newScenarioState": "Running2",
   "request" : {
-    "url" : "/feeds/events/0/forward/10",
+    "url" : "/feeds/events/10/forward/10",
     "method" : "GET",
     "headers" : {
       "Accept" : {
