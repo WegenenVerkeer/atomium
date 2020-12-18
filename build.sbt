@@ -15,9 +15,7 @@ initialize := {
 scalaVersion := "2.12.8"
 crossScalaVersions := Seq("2.12.8", "2.13.2")
 parallelExecution := false
-resolvers += "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
-resolvers += Resolver.sonatypeRepo("public")
-resolvers += Resolver.typesafeRepo("releases")
+
 libraryDependencies ++= mainDependencies
 scalacOptions in ThisBuild := Seq(
   "-deprecation",
