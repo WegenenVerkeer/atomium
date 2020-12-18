@@ -5,10 +5,10 @@ package be.wegenenverkeer.atomium.api;
  */
 public interface FeedPageCodec<T,O> extends Codec<FeedPage<T>, O> {
 
-    public String getMimeType();
+    String getMimeType();
 
-    public O encode(FeedPage<T> page);
+    O encode(FeedPage<T> page);
 
-    public FeedPage<T> decode(O encoded);
+    FeedPage<T> decode(O encoded);
 
 }

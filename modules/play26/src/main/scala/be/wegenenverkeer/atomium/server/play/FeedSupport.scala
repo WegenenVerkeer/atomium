@@ -4,10 +4,10 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoField
 
-import be.wegenenverkeer.atomium.api.{FeedPage, FeedPageCodec}
+import be.wegenenverkeer.atomium.api.{ FeedPage, FeedPageCodec }
 import be.wegenenverkeer.atomium.format.Generator
 import org.slf4j.LoggerFactory
-import play.api.http.{HeaderNames, MediaRange}
+import play.api.http.{ HeaderNames, MediaRange }
 import play.api.mvc._
 
 import scala.concurrent.Future
@@ -58,7 +58,6 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
       }
     }
 
-
   /**
    * marshall the feed and set correct headers
    * @param page the optional page of the feed
@@ -77,7 +76,7 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
           f.setGenerator(generator)
           render(buildRenders(f))
         }
-      case None    =>
+      case None =>
         logger.info("sending response: 404 Not-Found")
         NotFound("feed or page not found")
     }
@@ -115,14 +114,13 @@ trait FeedSupport[T] extends Results with HeaderNames with Rendering with Accept
   //if modified since 02-11-2014 12:00:00 and getUpdated on 02-11-2014 12:00:00 => not modified => true
   private def notModified(f: FeedPage[T], headers: Headers): Boolean = {
 
-    val ifNoneMatch = headers get IF_NONE_MATCH exists ( _ ==  f.calcETag )
+    val ifNoneMatch = headers get IF_NONE_MATCH exists (_ == f.calcETag)
 
     val ifModifiedSince = headers get IF_MODIFIED_SINCE exists { dateStr =>
       try {
         val updated = f.getUpdated.`with`(ChronoField.MILLI_OF_SECOND, 0)
         OffsetDateTime.parse(dateStr, DateTimeFormatter.RFC_1123_DATE_TIME).compareTo(updated) >= 0
-      }
-      catch {
+      } catch {
         case e: IllegalArgumentException =>
           logger.error(e.getMessage, e)
           false

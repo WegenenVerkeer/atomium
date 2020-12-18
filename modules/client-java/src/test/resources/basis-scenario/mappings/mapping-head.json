@@ -1,0 +1,24 @@
+{
+  "request" : {
+    "url" : "/feeds/events/",
+    "method" : "GET",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/xml"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-forward-10-xNE3Z.json",
+    "headers" : {
+      "Cache-Control" : "public, max-age=31536000",
+      "Content-Type" : "application/xml",
+      "ETag" : "820bc1480506e19a54cb5c4a6d4405b4",
+      "Expires" : "Fri, 25 Mar 2016 14:57:59 UTC",
+      "Last-Modified" : "Thu, 26 Mar 2015 14:55:59 UTC",
+      "Vary" : "Accept",
+      "Content-Length" : "2522"
+    }
+  }
+}

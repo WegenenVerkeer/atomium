@@ -13,7 +13,7 @@ public class TestCreateEventTable extends AbstractIntegrationTest {
 
     @Test
     public void testCreate() {
-        try (Connection conn = mkConnection(TEST_SCHEMA); CreateEventTableOp op = dialect.mkCreateEventTableOp(conn, metadata)) {
+        try (Connection conn = mkConnection(); CreateEventTableOp op = dialect.mkCreateEventTableOp(conn, metadata)) {
             op.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
