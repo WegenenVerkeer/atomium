@@ -101,7 +101,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Not modified, returning empty feed page");
+            logger.debug("Modified, returning feed page");
         }
         Optional<String> newETag = response.getHeader("ETag");
         return new CachedFeedPage<>(codec.decode(response.getResponseBody()), newETag);
