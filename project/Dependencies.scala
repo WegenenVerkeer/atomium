@@ -20,7 +20,7 @@ object Dependencies {
   val wiremock              = "com.github.tomakehurst" % "wiremock" % "2.26.3" % "test"
   val postgresdriver        = "org.postgresql" % "postgresql" % "42.2.13" % "test"
   val play26Test            = "com.typesafe.play" %% "play-test" % play26Version % "test"
-  val testcontainersVersion = "1.13.0"
+  val testcontainersVersion = "1.15.1"
   val testcontainers        = "org.testcontainers" % "testcontainers" % testcontainersVersion % "test"
   val testcontainersJunit   = "org.testcontainers" % "junit-jupiter" % testcontainersVersion % "test"
   val testcontainersPsql    = "org.testcontainers" % "postgresql" % testcontainersVersion % "test"
