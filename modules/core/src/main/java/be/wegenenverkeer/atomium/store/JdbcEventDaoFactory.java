@@ -94,6 +94,4 @@ class JdbcEventDao<T> implements EventDao<T> {
             if (op != null) op.close();
         }
     }
-
-
 }

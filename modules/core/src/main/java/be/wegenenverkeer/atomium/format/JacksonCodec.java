@@ -32,7 +32,6 @@ public class JacksonCodec<T> implements Codec<T, String> {
         m.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         m.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         m.setTimeZone(TimeZone.getDefault()); //this is required since default TimeZone is GMT in Jackson!
-        m.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         m.registerModule(new OffsetDateTimeModule());
         this.mapper = m;
     }
