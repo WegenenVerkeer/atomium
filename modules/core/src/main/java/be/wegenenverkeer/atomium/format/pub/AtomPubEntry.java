@@ -4,6 +4,7 @@ import be.wegenenverkeer.atomium.format.Adapters;
 import be.wegenenverkeer.atomium.format.Content;
 import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.format.Link;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -22,6 +23,7 @@ public class AtomPubEntry<T> extends Entry<T> {
     private Content<T> content;
 
     @XmlElement(name = "link")
+    @JsonProperty("links")
     private List<Link> links = new ArrayList<>();
 
 
