@@ -7,7 +7,7 @@ object Dependencies {
   // main deps
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
   val rxscala = "io.reactivex"   %% "rxscala"        % "0.26.5"
-  val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt"        % "2.3.2-1" pomOnly ()
+  val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt"        % "2.3.6" pomOnly ()
 
   //play26 deps
   val play26Json = "com.typesafe.play" %% "play-json" % play26Version
