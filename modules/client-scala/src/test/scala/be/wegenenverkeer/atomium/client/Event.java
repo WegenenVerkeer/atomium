@@ -1,6 +1,6 @@
 package be.wegenenverkeer.atomium.client;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 // this is the Event model, annotations for XML deserialization
 // and public accessors for JSON

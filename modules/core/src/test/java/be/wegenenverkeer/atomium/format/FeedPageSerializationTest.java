@@ -7,8 +7,8 @@ import be.wegenenverkeer.atomium.format.pub.Control;
 import be.wegenenverkeer.atomium.format.pub.Draft;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.*;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;

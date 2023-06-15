@@ -5,8 +5,8 @@ import be.wegenenverkeer.atomium.format.Content;
 import be.wegenenverkeer.atomium.format.Entry;
 import be.wegenenverkeer.atomium.format.Link;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package be.wegenenverkeer.atomium.client
 
 import java.util.concurrent.TimeUnit
-import javax.xml.bind.annotation._
+import jakarta.xml.bind.annotation._
 
 import be.wegenenverkeer.atomium.japi
 import be.wegenenverkeer.atomium.japi.client.FeedEntry
