@@ -4,6 +4,7 @@ import be.wegenenverkeer.atomium.api.FeedPageCodec;
 import be.wegenenverkeer.atomium.client.CachedFeedPage;
 import be.wegenenverkeer.atomium.client.EmptyCachedFeedPage;
 import be.wegenenverkeer.atomium.client.PageFetcher;
+import be.wegenenverkeer.atomium.client.RecoveryStrategy;
 import be.wegenenverkeer.atomium.client.RetryStrategy;
 import be.wegenenverkeer.atomium.client.UrlHelper;
 import be.wegenenverkeer.atomium.format.JacksonFeedPageCodec;
@@ -33,19 +34,22 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final RxHttpClient rxHttpClient;
     private final ClientRequestCustomizer requestCustomizer;
     private final RetryStrategy retryStrategy;
+    private final RecoveryStrategy recoveryStrategy;
 
     RxHttpPageFetcher(String feedUrl,
-            Class<E> entryTypeMarker,
-            FeedPageCodec<E, String> codec,
-            RxHttpClient rxHttpClient,
-            ClientRequestCustomizer requestCustomizer,
-            RetryStrategy retryStrategy) {
+                      Class<E> entryTypeMarker,
+                      FeedPageCodec<E, String> codec,
+                      RxHttpClient rxHttpClient,
+                      ClientRequestCustomizer requestCustomizer,
+                      RetryStrategy retryStrategy,
+                      RecoveryStrategy recoveryStrategy) {
         this.feedUrl = feedUrl;
         this.entryTypeMarker = entryTypeMarker;
         this.codec = codec;
         this.rxHttpClient = rxHttpClient;
         this.requestCustomizer = requestCustomizer;
         this.retryStrategy = retryStrategy;
+        this.recoveryStrategy = recoveryStrategy;
     }
 
     @Override
@@ -78,6 +82,11 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     @Override
     public RetryStrategy getRetryStrategy() {
         return this.retryStrategy;
+    }
+
+    @Override
+    public RecoveryStrategy getRecoveryStrategy() {
+        return this.recoveryStrategy;
     }
 
     Single<ClientRequest> buildRequest(String pageUrl, Optional<String> eTag) {
@@ -116,6 +125,9 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
             logger.info("Retry feed count {}", count);
             return count.longValue();
         };
+        private RecoveryStrategy recoveryStrategy = (count) -> {
+            logger.info("Recovered feed after {} retries", count);
+        };
 
         private FeedPageCodec<E, String> codec;
 
@@ -136,7 +148,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                     codec,
                     rxHttpClient,
                     requestCustomizer,
-                    retryStrategy
+                    retryStrategy,
+                    recoveryStrategy
             );
         }
 
@@ -167,6 +180,11 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         public RxHttpPageFetcher.Builder<E> setRetryStrategy(RetryStrategy retryStrategy) {
             this.retryStrategy = retryStrategy;
+            return this;
+        }
+
+        public RxHttpPageFetcher.Builder<E> setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
+            this.recoveryStrategy = recoveryStrategy;
             return this;
         }
     }
