@@ -86,7 +86,12 @@ public class AtomiumFeed<E> {
                         .flatMap(this::applyRetryStrategy)
                         .flatMap(delay -> Flowable.just(1).delay(delay, TimeUnit.MILLISECONDS))
                 )
-                .doAfterSuccess(page -> this.retryCount = 0);
+                .doAfterSuccess(page -> {
+                    if (this.retryCount > 0) {
+                        pageFetcher.getRecoveryStrategy().apply(this.retryCount);
+                    }
+                    this.retryCount = 0;
+                });
     }
 
     private Flowable<Long> applyRetryStrategy(Throwable throwable) {

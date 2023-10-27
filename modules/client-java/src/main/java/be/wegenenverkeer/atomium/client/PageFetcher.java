@@ -9,4 +9,5 @@ public interface PageFetcher<E> {
     void close();
     Class<E> getEntryTypeMarker();
     RetryStrategy getRetryStrategy();
+    RecoveryStrategy getRecoveryStrategy();
 }
