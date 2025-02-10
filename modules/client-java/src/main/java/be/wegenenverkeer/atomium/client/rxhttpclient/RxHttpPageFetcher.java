@@ -123,7 +123,16 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         private ClientRequestCustomizer requestCustomizer = Single::just;
         private RetryStrategy retryStrategy = (count, exception) -> {
             logger.info("Retry feed count {}", count);
-            return count.longValue();
+            // Exponential backoff
+            // Genereert volgende getallen: 1000 1500 2250 3375 5062 7593 11390 17085 25628 30000 30000 30000 ...
+            long maxBackoff = 30000;
+            if (count >= 10) {
+                // optimalisatie voor grote counts
+                return maxBackoff;
+            } else {
+                double pow = Math.pow(1.5, count - 1);
+                return Math.min((long) (pow * 1000), maxBackoff);
+            }
         };
         private RecoveryStrategy recoveryStrategy = (count) -> {
             logger.info("Recovered feed after {} retries", count);
