@@ -1,25 +1,14 @@
 import sbt._
-import Keys._
 
 object Dependencies {
-  val play26Version = "2.6.2"
 
   // main deps
   val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
-  val rxscala = "io.reactivex"   %% "rxscala"        % "0.26.5"
   val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt"        % "4.0.0" pomOnly ()
 
-  //play26 deps
-  val play26Json = "com.typesafe.play" %% "play-json" % play26Version
-  val play26     = "com.typesafe.play" %% "play"      % play26Version
-
   // test deps
-  val scalaTest             = "org.scalatest" %% "scalatest" % "3.1.2" % "test"
-  val scalaTestPlay26       = "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.1" % "test"
-  val scalaCheck            = "org.scalacheck" %% "scalacheck" % "1.14.1" % "test"
   val wiremock              = "com.github.tomakehurst" % "wiremock" % "2.26.3" % "test"
   val postgresdriver        = "org.postgresql" % "postgresql" % "42.2.13" % "test"
-  val play26Test            = "com.typesafe.play" %% "play-test" % play26Version % "test"
   val testcontainersVersion = "1.20.4"
   val testcontainers        = "org.testcontainers" % "testcontainers" % testcontainersVersion % "test"
   val testcontainersJunit   = "org.testcontainers" % "junit-jupiter" % testcontainersVersion % "test"
@@ -44,9 +33,4 @@ object Dependencies {
     testcontainersPsql
   )
 
-  val mainScalaTestDependencies = Seq(
-    scalaTest,
-    scalaCheck,
-    junitInterface
-  )
 }

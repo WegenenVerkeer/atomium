@@ -10,4 +10,4 @@ def buildVersionNr(vn: String): String = (buildNr, isRelease) match {
   case (_, false)       => s"$vn-SNAPSHOT"
 }
 
-version in ThisBuild := buildVersionNr(baseVersion)
+ThisBuild / version := buildVersionNr(baseVersion)
