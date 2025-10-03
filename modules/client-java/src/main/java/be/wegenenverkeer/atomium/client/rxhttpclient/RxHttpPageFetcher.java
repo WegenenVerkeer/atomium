@@ -18,6 +18,9 @@ import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
@@ -35,6 +38,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
     private final ClientRequestCustomizer requestCustomizer;
     private final RetryStrategy retryStrategy;
     private final RecoveryStrategy recoveryStrategy;
+    private final Map<String, List<String>> defaultParameters;
 
     RxHttpPageFetcher(String feedUrl,
                       Class<E> entryTypeMarker,
@@ -42,7 +46,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                       RxHttpClient rxHttpClient,
                       ClientRequestCustomizer requestCustomizer,
                       RetryStrategy retryStrategy,
-                      RecoveryStrategy recoveryStrategy) {
+                      RecoveryStrategy recoveryStrategy,
+                      Map<String, List<String>> defaultParameters) {
         this.feedUrl = feedUrl;
         this.entryTypeMarker = entryTypeMarker;
         this.codec = codec;
@@ -50,6 +55,7 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         this.requestCustomizer = requestCustomizer;
         this.retryStrategy = retryStrategy;
         this.recoveryStrategy = recoveryStrategy;
+        this.defaultParameters = defaultParameters;
     }
 
     @Override
@@ -96,6 +102,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
         String relative = new UrlHelper(rxHttpClient.getBaseUrl()).toRelative(feedUrl, pageUrl);
         builder.setUrlRelativetoBase(relative);
 
+        this.defaultParameters.forEach((k, v) -> v.forEach(s -> builder.addQueryParam(k, s)));
+
         eTag.ifPresent(s -> builder.addHeader("If-None-Match", s));
 
         return this.requestCustomizer.apply(builder).map(ClientRequestBuilder::build);
@@ -140,6 +148,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         private FeedPageCodec<E, String> codec;
 
+        private Map<String, List<String>> defaultParameters = Collections.emptyMap();
+
         Builder(RxHttpClient rxHttpClient, String feedUrl, Class<E> entryTypeMarker) {
             this.rxHttpClient = rxHttpClient;
             this.feedUrl = feedUrl;
@@ -158,7 +168,8 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
                     rxHttpClient,
                     requestCustomizer,
                     retryStrategy,
-                    recoveryStrategy
+                    recoveryStrategy,
+                    defaultParameters
             );
         }
 
@@ -194,6 +205,11 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
 
         public RxHttpPageFetcher.Builder<E> setRecoveryStrategy(RecoveryStrategy recoveryStrategy) {
             this.recoveryStrategy = recoveryStrategy;
+            return this;
+        }
+
+        public RxHttpPageFetcher.Builder<E> setDeFaultQueryParameters(Map<String, List<String>> defaultParameters) {
+            this.defaultParameters = defaultParameters;
             return this;
         }
     }
