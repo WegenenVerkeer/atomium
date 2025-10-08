@@ -23,3 +23,9 @@ project/plugins/project/
 .idea/
 .idea_modules/
 /.bsp/
+
+metals.sbt
+.metals/
+
+.gemini/
+.vscode/
