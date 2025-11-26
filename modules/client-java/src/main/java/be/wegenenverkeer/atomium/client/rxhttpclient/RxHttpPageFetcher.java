@@ -185,11 +185,20 @@ class RxHttpPageFetcher<E> implements PageFetcher<E> {
             return this;
         }
 
+        /**
+         * @deprecated Use setCodec with a properly configured JacksonFeedPageCodec instead
+         */
+        @Deprecated
         public RxHttpPageFetcher.Builder<E> registerModules(Module... modules) {
             if (this.codec != null && this.codec instanceof JacksonFeedPageCodec) {
                 ((JacksonFeedPageCodec<E>) this.codec).registerModules(modules);
             }
 
+            return this;
+        }
+
+        public RxHttpPageFetcher.Builder<E> setCodec(FeedPageCodec<E,String> codec) {
+            this.codec = codec;
             return this;
         }
 

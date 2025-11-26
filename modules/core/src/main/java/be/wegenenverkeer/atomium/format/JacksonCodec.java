@@ -40,6 +40,10 @@ public class JacksonCodec<T> implements Codec<T, String> {
         this.mapper.registerModules(modules);
     }
 
+    public void configureObjectMapper(DeserializationFeature feature, boolean state) {
+        this.mapper.configure(feature, state);
+    }
+
     @Override
     public String getMimeType() {
         return "application/json";
