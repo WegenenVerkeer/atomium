@@ -1,5 +1,5 @@
-val baseVersion    = "3.1.0"
-lazy val isRelease = true
+val baseVersion    = "3.1.1"
+lazy val isRelease = false
 
 lazy val buildNr = sys.env.get("bamboo_buildNumber")
 
