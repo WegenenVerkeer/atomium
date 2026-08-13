@@ -40,13 +40,13 @@ public class OffsetDateTimeModule extends SimpleModule {
          */
         @Override
         public OffsetDateTime deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            switch(jp.getCurrentToken())
+            switch(jp.currentToken())
             {
                 case VALUE_STRING:
                     String string = jp.getText().trim();
                     return TimestampFormat.parse(string);
             }
-            throw ctxt.mappingException("Expected type string.");
+            return ctxt.reportInputMismatch(OffsetDateTime.class, "Expected type string.");
         }
     };
 

@@ -4,7 +4,10 @@ val projectName = "atomium"
 
 ThisBuild / organization := "be.wegenenverkeer"
 
-javacOptions ++= Seq("-source", "17", "-target", "17", "-Xlint")
+// ThisBuild, otherwise this only scopes to the root project and the modules silently compile
+// to whatever JDK runs sbt. -release (not -source/-target) also pins the API to 17, so building
+// on a newer JDK cannot leak newer APIs into the published jars.
+ThisBuild / javacOptions ++= Seq("--release", "17", "-Xlint")
 
 scalaVersion := "2.13.16"
 parallelExecution := false
@@ -29,7 +32,8 @@ lazy val clientJavaModule = Project(
   id   = "atomium-client-v2",
   base = file("modules/client-java")
 ).settings(
-    libraryDependencies ++= Seq(slf4j, rxhttpclient) ++ Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter),
+    // jaxbRuntime: this module uses JaxbCodec (setAcceptXml); runtime scope does not carry over dependsOn.
+    libraryDependencies ++= Seq(slf4j, rxhttpclient, jaxbRuntime) ++ Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter, logback),
     autoScalaLibrary := false,
     fork := true,
     Compile / doc / sources := Seq() // workaround: skip javadoc, sbt can't build them

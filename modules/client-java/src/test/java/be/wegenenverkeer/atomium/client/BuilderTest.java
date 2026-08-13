@@ -8,16 +8,25 @@ import org.junit.Test;
 
 public class BuilderTest {
 
+    /**
+     * Configuring the ObjectMapper is done by subclassing: the mapper is visible to subclasses.
+     */
+    static class EventFeedPageCodec extends JacksonFeedPageCodec<Event> {
+        EventFeedPageCodec() {
+            super(Event.class);
+            mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+            mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, false);
+        }
+    }
+
     @Test
     public void testBuilderCanBeConfiguredWithCustomFeedpageCodec() {
         var client = new RxHttpAtomiumClient(new RxJavaHttpClient.Builder()
                 .setBaseUrl("http://localhost:8080/")
                 .build());
 
-        var codec = new JacksonFeedPageCodec<>(Event.class);
+        var codec = new EventFeedPageCodec();
         codec.registerModules();
-        codec.configureObjectMapper(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        codec.configureObjectMapper(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, false);
 
         var pageFetcher = client.getPageFetcherBuilder("/feeds/events/", Event.class)
                 .setCodec( codec )
