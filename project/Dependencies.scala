@@ -9,7 +9,11 @@ object Dependencies {
   // main deps
   // logback is a logging *backend*: only needed to run our own tests, never forced on consumers.
   val logback = "ch.qos.logback" % "logback-classic" % logbackVersion % "test"
-  val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt" % "4.0.0" pomOnly ()
+
+  // JaxbCodec needs JAXB only; the api carries the annotations we expose, the runtime backs
+  // JAXBContext.newInstance. (This replaces jaxws-rt, a full SOAP stack we never used.)
+  val jaxbApi     = "jakarta.xml.bind"   % "jakarta.xml.bind-api" % "4.0.5"
+  val jaxbRuntime = "org.glassfish.jaxb" % "jaxb-runtime"         % "4.0.9" % "runtime"
 
   // test deps
   val wiremock              = "com.github.tomakehurst" % "wiremock" % "2.26.3" % "test"
@@ -34,7 +38,8 @@ object Dependencies {
 
   val mainDependencies = Seq(
     logback,
-    jaxwsRt,
+    jaxbApi,
+    jaxbRuntime,
     testcontainers,
     testcontainersJunit,
     testcontainersPsql
