@@ -7,7 +7,7 @@ import be.wegenenverkeer.atomium.store.PostgresDialect;
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -49,8 +49,24 @@ public abstract class AbstractIntegrationTest {
         return false;
     }
 
-    @Rule
-    public PostgreSQLContainer container = new PostgreSQLContainer();
+    // Testcontainers 2 dropped JUnit 4 rule support, so we drive the lifecycle ourselves. Still one
+    // container per test method, as @Rule gave us: TestJdbcDao creates its table in its own @Before,
+    // which JUnit runs after this one because it is declared in the subclass.
+    // postgres:9.6.12 was what the removed no-arg constructor defaulted to.
+    public PostgreSQLContainer container;
+
+    @Before
+    public void startContainer() {
+        container = new PostgreSQLContainer("postgres:9.6.12");
+        container.start();
+    }
+
+    @After
+    public void stopContainer() {
+        if (container != null) {
+            container.stop();
+        }
+    }
 
     public Connection mkConnection() {
         try {
