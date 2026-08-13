@@ -2,9 +2,14 @@ import sbt._
 
 object Dependencies {
 
+  val jacksonVersion = "2.22.1"
+  val logbackVersion = "1.5.38"
+  val slf4jVersion   = "2.0.18"
+
   // main deps
-  val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
-  val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt"        % "4.0.0" pomOnly ()
+  // logback is a logging *backend*: only needed to run our own tests, never forced on consumers.
+  val logback = "ch.qos.logback" % "logback-classic" % logbackVersion % "test"
+  val jaxwsRt = "com.sun.xml.ws" % "jaxws-rt" % "4.0.0" pomOnly ()
 
   // test deps
   val wiremock              = "com.github.tomakehurst" % "wiremock" % "2.26.3" % "test"
@@ -17,13 +22,15 @@ object Dependencies {
   // java deps
   val junit           = "junit"                      % "junit"            % "4.11" % "test"
   val junitInterface  = "com.novocode"               % "junit-interface"  % "0.11" % "test->default"
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.3"
-  val rxhttpclient    = "be.wegenenverkeer"          % "rxhttpclient"     % "2.0-RC2"
-  val reactor         = "io.projectreactor"          % "reactor-core"     % "3.3.5.RELEASE" % "test"
-  val reactorTest     = "io.projectreactor"          % "reactor-test"     % "3.3.3.RELEASE" % "test"
-  val reactorAdapter  = "io.projectreactor.addons"   % "reactor-adapter"  % "3.3.3.RELEASE" % "test"
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+  val rxhttpclient    = "be.wegenenverkeer"          % "rxhttpclient"     % "2.0.1"
+  // reactor-adapter 3.4+ is required: RxJava 3.1 moved QueueSubscription out of the internal.fuseable package.
+  val reactorVersion = "3.5.20"
+  val reactor        = "io.projectreactor"        % "reactor-core"    % reactorVersion % "test"
+  val reactorTest    = "io.projectreactor"        % "reactor-test"    % reactorVersion % "test"
+  val reactorAdapter = "io.projectreactor.addons" % "reactor-adapter" % "3.5.5"        % "test"
 
-  val slf4j = "org.slf4j" % "slf4j-api" % "1.7.30"
+  val slf4j = "org.slf4j" % "slf4j-api" % slf4jVersion
 
   val mainDependencies = Seq(
     logback,

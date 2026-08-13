@@ -29,7 +29,7 @@ lazy val clientJavaModule = Project(
   id   = "atomium-client-v2",
   base = file("modules/client-java")
 ).settings(
-    libraryDependencies ++= Seq(slf4j, rxhttpclient) ++ Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter),
+    libraryDependencies ++= Seq(slf4j, rxhttpclient) ++ Seq(junit, wiremock, junitInterface, reactor, reactorTest, reactorAdapter, logback),
     autoScalaLibrary := false,
     fork := true,
     Compile / doc / sources := Seq() // workaround: skip javadoc, sbt can't build them
